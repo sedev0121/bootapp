@@ -1,0 +1,64 @@
+{
+  "data": [
+    {
+      "id": "1",
+      "customer_product_code": "140042674",
+      "customer_product_name": "JPJ08-三角吊件",
+      "abc_class": "A",
+      "unit": "PCS",
+      "supplier": "XXXX",
+      "order_number": "",
+      "order_line_number": "",
+      "demand_date": "2018-4-20",
+      "quantity_order": "3000",
+      "ans_quantity": "2000",
+      "rk_quantity": "",
+      "order_remaining_delivery": "1000"
+    },
+    {
+      "id": "2",
+      "customer_product_code": "140042680",
+      "customer_product_name": "JPJ14-轻钢龙骨",
+      "abc_class": "A",
+      "unit": "PCS",
+      "supplier": "VVVVV",
+      "order_number": "",
+      "order_line_number": "",
+      "demand_date": "2018-4-20",
+      "quantity_order": "",
+      "ans_quantity": "",
+      "rk_quantity": "",
+      "order_remaining_delivery": ""
+    },
+    {
+      "id": "3",
+      "customer_product_code": "140042682",
+      "customer_product_name": "JPJ10-主龙骨大吊",
+      "abc_class": "C",
+      "unit": "PCS",
+      "supplier": "",
+      "order_number": "",
+      "order_line_number": "",
+      "demand_date": "2018-4-20",
+      "quantity_order": "",
+      "ans_quantity": "",
+      "rk_quantity": "",
+      "order_remaining_delivery": ""
+    },
+    {
+      "id": "4",
+      "customer_product_code": "140042684",
+      "customer_product_name": "JPJ12-螺帽四件套",
+      "abc_class": "C",
+      "unit": "PCS",
+      "supplier": "",
+      "order_number": "",
+      "order_line_number": "",
+      "demand_date": "2018-4-20",
+      "quantity_order": "",
+      "ans_quantity": "",
+      "rk_quantity": "",
+      "order_remaining_delivery": ""
+    }
+  ]
+}
