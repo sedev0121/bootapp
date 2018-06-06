@@ -1,14 +1,16 @@
 package com.srm.platform.vendor.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import javax.persistence.*;
 import java.time.Instant;
 
-@SuppressWarnings("serial")
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 @Entity
 @Table(name = "account")
-public class Account implements java.io.Serializable {
+public class Account {
 
 	@Id
 	@GeneratedValue
@@ -16,18 +18,17 @@ public class Account implements java.io.Serializable {
 
 	@Column(unique = true)
 	private String email;
-	
-	@JsonIgnore
+
 	private String password;
 
 	private String role = "ROLE_USER";
 
 	private Instant created;
 
-    protected Account() {
+	protected Account() {
 
 	}
-	
+
 	public Account(String email, String password, String role) {
 		this.email = email;
 		this.password = password;
@@ -39,7 +40,7 @@ public class Account implements java.io.Serializable {
 		return id;
 	}
 
-    public String getEmail() {
+	public String getEmail() {
 		return email;
 	}
 
