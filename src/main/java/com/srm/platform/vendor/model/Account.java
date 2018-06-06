@@ -17,7 +17,7 @@ public class Account {
 	private Long id;
 
 	@Column(unique = true)
-	private String email;
+	private String username;
 
 	private String password;
 
@@ -25,12 +25,16 @@ public class Account {
 
 	private Instant created;
 
+	private String to_account;
+	private String token_id;
+	private int token_expiresIn;
+
 	protected Account() {
 
 	}
 
-	public Account(String email, String password, String role) {
-		this.email = email;
+	public Account(String username, String password, String role) {
+		this.username = username;
 		this.password = password;
 		this.role = role;
 		this.created = Instant.now();
@@ -38,14 +42,6 @@ public class Account {
 
 	public Long getId() {
 		return id;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
 	}
 
 	public String getPassword() {
@@ -64,7 +60,48 @@ public class Account {
 		this.role = role;
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	public Instant getCreated() {
 		return created;
 	}
+
+	public String getTo_account() {
+		return to_account;
+	}
+
+	public void setTo_account(String to_account) {
+		this.to_account = to_account;
+	}
+
+	public String getToken_id() {
+		return token_id;
+	}
+
+	public void setToken_id(String token_id) {
+		this.token_id = token_id;
+	}
+
+	public int getToken_expiresIn() {
+		return token_expiresIn;
+	}
+
+	public void setToken_expiresIn(int token_expiresIn) {
+		this.token_expiresIn = token_expiresIn;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setCreated(Instant created) {
+		this.created = created;
+	}
+
 }

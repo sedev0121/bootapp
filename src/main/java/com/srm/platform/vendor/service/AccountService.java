@@ -46,7 +46,7 @@ public class AccountService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Account account = accountRepository.findOneByEmail(username);
+		Account account = accountRepository.findOneByUsername(username);
 		if (account == null) {
 			throw new UsernameNotFoundException("user not found");
 		}
@@ -63,7 +63,7 @@ public class AccountService implements UserDetailsService {
 	}
 
 	private User createUser(Account account) {
-		return new User(account.getEmail(), account.getPassword(), Collections.singleton(createAuthority(account)));
+		return new User(account.getUsername(), account.getPassword(), Collections.singleton(createAuthority(account)));
 	}
 
 	private GrantedAuthority createAuthority(Account account) {

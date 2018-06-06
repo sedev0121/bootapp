@@ -7,5 +7,5 @@ import com.srm.platform.vendor.model.Account;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
-	Account findOneByEmail(String email);
+	Account findOneByUsername(String username);
 }
