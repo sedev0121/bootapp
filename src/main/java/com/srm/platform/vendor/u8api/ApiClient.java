@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -51,13 +52,13 @@ public class ApiClient {
 		String username = authentication.getName();
 		Account account = accountRepository.findOneByUsername(username);
 
-		logger.info(username);
-		if (account.getToken_id() == null) {
+		logger.info(account.getExpire_time() + " " + System.currentTimeMillis() / 1000);
+		if (account.getToken_id() == null || System.currentTimeMillis() / 1000 >= account.getExpire_time()) {
 			Token token = getToken();
 
 			if (token != null) {
 				account.setToken_id(token.getId());
-				account.setToken_expiresIn(token.getExpiresIn());
+				account.setExpire_time(System.currentTimeMillis() / 1000 + token.getExpiresIn());
 				accountRepository.save(account);
 			}
 
@@ -69,11 +70,34 @@ public class ApiClient {
 		return account.getToken_id();
 	}
 
+	private String getErrorMsg(String responseStr) {
+		logger.info("start getToken api");
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		String url = appProperties.getSystem().getToken();
+
+		// String url = env.getProperty("u8api.system_token");
+
+		try {
+			Response response = objectMapper.readValue(responseStr, Response.class);
+			logger.info(response.getErrmsg());
+
+			if (response.getErrcode() != appProperties.getError_code_success())
+				return response.getErrmsg();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.info(e.getMessage());
+		}
+
+		return null;
+	}
+
 	private Token getToken() {
 		logger.info("start getToken api");
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		String url = appProperties.getSystem_token();
+		String url = appProperties.getSystem().getToken();
 
 		// String url = env.getProperty("u8api.system_token");
 
@@ -93,14 +117,109 @@ public class ApiClient {
 
 	}
 
-	public String getVendor(String id, int ds_sequence) {
+	public String getVendor(String id) {
 
 		checkToken();
 		logger.info("start getVendor api");
 		RestClient client = new RestClient();
-		logger.info(appProperties.getVendor_get());
-		String url = String.format(appProperties.getVendor_get(), to_account, token_id, ds_sequence, id);
+		logger.info(appProperties.getVendor().getGet());
+		String url = String.format(appProperties.getVendor().getGet(), to_account, token_id, id);
+		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+
+		return response;
+
+	}
+
+	public String getBatchVendor(Map<String, String> requestParams) {
+
+		checkToken();
+
+		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
+		String page_index = requestParams.getOrDefault("page_index", "1");
+		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
+		String name = requestParams.getOrDefault("name", "");
+
+		logger.info("start getBatchVendor api");
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getVendor().getBatch_get(), to_account, token_id, rows_per_page,
+				page_index, ds_sequence, name);
+		logger.info(String.format("url=>%s", url));
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+		return response;
+	}
+
+	public String getBatchVenPriceAdjust() {
+
+		checkToken();
+		logger.info("start getBatchVenPriceAdjust api");
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getVenPriceAdjust().getBatch_get(), to_account, token_id);
+		logger.info(String.format("url=>%s", url));
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+		return response;
+	}
+
+	public String getBatchInventory() {
+
+		checkToken();
+		logger.info("start getBatchInventory api");
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getInventory().getBatch_get(), to_account, token_id);
+		logger.info(String.format("url=>%s", url));
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+		return response;
+	}
+
+	public String getBatchPurchaseIn() {
+
+		checkToken();
+		logger.info("start getBatchPurchaseIn api");
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getPurchaseIn().getBatch_get(), to_account, token_id);
+		logger.info(String.format("url=>%s", url));
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+		return response;
+	}
+
+	public String getBatchPurInvoice() {
+
+		checkToken();
+		logger.info("start getBatchPurInvoice api");
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getPurInvoice().getBatch_get(), to_account, token_id);
+		logger.info(String.format("url=>%s", url));
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+		return response;
+	}
+
+	public String getBatchPurchaseOrder() {
+
+		checkToken();
+		logger.info("start getBatchPurchaseOrder api");
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getPurchaseOrder().getBatch_get(), to_account, token_id);
+		logger.info(String.format("url=>%s", url));
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+		return response;
+	}
+
+	public String getPurchaseOrder(String id) {
+
+		checkToken();
+		logger.info("start getPurchaseOrder api");
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getPurchaseOrder().getGet(), to_account, token_id, id);
+		logger.info(String.format("url=>%s", url));
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
 		return response;
 	}
 

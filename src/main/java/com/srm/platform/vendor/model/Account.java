@@ -27,7 +27,8 @@ public class Account {
 
 	private String to_account;
 	private String token_id;
-	private int token_expiresIn;
+
+	private long expire_time;
 
 	protected Account() {
 
@@ -88,12 +89,12 @@ public class Account {
 		this.token_id = token_id;
 	}
 
-	public int getToken_expiresIn() {
-		return token_expiresIn;
+	public long getExpire_time() {
+		return expire_time;
 	}
 
-	public void setToken_expiresIn(int token_expiresIn) {
-		this.token_expiresIn = token_expiresIn;
+	public void setExpire_time(long expire_time) {
+		this.expire_time = expire_time;
 	}
 
 	public void setId(Long id) {

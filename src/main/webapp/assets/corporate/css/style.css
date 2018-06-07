@@ -430,7 +430,6 @@ body.page-header-fixed {
   font-size: 23px;
   font-weight: 400;
 
-  margin-right: 67px;
   padding-top: 22px;
 	padding-bottom: 22px;
 	line-height: normal;
@@ -1923,7 +1922,7 @@ Demo Utils
 .glyphicons-demo ul {
   padding-left: 0;
   padding-bottom: 1px;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   list-style: none;
   overflow: hidden;
 }
@@ -1931,7 +1930,7 @@ Demo Utils
 .bs-glyphicons {
   padding-left: 0;
   padding-bottom: 1px;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   list-style: none;
   overflow: hidden;
 }
@@ -3104,7 +3103,7 @@ Styler Panel
 }
 
 .bg-login {
-	height: calc(100vh);
+	height: calc(90vh);
 	background-image: url(../img/bg_login.png);
 	background-size: cover;
 }
@@ -3118,4 +3117,80 @@ Styler Panel
 	margin-right: 30px;
 	background-color: rgba(0,0,33, 0.9);
 	font-size: 16px;
+}
+
+.search-content {
+	display: table;
+	width: 100%;
+	table-layout: fixed;
+	border-spacing: 3px;
+}
+
+.search-row {
+	display: table-row;
+}
+
+.search-cell {
+	display: table-cell;
+}
+
+.width-18 {
+	width: 18%;
+}
+.width-15 {
+	width: 15%;
+}
+.width-10 {
+	width: 10%;
+}
+.width-6 {
+	width: 6%;
+}
+
+.paginate_input {
+	text-align: center;
+	width: 55px;
+	height: 34px;
+	padding: 6px 12px;
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: #555;
+	background-color: #fff;
+	background-image: none;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+	box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+	-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+	-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+	transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+
+.paginate_button {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.paginate_button:not(.disabled):hover {
+	cursor: pointer;
+	font-weight: bolder;
+	font-size: larger;
+}
+
+.input-icon {
+	position: relative;
+	left: 0;
+}
+.input-icon>.form-control {
+	padding-left: 33px;
+}
+.input-icon>i {
+	color: #ccc;
+	position: absolute;
+	margin: 11px 2px 4px 10px;
+	z-index: 3;
+	width: 16px;
+	font-size: 16px;
+	text-align: center;
+	left: 0;
 }

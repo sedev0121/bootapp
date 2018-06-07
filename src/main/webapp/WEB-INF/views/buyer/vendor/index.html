@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+  <div class="container"  layout:fragment="content">  
+      <ul class="breadcrumb">
+          <li>
+            <a href="index.html"><i class="fa fa-dashboard"></i> 首页</a>
+          </li>
+          <li><a href="#">供应商管理</a></li>
+          <li class="active">供应商档表</li>
+      </ul>
+      <div class="search-content">
+          <div class="search-cell width-18">
+              <label for="product_code">商品编码:</label>
+              <input type="text" id="product_code" class="form-control">
+          </div>
+          <div class="search-cell width-18">
+              <label for="product_name">商品名称:</label>
+              <input type="text" id="product_name" class="form-control">
+          </div>
+          <div style="vertical-align: bottom" class="search-cell width-6 text-right">
+            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i></button>
+          </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+            <table id="example" class="ui celled table nowrap" style="width:100%">
+            </table>
+        </div>
+      </div>
+  </div>  
+</body>
+</html>
+
+
+<script th:inline="javascript">
+	$.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+		var product_code = $('#product_code').val();
+		var product_name = $('#product_name').val();
+
+		if (data[9] == product_code || product_code == '') {
+			if (data[10] == product_name || product_name == '') {
+				return true;
+			}
+		}
+		return false;
+	});
+
+	///*[[@{/api/vendor/batch_get}]]*/ ''
+	$(document).ready(function() {
+		var table = $('#example').DataTable({
+			ajax : {
+				url : /*[[@{/api/vendor/batch_get}]]*/'',
+				data : function(data) {
+					var filter = {
+						rows_per_page: data.length,
+						page_index:data.start/data.length+1,
+						name:$('#product_name').val()
+					}
+					return filter;
+				},
+				dataSrc : function(json) {
+					if (json.errcode != 0) {
+						alert(json.errmsg);
+						json.recordsTotal = 0
+						json.recordsFiltered = 0;
+						json.vendor = [];
+					}else{
+						json.recordsTotal = json.row_count;
+						json.recordsFiltered = json.row_count;
+					}
+					return json.vendor;
+				},				
+			},
+			
+			columns : [ {
+				data : 'RowNum',
+				title : 'No',
+				defaultContent : ''
+			}, {
+				data : 'code',
+				title : '供应商编码',
+				defaultContent : ''
+			}, {
+				data : 'name',
+				title : '供应商名称',
+				defaultContent : ''
+			}, {
+				data : 'abbrname',
+				title : '供应商简称',
+				defaultContent : ''
+			}, {
+				data : 'sort_code',
+				title : '所属分类码',
+				defaultContent : ''
+			}, {
+				data : 'industry',
+				title : '所属行业',
+				defaultContent : ''
+			}, {
+				data : 'address',
+				title : '地址',
+				defaultContent : ''
+			}, {
+				data : 'bank_open',
+				title : '开户银行',
+				defaultContent : ''
+			}, {
+				data : 'bank_acc_number',
+				title : '银行帐号',
+				defaultContent : ''
+			}, {
+				data : 'phone',
+				title : '电话',
+				defaultContent : ''
+			}, {
+				data : 'phone',
+				title : '电话',
+				defaultContent : ''
+			} ],
+		});
+		
+    $("#btn_search").click(function() {
+    	table.draw();
+    });
+    
+    $('#product_name').keyup(function(e){
+        if(e.keyCode == 13)
+        	table.draw();
+    });
+	});
+</script>

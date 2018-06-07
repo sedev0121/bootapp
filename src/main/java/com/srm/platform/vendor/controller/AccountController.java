@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.service.AccountService;
-import com.srm.platform.vendor.u8api.ApiClient;
 
 @Controller // This means that this class is a Controller
 @RequestMapping(path = "/admin") // This means URL's start with /demo (after Application path)
@@ -25,9 +24,6 @@ public class AccountController {
 
 	@Autowired
 	private AccountService accountService;
-
-	@Autowired
-	private ApiClient apiClient;
 
 	@GetMapping(path = "/users/add") // Map ONLY GET Requests
 	public @ResponseBody String addNewUser(@RequestParam String username, @RequestParam String password) {
