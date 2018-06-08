@@ -37,29 +37,6 @@
       <div class="row">
         <div class="col-lg-12">
             <table id="example" class="ui celled table nowrap" style="width:100%">
-              <thead>
-                <tr>
-                  <th><input type="checkbox" class="editor-active"></th>
-                  <th>行号</th>
-                  <th>报价单号</th>
-                  <th>供应商编码</th>
-                  <th>供应商名称</th>
-                  <th>供应商名称</th>
-                  <th>状态</th>
-                  <th>是否含税</th>
-                  <th>税率</th>
-                  <th>商品编码</th>
-                  <th>商品名称</th>
-                  <th>单位</th>
-                  <th>原价格</th>
-                  <th>含税单价</th>
-                  <th>不含税单价</th>
-                  <th>创建日期</th>
-                  <th>发布日期</th>
-                  <th>报价开始日期</th>
-                  <th>报价结束日期</th>
-                </tr>
-              </thead>
             </table>
         </div>
       </div>
@@ -80,7 +57,112 @@
       }, function(start, end, label) {
         console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
       });
-    
+    var table = $('#example').DataTable({
+  		ajax : {
+  			url : /*[[@{/api/inventory/batch_get}]]*/'',
+  			data : function(data) {
+  				var filter = {
+  					rows_per_page : data.length,
+  					page_index : data.start / data.length + 1
+  				}
+  				return filter;
+  			},
+  			dataSrc : function(json) {
+  				if (json.errcode != 0) {
+  					alert(json.errmsg);
+  					json.recordsTotal = 0
+  					json.recordsFiltered = 0;
+  					json.inventory = [];
+  				} else {
+  					json.recordsTotal = json.row_count;
+  					json.recordsFiltered = json.row_count;
+  				}
+  				return json.inventory;
+  			},
+  		},
+  
+  		columns : [ {
+  			data : 'code',
+  			title : '存货编码',
+  			defaultContent : ''
+  		}, {
+  			data : 'name',
+  			title : '存货名称',
+  			defaultContent : ''
+  		}, {
+  			data : 'invaddcode',
+  			title : '存货代码',
+  			defaultContent : ''
+  		}, {
+  			data : 'specs',
+  			title : '规格型号',
+  			defaultContent : ''
+  		}, {
+  			data : 'sort_code',
+  			title : '所属分类码',
+  			defaultContent : ''
+  		}, {
+  			data : 'main_measure',
+  			title : '主计量单位',
+  			defaultContent : ''
+  		}, {
+  			data : 'ref_sale_price',
+  			title : '参考售价',
+  			defaultContent : ''
+  		}, {
+  			data : 'tax_rate',
+  			title : '销项税率',
+  			defaultContent : ''
+  		}, {
+  			data : 'iimptaxrate',
+  			title : '进项税率',
+  			defaultContent : ''
+  		}, {
+  			data : 'iSupplyType',
+  			title : '供应类型',
+  			defaultContent : ''
+  		}, {
+  			data : 'puunit_name',
+  			title : '采购默认单位名称',
+  			defaultContent : ''
+  		}, {
+  			data : 'saunit_name',
+  			title : '销售默认单位名称',
+  			defaultContent : ''
+  		}, {
+  			data : 'stunit_name',
+  			title : '库存默认单位名称',
+  			defaultContent : ''
+  		}, {
+  			data : 'bottom_sale_price',
+  			title : '最低售价',
+  			defaultContent : ''
+  		}, {
+  			data : 'defwarehousename',
+  			title : '默认仓库名称',
+  			defaultContent : ''
+  		}, {
+  			data : 'start_date',
+  			title : '启用日期',
+  			render: $.fn.date_renderer,
+  			defaultContent : ''
+  		}, {
+  			data : 'end_date',
+  			title : '停用日期',
+  			render: $.fn.date_renderer,
+  			defaultContent : ''
+  		}, {
+  			data : 'ModifyDate',
+  			title : '变更日期',
+  			render: $.fn.date_renderer,
+  			defaultContent : ''				
+  		} ],
+  	});
+  	
+  $("#btn_search").click(function() {
+  	table.draw();
+  });
+
 		
 	});
 </script>

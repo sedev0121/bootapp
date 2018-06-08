@@ -16,22 +16,6 @@
       <div class="row">
         <div class="col-lg-12">
             <table id="example" class="ui celled table nowrap" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>客户商品编码</th>
-                        <th>客户商品名称</th>
-                        <th>ABC类</th>
-                        <th>单位</th>
-                        <th>供应商</th>
-                        <th>订单号</th>
-                        <th>订单行号</th>
-                        <th>需求日期</th>
-                        <th>订单数量</th>
-                        <th>（发货数量）ANS数量</th>
-                        <th>RK数量</th>
-                        <th>订单剩余交货量</th>
-                    </tr>
-                </thead>
             </table>
         </div>
       </div>
@@ -41,5 +25,81 @@
 
 
 <script th:inline="javascript">
-	
+
+$(document).ready(function() {
+	var table = $('#example').DataTable({
+		ajax : {
+			url : /*[[@{/api/venpriceadjust/batch_get}]]*/'',
+			data : function(data) {
+				var filter = {
+					rows_per_page : data.length,
+					page_index : data.start / data.length + 1
+				}
+				return filter;
+			},
+			dataSrc : function(json) {
+				if (json.errcode != 0) {
+					alert(json.errmsg);
+					json.recordsTotal = 0
+					json.recordsFiltered = 0;
+					json.venpriceadjustlist = [];
+				} else {
+					json.recordsTotal = json.row_count;
+					json.recordsFiltered = json.row_count;
+				}
+				return json.venpriceadjustlist;
+			},
+		},
+
+		columns : [ {
+			data : 'ccode',
+			title : '单据号',
+			defaultContent : ''
+		}, {
+			data : 'ddate',
+			title : '调价日期',
+			render: $.fn.date_renderer,
+			defaultContent : ''
+		}, {
+			data : 'cdepname',
+			title : '调价部门',
+			defaultContent : ''
+		}, {
+			data : 'cpersonname',
+			title : '调价业务员',
+			defaultContent : ''
+		}, {
+			data : 'btaxcost',
+			title : '价格标识',
+			defaultContent : ''
+		}, {
+			data : 'isupplytype',
+			title : '供应类型',
+			defaultContent : ''
+		}, {
+			data : 'cmainmemo',
+			title : '表头备注',
+			defaultContent : ''
+		}, {
+			data : 'cmaker',
+			title : '制单人',
+			defaultContent : ''
+		}, {
+			data : 'cverifier',
+			title : '审批人',
+			defaultContent : ''
+		}, {
+			data : 'dverifydate',
+			title : '审批日期',
+			render: $.fn.date_renderer,
+			defaultContent : ''
+				
+		} ],
+	});
+
+	$("#btn_search").click(function() {
+		table.draw();
+	});
+
+});
 </script>
