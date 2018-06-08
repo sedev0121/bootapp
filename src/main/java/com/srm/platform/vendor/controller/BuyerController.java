@@ -15,8 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class BuyerController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	// Home
+	@GetMapping({ "", "/" })
+	public String home() {
+		return "redirect:/buyer/inquery";
+	}
+
 	// 价格管理->询价管理
-	@GetMapping({ "/inquery", "", "/" })
+	@GetMapping("/inquery")
 	public String inquery() {
 		return "buyer/inquery/index";
 	}

@@ -5,10 +5,10 @@
       <div class="container">
         <ul class="breadcrumb">
           <li>
-            <a href="index.html"><i class="fa fa-dashboard"></i> 首页</a>
+            <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
           </li>
           <li><a>订单管理</a></li>
-          <li><a href="order_delivery_index.html">订单发货</a></li>
+          <li><a th:href="@{/vendor/purchaseorder/ship}">订单发货</a></li>
           <li class="active">导入送货单</li>
         </ul>
         <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">

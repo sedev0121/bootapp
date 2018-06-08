@@ -5,7 +5,7 @@
   <div class="container" layout:fragment="content">
     <ul class="breadcrumb">
       <li>
-        <a href="index.html"><i class="fa fa-dashboard"></i> 首页</a>
+        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
       <li><a href="#" class="active">价格管理</a></li>
       <li class="active">询价管理</li>
@@ -15,10 +15,10 @@
         <a class="btn btn-primary"><i class="fa fa-pencil"></i>&nbsp; 修改  </a>
         <a class="btn btn-primary"><i class="fa fa-times"></i>&nbsp; 删除  </a>
         <a class="btn btn-primary"> 提交</a>
-        <a class="btn btn-primary" href="inquery_review.html"> 审核</a>
+        <a class="btn btn-primary" th:href="@{/buyer/inquery/add}"> 审核</a>
         <a class="btn btn-primary"> 退回</a>
-        <a class="btn btn-primary" href="inquery_review.html"> 发布</a>
-        <a class="btn btn-primary" href="inquery_review.html"> 复核</a>
+        <a class="btn btn-primary" th:href="@{/buyer/inquery/add}"> 发布</a>
+        <a class="btn btn-primary" th:href="@{/buyer/inquery/add}"> 复核</a>
         <a class="btn btn-primary"> 更新</a>
     </div>
     <div class="search-content">

@@ -4,10 +4,10 @@
   <div class="container"  layout:fragment="content">  
       <ul class="breadcrumb">
         <li>
-          <a href="index.html"><i class="fa fa-dashboard"></i> 首页</a>
+          <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
         <li>价格管理</li>
-        <li><a href="quote_index.html" class="active">报价管理</a></li>
+        <li><a th:href="@{/buyer/quote}" class="active">报价管理</a></li>
         <li class="active">报价详细</li>
       </ul>
       <div class="row">

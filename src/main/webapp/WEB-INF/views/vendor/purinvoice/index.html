@@ -4,13 +4,13 @@
   <div class="container"  layout:fragment="content">  
       <ul class="breadcrumb">
         <li>
-          <a href="index.html"><i class="fa fa-dashboard"></i> 首页</a>
+          <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
         <li class="active">对账单管理</li>
       </ul>
       <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-          <a class="btn btn-primary" href="index.html"> 退回</a>
-          <a class="btn btn-primary" href="billing_details.html"> 确定</a>
+          <a class="btn btn-primary" th:href="@{/vendor/purinvoice/edit}"> 退回</a>
+          <a class="btn btn-primary" th:href="@{/vendor/purinvoice/edit}"> 确定</a>
           <a class="btn btn-primary"> 协调</a>
           <a class="btn btn-primary"> 提交发票</a>
       </div>

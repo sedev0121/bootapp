@@ -51,15 +51,15 @@
         <!-- BEGIN NAVIGATION -->
         <div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_BUYER')">
           <ul>
-            <li class="dropdown">
+            <li class="dropdown" th:classappend="${#strings.contains(#httpServletRequest.requestURI,'inquery')} or ${#strings.contains(#httpServletRequest.requestURI,'quote')}? active : ''" >   
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">价格管理</a>
                 
               <ul class="dropdown-menu">
                 <li><a th:href="@{/buyer/inquery}">询价管理</a></li>
                 <li><a th:href="@{/buyer/quote}">报价管理</a></li>
               </ul>
-            </li>            
-            <li class="dropdown">
+            </li>         
+            <li class="dropdown" th:classappend="${#strings.contains(#httpServletRequest.requestURI,'inventory')} or ${#strings.contains(#httpServletRequest.requestURI,'price')}? active : ''" >   
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">商品管理 </a>
                 
               <ul class="dropdown-menu">
@@ -67,19 +67,19 @@
                 <li><a th:href="@{/buyer/price}">商品价格查询</a></li>
               </ul>
             </li>
-            <li class="active">
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'vendor')} ? active : ''" >
               <a th:href="@{/buyer/vendor}">供应商管理</a>
             </li>
-            <li>
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purchaseorder')} ? active : ''" >
               <a th:href="@{/buyer/purchaseorder}">订单管理</a>
             </li>
-            <li>
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'shipment')} ? active : ''" >
               <a th:href="@{/buyer/shipment}">出货看板</a>
             </li>
-            <li>
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purinvoice')} ? active : ''" >
               <a th:href="@{/buyer/purinvoice}">对账单管理</a>
             </li>
-            <li>
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purchasein')} ? active : ''" >
               <a th:href="@{/buyer/purchasein}">外购入库单</a>
             </li>
           </ul>
@@ -87,7 +87,7 @@
         <!-- BEGIN NAVIGATION -->
         <div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_VENDOR')">
           <ul>
-            <li class="dropdown">
+            <li class="dropdown" th:classappend="${#strings.contains(#httpServletRequest.requestURI,'inquery')} or ${#strings.contains(#httpServletRequest.requestURI,'quote')}? active : ''" >   
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">价格管理</a>
                 
               <ul class="dropdown-menu">
@@ -95,7 +95,7 @@
                 <li><a th:href="@{/vendor/quote}">报价管理</a></li>
               </ul>
             </li>
-            <li class="dropdown">
+            <li class="dropdown" th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purchaseorder')} ? active : ''" >
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">订单管理 </a>
                 
               <ul class="dropdown-menu">
@@ -104,10 +104,10 @@
                 <li><a th:href="@{/vendor/purchaseorder/ship}">订单发货</a></li>
               </ul>
             </li>
-            <li>
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'shipment')} ? active : ''" >
               <a th:href="@{/vendor/shipment}">出货看板</a>
             </li>
-            <li>
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purinvoice')} ? active : ''" >
               <a th:href="@{/vendor/purinvoice}">对账单管理</a>
             </li>
           </ul>

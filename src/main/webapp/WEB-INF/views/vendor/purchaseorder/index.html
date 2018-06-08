@@ -4,9 +4,9 @@
   <div class="container"  layout:fragment="content">  
       <ul class="breadcrumb">
         <li>
-          <a href="index.html"><i class="fa fa-dashboard"></i> 首页</a>
+          <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
-        <li><a href="#">订单管理</a></li>
+        <li><a th:href="@{/vendor/purchageorder}">订单管理</a></li>
         <li class="active">订单确认</li>
       </ul>
 
