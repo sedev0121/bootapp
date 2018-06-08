@@ -9,17 +9,20 @@
         <li class="active">对账单管理</li>
       </ul>
       <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-          <a class="btn btn-primary" th:href="@{/buyer/purinvoice/edit}"> 退回</a>
-          <a class="btn btn-primary" th:href="@{/buyer/purinvoice/edit}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
-          <a class="btn btn-primary" th:href="@{/buyer/purinvoice/edit}"> 审核</a>
-          <a class="btn btn-primary" th:href="@{/buyer/purinvoice/edit}"> 发布</a>
-          <a class="btn btn-primary" th:href="@{/buyer/purinvoice/edit}"> 发票确认</a>
+          <a class="btn btn-primary" href="index.html"> 退回</a>
+          <a class="btn btn-primary" href="billing_details.html"> 确定</a>
+          <a class="btn btn-primary"> 协调</a>
+          <a class="btn btn-primary"> 提交发票</a>
       </div>
 
       <div class="search-content">
+          <div class="search-cell width-18">
+            <label for="date_range">对账期间: </label>
+            <input type="text" name="daterange" value="" class="form-control" />
+          </div>
           <div class="search-cell width-15">
-            <label for="order_number">订单号码：</label>
-            <input type="text" id="order_number" class="form-control">
+            <label for="supplier">供应商：</label>
+            <input type="text" id="supplier" class="form-control">
           </div>
           <div class="search-cell width-10">
             <label for="date_range">状态:</label>
@@ -30,18 +33,6 @@
               <option value="拒绝">拒绝</option>
               <option value="发布">发布</option>
             </select>
-          </div>
-          <div class="search-cell width-18">
-            <label for="supplier_code">供应商编码：</label>
-            <input type="text" id="supplier_code" class="form-control">
-          </div>
-          <div class="search-cell width-18">
-            <label for="supplier_name">供应商名称:</label>
-            <input type="text" id="supplier_name" class="form-control">
-          </div>
-          <div class="search-cell width-18">
-            <label for="date_range">发布日期: </label>
-            <input type="text" name="daterange" value="" class="form-control" />
           </div>
           <div style="vertical-align: bottom" class="search-cell width-6 text-right">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i></button>

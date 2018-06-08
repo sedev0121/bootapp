@@ -44,12 +44,12 @@
     <!-- BEGIN HEADER -->
     <div class="header">
       <div class="container">
-        <a class="site-logo" href="index.html"><img th:src="@{/assets/corporate/img/logo.png}" alt="采购管理平台"></a>
+        <a class="site-logo" th:href="@{/}"><img th:src="@{/assets/corporate/img/logo.png}" alt="采购管理平台"></a>
 
         <a href="javascript:void(0);" class="mobi-toggler"><i class="fa fa-bars"></i></a>
 
         <!-- BEGIN NAVIGATION -->
-        <div class="header-navigation font-transform-inherit">
+        <div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_BUYER')">
           <ul>
             <li class="dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">价格管理</a>
@@ -58,10 +58,7 @@
                 <li><a th:href="@{/buyer/inquery}">询价管理</a></li>
                 <li><a th:href="@{/buyer/quote}">报价管理</a></li>
               </ul>
-            </li>
-           
-
-            
+            </li>            
             <li class="dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">商品管理 </a>
                 
@@ -87,6 +84,34 @@
             </li>
           </ul>
         </div>
+        <!-- BEGIN NAVIGATION -->
+        <div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_VENDOR')">
+          <ul>
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">价格管理</a>
+                
+              <ul class="dropdown-menu">
+                <li><a th:href="@{/vendor/inquery}">询价管理</a></li>
+                <li><a th:href="@{/vendor/quote}">报价管理</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">订单管理 </a>
+                
+              <ul class="dropdown-menu">
+                <li><a th:href="@{/vendor/purchaseorder/confirm}">订单确认</a></li>
+                <li><a th:href="@{/vendor/purchaseorder/delivery}">交期确认</a></li>
+                <li><a th:href="@{/vendor/purchaseorder/ship}">订单发货</a></li>
+              </ul>
+            </li>
+            <li>
+              <a th:href="@{/vendor/shipment}">出货看板</a>
+            </li>
+            <li>
+              <a th:href="@{/vendor/purinvoice}">对账单管理</a>
+            </li>
+          </ul>
+        </div>
         <form id="logout_form" th:action="@{/logout}" method="post"></form>
         <div class="header-navigation menu-right">
           <ul>
@@ -100,11 +125,72 @@
     </div>
     <!-- Header END -->
 
-    <div class="main">
+    <div class="main" style="min-height:600px;">
       <div class="container"  layout:fragment="content">          
       </div>
     </div>
+    <!-- BEGIN PRE-FOOTER -->
+    <div class="pre-footer margin-top-10">
+      <div class="container">
+        <div class="row">
+          <!-- BEGIN BOTTOM ABOUT BLOCK -->
+          <div class="col-md-5 col-sm-8 pre-footer-col">
+            <h2>关于我们</h2>
+            <p>用友U8开放平台是基于用友大量的企业用户和U8的开放接口 ，接入外部合作伙伴，为企业用户提供丰富应用和完善服务的开放平台。</p>
+          </div>
+          <!-- END BOTTOM ABOUT BLOCK -->
 
+          <!-- BEGIN BOTTOM CONTACTS -->
+          <div class="col-md-4 col-sm-6 pre-footer-col">
+            <h2>联系我们</h2>
+            <address class="margin-bottom-40">
+                                  北京市海淀区北清路68号用友产业园<br>
+                                  邮编:100094<br>
+                                  客服热线<br>
+              400-6600-588<br>
+            </address>
+
+          </div>
+          <!-- END BOTTOM CONTACTS -->
+
+          <!-- BEGIN TWITTER BLOCK --> 
+          <div class="col-md-3 col-sm-4 pre-footer-col">
+            <h2>备案</h2>
+            <ul class="list-unstyled">
+              <li>京ICP备05007539号-7</li>
+              <li>京ICP证100714号</li>
+              <li>京公网安备11010802021935号</li>
+            </ul>
+          </div>
+          <!-- END TWITTER BLOCK -->
+        </div>
+      </div>
+    </div>
+    <!-- END PRE-FOOTER -->
+
+    <!-- BEGIN FOOTER -->
+    <div class="footer">
+      <div class="container">
+        <div class="row">
+          <!-- BEGIN COPYRIGHT -->
+          <div class="col-md-4 col-sm-4">
+             <p class="powered"> 版权所有：<a href="http://www.keenthemes.com/">美尔凯特</a>©2018</p> 
+          </div>
+          <!-- END COPYRIGHT -->
+          <!-- BEGIN PAYMENTS -->
+          <div class="col-md-6 col-sm-6">
+          
+          </div>
+          <!-- END PAYMENTS -->
+          <!-- BEGIN POWERED -->
+          <div class="col-md-2 col-sm-2 text-right">
+            <p class="powered">由<a href="http://www.keenthemes.com/">云链信息</a>提供技术支持</p>
+          </div>
+          <!-- END POWERED -->
+        </div>
+      </div>
+    </div>
+    <!-- END FOOTER -->
     <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> -->
     <script th:src="@{/assets/plugins/jquery.min.js}" type="text/javascript"></script>
     <script th:src="@{/assets/plugins/jquery-migrate.min.js}" type="text/javascript"></script>

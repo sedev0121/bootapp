@@ -6,6 +6,7 @@ Template Name: Metronic - Responsive Website Template build with Twitter Bootstr
 body { 
 	color: #3e4d5c; 
 	direction: ltr;
+	font-family:'Microsoft YaHei','SimSun' !important;
 	font: 400 13px 'Open Sans', Arial, sans-serif;
 	background: #fff;
 }
@@ -461,6 +462,7 @@ body.page-header-fixed {
 
 /* Navigation */
 .header-navigation {
+	font-family:'Microsoft YaHei','SimSun' !important;
 	font: 15px "Open Sans", sans-serif;
 	margin: 0 10px 0 0;
 	padding: 0;
@@ -518,6 +520,7 @@ body.page-header-fixed {
   border: none;  
   box-shadow: 5px 5px rgba(91, 91, 91, 0.2);
   text-transform: none;
+  font-family:'Microsoft YaHei','SimSun' !important;
   font: 13px "Open Sans", sans-serif;
   letter-spacing: 0;
   border-radius: 0;
@@ -1116,6 +1119,7 @@ steps block and steps block elements
 
 /* breadcrumb */
 .breadcrumb {
+	font-family:'Microsoft YaHei','SimSun' !important;
 	background: none;
 	padding: 0;
 	font: 14px "Open Sans", sans-serif;

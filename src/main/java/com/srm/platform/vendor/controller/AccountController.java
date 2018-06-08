@@ -31,7 +31,7 @@ public class AccountController {
 		// @RequestParam means it is a parameter from the GET or POST request
 
 		logger.info("start user add");
-		Account n = new Account(username, password, "ROLE_USER");
+		Account n = new Account(username, password, "ROLE_VENDOR");
 		n.setTo_account("jxylxx");
 		accountService.save(n);
 

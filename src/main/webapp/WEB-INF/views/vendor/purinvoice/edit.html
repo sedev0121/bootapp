@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+
+  <div class="container"  layout:fragment="content">  
+      <div class="container">
+        <ul class="breadcrumb">
+          <li>
+            <a href="index.html"><i class="fa fa-dashboard"></i> 首页</a>
+          </li>
+          <li><a href="billing_index.html">对账单明细</a></li>
+          <li class="active">对账单明细</li>
+        </ul>
+
+        <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
+            <a class="btn btn-primary" href="billing_index.html"> 退回</a>
+            <a class="btn btn-primary"> 审核</a>
+            <a class="btn btn-primary"> 发布</a>
+            <a class="btn btn-primary"> 发票确认</a>
+            <a class="btn btn-primary"> 打印</a>
+        </div>
+        <div class="row">
+            <div class="col-lg-2 col-md-2">
+              <label>对账单号: </label>
+              <input type="text" class="form-control" value="4502691503" readonly/>
+            </div>
+            <div class="col-lg-2 col-md-2">
+              <label>币别: </label>
+              <input type="text" class="form-control" value="CNY" readonly/>
+            </div>
+            <div class="col-lg-2 col-md-2">
+              <label>订单类型: </label>
+              <input type="text" class="form-control" value="标准采购订单" readonly/>
+            </div>
+            <div class="col-lg-2 col-md-2">
+              <label>版本: </label>
+              <input type="text" class="form-control" value="2" readonly/>
+            </div>
+            <div class="col-lg-2 col-md-2">
+              <label>数据来源: </label>
+              <input type="text" class="form-control" value="ERP" readonly/>
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+              <label>客户: </label>
+              <input type="text" class="form-control" value="浙江美尔凯特集成吊顶有限公司" readonly/>
+            </div>
+            <div class="col-lg-4 col-md-4">
+              <label>供应商: </label>
+              <input type="text" class="form-control" value="嘉兴市华年电机有限公司" readonly/>
+            </div>
+            <div class="col-lg-4 col-md-4">
+              <label>供应商地址: </label>
+              <input type="text" class="form-control" value="XXXXXXXXXXXXXXX" readonly/>
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+              <label>含税金额: </label>
+              <input type="text" class="form-control" value="XXXXX.XX" readonly/>
+            </div>
+            <div class="col-lg-4 col-md-4">
+              <label>创建日期: </label>
+              <input type="text" class="form-control" value="xxxx-xx-xx xx:xx:xx" readonly/>
+            </div>
+            <div class="col-lg-4 col-md-4">
+              <label>发布日期: </label>
+              <input type="text" class="form-control" value="xxxx-xx-xx xx:xx:xx" readonly/>
+            </div>
+
+            <div class="col-lg-12 col-md-12">
+              <label>未税金额: </label>
+              <input type="text" class="form-control" value="" readonly/>
+            </div>
+
+            <div class="col-lg-12 col-md-12">
+              <label>订单摘要: </label>
+              <input type="text" class="form-control" value="" readonly/>
+            </div>
+            <div class="col-lg-12 col-md-12 text-right margin-top-10">
+              <a class="btn btn-primary">基本信息</a>
+              <a class="btn btn-primary">预付款信息</a>
+            </div>
+
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+              <table id="example" class="ui celled table nowrap" style="width:100%">
+              </table>
+          </div>
+        </div>
+    </div>
+  </div>  
+</body>
+</html>
+
+
+<script th:inline="javascript">
+	$(document).ready(function() {
+		var table = $('#example').DataTable({
+			ajax : {
+				url : /*[[@{/api/purinvoice/batch_get}]]*/'',
+				data : function(data) {
+					var filter = {
+						rows_per_page: data.length,
+						page_index:data.start/data.length+1,
+						name:$('#product_name').val()
+					}
+					return filter;
+				},
+				dataSrc : function(json) {
+					if (json.errcode != 0) {
+						alert(json.errmsg);
+						json.recordsTotal = 0
+						json.recordsFiltered = 0;
+						json.purinvoicelist = [];
+					}else{
+						json.recordsTotal = json.row_count;
+						json.recordsFiltered = json.row_count;
+					}
+					return json.purinvoicelist;
+				},				
+			},
+			
+			columns : [ {
+				data : 'type',
+				title : '采购发票类型',
+				defaultContent : ''
+			}, {
+				data : 'cexchrate',
+				title : '汇率',
+				defaultContent : ''
+			}, {
+				data : 'cexch_name',
+				title : '币种',
+				defaultContent : ''
+			}, {
+				data : 'cexch_code',
+				title : '币种编码',
+				defaultContent : ''
+			}, {
+				data : 'cdepname',
+				title : '部门名称',
+				defaultContent : ''
+			}, {
+				data : 'cdepcode',
+				title : '部门名称编码',
+				defaultContent : ''
+			}, {
+				data : 'cptname',
+				title : '采购类型名称',
+				defaultContent : ''
+			}, {
+				data : 'cptcode',
+				title : '采购类型编码',
+				defaultContent : ''
+			}, {
+				data : 'cpersonname',
+				title : '业务员名称',
+				defaultContent : ''
+			}, {
+				data : 'cpersoncode',
+				title : '业务员编码',
+				defaultContent : ''
+			}, {
+				data : 'cvenname',
+				title : '供应商名称',
+				defaultContent : ''
+			}, {
+				data : 'cvencode',
+				title : '供应商编码',
+				defaultContent : ''				
+			} ],
+		});
+		
+    $("#btn_search").click(function() {
+    	table.draw();
+    });
+    
+    $('#product_name').keyup(function(e){
+        if(e.keyCode == 13)
+        	table.draw();
+    });
+	});
+</script>

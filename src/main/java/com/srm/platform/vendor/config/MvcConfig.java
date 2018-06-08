@@ -2,6 +2,7 @@ package com.srm.platform.vendor.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -30,7 +31,6 @@ public class MvcConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/").setViewName("home/index");
 		registry.addViewController("/login").setViewName("login");
 	}
 
@@ -43,6 +43,11 @@ public class MvcConfig implements WebMvcConfigurer {
 		resolver.setCharacterEncoding("UTF-8");
 		resolver.setCacheable(false);
 		return resolver;
+	}
+
+	@EnableGlobalMethodSecurity(prePostEnabled = true)
+	public class MethodSecurityConfig {
+		// ...
 	}
 
 	@Bean
