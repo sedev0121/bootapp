@@ -195,7 +195,7 @@
                 .addClass(disableClasses[lastClassName]);
  
             // Paginate of N pages text
-            $(an).children('.' + paginateOfClassName).html(' 共页 ' + iPages);
+            $(an).children('.' + paginateOfClassName).html(' 共 ' + iPages + ' 页');
  
             // Current page numer input value
             $(an).children('.' + paginateInputClassName).val(iCurrentPage);

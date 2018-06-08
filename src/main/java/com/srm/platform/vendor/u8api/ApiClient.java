@@ -21,6 +21,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
@@ -52,13 +53,13 @@ public class ApiClient {
 		String username = authentication.getName();
 		Account account = accountRepository.findOneByUsername(username);
 
-		logger.info(account.getExpire_time() + " " + System.currentTimeMillis() / 1000);
-		if (account.getToken_id() == null || System.currentTimeMillis() / 1000 >= account.getExpire_time()) {
+		logger.info(account.getExpire_time() + ">" + System.currentTimeMillis());
+		if (account.getToken_id() == null || System.currentTimeMillis() >= account.getExpire_time()) {
 			Token token = getToken();
 
 			if (token != null) {
 				account.setToken_id(token.getId());
-				account.setExpire_time(System.currentTimeMillis() / 1000 + token.getExpiresIn());
+				account.setExpire_time(System.currentTimeMillis() + token.getExpiresIn() * 1000);
 				accountRepository.save(account);
 			}
 
@@ -151,60 +152,88 @@ public class ApiClient {
 		return response;
 	}
 
-	public String getBatchVenPriceAdjust() {
+	public String getBatchVenPriceAdjust(Map<String, String> requestParams) {
 
 		checkToken();
+
+		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
+		String page_index = requestParams.getOrDefault("page_index", "1");
+		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
+		String personname = requestParams.getOrDefault("personname", "");
+
 		logger.info("start getBatchVenPriceAdjust api");
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getVenPriceAdjust().getBatch_get(), to_account, token_id);
+		String url = String.format(appProperties.getVenPriceAdjust().getBatch_get(), to_account, token_id,
+				rows_per_page, page_index, ds_sequence, personname);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
 		return response;
 	}
 
-	public String getBatchInventory() {
+	public String getBatchInventory(Map<String, String> requestParams) {
 
 		checkToken();
+
 		logger.info("start getBatchInventory api");
+		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
+		String page_index = requestParams.getOrDefault("page_index", "1");
+		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
+
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getInventory().getBatch_get(), to_account, token_id);
+		String url = String.format(appProperties.getInventory().getBatch_get(), to_account, token_id, rows_per_page,
+				page_index, ds_sequence);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
 		return response;
 	}
 
-	public String getBatchPurchaseIn() {
+	public String getBatchPurchaseIn(@RequestParam Map<String, String> requestParams) {
 
 		checkToken();
 		logger.info("start getBatchPurchaseIn api");
+		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
+		String page_index = requestParams.getOrDefault("page_index", "1");
+		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
+
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getPurchaseIn().getBatch_get(), to_account, token_id);
+		String url = String.format(appProperties.getPurchaseIn().getBatch_get(), to_account, token_id, rows_per_page,
+				page_index, ds_sequence);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
 		return response;
 	}
 
-	public String getBatchPurInvoice() {
+	public String getBatchPurInvoice(@RequestParam Map<String, String> requestParams) {
 
 		checkToken();
 		logger.info("start getBatchPurInvoice api");
+		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
+		String page_index = requestParams.getOrDefault("page_index", "1");
+		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
+
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getPurInvoice().getBatch_get(), to_account, token_id);
+		String url = String.format(appProperties.getPurInvoice().getBatch_get(), to_account, token_id, rows_per_page,
+				page_index, ds_sequence);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
 		return response;
 	}
 
-	public String getBatchPurchaseOrder() {
+	public String getBatchPurchaseOrder(@RequestParam Map<String, String> requestParams) {
 
 		checkToken();
 		logger.info("start getBatchPurchaseOrder api");
+		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
+		String page_index = requestParams.getOrDefault("page_index", "1");
+		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
+
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getPurchaseOrder().getBatch_get(), to_account, token_id);
+		String url = String.format(appProperties.getPurchaseOrder().getBatch_get(), to_account, token_id, rows_per_page,
+				page_index, ds_sequence);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));

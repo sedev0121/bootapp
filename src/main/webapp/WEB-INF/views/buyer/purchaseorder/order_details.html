@@ -55,13 +55,10 @@
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">价格管理</a>
                 
               <ul class="dropdown-menu">
-                <li><a href="inquery_index.html">询价管理</a></li>
+                <li class="active"><a href="inquery_index.html">询价管理</a></li>
                 <li><a href="quote_index.html">报价管理</a></li>
               </ul>
             </li>
-           
-
-            
             <li class="dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">商品管理 </a>
                 
@@ -70,10 +67,10 @@
                 <li><a href="commodity_code_table.html">商品价格查询</a></li>
               </ul>
             </li>
-            <li class="active">
+            <li>
               <a href="supplier_index.html">供应商管理</a>
             </li>
-            <li>
+            <li class="active">
               <a href="order_index.html">订单管理</a>
             </li>
             <li>
@@ -102,45 +99,110 @@
     <div class="main">
       <div class="container">
           <ul class="breadcrumb">
-              <li>
-                <a href="index.html"><i class="fa fa-dashboard"></i> 首页</a>
-              </li>
-              <li><a href="#">供应商管理</a></li>
-              <li class="active">供应商档表</li>
+            <li>
+              <a href="index.html"><i class="fa fa-dashboard"></i> 首页</a>
+            </li>
+            <li><a href="order_index.html">订单管理</a></li>
+            <li class="active">采购订单明细</li>
           </ul>
-          <div class="search-content">
-              <div class="search-cell width-18">
-                  <label for="product_code">商品编码:</label>
-                  <input type="text" id="product_code" class="form-control">
+
+          <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
+              <a class="btn btn-primary"> 退回</a>
+              <a class="btn btn-primary"> 发布</a>
+              <a class="btn btn-primary"> 打印</a>
+          </div>
+
+          <div class="row">
+              <div class="col-lg-2 col-md-2">
+                <label>订单号: </label>
+                <input type="text" class="form-control" value="4502691503" readonly/>
               </div>
-              <div class="search-cell width-18">
-                  <label for="product_name">商品名称:</label>
-                  <input type="text" id="product_name" class="form-control">
+              <div class="col-lg-2 col-md-2">
+                <label>币别: </label>
+                <input type="text" class="form-control" value="CNY" readonly/>
               </div>
-              <div style="vertical-align: bottom" class="search-cell width-6 text-right">
-                <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i></button>
+              <div class="col-lg-2 col-md-2">
+                <label>订单类型: </label>
+                <input type="text" class="form-control" value="标准采购订单" readonly/>
               </div>
+              <div class="col-lg-2 col-md-2">
+                <label>版本: </label>
+                <input type="text" class="form-control" value="2" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>数据来源: </label>
+                <input type="text" class="form-control" value="ERP" readonly/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>客户: </label>
+                <input type="text" class="form-control" value="浙江美尔凯特集成吊顶有限公司" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>供应商: </label>
+                <input type="text" class="form-control" value="嘉兴市华年电机有限公司" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>供应商地址: </label>
+                <input type="text" class="form-control" value="XXXXXXXXXXXXXXX" readonly/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>订单总金额: </label>
+                <input type="text" class="form-control" value="XXXXX.XX" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>创建日期: </label>
+                <input type="text" class="form-control" value="xxxx-xx-xx xx:xx:xx" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>发布日期: </label>
+                <input type="text" class="form-control" value="xxxx-xx-xx xx:xx:xx" readonly/>
+              </div>
+
+              <div class="col-lg-12 col-md-12">
+                <label>订单摘要: </label>
+                <input type="text" class="form-control" value="" readonly/>
+              </div>
+              
+              <div class="col-lg-4 col-md-4">
+                <label>付款条件: </label>
+                <input type="text" class="form-control" value="XXXXX.XX" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>预付金额: </label>
+                <input type="text" class="form-control" value="23000" readonly/>
+              </div>
+              <div class="col-lg-12 col-md-12 text-right">
+                <a class="btn btn-default">基本信息</a>
+                <a class="btn btn-default">预付款信息</a>
+              </div>
+
           </div>
           <div class="row">
             <div class="col-lg-12">
                 <table id="example" class="ui celled table nowrap" style="width:100%">
                     <thead>
                         <tr>
-                            <th>序号</th>
-                            <th>供应商编码</th>
-                            <th>供应商名称</th>
-                            <th>地址</th>
-                            <th>发展日期</th>
-                            <th>电话</th>
-                            <th>传真</th>
-                            <th>Email地址</th>
-                            <th>联系人</th>
-                            <th>手机</th>
-                            <th>到货地址</th>
-                            <th>建档人</th>
-                            <th>建档日期</th>
-                            <th>变更人</th>
-                            <th>变更日期</th>
+                            <th>行号</th>
+                            <th>商品编码</th>
+                            <th>商品名称</th>
+                            <th>数量</th>
+                            <th>单位</th>
+                            <th>最新未税单价</th>
+                            <th>最新含税单价</th>
+                            <th>未税金额</th>
+                            <th>最新含税金额</th>
+                            <th>税率</th>
+                            <th>原单价</th>
+                            <th>原金额</th>
+                            <th>预付金额</th>
+                            <th>需求日期</th>
+                            <th>收货组织</th>
+                            <th>收货库房</th>
+                            <th>承诺交货日期</th>
+                            <th>供货方备注</th>
+                            <th>交货方备注</th>
                         </tr>
                     </thead>
                 </table>
@@ -176,7 +238,6 @@
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
     <script type="text/javascript" src="assets/plugins/data-table/datatable-input.js"></script>
 </body>
 <!-- END BODY -->
@@ -184,22 +245,18 @@
 
 
 <script>
-  $.fn.dataTable.ext.search.push(
-    function( settings, data, dataIndex ) {
-        var product_code = $('#product_code').val();
-        var product_name = $('#product_name').val();
-
-        if (data[9] == product_code || product_code == '') {
-          if (data[10] == product_name || product_name == '') {
-              return true;
-          }
-        }
-        return false;
-    }
-  );
   $(document).ready(function() {
+    $('input[name="daterange"]').daterangepicker({
+      opens: 'right',
+      locale: {
+        format: 'YYYY年MM月DD'
+      }
+    }, function(start, end, label) {
+      console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+    });
+
     var table = $('#example').DataTable({
-        "sAjaxSource": "data/supplier_index.txt",
+        "sAjaxSource": "data/order_details.txt",
         "scrollX": true,
         "dom": 'tr<"bottom"<"pull-left"p><"pull-left"l><"pull-right"i>><"clear">',
         "language": {
@@ -214,21 +271,25 @@
         },
         "pagingType": "input",
         "columns": [
-            { "data": "no" },
-            { "data": "vendor_code" },
-            { "data": "supplier_name" },
-            { "data": "address" },
-            { "data": "development_date" },
-            { "data": "phone" },
-            { "data": "fax" },
-            { "data": "email_address" },
-            { "data": "contacts" },
-            { "data": "cell_phone" },
-            { "data": "arrival_address" },
-            { "data": "filter" },
-            { "data": "filling_date" },
-            { "data": "change_person" },
-            { "data": "change_date" }
+            { "data": "line_number" },
+            { "data": "product_code" },
+            { "data": "product_name" },
+            { "data": "quantity" },
+            { "data": "unit" },
+            { "data": "latest_untaxed_unit_price" },
+            { "data": "latest_tax_inclusive_unit_price" },
+            { "data": "untaxed_amount" },
+            { "data": "latest_taxable_amount" },
+            { "data": "tax_rate" },
+            { "data": "original_unit_price" },
+            { "data": "original_amount" },
+            { "data": "prepayment_amount" },
+            { "data": "demand_date" },
+            { "data": "receiving_organization" },
+            { "data": "receipt_warehouse" },
+            { "data": "commitment_delivery_date" },
+            { "data": "supplier_notes" },
+            { "data": "delivery_note" }
         ]
     });
 

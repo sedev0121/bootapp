@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+  <div class="container"  layout:fragment="content">  
+      <ul class="breadcrumb">
+        <li>
+          <a href="index.html"><i class="fa fa-dashboard"></i> 首页</a>
+        </li>
+        <li class="active">外购入库单</li>
+      </ul>
+
+      <div class="search-content">
+          <div class="search-cell width-18">
+            <label for="date_range">入库时间: </label>
+            <input type="text" name="daterange" value="" class="form-control" />
+          </div>
+          <div class="search-cell width-18">
+            <label for="supplier_code">供应商：</label>
+            <input type="text" id="supplier_code" class="form-control">
+          </div>
+          <div class="search-cell width-10">
+            <label for="date_range">状态:</label>
+            <select name="status" id="status" class="form-control">
+              <option value=""></option>
+              <option value="新建">新建</option>
+              <option value="审核">审核</option>
+              <option value="拒绝">拒绝</option>
+              <option value="发布">发布</option>
+            </select>
+          </div>
+          <div style="vertical-align: bottom" class="search-cell width-6 text-right">
+            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i></button>
+          </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+            <table id="example" class="ui celled table nowrap" style="width:100%">
+            </table>
+        </div>
+      </div>
+  </div>  
+</body>
+</html>
+
+
+<script th:inline="javascript">
+
+	$(document).ready(function() {
+		var table = $('#example').DataTable({
+			ajax : {
+				url : /*[[@{/api/purchasein/batch_get}]]*/'',
+				data : function(data) {
+					var filter = {
+						rows_per_page: data.length,
+						page_index:data.start/data.length+1,
+						name:$('#product_name').val()
+					}
+					return filter;
+				},
+				dataSrc : function(json) {
+					if (json.errcode != 0) {
+						alert(json.errmsg);
+						json.recordsTotal = 0
+						json.recordsFiltered = 0;
+						json.purchaseinlist = [];
+					}else{
+						json.recordsTotal = json.row_count;
+						json.recordsFiltered = json.row_count;
+					}
+					return json.purchaseinlist;
+				},				
+			},
+			
+			columns : [ {
+				data : 'code',
+				title : '单据号',
+				defaultContent : ''
+			}, {
+				data : 'date',
+				title : '单据日期',
+				render: $.fn.date_renderer,
+				defaultContent : ''
+			}, {
+				data : 'maker',
+				title : '制单人名称',
+				defaultContent : ''
+			}, {
+				data : 'warehousecode',
+				title : '仓库编码',
+				defaultContent : ''
+			}, {
+				data : 'memory',
+				title : '备注',
+				defaultContent : ''
+			}, {
+				data : 'receivecode',
+				title : '收发类型编码',
+				defaultContent : ''
+			}, {
+				data : 'departmentcode',
+				title : '部门编码',
+				defaultContent : ''
+			}, {
+				data : 'warehousename',
+				title : '仓库名称',
+				defaultContent : ''
+			}, {
+				data : 'receivename',
+				title : '收发类型名称',
+				defaultContent : ''
+			}, {
+				data : 'departmentname',
+				title : '部门名称',
+				defaultContent : ''
+			}, {
+				data : 'purchasetypecode',
+				title : '采购类型编码',
+				defaultContent : ''
+			}, {
+				data : 'purchasetypename',
+				title : '采购类型名称',
+				defaultContent : ''
+			}, {
+				data : 'auditdate',
+				title : '审核日期',
+				render: $.fn.date_renderer,
+				defaultContent : ''
+			}, {
+				data : 'handler',
+				title : '审核人',
+				defaultContent : ''
+			}, {
+				data : 'vendorcode',
+				title : '供货单位编码',
+				defaultContent : ''
+			}, {
+				data : 'vendorname',
+				title : '供货单位名称',
+				defaultContent : ''
+			}, {
+				data : 'vendorabbname',
+				title : '供货单位简称',
+				defaultContent : ''
+			}, {
+				data : 'bredvouch',
+				title : '红蓝标识',
+				defaultContent : ''
+			} ],
+		});
+		
+    $("#btn_search").click(function() {
+    	table.draw();
+    });
+    
+    $('#product_name').keyup(function(e){
+        if(e.keyCode == 13)
+        	table.draw();
+    });
+	});
+</script>

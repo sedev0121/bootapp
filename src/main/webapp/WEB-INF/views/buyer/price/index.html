@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+  <div class="container"  layout:fragment="content">  
+      <ul class="breadcrumb">
+        <li>
+          <a href="index.html"><i class="fa fa-dashboard"></i> 首页</a>
+        </li>
+        <li><a href="#">商品管理</a></li>
+        <li class="active">商品价格查询</li>
+      </ul>
+      <div class="search-content">
+          <div class="search-cell width-15">
+            <label for="product_code">商品编码:</label>
+            <input type="text" id="product_code" class="form-control">
+          </div>
+          <div class="search-cell width-15">
+            <label for="product_name">商品名称:</label>
+            <input type="text" id="product_name" class="form-control">
+          </div>
+          <div class="search-cell width-18">
+            <label for="supplier_code">供应商编码：</label>
+            <input type="text" id="supplier_code" class="form-control">
+          </div>
+          <div class="search-cell width-18">
+            <label for="supplier_name">供应商名称:</label>
+            <input type="text" id="supplier_name" class="form-control">
+          </div>
+          <div class="search-cell width-18">
+            <label for="date_range">有效日期: </label>
+            <input type="text" name="daterange" value="" class="form-control" />
+          </div>
+          <div style="vertical-align: bottom" class="search-cell width-6 text-right">
+            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i></button>
+          </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+            <table id="example" class="ui celled table nowrap" style="width:100%">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" class="editor-active"></th>
+                  <th>行号</th>
+                  <th>报价单号</th>
+                  <th>供应商编码</th>
+                  <th>供应商名称</th>
+                  <th>供应商名称</th>
+                  <th>状态</th>
+                  <th>是否含税</th>
+                  <th>税率</th>
+                  <th>商品编码</th>
+                  <th>商品名称</th>
+                  <th>单位</th>
+                  <th>原价格</th>
+                  <th>含税单价</th>
+                  <th>不含税单价</th>
+                  <th>创建日期</th>
+                  <th>发布日期</th>
+                  <th>报价开始日期</th>
+                  <th>报价结束日期</th>
+                </tr>
+              </thead>
+            </table>
+        </div>
+      </div>
+  </div>  
+</body>
+</html>
+
+
+<script th:inline="javascript">
+
+	$(document).ready(function() {
+		
+    $('input[name="daterange"]').daterangepicker({
+        opens: 'right',
+        locale: {
+          format: 'YYYY/MM/DD'
+        }
+      }, function(start, end, label) {
+        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+      });
+    
+		
+	});
+</script>

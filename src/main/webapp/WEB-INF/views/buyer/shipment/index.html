@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+  <div class="container"  layout:fragment="content">  
+      <ul class="breadcrumb">
+        <li>
+          <a href="index.html"><i class="fa fa-dashboard"></i> 首页</a>
+        </li>
+        <li class="active">出货看板</li>
+      </ul>
+      <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
+          <a class="btn btn-primary"> 返回</a>
+          <a class="btn btn-primary"> 导出</a>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12">
+            <table id="example" class="ui celled table nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>客户商品编码</th>
+                        <th>客户商品名称</th>
+                        <th>ABC类</th>
+                        <th>单位</th>
+                        <th>供应商</th>
+                        <th>订单号</th>
+                        <th>订单行号</th>
+                        <th>需求日期</th>
+                        <th>订单数量</th>
+                        <th>（发货数量）ANS数量</th>
+                        <th>RK数量</th>
+                        <th>订单剩余交货量</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+      </div>
+  </div>  
+</body>
+</html>
+
+
+<script th:inline="javascript">
+	
+</script>

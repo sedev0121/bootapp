@@ -5,7 +5,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,32 +33,32 @@ public class ApiController {
 
 	// 价格管理
 	@RequestMapping(value = "/venpriceadjust/batch_get", produces = "application/json")
-	public String venpriceadjust(Model model) {
-		return apiClient.getBatchVenPriceAdjust();
+	public String venpriceadjust(@RequestParam Map<String, String> requestParams) {
+		return apiClient.getBatchVenPriceAdjust(requestParams);
 	}
 
 	// 商品管理
 	@RequestMapping(value = "/inventory/batch_get", produces = "application/json")
-	public String inventory(Model model) {
-		return apiClient.getBatchInventory();
+	public String inventory(@RequestParam Map<String, String> requestParams) {
+		return apiClient.getBatchInventory(requestParams);
 	}
 
 	// 外购入库单
 	@RequestMapping(value = "/purchasein/batch_get", produces = "application/json")
-	public String purchasein(Model model) {
-		return apiClient.getBatchPurchaseIn();
+	public String purchasein(@RequestParam Map<String, String> requestParams) {
+		return apiClient.getBatchPurchaseIn(requestParams);
 	}
 
 	// 对账单管理
 	@RequestMapping(value = "/purinvoice/batch_get", produces = "application/json")
-	public String purinvoice(Model model) {
-		return apiClient.getBatchPurInvoice();
+	public String purinvoice(@RequestParam Map<String, String> requestParams) {
+		return apiClient.getBatchPurInvoice(requestParams);
 	}
 
 	// 订单管理
 	@RequestMapping(value = "/purchaseorder/batch_get", produces = "application/json")
-	public String purchaseorder(Model model) {
-		return apiClient.getBatchPurchaseOrder();
+	public String purchaseorder(@RequestParam Map<String, String> requestParams) {
+		return apiClient.getBatchPurchaseOrder(requestParams);
 	}
 
 	@RequestMapping(value = "/purchaseorder/get/{id}", produces = "application/json")

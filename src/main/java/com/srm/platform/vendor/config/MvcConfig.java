@@ -31,7 +31,7 @@ public class MvcConfig implements WebMvcConfigurer {
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/").setViewName("home/index");
-		registry.addViewController("/login").setViewName("signin");
+		registry.addViewController("/login").setViewName("login");
 	}
 
 	@Bean
