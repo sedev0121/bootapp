@@ -38,6 +38,10 @@
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
 
     <!-- JPA Data (We are going to use Repositories, Entities, Hibernate, 
       etc...) -->
@@ -110,13 +114,13 @@
       <artifactId>httpclient</artifactId>
       <version>4.5.5</version>
     </dependency>
-    
+
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
   </dependencies>
 
   <properties>

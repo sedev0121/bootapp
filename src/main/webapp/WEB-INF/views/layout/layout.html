@@ -113,7 +113,7 @@
           </ul>
         </div>
         <form id="logout_form" th:action="@{/logout}" method="post"></form>
-        <div class="header-navigation menu-right">
+        <div class="header-navigation menu-right" sec:authorize="isAuthenticated()">
           <ul>
             <li><a href="#">账号管理 </a></li>
             <li><a href="#" onclick="$('#logout_form').submit()">退出</a></li>
