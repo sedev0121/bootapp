@@ -120,7 +120,6 @@
       <artifactId>json-path</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <properties>
@@ -130,6 +129,7 @@
     <nz.net.ultraq.thymeleaflayout-version>2.3.0</nz.net.ultraq.thymeleaflayout-version>
     <thymeleaf-extras-java8time-version>3.0.0.RELEASE</thymeleaf-extras-java8time-version>
   </properties>
+
 
 
   <build>

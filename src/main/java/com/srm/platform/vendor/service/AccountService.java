@@ -2,6 +2,8 @@ package com.srm.platform.vendor.service;
 
 import java.util.Collections;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -31,11 +33,28 @@ public class AccountService implements UserDetailsService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	// @PostConstruct
-	// protected void initialize() {
-	// save(new Account("user", "demo", "ROLE_USER"));
-	// save(new Account("admin", "admin", "ROLE_ADMIN"));
-	// }
+	@PostConstruct
+	protected void initialize() {
+
+		Account temp = accountRepository.findOneByUsername("buyer");
+		if (temp == null) {
+			temp = new Account("buyer", "111", "ROLE_BUYER");
+			temp.setTo_account("jxylxx");
+			save(temp);
+		}
+		temp = accountRepository.findOneByUsername("vendor");
+		if (temp == null) {
+			temp = new Account("vendor", "111", "ROLE_VENDOR");
+			temp.setTo_account("jxylxx");
+			save(temp);
+		}
+		temp = accountRepository.findOneByUsername("admin");
+		if (temp == null) {
+			temp = new Account("admin", "111", "ROLE_ADMIN");
+			temp.setTo_account("jxylxx");
+			save(temp);
+		}
+	}
 
 	@Transactional
 	public Account save(Account account) {
