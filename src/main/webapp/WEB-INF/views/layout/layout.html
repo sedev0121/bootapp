@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
 <!-- Head BEGIN -->
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head>
   <meta charset="utf-8">
   <title>供应商管理平台</title>
 
@@ -109,6 +109,20 @@
             </li>
             <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purinvoice')} ? active : ''" >
               <a th:href="@{/vendor/purinvoice}">对账单管理</a>
+            </li>
+          </ul>
+        </div>
+        <!-- BEGIN NAVIGATION -->
+        <div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_ADMIN')">
+          <ul>
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'account')} ? active : ''" >
+              <a th:href="@{/admin/account}">用户管理</a>
+            </li>
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'permission_group')} ? active : ''" >
+              <a th:href="@{/admin/permission_group}">权限组管理</a>
+            </li>
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'unit')} ? active : ''" >
+              <a th:href="@{/admin/unit}">组织架构管理</a>
             </li>
           </ul>
         </div>

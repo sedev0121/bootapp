@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"
+  layout:decorate="~{layout/layout}">
+<body>
+  <div class="container" layout:fragment="content">
+    <ul class="breadcrumb">
+      <li>
+        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+      </li>
+      <li class="active">权限组管理</li>
+    </ul>
+    <div class="row">
+      <div class="col-lg-12">
+        <table id="example" class="ui celled table nowrap" style="width: 100%">
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+<script th:inline="javascript">
+$(document).ready(function() {
+    var table = $('#example').DataTable({
+      ajax : {
+        url : /*[[@{/admin/permission_group_ajax}]]*/'',
+        data : function(data) {
+          var filter = {
+            rows_per_page : data.length,
+            page_index : data.start / data.length + 1
+          }
+          return filter;
+        },
+        dataSrc : function(json) {
+          json.recordsTotal = json.totalElements;
+          json.recordsFiltered = json.totalElements;
+          return json.content;
+        },
+      },
+
+      columns : [ {
+        data : 'name',
+        title : '名称',
+        defaultContent : ''
+      }, {
+        data : 'description',
+        title : '描述',
+        defaultContent : ''
+      }, {
+        data : null,
+        title : '用户列表',
+        defaultContent : ''
+      }, {
+    	  	data: null,
+          title: '操作',
+          render: function (row, index, datatable) {
+        	  var edit_url = /*[[@{/admin/permission_group/}]]*/'';
+        	  edit_url +=  row.id + '/edit';
+        	  var del_url =  /*[[@{/admin/permission_group/}]]*/'';
+        	  del_url += row.id + '/delete';
+        	  return '<a class="btn btn-sm btn-primary margin-right-10" href="' + edit_url + '">修改  </a><a class="btn btn-sm btn-danger" href="'+ del_url + '">删除  </a>';
+          },
+      } ],
+    });
+
+    $("#btn_search").click(function() {
+      table.draw();
+    });
+});
+    </script>

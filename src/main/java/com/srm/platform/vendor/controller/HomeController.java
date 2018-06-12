@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class HomeController {
 
 	@GetMapping({ "/", "" })
-	@PreAuthorize("hasRole('ROLE_BUYER') OR hasRole('ROLE_VENDOR')")
+	@PreAuthorize("hasRole('ROLE_BUYER') OR hasRole('ROLE_VENDOR') OR hasRole('ROLE_ADMIN')")
 	public String dashboard(Authentication authentication) {
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
@@ -24,6 +24,10 @@ public class HomeController {
 		for (GrantedAuthority a : authorities) {
 			if (a.getAuthority().equals("ROLE_VENDOR")) {
 				redirectUrl = "/vendor";
+				break;
+			}
+			if (a.getAuthority().equals("ROLE_ADMIN")) {
+				redirectUrl = "/admin";
 				break;
 			}
 

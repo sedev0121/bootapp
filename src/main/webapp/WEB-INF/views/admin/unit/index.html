@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
+<head>
+  <link th:href="@{/assets/plugins/jstree/theme/style.min.css}" rel="stylesheet">
+</head>  
+<body>
+  <div class="container" layout:fragment="content">
+    <ul class="breadcrumb">
+      <li>
+        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+      </li>
+      <li class="active">组织架构管理</li>
+    </ul>
+    <div class="row">
+      <div class="col-md-4">
+            <i class="fa fa-sitemap"></i>维护部门结构::浙江鼎美智装股份有限公司
+            <div id="tree_3"></div>
+      </div>
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-body card-block">
+            <div style="display: table; width: 100%">
+              <div style="display: table-cell; display: 70%">
+                <span><i class="fa fa-sitemap"></i> 浙江鼎美智装股份有限公司 >下级部门</span>
+                <input type="text" id="childnode_1" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_2" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_3" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_4" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_5" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_6" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_7" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_8" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_9" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_10" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_11" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_12" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_13" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_14" class="childnode form-control margin-top-10" node_id="">
+                <input type="text" id="childnode_15" class="childnode form-control margin-top-10" node_id="">
+                
+                <div class="margin-top-10">
+                    <a class="btn btn-primary" id="btn_save" onClick="save_node();" parent_id="#"> 保存</a>
+                    <a class="btn btn-default"> 返回</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+<script th:src="@{/assets/plugins/jstree/jstree.min.js}" type="text/javascript"></script>
+  <script>
+    jQuery(document).ready(function() {
+
+        var data = [
+          { text:"采购部",
+          children:[
+          {text:"采购一组"},
+          {text:"采购二组"}] },
+
+          { text:"财务部"},
+          { text:"其他",
+          children:[
+            {text: "其他一组"}
+          ]},
+          { text:"研发中心",
+          children:[
+            {text: "生成部"}
+          ]},
+          { text:"营销中心",
+          children:[
+            {text: "培训科",
+            children: [
+              {text: "企划科",
+              children: [
+                {text: "企划一组",
+                children: [
+                  {text: "企划一组设计部"},
+                  {text: "企划一组其他部"}
+                ]}
+              ]}
+            ]}
+          ]}
+        ];
+
+        jQuery("#tree_3").jstree({
+          core:{
+            "check_callback": true,
+            data: data
+          },
+          state:{key:"demo1"},
+          plugins:["contextmenu","dnd","state","types"]
+        });
+        jQuery("#tree_3").bind(
+          "select_node.jstree", function(evt, data) {
+            jQuery(".childnode").val("");
+            jQuery(".childnode").attr("node_id", "");
+            jQuery("#btn_save").attr("parent_id", data.node.id);
+            for(i=0;i<data.node.children.length;i++) {
+              var child = data.node.children[i];
+              child_anchor = child + "_anchor";
+              jQuery("#childnode_"+(i+1)).val(jQuery("#"+child_anchor).text());
+              jQuery("#childnode_"+(i+1)).attr("node_id", child);
+            }
+          }
+        );
+    });
+
+    function save_node() {
+      var parent_id = jQuery("#btn_save").attr("parent_id");
+      var nodes = [];
+      jQuery(".childnode").each(function() {
+        if (jQuery(this).val() != "") {
+          var text = jQuery(this).val();
+          var node_id = jQuery(this).attr("node_id");
+          if (node_id == "") {
+            node_id = jQuery("#tree_3").jstree().create_node(parent_id, {
+              "text": text
+            }, "last", function() {
+            });
+            nodes.push(node_id);
+          } else {
+            jQuery("#tree_3").jstree().rename_node(node_id, text);
+            nodes.push(node_id);
+          }
+        }
+      });     
+      var children = jQuery("#tree_3").jstree().get_node("#"+parent_id).children;
+      for (i=0;i<children.length; i++) {
+        if (jQuery.inArray(children[i], nodes) === -1) {
+          jQuery("#tree_3").jstree().delete_node(children[i]);
+        }
+      }
+    }
+</script>
+

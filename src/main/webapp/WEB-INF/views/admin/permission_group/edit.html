@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
+<body>
+  <div class="container" layout:fragment="content">
+    <ul class="breadcrumb">
+      <li>
+        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+      </li>
+      <li><a th:href="@{/admin/permission_group}">权限组管理</a></li>
+      <li class="active">新建权限组</li>
+    </ul>
+    <form>  
+      <div class="row">
+        <div class="col-lg-1 col-md-1"></div>
+        <div class="col-lg-10 col-md-10 content-form-page">
+          <fieldset>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">名称: </label>
+              <input type="text" id="document_date" class="form-control" th:value="${permission_group.name}">
+            </div>
+            <div class="col-lg-9 col-md-9 form-group">
+              <label for="document_date">描述: </label>
+              <input type="text" id="document_date" class="form-control" th:value="${permission_group.description}">
+            </div>
+            <div class="col-lg-12 col-md-12 form-group">
+              <label for="document_date">用户列表: </label>
+              <input type="text" id="document_date" class="form-control">
+            </div>
+
+          </fieldset>
+          
+
+          <div class="row">
+            <div class="text-right margin-right-20">
+                <a class="btn btn-primary"> 保存</a>
+                <a class="btn btn-default"> 删除</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-1 col-md-1"></div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
+

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
+<body>
+  <div class="container" layout:fragment="content">
+    <ul class="breadcrumb">
+      <li>
+        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+      </li>
+      <li><a th:href="@{/admin/account}">用户管理</a></li>
+      <li class="active">新建用户</li>
+    </ul>
+    <form>  
+      <div class="row">
+        <div class="col-lg-1 col-md-1"></div>
+        <div class="col-lg-10 col-md-10 content-form-page">
+          <fieldset>
+            <legend>基本信息</legend>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">真实姓名: </label>
+              <input type="text" id="document_date" class="form-control" th:value="${account.real_name}">
+            </div>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">所属部门: </label>
+              <input type="text" id="document_date" class="form-control">
+            </div>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">职位: </label>
+              <input type="text" id="document_date" class="form-control" th:value="${account.entry_time}">
+            </div>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">入职日期: </label>
+              <input type="text" id="document_date" class="form-control datepicker">
+            </div>
+            <div class="col-lg-12 col-md-12 form-group">
+              <label for="document_date">权限: </label>
+              <input type="text" id="document_date" class="form-control" th:value="${account.role}">
+            </div>
+
+          </fieldset>
+          <fieldset>
+            <legend>账号信息</legend>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">用户名: </label>
+              <input type="text" id="document_date" class="form-control datepicker" th:value="${account.username}">
+            </div>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">密码: </label>
+              <input type="text" id="document_date" class="form-control datepicker">
+            </div>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">源代码账号: </label>
+              <input type="text" id="document_date" class="form-control datepicker">
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>联系信息</legend>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">Skype: </label>
+              <input type="text" id="document_date" class="form-control datepicker" th:value="${account.skype}">
+            </div>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">QQ: </label>
+              <input type="text" id="document_date" class="form-control datepicker" th:value="${account.qq}">
+            </div>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">雅虎通: </label>
+              <input type="text" id="document_date" class="form-control datepicker" th:value="${account.yahoo}">
+            </div>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">GTalk: </label>
+              <input type="text" id="document_date" class="form-control datepicker" th:value="${account.gtalk}">
+            </div>
+            <div class="col-lg-3 col-md-3 form-group">
+              <label for="document_date">旺旺: </label>
+              <input type="text" id="document_date" class="form-control datepicker" th:value="${account.wangwang}">
+            </div>                                                
+            <div class="col-lg-3 col-md-3">
+              <label for="effective_date">手机:</label>
+              <input type="text" id="effective_date" class="form-control datepicker" th:value="${account.mobile}">
+            </div>
+            
+            <div class="col-lg-3 col-md-3">
+              <label for="tax_rate">电话:</label>
+              <input type="text" id="tax_rate" name="tax_rate" class="form-control" th:value="${account.tel}">
+            </div>
+            <div class="col-lg-3 col-md-3">
+              <label for="effective_date1">通讯地址:</label>
+              <input type="text" id="effective_date1" class="form-control datepicker" th:value="${account.address}">
+            </div>
+          </fieldset>
+
+          <div class="row">
+            <div class="text-right margin-right-20">
+                <a class="btn btn-primary"> 保存</a>
+                <a class="btn btn-default"> 删除</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-1 col-md-1"></div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
+

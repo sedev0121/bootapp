@@ -16,7 +16,7 @@ public class BuyerController {
 	// Home
 	@GetMapping({ "", "/" })
 	public String home() {
-		return "redirect:/buyer/inquery";
+		return "/buyer/index";
 	}
 
 	// 价格管理->询价管理

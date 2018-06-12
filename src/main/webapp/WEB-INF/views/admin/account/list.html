@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"
+  layout:decorate="~{layout/layout}">
+<body>
+  <div class="container" layout:fragment="content">
+    <ul class="breadcrumb">
+      <li>
+        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+      </li>
+      <li class="active">用户管理</li>
+    </ul>
+    <div class="search-content">
+        <div class="search-cell width-18">
+          <label for="supplier_code">用户名：</label>
+          <input type="text" id="supplier_code" class="form-control">
+        </div>
+        <div class="search-cell width-18">
+          <label for="supplier_code">真实姓名：</label>
+          <input type="text" id="supplier_code" class="form-control">
+        </div>
+        <div class="search-cell width-18">
+          <label for="supplier_code">邮箱：</label>
+          <input type="text" id="supplier_code" class="form-control">
+        </div>
+        <div style="vertical-align: bottom" class="search-cell width-18 text-right">
+          <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+          <a class="btn btn-primary" th:href="@{/admin/account/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <table id="example" class="ui celled table nowrap" style="width: 100%">
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+<script th:inline="javascript">
+$(document).ready(function() {
+    $('input[name="daterange"]').daterangepicker(
+      {
+        opens : 'right',
+        parentEl : 'body',
+        locale : {
+          format : 'YYYY/MM/DD'
+        }
+      },
+      function(start, end, label) {
+        console.log("A new date selection was made: "
+            + start.format('YYYY-MM-DD') + ' to '
+            + end.format('YYYY-MM-DD'));
+      });
+
+    var table = $('#example').DataTable({
+      ajax : {
+        url : /*[[@{/admin/account_ajax}]]*/'',
+        data : function(data) {
+          var filter = {
+            rows_per_page : data.length,
+            page_index : data.start / data.length + 1
+          }
+          return filter;
+        },
+        dataSrc : function(json) {
+          json.recordsTotal = json.totalElements;
+          json.recordsFiltered = json.totalElements;
+          return json.content;
+        },
+      },
+
+      columns : [ {
+        data : 'real_name',
+        title : '真实姓名',
+        defaultContent : ''
+      }, {
+        data : 'username',
+        title : '用户名',
+        defaultContent : ''
+      }, {
+        data : 'role',
+        title : '权限',
+        defaultContent : ''
+      }, {
+        data : 'email',
+        title : '邮箱',
+        defaultContent : ''
+      }, {
+        data : 'tel',
+        title : '电话',
+        defaultContent : ''
+      }, {
+        data : 'qq',
+        title : 'QQ',
+        defaultContent : ''
+      }, {
+          data : 'mobile',
+          title : '手机',
+          defaultContent : ''     
+      }, {
+    	  	data: null,
+          title: '操作',
+          render: function (row, index, datatable) {
+        	  var edit_url = /*[[@{/admin/account/}]]*/'';
+        	  edit_url +=  row.id + '/edit';
+        	  var del_url =  /*[[@{/admin/account/}]]*/'';
+        	  del_url += row.id + '/delete';
+        	  return '<a class="btn btn-sm btn-primary margin-right-10" href="' + edit_url + '">修改  </a><a class="btn btn-sm btn-danger" href="'+ del_url + '">删除  </a>';
+          },
+      } ],
+    });
+
+    $("#btn_search").click(function() {
+      table.draw();
+    });
+});
+    </script>

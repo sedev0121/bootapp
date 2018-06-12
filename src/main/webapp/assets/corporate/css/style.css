@@ -430,7 +430,7 @@ body.page-header-fixed {
   float: left;
   font-size: 23px;
   font-weight: 400;
-
+	margin-right: 10px;
   padding-top: 22px;
 	padding-bottom: 22px;
 	line-height: normal;
@@ -783,6 +783,16 @@ body.page-header-fixed {
 	top: -40px;
 	right: 10px;
 }
+
+input,
+button,
+select,
+textarea {
+  font-family:'Microsoft YaHei','SimSun' !important;
+  font-size: inherit;
+  line-height: inherit;
+}
+
 .owl-buttons div {
 	display: inline-block;
 	width: 26px;
@@ -1283,10 +1293,10 @@ div.content-form-page {
 	margin-right: 10px;
 }
 .content-form-page a {
-	color: #767F88;
+	/*color: #767F88;*/
 }
 .content-form-page a:hover {
-	color: #E02222;
+	/*color: #E02222;*/
 }
 .form-without-legend {
 	padding-top: 25px;
@@ -3197,4 +3207,20 @@ Styler Panel
 	font-size: 16px;
 	text-align: center;
 	left: 0;
+}
+
+.card .card-header .card-actions {
+	float: right;
+}
+
+
+.card .card-header .card-actions [class*="btn"] {
+	border-left: 1px solid rgba(120, 130, 140, 0.4);
+	color: #878787;
+	display: inline-block;
+	font-size: 16px;
+	float: left;
+	padding: 0 7px;
+	width: inherit;
+	text-align: center;
 }
