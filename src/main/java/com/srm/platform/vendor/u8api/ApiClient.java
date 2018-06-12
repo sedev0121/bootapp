@@ -12,20 +12,17 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.srm.platform.vendor.model.Account;
-import com.srm.platform.vendor.repository.AccountRepository;
 
 @Component
 @ComponentScan(basePackageClasses = AppProperties.class)
@@ -38,9 +35,8 @@ public class ApiClient {
 	private AppProperties appProperties;
 
 	@Autowired
-	private AccountRepository accountRepository;
+	private HttpSession httpSession;
 
-	private String to_account = null;
 	private String token_id = null;
 
 	public ApiClient() {
@@ -49,49 +45,23 @@ public class ApiClient {
 	}
 
 	private String checkToken() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = authentication.getName();
-		Account account = accountRepository.findOneByUsername(username);
 
-		logger.info(account.getExpire_time() + ">" + System.currentTimeMillis());
-		if (account.getToken_id() == null || System.currentTimeMillis() >= account.getExpire_time()) {
+		Integer tokenExpireTime = (Integer) httpSession.getAttribute("token_expire_time");
+		token_id = (String) httpSession.getAttribute("token_id");
+
+		logger.info(tokenExpireTime + ">" + token_id);
+		if (tokenExpireTime == null || token_id == null || System.currentTimeMillis() >= tokenExpireTime) {
 			Token token = getToken();
 
 			if (token != null) {
-				account.setToken_id(token.getId());
-				account.setExpire_time(System.currentTimeMillis() + token.getExpiresIn() * 1000);
-				accountRepository.save(account);
+				token_id = token.getId();
+				httpSession.setAttribute("token_expire_time", token.getExpiresIn());
+				httpSession.setAttribute("token_id", token_id);
 			}
 
 		}
 
-		token_id = account.getToken_id();
-		to_account = account.getTo_account();
-
-		return account.getToken_id();
-	}
-
-	private String getErrorMsg(String responseStr) {
-		logger.info("start getToken api");
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		String url = appProperties.getSystem().getToken();
-
-		// String url = env.getProperty("u8api.system_token");
-
-		try {
-			Response response = objectMapper.readValue(responseStr, Response.class);
-			logger.info(response.getErrmsg());
-
-			if (response.getErrcode() != appProperties.getError_code_success())
-				return response.getErrmsg();
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.info(e.getMessage());
-		}
-
-		return null;
+		return token_id;
 	}
 
 	private Token getToken() {
@@ -99,8 +69,6 @@ public class ApiClient {
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		String url = appProperties.getSystem().getToken();
-
-		// String url = env.getProperty("u8api.system_token");
 
 		try {
 			TokenResponse response = objectMapper.readValue(new URL(url), TokenResponse.class);
@@ -124,7 +92,7 @@ public class ApiClient {
 		logger.info("start getVendor api");
 		RestClient client = new RestClient();
 		logger.info(appProperties.getVendor().getGet());
-		String url = String.format(appProperties.getVendor().getGet(), to_account, token_id, id);
+		String url = String.format(appProperties.getVendor().getGet(), token_id, id);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -144,8 +112,8 @@ public class ApiClient {
 
 		logger.info("start getBatchVendor api");
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getVendor().getBatch_get(), to_account, token_id, rows_per_page,
-				page_index, ds_sequence, name);
+		String url = String.format(appProperties.getVendor().getBatch_get(), token_id, rows_per_page, page_index,
+				ds_sequence, name);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -163,8 +131,8 @@ public class ApiClient {
 
 		logger.info("start getBatchVenPriceAdjust api");
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getVenPriceAdjust().getBatch_get(), to_account, token_id,
-				rows_per_page, page_index, ds_sequence, personname);
+		String url = String.format(appProperties.getVenPriceAdjust().getBatch_get(), token_id, rows_per_page,
+				page_index, ds_sequence, personname);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -181,8 +149,8 @@ public class ApiClient {
 		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
 
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getInventory().getBatch_get(), to_account, token_id, rows_per_page,
-				page_index, ds_sequence);
+		String url = String.format(appProperties.getInventory().getBatch_get(), token_id, rows_per_page, page_index,
+				ds_sequence);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -198,8 +166,8 @@ public class ApiClient {
 		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
 
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getPurchaseIn().getBatch_get(), to_account, token_id, rows_per_page,
-				page_index, ds_sequence);
+		String url = String.format(appProperties.getPurchaseIn().getBatch_get(), token_id, rows_per_page, page_index,
+				ds_sequence);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -215,8 +183,8 @@ public class ApiClient {
 		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
 
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getPurInvoice().getBatch_get(), to_account, token_id, rows_per_page,
-				page_index, ds_sequence);
+		String url = String.format(appProperties.getPurInvoice().getBatch_get(), token_id, rows_per_page, page_index,
+				ds_sequence);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -232,8 +200,8 @@ public class ApiClient {
 		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
 
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getPurchaseOrder().getBatch_get(), to_account, token_id, rows_per_page,
-				page_index, ds_sequence);
+		String url = String.format(appProperties.getPurchaseOrder().getBatch_get(), token_id, rows_per_page, page_index,
+				ds_sequence);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -245,7 +213,7 @@ public class ApiClient {
 		checkToken();
 		logger.info("start getPurchaseOrder api");
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getPurchaseOrder().getGet(), to_account, token_id, id);
+		String url = String.format(appProperties.getPurchaseOrder().getGet(), token_id, id);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
