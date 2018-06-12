@@ -16,7 +16,7 @@ public class VendorController {
 	// Home
 	@GetMapping({ "", "/" })
 	public String home() {
-		return "/vendor/index";
+		return "vendor/index";
 	}
 
 	// 价格管理->询价管理

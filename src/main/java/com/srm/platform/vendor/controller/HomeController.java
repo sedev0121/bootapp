@@ -19,7 +19,7 @@ public class HomeController {
 	public String dashboard(Authentication authentication) {
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
-		String redirectUrl = "buyer";
+		String redirectUrl = "/buyer";
 
 		for (GrantedAuthority a : authorities) {
 			if (a.getAuthority().equals("ROLE_VENDOR")) {

@@ -23,11 +23,9 @@ import nz.net.ultraq.thymeleaf.LayoutDialect;
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
-	private static final String VIEWS = "/WEB-INF/views/";
-	private static final String ASSETS_LOCATION = "/assets/";
-	private static final String ASSETS_HANDLER = ASSETS_LOCATION + "**";
-	private static final String DATA_LOCATION = "/assets/";
-	private static final String DATA_HANDLER = DATA_LOCATION + "**";
+	private static final String VIEWS = "classpath:views/";
+	private static final String ASSETS_LOCATION = "classpath:/assets/";
+	private static final String ASSETS_HANDLER = "/assets/**";
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
@@ -76,7 +74,6 @@ public class MvcConfig implements WebMvcConfigurer {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler(ASSETS_HANDLER).addResourceLocations(ASSETS_LOCATION);
-		registry.addResourceHandler(DATA_HANDLER).addResourceLocations(DATA_LOCATION);
 	}
 
 	@Override
