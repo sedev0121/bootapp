@@ -45,7 +45,6 @@ public class AccountService implements UserDetailsService {
 		Account temp = accountRepository.findOneByUsername("buyer");
 		if (temp == null) {
 			temp = new Account("buyer", "111", "ROLE_BUYER");
-			temp.setTo_account("jxylxx");
 			temp.setReal_name("采购员");
 			temp.setEmail("buyer@gmail.com");
 			temp.setSkype("buyer");
@@ -62,7 +61,6 @@ public class AccountService implements UserDetailsService {
 		temp = accountRepository.findOneByUsername("vendor");
 		if (temp == null) {
 			temp = new Account("vendor", "111", "ROLE_VENDOR");
-			temp.setTo_account("jxylxx");
 			temp.setReal_name("采购员");
 			temp.setEmail("vendor@gmail.com");
 			temp.setSkype("vendor");
@@ -79,7 +77,6 @@ public class AccountService implements UserDetailsService {
 		temp = accountRepository.findOneByUsername("admin");
 		if (temp == null) {
 			temp = new Account("admin", "111", "ROLE_ADMIN");
-			temp.setTo_account("jxylxx");
 			temp.setReal_name("管理员");
 			temp.setEmail("admin@gmail.com");
 			temp.setSkype("admin");

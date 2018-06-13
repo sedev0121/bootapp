@@ -164,7 +164,6 @@ public class AdminController {
 
 		logger.info("start user add");
 		Account n = new Account(username, password, "ROLE_VENDOR");
-		n.setTo_account("jxylxx");
 		accountService.save(n);
 
 		return "Saved";

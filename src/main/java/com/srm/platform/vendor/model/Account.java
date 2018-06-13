@@ -23,11 +23,6 @@ public class Account {
 
 	private String role = "ROLE_USER";
 
-	private String to_account;
-	private String token_id;
-
-	private long expire_time;
-
 	private String real_name;
 
 	private String address;
@@ -186,30 +181,6 @@ public class Account {
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public String getTo_account() {
-		return to_account;
-	}
-
-	public void setTo_account(String to_account) {
-		this.to_account = to_account;
-	}
-
-	public String getToken_id() {
-		return token_id;
-	}
-
-	public void setToken_id(String token_id) {
-		this.token_id = token_id;
-	}
-
-	public long getExpire_time() {
-		return expire_time;
-	}
-
-	public void setExpire_time(long expire_time) {
-		this.expire_time = expire_time;
 	}
 
 	public void setId(Long id) {
