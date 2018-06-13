@@ -36,6 +36,12 @@ public class VendorController {
 		return "vendor/quote/index";
 	}
 
+	// 价格管理->报价管理->修改
+	@GetMapping("/quote/edit")
+	public String quote_edit() {
+		return "vendor/quote/edit";
+	}
+
 	// 订单管理->订单确认
 	@GetMapping("/purchaseorder/confirm")
 	public String purchaseorder_confirm() {

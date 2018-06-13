@@ -8,7 +8,7 @@ public class AccountForm {
 
 	@NotNull
 
-	private String username;
+	private String username = "";
 
 	@NotNull
 	private String password;

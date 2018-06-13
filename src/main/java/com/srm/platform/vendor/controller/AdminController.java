@@ -96,7 +96,7 @@ public class AdminController {
 	// 用户管理->新建
 	@GetMapping("/account/add")
 	public String account_add(Model model) {
-		model.addAttribute(new AccountForm());
+		model.addAttribute("account", new Account());
 		return "admin/account/edit";
 	}
 
@@ -148,14 +148,25 @@ public class AdminController {
 	// 权限组管理->修改
 	@GetMapping("/permission_group/{id}/edit")
 	public String permission_group_edit(@PathVariable("id") Long id, Model model) {
-		model.addAttribute("permission_group", permissionGroupRepository.findOneById(id));
+		PermissionGroup temp = permissionGroupRepository.findOneById(id);
+		temp.getAccounts();
+		model.addAttribute("permission_group", temp);
 		return "admin/permission_group/edit";
+	}
+
+	// 权限组管理->修改
+	@GetMapping("/permission_group/{id}/edit_perm")
+	public String permission_group_edit_perm(@PathVariable("id") Long id, Model model) {
+		PermissionGroup temp = permissionGroupRepository.findOneById(id);
+		temp.getAccounts();
+		model.addAttribute("permission_group", temp);
+		return "admin/permission_group/edit_perm";
 	}
 
 	// 权限组管理->新建
 	@GetMapping("/permission_group/add")
 	public String permission_group_add(Model model) {
-		model.addAttribute(new AccountForm());
+		model.addAttribute("permission_group", new PermissionGroup());
 		return "admin/permission_group/edit";
 	}
 

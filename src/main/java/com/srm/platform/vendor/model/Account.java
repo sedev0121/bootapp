@@ -20,24 +20,28 @@ public class Account {
 	private String username;
 
 	private String password;
-
 	private String role = "ROLE_USER";
-
 	private String real_name;
-
 	private String address;
-	private Instant create_time;
-	private Instant update_time;
-
+	private Instant entry_time;
+	private Long unit_id;
 	private String email;
 	private String tel;
 	private String qq;
-	private Instant entry_time;
 	private String skype;
 	private String yahoo;
 	private String gtalk;
 	private String wangwang;
 	private String mobile;
+	private Instant modify_time;
+
+	public Instant getModify_time() {
+		return modify_time;
+	}
+
+	public void setModify_time(Instant modify_time) {
+		this.modify_time = modify_time;
+	}
 
 	public String getReal_name() {
 		return real_name;
@@ -127,23 +131,7 @@ public class Account {
 		this.address = address;
 	}
 
-	public Instant getCreate_time() {
-		return create_time;
-	}
-
-	public void setCreate_time(Instant create_time) {
-		this.create_time = create_time;
-	}
-
-	public Instant getUpdate_time() {
-		return update_time;
-	}
-
-	public void setUpdate_time(Instant update_time) {
-		this.update_time = update_time;
-	}
-
-	protected Account() {
+	public Account() {
 
 	}
 
@@ -151,8 +139,7 @@ public class Account {
 		this.username = username;
 		this.password = password;
 		this.role = role;
-		this.create_time = Instant.now();
-		this.update_time = Instant.now();
+		this.modify_time = Instant.now();
 	}
 
 	public Long getId() {
@@ -185,6 +172,14 @@ public class Account {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getUnit_id() {
+		return unit_id;
+	}
+
+	public void setUnit_id(Long unit_id) {
+		this.unit_id = unit_id;
 	}
 
 }

@@ -79,6 +79,11 @@
 			columns : [ {
 				data : 'type',
 				title : '采购发票类型',
+				render: function (data, display, record) {
+      	  var edit_url = /*[[@{/vendor/purinvoice/}]]*/'';
+      	  edit_url +=  data + '/edit';
+      	  return '<a href="' + edit_url + '">' + data  + '</a>';
+        },
 				defaultContent : ''
 			}, {
 				data : 'cexchrate',

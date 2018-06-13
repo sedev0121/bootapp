@@ -10,23 +10,17 @@
       <li><a href="#" class="active">价格管理</a></li>
       <li class="active">询价管理</li>
     </ul>
-    <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-      <a class="btn btn-primary" th:href="@{/vendor/inquery/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
-      <a class="btn btn-primary"> 提交</a>
-      <a class="btn btn-primary"><i class="fa fa-times"></i>&nbsp; 删除  </a>
-      <a class="btn btn-primary" th:href="@{/vendor/inquery/add}"> 退回</a>
-    </div>
   
     <div class="search-content">
         <div class="search-cell width-18">
           <label for="date_range">时间: </label>
           <input type="text" name="daterange" value="" class="form-control" />
         </div>
-        <div class="search-cell width-18">
+        <div class="search-cell width-15">
           <label for="supplier_code">供应商编码：</label>
           <input type="text" id="supplier_code" class="form-control">
         </div>
-        <div class="search-cell width-18">
+        <div class="search-cell width-15">
           <label for="supplier_name">供应商名称:</label>
           <input type="text" id="supplier_name" class="form-control">
         </div>
@@ -48,8 +42,9 @@
             <option value="发布">发布</option>
           </select>
         </div>
-        <div style="vertical-align: bottom" class="search-cell width-6 text-right">
-          <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i></button>
+        <div style="vertical-align: bottom" class="search-cell width-15 text-right">
+          <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+          <a class="btn btn-primary" th:href="@{/vendor/inquery/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
     </div>
     <div class="row">
@@ -127,6 +122,11 @@
 			columns : [ {
 				data : 'ccode',
 				title : '单据号',
+				render: function (data, display, record) {
+      	  var edit_url = /*[[@{/vendor/inquery/}]]*/'';
+      	  edit_url +=  data + '/edit';
+      	  return '<a href="' + edit_url + '">' + data  + '</a>';
+        },
 				defaultContent : ''
 			}, {
 				data : 'ddate',

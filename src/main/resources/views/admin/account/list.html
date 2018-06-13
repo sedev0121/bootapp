@@ -72,6 +72,11 @@ $(document).ready(function() {
       columns : [ {
         data : 'real_name',
         title : '真实姓名',
+        render: function (data, display, record) {
+      	  var edit_url = /*[[@{/admin/account/}]]*/'';
+      	  edit_url +=  record.id + '/edit';
+      	  return '<a href="' + edit_url + '">' + data  + '</a>';
+        },
         defaultContent : ''
       }, {
         data : 'username',
@@ -97,16 +102,7 @@ $(document).ready(function() {
           data : 'mobile',
           title : '手机',
           defaultContent : ''     
-      }, {
-    	  	data: null,
-          title: '操作',
-          render: function (row, index, datatable) {
-        	  var edit_url = /*[[@{/admin/account/}]]*/'';
-        	  edit_url +=  row.id + '/edit';
-        	  var del_url =  /*[[@{/admin/account/}]]*/'';
-        	  del_url += row.id + '/delete';
-        	  return '<a class="btn btn-sm btn-primary margin-right-10" href="' + edit_url + '">修改  </a><a class="btn btn-sm btn-danger" href="'+ del_url + '">删除  </a>';
-          },
+      
       } ],
     });
 

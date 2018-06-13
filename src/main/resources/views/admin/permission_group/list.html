@@ -9,6 +9,9 @@
       </li>
       <li class="active">权限组管理</li>
     </ul>
+    <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
+        <a class="btn btn-primary" th:href="@{/admin/permission_group/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+    </div>
     <div class="row">
       <div class="col-lg-12">
         <table id="example" class="ui celled table nowrap" style="width: 100%">
@@ -40,24 +43,27 @@ $(document).ready(function() {
       columns : [ {
         data : 'name',
         title : '名称',
+        render: function (data, display, record) {
+      	  var edit_url = /*[[@{/admin/permission_group/}]]*/'';
+      	  edit_url +=  record.id + '/edit';
+      	  return '<a class="" href="' + edit_url + '">' + data + '</a>';
+        },
         defaultContent : ''
       }, {
         data : 'description',
         title : '描述',
         defaultContent : ''
       }, {
-        data : null,
-        title : '用户列表',
-        defaultContent : ''
-      }, {
     	  	data: null,
           title: '操作',
-          render: function (row, index, datatable) {
+          render: function (data, display, record) {
         	  var edit_url = /*[[@{/admin/permission_group/}]]*/'';
-        	  edit_url +=  row.id + '/edit';
+        	  edit_url +=  record.id + '/edit';
+        	  var edit_perm_url = /*[[@{/admin/permission_group/}]]*/'';
+        	  edit_perm_url +=  record.id + '/edit_perm';
         	  var del_url =  /*[[@{/admin/permission_group/}]]*/'';
-        	  del_url += row.id + '/delete';
-        	  return '<a class="btn btn-sm btn-primary margin-right-10" href="' + edit_url + '">修改  </a><a class="btn btn-sm btn-danger" href="'+ del_url + '">删除  </a>';
+        	  del_url += record.id + '/delete';
+        	  return '<a class="btn btn-sm btn-primary margin-right-10" href="' + edit_perm_url + '">修改权限  </a>';
           },
       } ],
     });

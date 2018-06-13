@@ -8,14 +8,6 @@
         </li>
         <li class="active">对账单管理</li>
       </ul>
-      <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-          <a class="btn btn-primary" th:href="@{/buyer/purinvoice/edit}"> 退回</a>
-          <a class="btn btn-primary" th:href="@{/buyer/purinvoice/edit}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
-          <a class="btn btn-primary" th:href="@{/buyer/purinvoice/edit}"> 审核</a>
-          <a class="btn btn-primary" th:href="@{/buyer/purinvoice/edit}"> 发布</a>
-          <a class="btn btn-primary" th:href="@{/buyer/purinvoice/edit}"> 发票确认</a>
-      </div>
-
       <div class="search-content">
           <div class="search-cell width-15">
             <label for="order_number">订单号码：</label>
@@ -43,8 +35,9 @@
             <label for="date_range">发布日期: </label>
             <input type="text" name="daterange" value="" class="form-control" />
           </div>
-          <div style="vertical-align: bottom" class="search-cell width-6 text-right">
-            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i></button>
+          <div style="vertical-align: bottom" class="search-cell width-15 text-right">
+            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+            <a class="btn btn-primary" th:href="@{/buyer/purinvoice/edit}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
           </div>
       </div>
       <div class="row">
@@ -88,6 +81,11 @@
 			columns : [ {
 				data : 'type',
 				title : '采购发票类型',
+				render: function (data, display, record) {
+      	  var edit_url = /*[[@{/buyer/purinvoice/}]]*/'';
+      	  edit_url +=  data + '/edit';
+      	  return '<a href="' + edit_url + '">' + data  + '</a>';
+        },
 				defaultContent : ''
 			}, {
 				data : 'cexchrate',

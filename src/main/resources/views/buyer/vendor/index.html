@@ -7,19 +7,19 @@
             <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
           </li>
           <li><a href="#">供应商管理</a></li>
-          <li class="active">供应商档表</li>
+          <li class="active">供应商档案表</li>
       </ul>
       <div class="search-content">
-          <div class="search-cell width-18">
-              <label for="product_code">商品编码:</label>
+          <div class="search-cell width-10">
+              <label for="product_code">供应商编码:</label>
               <input type="text" id="product_code" class="form-control">
           </div>
-          <div class="search-cell width-18">
-              <label for="product_name">商品名称:</label>
+          <div class="search-cell width-10">
+              <label for="product_name">供应商名称:</label>
               <input type="text" id="product_name" class="form-control">
           </div>
-          <div style="vertical-align: bottom" class="search-cell width-6 text-right">
-            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i></button>
+          <div style="vertical-align: bottom" class="search-cell width-18 text-right">
+            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
           </div>
       </div>
       <div class="row">
@@ -80,6 +80,11 @@
 			}, {
 				data : 'code',
 				title : '供应商编码',
+				render: function (data, display, record) {
+      	  var edit_url = /*[[@{/buyer/vendor/}]]*/'';
+      	  edit_url +=  data + '/edit';
+      	  return '<a href="' + edit_url + '">' + data  + '</a>';
+        },
 				defaultContent : ''
 			}, {
 				data : 'name',

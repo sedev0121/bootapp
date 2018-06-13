@@ -36,8 +36,8 @@
             <label for="date_range">发布日期: </label>
             <input type="text" name="daterange" value="" class="form-control" />
           </div>
-          <div style="vertical-align: bottom" class="search-cell width-6 text-right">
-            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i></button>
+          <div style="vertical-align: bottom" class="search-cell width-15 text-right">
+            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
           </div>
       </div>
       <div class="row">
@@ -82,6 +82,11 @@
 			columns : [ {
 				data : 'code',
 				title : '订单编号',
+				render: function (data, display, record) {
+      	  var edit_url = /*[[@{/buyer/purchaseorder/}]]*/'';
+      	  edit_url +=  data + '/edit';
+      	  return '<a href="' + edit_url + '">' + data  + '</a>';
+        },
 				defaultContent : ''
 			}, {
 				data : 'date',

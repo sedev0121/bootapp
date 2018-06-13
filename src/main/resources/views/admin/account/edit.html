@@ -26,11 +26,11 @@
             </div>
             <div class="col-lg-3 col-md-3 form-group">
               <label for="document_date">职位: </label>
-              <input type="text" id="document_date" class="form-control" th:value="${account.entry_time}">
+              <input type="text" id="document_date" class="form-control">
             </div>
             <div class="col-lg-3 col-md-3 form-group">
               <label for="document_date">入职日期: </label>
-              <input type="text" id="document_date" class="form-control datepicker">
+              <input type="text" id="document_date" class="form-control datepicker" th:value="${account.entry_time}">
             </div>
             <div class="col-lg-12 col-md-12 form-group">
               <label for="document_date">权限: </label>
@@ -92,8 +92,9 @@
 
           <div class="row">
             <div class="text-right margin-right-20">
-                <a class="btn btn-primary"> 保存</a>
-                <a class="btn btn-default"> 删除</a>
+                <a class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
+                <a class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
+                <a class="btn btn-default" th:href="@{/admin/account}"><i class="fa fa-arrow-left"></i> 返回</a>
             </div>
           </div>
         </div>
