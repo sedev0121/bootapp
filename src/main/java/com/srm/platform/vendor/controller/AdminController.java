@@ -1,5 +1,8 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -28,8 +31,10 @@ import org.thymeleaf.util.StringUtils;
 import com.srm.platform.vendor.form.AccountForm;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PermissionGroup;
+import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
+import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.service.AccountService;
 
 @Controller
@@ -42,6 +47,8 @@ public class AdminController {
 	private AccountRepository accountRepository;
 	@Autowired
 	private PermissionGroupRepository permissionGroupRepository;
+	@Autowired
+	private UnitRepository unitRepository;
 
 	@Autowired
 	private AccountService accountService;
@@ -125,6 +132,64 @@ public class AdminController {
 	@GetMapping("/unit")
 	public String unit() {
 		return "admin/unit/index";
+	}
+
+	// 组织架构管理->下级组织列表
+	@GetMapping("/unit/{parent_id}/children")
+	public @ResponseBody List<Map<String, Object>> get_units(@PathVariable("parent_id") Long parent_id) {
+		List<Unit> children = unitRepository.findByParentId(parent_id);
+
+		Unit temp;
+		List<Unit> tempChildren;
+
+		Map<String, Object> row = new HashMap<>();
+		List<Map<String, Object>> response = new ArrayList<>();
+		for (int i = 0; i < children.size(); i++) {
+
+			temp = children.get(i);
+			tempChildren = unitRepository.findByParentId(temp.getId());
+			row = new HashMap<>();
+			row.put("id", temp.getId());
+			row.put("text", temp.getName());
+			row.put("children", tempChildren.size() > 0 ? true : false);
+			response.add(row);
+		}
+
+		return response;
+	}
+
+	// 组织架构管理->删除
+	@GetMapping("/unit/{id}/delete")
+	public @ResponseBody Boolean delete_unit(@PathVariable("id") Long id) {
+		Unit unit = unitRepository.findOneById(id);
+		unitRepository.delete(unit);
+		return true;
+	}
+
+	// 组织架构管理->改名
+	@GetMapping("/unit/{id}/rename/{name}")
+	public @ResponseBody Unit rename_unit(@PathVariable("id") Long id, @PathVariable("name") String name) {
+		Unit unit = unitRepository.findOneById(id);
+		unit.setName(name);
+		unit = unitRepository.save(unit);
+		return unit;
+	}
+
+	// 组织架构管理->移动
+	@GetMapping("/unit/{id}/move/{parent_id}")
+	public @ResponseBody Unit move_unit(@PathVariable("id") Long id, @PathVariable("parent_id") Long parent_id) {
+		Unit unit = unitRepository.findOneById(id);
+		unit.setParent_id(parent_id);
+		unit = unitRepository.save(unit);
+		return unit;
+	}
+
+	// 组织架构管理->新建
+	@GetMapping("/unit/add/{parent_id}/{name}")
+	public @ResponseBody Unit add_unit(@PathVariable("parent_id") Long parentId, @PathVariable("name") String name) {
+		Unit unit = new Unit(name, parentId);
+		unitRepository.save(unit);
+		return unit;
 	}
 
 	// 权限组管理->列表

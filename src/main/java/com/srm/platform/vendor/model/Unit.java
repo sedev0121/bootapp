@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,14 +15,16 @@ public class Unit {
 	private Long id;
 
 	private String name;
-	private Long parent_id;
+
+	@Column(name = "parent_id")
+	private Long parentId;
 
 	public Long getParent_id() {
-		return parent_id;
+		return parentId;
 	}
 
 	public void setParent_id(Long parent_id) {
-		this.parent_id = parent_id;
+		this.parentId = parent_id;
 	}
 
 	public Long getId() {
@@ -40,8 +43,12 @@ public class Unit {
 		this.name = name;
 	}
 
+	public Unit() {
+
+	}
+
 	public Unit(String name, Long parent_id) {
 		this.name = name;
-		this.parent_id = parent_id;
+		this.parentId = parent_id;
 	}
 }
