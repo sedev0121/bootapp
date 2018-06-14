@@ -39,4 +39,17 @@ $(document).ready(function() {
 	    	return '';
 	    }
 	};
+	
+	jQuery.extend(jQuery.validator.messages, {
+	    required: "不能为空",
+	    email: "无效的邮箱格式",
+	    number: "请输入数值",
+	    equalTo: "请再输入同样的值",
+	    maxlength: jQuery.validator.format("长度不能大于{0}"),
+	    minlength: jQuery.validator.format("长度不能小于{0}"),
+	    rangelength: jQuery.validator.format("长度范围在 {0}-{1}"),
+	    range: jQuery.validator.format("请输入{0}到{1}之间的值."),
+	    max: jQuery.validator.format("请输入不大于 {0}的值."),
+	    min: jQuery.validator.format("请输入不小于{0}的值.")
+	});
 });

@@ -25,6 +25,10 @@ h1 {
 	margin-top: -6px;
 }
 
+input.error { border-color: #f4516c !important; }
+label.error {
+    color: red;
+}
 /***
 Fix link outlines after click
 ***/

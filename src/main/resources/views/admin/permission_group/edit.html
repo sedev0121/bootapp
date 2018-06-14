@@ -10,24 +10,24 @@
       <li><a th:href="@{/admin/permission_group}">权限组管理</a></li>
       <li class="active">权限组详细</li>
     </ul>
-    <form>  
+    <form id="form" th:action="@{/admin/permission_group/update}" method="post">  
+      <input type="hidden" id="id" name="id" th:value="${permission_group.id}">
       <div class="panel panel-default">
         <div class="panel-body"> 
           <div class="row">
-
             <div class="content-form-page">
               <fieldset>
                 <div class="col-lg-3 col-md-3 form-group">
                   <label for="document_date">名称: </label>
-                  <input type="text" id="document_date" class="form-control" th:value="${permission_group.name}">
+                  <input type="text" class="form-control" name="name" th:value="${permission_group.name}">
                 </div>
                 <div class="col-lg-9 col-md-9 form-group">
                   <label for="document_date">描述: </label>
-                  <input type="text" id="document_date" class="form-control" th:value="${permission_group.description}">
+                  <input type="text" class="form-control" name="description" th:value="${permission_group.description}">
                 </div>
                 <div class="col-lg-12 col-md-12 form-group">
                   <label for="document_date">用户列表: </label>
-                  <textarea type="text" id="document_date" rows="5" class="form-control">buyer, vendor</textarea>
+                  <textarea type="text" rows="5" name="accounts" class="form-control" th:text="${accounts}"></textarea>
                 </div>
     
               </fieldset>
@@ -38,8 +38,8 @@
         </div>
         <div class="panel-footer">
           <div class="text-right margin-right-20">
-              <a class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
-              <a class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
+              <a id="save" class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
+              <a id="del" class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
               <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
           </div>
         </div>
@@ -48,4 +48,80 @@
   </div>
 </body>
 </html>
+
+<script th:inline="javascript">
+var edit_url = /*[[@{/admin/permission_group/}]]*/'';
+
+jQuery(document).ready(function() {   
+	var is_add = $("#id").val().length==0;
+    $("#form" ).validate({
+        // define validation rules
+        rules: {
+            name: {
+                required: true
+            },    
+        },
+        
+        //display error alert on form submit  
+        invalidHandler: function(event, validator) {
+            swal({
+                "title": "输入有误", 
+                "text": "请输入正确的值", 
+                "type": "error"
+            });
+        },
+  
+        submitHandler: function (form) {
+        	jQuery(form).ajaxSubmit({
+        		success: function(res, status, xhr, form) {
+        			swal({
+                        "title": "操作成功", 
+                        "type": "success"
+                    }).then((result) => {
+                    	if (is_add)
+                    	    window.location.href = edit_url + res.id + "/edit";
+            		});
+        	    },
+        	    error: function (res, status, xhr, form) {
+        	    	swal({
+                        "title": "操作失败", 
+                        "text": "请输入正确的值", 
+                        "type": "error"
+                    });
+        	    }
+            });
+        }
+      }); 
+    
+	$("#save").click(function() {
+		$("#form").submit();			
+	});
+	
+	$("#del").click(function(){
+        swal({
+          title: '确定要删除吗?',
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '是',
+          cancelButtonText: '否'
+        }).then((result) => {
+          if (result.value) {
+        	  var del_url = edit_url + $("#id").val() + "/delete";  
+              $.get(del_url, function(data, status){
+              	swal({
+                      "title": "操作成功", 
+                      "type": "success"
+                  }).then((result) => {
+                      window.location.href = edit_url;
+                  });
+              });
+          }
+        })
+	});
+     
+
+});
+
+
+</script>
 

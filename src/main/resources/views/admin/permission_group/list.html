@@ -9,8 +9,15 @@
       </li>
       <li class="active">权限组管理</li>
     </ul>
-    <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-        <a class="btn btn-primary" th:href="@{/admin/permission_group/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+    <div class="search-content">
+        <div class="search-cell width-18">
+          <label for="search">时间: </label>
+          <input type="text" id="search" name="search" value="" class="form-control" />
+        </div>
+        <div style="vertical-align: bottom" class="search-cell width-15 text-right">
+          <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+          <a class="btn btn-primary" th:href="@{/admin/permission_group/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+        </div>
     </div>
     <div class="row">
       <div class="col-lg-12">
@@ -24,12 +31,16 @@
 <script th:inline="javascript">
 $(document).ready(function() {
     var table = $('#example').DataTable({
+      ordering: true,
       ajax : {
         url : /*[[@{/admin/permission_group_ajax}]]*/'',
         data : function(data) {
           var filter = {
             rows_per_page : data.length,
-            page_index : data.start / data.length + 1
+            page_index : data.start / data.length + 1,
+            order: data.columns[data.order[0].column].data,
+            dir:data.order[0].dir,
+            search: $('#search').val()
           }
           return filter;
         },
@@ -39,7 +50,7 @@ $(document).ready(function() {
           return json.content;
         },
       },
-
+      order: [ [0, 'asc'] ],
       columns : [ {
         data : 'name',
         title : '名称',
@@ -54,7 +65,8 @@ $(document).ready(function() {
         title : '描述',
         defaultContent : ''
       }, {
-    	  	data: null,
+    	  orderable: false,
+    	  data: null,
           title: '操作',
           render: function (data, display, record) {
         	  var edit_url = /*[[@{/admin/permission_group/}]]*/'';
@@ -70,6 +82,11 @@ $(document).ready(function() {
 
     $("#btn_search").click(function() {
       table.draw();
+    });
+    
+    $('#search').keyup(function(e){
+        if(e.keyCode == 13)
+            table.draw();
     });
 });
     </script>

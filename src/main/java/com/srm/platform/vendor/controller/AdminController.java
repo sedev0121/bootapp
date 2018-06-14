@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.form.AccountForm;
 import com.srm.platform.vendor.model.Account;
@@ -131,9 +133,14 @@ public class AdminController {
 			@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "name");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String search = requestParams.getOrDefault("search", "");
+
 		page_index--;
-		PageRequest request = PageRequest.of(page_index, rows_per_page);
-		Page<PermissionGroup> result = permissionGroupRepository.findAll(request);
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+		Page<PermissionGroup> result = permissionGroupRepository.findBySearchTerm(search, request);
 
 		return result;
 	}
@@ -141,7 +148,6 @@ public class AdminController {
 	// 权限组管理
 	@GetMapping("/permission_group")
 	public String permission_group(Model model) {
-		model.addAttribute("permission_groups", permissionGroupRepository.findAll());
 		return "admin/permission_group/list";
 	}
 
@@ -149,8 +155,8 @@ public class AdminController {
 	@GetMapping("/permission_group/{id}/edit")
 	public String permission_group_edit(@PathVariable("id") Long id, Model model) {
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
-		temp.getAccounts();
 		model.addAttribute("permission_group", temp);
+		model.addAttribute("accounts", StringUtils.join(permissionGroupRepository.findAccountsInGroupById(id), ","));
 		return "admin/permission_group/edit";
 	}
 
@@ -158,7 +164,6 @@ public class AdminController {
 	@GetMapping("/permission_group/{id}/edit_perm")
 	public String permission_group_edit_perm(@PathVariable("id") Long id, Model model) {
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
-		temp.getAccounts();
 		model.addAttribute("permission_group", temp);
 		return "admin/permission_group/edit_perm";
 	}
@@ -168,6 +173,36 @@ public class AdminController {
 	public String permission_group_add(Model model) {
 		model.addAttribute("permission_group", new PermissionGroup());
 		return "admin/permission_group/edit";
+	}
+
+	// 权限组管理->更新
+	@PostMapping("/permission_group/update")
+	public @ResponseBody PermissionGroup permission_group_update(@RequestParam Map<String, String> requestParams) {
+
+		String name = requestParams.get("name");
+		String description = requestParams.get("description");
+		String id = requestParams.get("id");
+		String accounts = requestParams.get("accounts");
+
+		PermissionGroup group = new PermissionGroup(name, description);
+
+		if (id != null && !id.isEmpty())
+			group.setId(Long.parseLong(id));
+
+		group = permissionGroupRepository.save(group);
+
+		return group;
+	}
+
+	// 权限组管理->删除
+	@GetMapping("/permission_group/{id}/delete")
+	public @ResponseBody Boolean permission_group_delete(@PathVariable("id") Long id) {
+
+		PermissionGroup temp = permissionGroupRepository.findOneById(id);
+
+		permissionGroupRepository.delete(temp);
+
+		return true;
 	}
 
 	@GetMapping("/account/addaaa") // Map ONLY GET Requests
