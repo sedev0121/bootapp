@@ -31,6 +31,12 @@ public class BuyerController {
 		return "buyer/inquery/add";
 	}
 
+	// 价格管理->询价管理->新建
+	@GetMapping({ "/inquery/{id}/edit" })
+	public String inquery_edit() {
+		return "buyer/inquery/add";
+	}
+
 	// 价格管理->报价管理
 	@GetMapping("/quote")
 	public String quote() {
@@ -38,7 +44,7 @@ public class BuyerController {
 	}
 
 	// 价格管理->报价管理->修改
-	@GetMapping("/quote/edit")
+	@GetMapping("/quote/{id}/edit")
 	public String quote_edit() {
 		return "buyer/quote/edit";
 	}
@@ -62,7 +68,7 @@ public class BuyerController {
 	}
 
 	// 供应商管理->修改
-	@GetMapping("/vendor/edit")
+	@GetMapping("/vendor/{id}/edit")
 	public String vendor_edit() {
 		return "buyer/vendor/edit";
 	}
@@ -74,7 +80,7 @@ public class BuyerController {
 	}
 
 	// 订单管理->明细
-	@GetMapping("/purchaseorder/edit")
+	@GetMapping("/purchaseorder/{id}/edit")
 	public String purchaseorder_edit() {
 		return "buyer/purchaseorder/edit";
 	}
@@ -92,7 +98,13 @@ public class BuyerController {
 	}
 
 	// 对账单管理
-	@GetMapping("/purinvoice/edit")
+	@GetMapping("/purinvoice/add")
+	public String purinvoice_add() {
+		return "buyer/purinvoice/edit";
+	}
+
+	// 对账单管理
+	@GetMapping("/purinvoice/{id}/edit")
 	public String purinvoice_edit() {
 		return "buyer/purinvoice/edit";
 	}

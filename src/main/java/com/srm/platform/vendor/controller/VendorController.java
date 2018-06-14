@@ -30,6 +30,11 @@ public class VendorController {
 		return "vendor/inquery/add";
 	}
 
+	@GetMapping("/inquery/{id}/edit")
+	public String inquery_edit() {
+		return "vendor/inquery/add";
+	}
+
 	// 价格管理->报价管理
 	@GetMapping("/quote")
 	public String quote() {
@@ -37,13 +42,19 @@ public class VendorController {
 	}
 
 	// 价格管理->报价管理->修改
-	@GetMapping("/quote/edit")
+	@GetMapping("/quote/{id}/edit")
 	public String quote_edit() {
 		return "vendor/quote/edit";
 	}
 
+	// 订单管理->订单确认->修改
+	@GetMapping("/purchaseorder/{id}/edit")
+	public String purchaseorder_edit() {
+		return "vendor/purchaseorder/edit";
+	}
+
 	// 订单管理->订单确认
-	@GetMapping("/purchaseorder/confirm")
+	@GetMapping({ "/purchaseorder", "/purchaseorder/confirm" })
 	public String purchaseorder_confirm() {
 		return "vendor/purchaseorder/index";
 	}
@@ -79,7 +90,7 @@ public class VendorController {
 	}
 
 	// 对账单管理->对账单明细
-	@GetMapping("/purinvoice/edit")
+	@GetMapping("/purinvoice/{id}/edit")
 	public String purinvoice_edit() {
 		return "vendor/purinvoice/edit";
 	}

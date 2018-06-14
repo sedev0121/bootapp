@@ -10,78 +10,77 @@
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
       <li><a th:href="@{/admin/permission_group}">权限组管理</a></li>
-      <li class="active">修改权限</li>
+      <li class="active">权限设置</li>
     </ul>
     <form>  
       <h1 th:text="${permission_group.name}"></h1>
-        <div class="row content-form-page">
-          <fieldset class="col-lg-4 col-md-4 ">
-            <legend>供应商档案管理 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
-            <div class="col-lg-4 col-md-4 form-group ">
-              <input type="checkbox">
-              <label for="document_date">新建</label>
+      <div class="panel panel-default">
+        <div class="panel-body"> 
+          <div class="row">
+            <fieldset class="col-lg-4 col-md-4 ">
+              <legend>供应商档案管理 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
+              <div class="col-lg-4 col-md-4">
+                <input type="checkbox">
+                <label>查询 </label>
+              </div>
+            </fieldset>
+            <fieldset class="col-lg-4 col-md-4 ">
+              <legend>询价管理 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
+              <div class="col-lg-4 col-md-4 form-group">
+                <input type="checkbox">
+                <label for="document_date">查询 </label>
+              </div>
+              
+              <div class="col-lg-4 col-md-4 form-group">
+                <input type="checkbox">
+                <label for="document_date">新建 </label>
+              </div>
+              <div class="col-lg-4 col-md-4 form-group">
+                <input type="checkbox">
+                <label for="document_date">删除 </label>
+              </div>
+              <div class="col-lg-4 col-md-4 form-group">
+                <input type="checkbox">
+                <label for="document_date">审核 </label>
+              </div>
+              <div class="col-lg-4 col-md-4 form-group">
+                <input type="checkbox">
+                <label for="document_date">退回 </label>
+              </div>
+              <div class="col-lg-4 col-md-4 form-group">
+                <input type="checkbox">
+                <label for="document_date">归档 </label>
+              </div>     
+              <div class="col-lg-6 col-md-6 form-group">
+                <input type="checkbox">
+                <label for="document_date">提交(发布) </label>
+              </div>
+            </fieldset>
+            <fieldset class="col-lg-4 col-md-4 ">
+              <legend>报价管理 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
+              <div class="col-lg-4 col-md-4 form-group">
+                <input type="checkbox">
+                <label for="document_date">查询 </label>
+              </div>
+              <div class="col-lg-4 col-md-4 form-group">
+                <input type="checkbox">
+                <label for="document_date">确认 </label>
+              </div>
+              <div class="col-lg-4 col-md-4 form-group">
+                <input type="checkbox">
+                <label for="document_date">拒绝 </label>
+              </div>
+              <div class="col-lg-4 col-md-4 form-group">
+                <input type="checkbox">
+                <label for="document_date">审核 </label>
+              </div>     
+              <div class="col-lg-4 col-md-4 form-group">
+                <input type="checkbox">
+                <label for="document_date">退回 </label>
+              </div>  
+            </fieldset>
             </div>
-            <div class="col-lg-4 col-md-4">
-              <input type="checkbox">
-              <label>查询 </label>
-            </div>
-          </fieldset>
-          <fieldset class="col-lg-4 col-md-4 ">
-            <legend>询价管理 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label for="document_date">新建 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label for="document_date">删除 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label for="document_date">提交 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label for="document_date">审核 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label for="document_date">退回 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label for="document_date">发布 </label>
-            </div>     
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label for="document_date">复核 </label>
-            </div>                               
-          </fieldset>
-          <fieldset class="col-lg-4 col-md-4 ">
-            <legend>报价管理 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label for="document_date">提交 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label for="document_date">退回 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label for="document_date">审核 </label>
-            </div>     
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label for="document_date">修改 </label>
-            </div>  
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label for="document_date">查询 </label>
-            </div>
-          </fieldset>
-          </div>
-          <div class="row content-form-page">
+          <div class="row">
           <fieldset class="col-lg-4 col-md-4 ">
             <legend>采购订单发布 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
             <div class="col-lg-4 col-md-4 form-group">
@@ -105,11 +104,11 @@
             <legend>对账单管理 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
             <div class="col-lg-4 col-md-4 form-group">
               <input type="checkbox">
-              <label for="document_date">新建 </label>
+              <label for="document_date">查询 </label>
             </div>
             <div class="col-lg-4 col-md-4 form-group">
               <input type="checkbox">
-              <label for="document_date">查询 </label>
+              <label for="document_date">新建 </label>
             </div>
             <div class="col-lg-4 col-md-4 form-group">
               <input type="checkbox">
@@ -127,41 +126,29 @@
               <input type="checkbox">
               <label for="document_date">发票确认 </label>
             </div> 
-            <div class="col-lg-6 col-md-6 form-group">
-              <input type="checkbox">
-              <label for="document_date">提交发票 </label>
-            </div> 
-            <div class="col-lg-6 col-md-6 form-group">
-              <input type="checkbox">
-              <label for="document_date">取外购入库单 </label>
-            </div>            
-            <div class="col-lg-6 col-md-6 form-group">
-              <input type="checkbox">
-              <label for="document_date">删除行 </label>
-            </div>            
           </fieldset>
           <fieldset class="col-lg-4 col-md-4 ">
             <legend>出货看板 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
             <div class="col-lg-4 col-md-4 form-group">
               <input type="checkbox">
-              <label for="document_date">导出 </label>
+              <label for="document_date">查询 </label>
             </div>
             <div class="col-lg-4 col-md-4 form-group">
               <input type="checkbox">
-              <label for="document_date">查询 </label>
+              <label for="document_date">导出 </label>
             </div>
           </fieldset>
           </div>
-          <div class="row content-form-page">
+          <div class="row">
           <fieldset class="col-lg-4 col-md-4 ">
             <legend>交期确认 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
             <div class="col-lg-4 col-md-4 form-group">
               <input type="checkbox">
-              <label for="document_date">接受 </label>
+              <label for="document_date">查询 </label>
             </div>
             <div class="col-lg-4 col-md-4 form-group">
               <input type="checkbox">
-              <label for="document_date">查询 </label>
+              <label for="document_date">接受 </label>
             </div>
             <div class="col-lg-4 col-md-4 form-group">
               <input type="checkbox">
@@ -188,7 +175,7 @@
             </div>            
           </fieldset>                          
           <fieldset class="col-lg-4 col-md-4 ">
-            <legend>订单发货 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
+            <legend>导入送货单 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
             <div class="col-lg-4 col-md-4 form-group">
               <input type="checkbox">
               <label for="document_date">查询 </label>
@@ -203,13 +190,12 @@
             </div>            
           </fieldset>  
           </div>
-          
-          <div class="row">
-            <div class="text-right margin-right-20">
-                <a class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
-                <a class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
-                <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
-            </div>
+        </div>
+        <div class="panel-footer">
+          <div class="text-right margin-right-20">
+              <a class="btn btn-primary"><i class="fa fa-remove"></i> 保存</a>
+              <a class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
+              <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
           </div>
         </div>
       </div>

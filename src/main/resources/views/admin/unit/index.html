@@ -12,40 +12,13 @@
       </li>
       <li class="active">组织架构管理</li>
     </ul>
-    <div class="row">
-      <div class="col-md-4">
-            <i class="fa fa-sitemap"></i>维护部门结构::浙江鼎美智装股份有限公司
-            <div id="tree_3"></div>
-      </div>
-      <div class="col-md-8">
-        <div class="card">
-          <div class="card-body card-block">
-            <div style="display: table; width: 100%">
-              <div style="display: table-cell; display: 70%">
-                <span><i class="fa fa-sitemap"></i> 浙江鼎美智装股份有限公司 >下级部门</span>
-                <input type="text" id="childnode_1" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_2" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_3" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_4" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_5" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_6" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_7" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_8" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_9" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_10" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_11" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_12" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_13" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_14" class="childnode form-control margin-top-10" node_id="">
-                <input type="text" id="childnode_15" class="childnode form-control margin-top-10" node_id="">
-                
-                <div class="margin-top-10">
-                    <a class="btn btn-primary" id="btn_save" onClick="save_node();" parent_id="#"> 保存</a>
-                    <a class="btn btn-default"> 返回</a>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div class="panel panel-default">
+      <div class="panel-body"> 
+        <div class="row">
+          <div class="col-md-4">
+                <i class="fa fa-sitemap"></i>维护部门结构::浙江鼎美智装股份有限公司
+                <div id="tree_3"></div>
+          </div>      
         </div>
       </div>
     </div>
@@ -91,6 +64,18 @@
           core:{
             "check_callback": true,
             data: data
+          },
+          contextmenu: {
+              'items': function(n) {
+                  var tmp = $.jstree.defaults.contextmenu.items();
+                  tmp.create.label = '新建';
+                  tmp.rename.label = '改名';
+                  tmp.remove.label = '删除';
+                  tmp.ccp.label = '编辑';
+                  tmp.ccp.submenu.copy = '复制';
+                  tmp.ccp.submenu.paste = '粘贴';
+                  return tmp;
+              }
           },
           state:{key:"demo1"},
           plugins:["contextmenu","dnd","state","types"]

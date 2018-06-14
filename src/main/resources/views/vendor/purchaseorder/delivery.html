@@ -8,13 +8,6 @@
       <li class="active">订单确认</li>
     </ul>
 
-    <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-      <a class="btn btn-primary"> 返回</a> 
-      <a class="btn btn-primary"> 接受</a> 
-      <a class="btn btn-primary"> 协调</a> 
-      <a class="btn btn-primary"> 导出</a>
-    </div>
-
     <div class="search-content">
       <div class="search-cell width-18">
         <label for="date_range">时间: </label> 
@@ -98,6 +91,11 @@
 			columns : [ {
 				data : 'code',
 				title : '订单编号',
+				render: function (data, display, record) {
+      	  var edit_url = /*[[@{/vendor/purchaseorder/}]]*/'';
+      	  edit_url +=  data + '/edit';
+      	  return '<a href="' + edit_url + '">' + data  + '</a>';
+        },				
 				defaultContent : ''
 			}, {
 				data : 'date',

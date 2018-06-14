@@ -91,6 +91,11 @@
 			columns : [ {
 				data : 'code',
 				title : '订单编号',
+				render: function (data, display, record) {
+      	  var edit_url = /*[[@{/vendor/purchaseorder/}]]*/'';
+      	  edit_url +=  data + '/edit';
+      	  return '<a href="' + edit_url + '">' + data  + '</a>';
+        },
 				defaultContent : ''
 			}, {
 				data : 'date',

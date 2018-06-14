@@ -6,82 +6,75 @@
         <li>
           <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
-        <li><a th:href="@{/buyer/purinvoice}">对账单管理</a></li>
+        <li><a th:href="@{/vendor/purinvoice}">对账单管理</a></li>
         <li class="active">对账单明细</li>
       </ul>
 
-      <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-          <a class="btn btn-primary"><i class="fa fa-undo"></i> 退回</a>
-          <a class="btn btn-primary"><i class="fa fa-check-square"></i> 审核</a>
-          <a class="btn btn-primary"><i class="fa fa-arrow-up"></i> 发布</a>
-          <a class="btn btn-primary"><i class="fa fa-pencil"></i> 发票确认</a>
-          <a class="btn btn-primary"><i class="fa fa-print"></i> 打印</a>
-          <a class="btn btn-default" th:href="@{/buyer/purinvoice}"><i class="fa fa-arrow-left"></i> 返回</a>
-      </div>
-
-      <div class="row">
-          <div class="col-lg-2 col-md-2">
-            <label>对账单号: </label>
-            <input type="text" class="form-control" value="4502691503" readonly/>
+      <div class="panel panel-default">
+        <div class="panel-body"> 
+          <div class="row">
+              <div class="col-lg-2 col-md-2">
+                <label>对账单号: </label>
+                <input type="text" class="form-control" value="4502691503" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>币别: </label>
+                <input type="text" class="form-control" value="CNY" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>订单类型: </label>
+                <input type="text" class="form-control" value="标准采购订单" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>版本: </label>
+                <input type="text" class="form-control" value="2" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>数据来源: </label>
+                <input type="text" class="form-control" value="ERP" readonly/>
+              </div>
+    
+              <div class="col-lg-4 col-md-4">
+                <label>客户: </label>
+                <input type="text" class="form-control" value="浙江美尔凯特集成吊顶有限公司" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>供应商: </label>
+                <input type="text" class="form-control" value="嘉兴市华年电机有限公司" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>供应商地址: </label>
+                <input type="text" class="form-control" value="XXXXXXXXXXXXXXX" readonly/>
+              </div>
+    
+              <div class="col-lg-4 col-md-4">
+                <label>含税金额: </label>
+                <input type="text" class="form-control" value="XXXXX.XX" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>创建日期: </label>
+                <input type="text" class="form-control" value="xxxx-xx-xx xx:xx:xx" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>发布日期: </label>
+                <input type="text" class="form-control" value="xxxx-xx-xx xx:xx:xx" readonly/>
+              </div>
+    
+              <div class="col-lg-12 col-md-12">
+                <label>未税金额: </label>
+                <input type="text" class="form-control" value="" readonly/>
+              </div>
+    
+              <div class="col-lg-6 col-md-6">
+                <label>订单摘要: </label>
+                <input type="text" class="form-control" value="" readonly/>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <label>发票号: </label>
+                <input type="text" class="form-control" value="" readonly/>
+              </div>
           </div>
-          <div class="col-lg-2 col-md-2">
-            <label>币别: </label>
-            <input type="text" class="form-control" value="CNY" readonly/>
-          </div>
-          <div class="col-lg-2 col-md-2">
-            <label>订单类型: </label>
-            <input type="text" class="form-control" value="标准采购订单" readonly/>
-          </div>
-          <div class="col-lg-2 col-md-2">
-            <label>版本: </label>
-            <input type="text" class="form-control" value="2" readonly/>
-          </div>
-          <div class="col-lg-2 col-md-2">
-            <label>数据来源: </label>
-            <input type="text" class="form-control" value="ERP" readonly/>
-          </div>
-
-          <div class="col-lg-4 col-md-4">
-            <label>客户: </label>
-            <input type="text" class="form-control" value="浙江美尔凯特集成吊顶有限公司" readonly/>
-          </div>
-          <div class="col-lg-4 col-md-4">
-            <label>供应商: </label>
-            <input type="text" class="form-control" value="嘉兴市华年电机有限公司" readonly/>
-          </div>
-          <div class="col-lg-4 col-md-4">
-            <label>供应商地址: </label>
-            <input type="text" class="form-control" value="XXXXXXXXXXXXXXX" readonly/>
-          </div>
-
-          <div class="col-lg-4 col-md-4">
-            <label>含税金额: </label>
-            <input type="text" class="form-control" value="XXXXX.XX" readonly/>
-          </div>
-          <div class="col-lg-4 col-md-4">
-            <label>创建日期: </label>
-            <input type="text" class="form-control" value="xxxx-xx-xx xx:xx:xx" readonly/>
-          </div>
-          <div class="col-lg-4 col-md-4">
-            <label>发布日期: </label>
-            <input type="text" class="form-control" value="xxxx-xx-xx xx:xx:xx" readonly/>
-          </div>
-
-          <div class="col-lg-12 col-md-12">
-            <label>未税金额: </label>
-            <input type="text" class="form-control" value="" readonly/>
-          </div>
-
-          <div class="col-lg-6 col-md-6">
-            <label>订单摘要: </label>
-            <input type="text" class="form-control" value="" readonly/>
-          </div>
-          <div class="col-lg-6 col-md-6">
-            <label>发票号: </label>
-            <input type="text" class="form-control" value="" readonly/>
-          </div>
-      </div>
-      <div class="row margin-top-10">
+          <div class="row margin-top-10">
         <div class="col-lg-12">
           <div class="blog-talks margin-bottom-30">
             <div class="tab-style-1">
@@ -103,6 +96,17 @@
           </div>     
         </div>
       </div>
+        </div>
+        <div class="panel-footer">        
+          <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
+            <a class="btn btn-primary"><i class="fa fa-undo"></i> 退回</a>
+            <a class="btn btn-primary"><i class="fa fa-check-square"></i> 审核</a>
+            <a class="btn btn-primary"><i class="fa fa-arrow-up"></i> 发布</a>
+            <a class="btn btn-primary"><i class="fa fa-pencil"></i> 发票确认</a>
+            <a class="btn btn-primary"><i class="fa fa-print"></i> 打印</a>
+            <a class="btn btn-default" th:href="@{/vendor/purinvoice}"><i class="fa fa-arrow-left"></i> 返回</a>
+          </div>
+        </div>
   </div>  
 </body>
 </html>

@@ -8,38 +8,41 @@
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
       <li><a th:href="@{/admin/permission_group}">权限组管理</a></li>
-      <li class="active">新建权限组</li>
+      <li class="active">权限组详细</li>
     </ul>
     <form>  
-      <div class="row">
-        <div class="col-lg-1 col-md-1"></div>
-        <div class="col-lg-10 col-md-10 content-form-page">
-          <fieldset>
-            <div class="col-lg-3 col-md-3 form-group">
-              <label for="document_date">名称: </label>
-              <input type="text" id="document_date" class="form-control" th:value="${permission_group.name}">
-            </div>
-            <div class="col-lg-9 col-md-9 form-group">
-              <label for="document_date">描述: </label>
-              <input type="text" id="document_date" class="form-control" th:value="${permission_group.description}">
-            </div>
-            <div class="col-lg-12 col-md-12 form-group">
-              <label for="document_date">用户列表: </label>
-              <textarea type="text" id="document_date" rows="5" class="form-control">buyer, vendor</textarea>
-            </div>
-
-          </fieldset>
-          
-
+      <div class="panel panel-default">
+        <div class="panel-body"> 
           <div class="row">
-            <div class="text-right margin-right-20">
-                <a class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
-                <a class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
-                <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
+
+            <div class="content-form-page">
+              <fieldset>
+                <div class="col-lg-3 col-md-3 form-group">
+                  <label for="document_date">名称: </label>
+                  <input type="text" id="document_date" class="form-control" th:value="${permission_group.name}">
+                </div>
+                <div class="col-lg-9 col-md-9 form-group">
+                  <label for="document_date">描述: </label>
+                  <input type="text" id="document_date" class="form-control" th:value="${permission_group.description}">
+                </div>
+                <div class="col-lg-12 col-md-12 form-group">
+                  <label for="document_date">用户列表: </label>
+                  <textarea type="text" id="document_date" rows="5" class="form-control">buyer, vendor</textarea>
+                </div>
+    
+              </fieldset>
+
             </div>
+        
           </div>
         </div>
-        <div class="col-lg-1 col-md-1"></div>
+        <div class="panel-footer">
+          <div class="text-right margin-right-20">
+              <a class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
+              <a class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
+              <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
+          </div>
+        </div>
       </div>
     </form>
   </div>
