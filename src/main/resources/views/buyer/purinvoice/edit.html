@@ -79,18 +79,23 @@
           <div class="row margin-top-10">
         <div class="col-lg-12">
           <div class="blog-talks margin-bottom-30">
-            <div class="tab-style-1">
+            <div class="tab-style-1" id="tabs">
               <ul class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#tab-1">基本信息</a></li>
-                <li><a data-toggle="tab" href="#tab-2">预付款信息</a></li>
+                <li class="active"><a data-toggle="tab" href="#tab-1">基本队长</a></li>
+                <li><a data-toggle="tab" href="#tab-2">辅助队长</a></li>
+                <li><a data-toggle="tab" href="#tab-3">外购入库单</a></li>
               </ul>
               <div class="tab-content">
                 <div id="tab-1" class="tab-pane row-fluid fade in active">
                   <table id="basic_info" class="ui celled table nowrap" style="width:100%">
                   </table>
                 </div>
-                <div id="tab-2" class="tab-pane fade">
-                  <table id="prepay_info" class="ui celled table nowrap" style="width:100%">
+                <div id="tab-2" class="tab-pane row-fluid fade in">
+                  <table id="special_info" class="ui celled table nowrap" style="width:100%">
+                  </table>
+                </div>
+                <div id="tab-3" class="tab-pane row-fluid fade in">
+                  <table id="outside_info" class="ui celled table nowrap" style="width:100%">
                   </table>
                 </div>
               </div>
@@ -116,158 +121,354 @@
 
 <script th:inline="javascript">
 	$(document).ready(function() {
-		var basic_table = $('#basic_info').DataTable({
-			ajax : {
-				url : /*[[@{/api/purinvoice/batch_get}]]*/'',
-				data : function(data) {
-					var filter = {
-						rows_per_page: data.length,
-						page_index:data.start/data.length+1,
-						name:$('#product_name').val()
-					}
-					return filter;
-				},
-				dataSrc : function(json) {
-					if (json.errcode != 0) {
-						alert(json.errmsg);
-						json.recordsTotal = 0
-						json.recordsFiltered = 0;
-						json.purinvoicelist = [];
-					}else{
-						json.recordsTotal = json.row_count;
-						json.recordsFiltered = json.row_count;
-					}
-					return json.purinvoicelist;
-				},				
-			},
-			
-			columns : [ {
-				data : 'type',
-				title : '采购发票类型',
-				defaultContent : ''
-			}, {
-				data : 'cexchrate',
-				title : '汇率',
-				defaultContent : ''
-			}, {
-				data : 'cexch_name',
-				title : '币种',
-				defaultContent : ''
-			}, {
-				data : 'cexch_code',
-				title : '币种编码',
-				defaultContent : ''
-			}, {
-				data : 'cdepname',
-				title : '部门名称',
-				defaultContent : ''
-			}, {
-				data : 'cdepcode',
-				title : '部门名称编码',
-				defaultContent : ''
-			}, {
-				data : 'cptname',
-				title : '采购类型名称',
-				defaultContent : ''
-			}, {
-				data : 'cptcode',
-				title : '采购类型编码',
-				defaultContent : ''
-			}, {
-				data : 'cpersonname',
-				title : '业务员名称',
-				defaultContent : ''
-			}, {
-				data : 'cpersoncode',
-				title : '业务员编码',
-				defaultContent : ''
-			}, {
-				data : 'cvenname',
-				title : '供应商名称',
-				defaultContent : ''
-			}, {
-				data : 'cvencode',
-				title : '供应商编码',
-				defaultContent : ''				
-			} ],
+		
+		var basic_table, prepay_table, outside_table;
+		
+		function load_prepay_table() {
+			if (prepay_table != undefined)
+				return;
+				
+			prepay_table = $('#special_info').DataTable({
+	            ajax : {
+	                url : /*[[@{/api/inventory/batch_get}]]*/'',
+	                data : function(data) {
+	                    var filter = {
+	                        rows_per_page : data.length,
+	                        page_index : data.start / data.length + 1
+	                    }
+	                    return filter;
+	                },
+	                dataSrc : function(json) {
+	                    if (json.errcode != 0) {
+	                        alert(json.errmsg);
+	                        json.recordsTotal = 0
+	                        json.recordsFiltered = 0;
+	                        json.inventory = [];
+	                    } else {
+	                        json.recordsTotal = json.row_count;
+	                        json.recordsFiltered = json.row_count;
+	                    }
+	                    return json.inventory;
+	                },
+	            },
+
+	            columns : [ {
+	                data : null,
+	                title : '单据类型',
+	                defaultContent : '外购入库单'
+	            }, {
+	                data : null,
+	                title : '外购入库单',
+	                defaultContent : '2018050300001'
+	            }, {
+	                data : 'end_date',
+	                render: $.fn.date_renderer,
+	                title : '入库日期',
+	                defaultContent : ''
+	            }, {
+	                data : null,
+	                title : '仓库',
+	                defaultContent : '02'
+	            }, {
+	                data : null,
+	                title : '商品编码',
+	                defaultContent : '0710071'
+	            }, {
+	                data : null,
+	                title : '商品名称',
+	                defaultContent : '金波流云基材印刷后'
+	            }, {
+	                data : null,
+	                title : '规格型号',
+	                defaultContent : '0.50*372*372'
+	            }, {
+	                data : null,
+	                title : '单位',
+	                defaultContent : '片'
+	            }, {
+	                data : null,
+	                title : '原材料出库数量',
+	                defaultContent : '9520'
+	            }, {
+                    data : null,
+                    title : '入库数量',
+                    defaultContent : '9493'
+                }, {
+	                data : null,
+	                title : '结算数量',
+	                defaultContent : '9490'
+	            }, {
+	                data : null,
+	                title : '印次',
+	                defaultContent : '16'
+	            }, {
+	                data : null,
+	                title : '扣款数量',
+	                defaultContent : '-4'
+	            }, {
+	                data : null,
+	                title : '原材料单价',
+	                defaultContent : '3.9625'
+	            }, {
+	                data : null,
+	                title : '税率',
+	                defaultContent : '17'
+	            }, {
+	                data : null,
+	                title : '采购订单未税单价',
+	                defaultContent : '1.5'
+	            }, {
+	                data : null,
+	                title : '采购订单含税单价',
+	                defaultContent : ''
+	            }, {
+	                data : null,
+	                title : '入库单未税单价',
+	                defaultContent : '1.5'
+                }, {
+                    data : null,
+                    title : '入库单含税单价',
+                    defaultContent : '1.76'
+                },{	                
+	                data : null,
+	                title : '结算金额',
+	                defaultContent : '14235'
+	            }, {
+	                data : null,
+	                title : '结算价税合计',
+	                defaultContent : '16654.95'
+	            }, {
+	                data : null,
+	                title : '摘要',
+	                defaultContent : ''
+	            } ],
+	        });
+		}
+		
+		function load_outside_table() {
+            if (outside_table != undefined)
+                return;
+                
+            outside_table = $('#outside_info').DataTable({
+                ajax : {
+                    url : /*[[@{/api/inventory/batch_get}]]*/'',
+                    data : function(data) {
+                        var filter = {
+                            rows_per_page : data.length,
+                            page_index : data.start / data.length + 1
+                        }
+                        return filter;
+                    },
+                    dataSrc : function(json) {
+                        if (json.errcode != 0) {
+                            alert(json.errmsg);
+                            json.recordsTotal = 0
+                            json.recordsFiltered = 0;
+                            json.inventory = [];
+                        } else {
+                            json.recordsTotal = json.row_count;
+                            json.recordsFiltered = json.row_count;
+                        }
+                        return json.inventory;
+                    },
+                },
+
+                columns : [ {
+                    data : null,
+                    title : '单据类型',
+                    defaultContent : '外购入库单'
+                }, {
+                    data : null,
+                    title : '外购入库单',
+                    defaultContent : '2018050300001'
+                }, {
+                    data : 'end_date',
+                    render: $.fn.date_renderer,
+                    title : '入库日期',
+                    defaultContent : ''
+                }, {
+                    data : null,
+                    title : '仓库',
+                    defaultContent : '02'
+                }, {
+                    data : null,
+                    title : '商品编码',
+                    defaultContent : '0710071'
+                }, {
+                    data : null,
+                    title : '商品名称',
+                    defaultContent : '金波流云基材印刷后'
+                }, {
+                    data : null,
+                    title : '规格型号',
+                    defaultContent : '0.50*372*372'
+                }, {
+                    data : null,
+                    title : '单位',
+                    defaultContent : '片'
+                }, {
+                    data : null,
+                    title : '原材料出库数量',
+                    defaultContent : '9520'
+                }, {
+                    data : null,
+                    title : '入库数量',
+                    defaultContent : '9493'
+                }, {
+                    data : null,
+                    title : '结算数量',
+                    defaultContent : '9490'
+                }, {
+                    data : null,
+                    title : '印次',
+                    defaultContent : '16'
+                }, {
+                    data : null,
+                    title : '扣款数量',
+                    defaultContent : '-4'
+                }, {
+                    data : null,
+                    title : '原材料单价',
+                    defaultContent : '3.9625'
+                }, {
+                    data : null,
+                    title : '税率',
+                    defaultContent : '17'
+                }, {
+                    data : null,
+                    title : '采购订单未税单价',
+                    defaultContent : '1.5'
+                }, {
+                    data : null,
+                    title : '采购订单含税单价',
+                    defaultContent : ''
+                }, {
+                    data : null,
+                    title : '入库单未税单价',
+                    defaultContent : '1.5'
+                }, {
+                    data : null,
+                    title : '入库单含税单价',
+                    defaultContent : '1.76'
+                },{                 
+                    data : null,
+                    title : '结算金额',
+                    defaultContent : '14235'
+                }, {
+                    data : null,
+                    title : '结算价税合计',
+                    defaultContent : '16654.95'
+                }, {
+                    data : null,
+                    title : '摘要',
+                    defaultContent : ''
+                } ],
+            });
+        }
+		
+		$('#tabs').tabs({
+          activate: function (event, ui) {
+        	  if (ui.newPanel.selector == '#tab-3')
+      		    load_outside_table();
+        	  else if (ui.newPanel.selector == '#tab-2')
+        		load_prepay_table();
+          }
 		});
 		
-		var prepay_table = $('#prepay_info').DataTable({
-			ajax : {
-				url : /*[[@{/api/purinvoice/batch_get}]]*/'',
-				data : function(data) {
-					var filter = {
-						rows_per_page: data.length,
-						page_index:data.start/data.length+1,
-						name:$('#product_name').val()
-					}
-					return filter;
-				},
-				dataSrc : function(json) {
-					if (json.errcode != 0) {
-						alert(json.errmsg);
-						json.recordsTotal = 0
-						json.recordsFiltered = 0;
-						json.purinvoicelist = [];
-					}else{
-						json.recordsTotal = json.row_count;
-						json.recordsFiltered = json.row_count;
-					}
-					return json.purinvoicelist;
-				},				
-			},
-			
-			columns : [ {
-				data : 'type',
-				title : '采购发票类型',
-				defaultContent : ''
-			}, {
-				data : 'cexchrate',
-				title : '汇率',
-				defaultContent : ''
-			}, {
-				data : 'cexch_name',
-				title : '币种',
-				defaultContent : ''
-			}, {
-				data : 'cexch_code',
-				title : '币种编码',
-				defaultContent : ''
-			}, {
-				data : 'cdepname',
-				title : '部门名称',
-				defaultContent : ''
-			}, {
-				data : 'cdepcode',
-				title : '部门名称编码',
-				defaultContent : ''
-			}, {
-				data : 'cptname',
-				title : '采购类型名称',
-				defaultContent : ''
-			}, {
-				data : 'cptcode',
-				title : '采购类型编码',
-				defaultContent : ''
-			}, {
-				data : 'cpersonname',
-				title : '业务员名称',
-				defaultContent : ''
-			}, {
-				data : 'cpersoncode',
-				title : '业务员编码',
-				defaultContent : ''
-			}, {
-				data : 'cvenname',
-				title : '供应商名称',
-				defaultContent : ''
-			}, {
-				data : 'cvencode',
-				title : '供应商编码',
-				defaultContent : ''				
-			} ],
-		});
+		basic_table = $('#basic_info').DataTable({
+            ajax : {
+                url : /*[[@{/api/inventory/batch_get}]]*/'',
+                data : function(data) {
+                    var filter = {
+                        rows_per_page : data.length,
+                        page_index : data.start / data.length + 1
+                    }
+                    return filter;
+                },
+                dataSrc : function(json) {
+                    if (json.errcode != 0) {
+                        alert(json.errmsg);
+                        json.recordsTotal = 0
+                        json.recordsFiltered = 0;
+                        json.inventory = [];
+                    } else {
+                        json.recordsTotal = json.row_count;
+                        json.recordsFiltered = json.row_count;
+                    }
+                    return json.inventory;
+                },
+            },
+
+            columns : [ {
+                data : null,
+                title : '单据类型',
+                defaultContent : '外购入库单'
+            }, {
+                data : null,
+                title : '外购入库单',
+                defaultContent : '2018050300001'
+            }, {
+            	data : 'end_date',
+                render: $.fn.date_renderer,
+                title : '入库日期',
+                defaultContent : ''
+            }, {
+                data : null,
+                title : '仓库',
+                defaultContent : '02'
+            }, {
+                data : null,
+                title : '商品编码',
+                defaultContent : '0710071'
+            }, {
+                data : null,
+                title : '商品名称',
+                defaultContent : '金波流云基材印刷后'
+            }, {
+                data : null,
+                title : '规格型号',
+                defaultContent : '0.50*372*372'
+            }, {
+                data : null,
+                title : '单位',
+                defaultContent : '片'
+            }, {
+                data : null,
+                title : '入库数量',
+                defaultContent : '9493'
+            }, {
+                data : null,
+                title : '结算数量',
+                defaultContent : '9490'
+            }, {
+                data : null,
+                title : '税率',
+                defaultContent : '17'
+            }, {
+                data : null,
+                title : '入库单未税单价',
+                defaultContent : '1.5'
+            }, {
+                data : null,
+                title : '入库单含税单价',
+                defaultContent : '1.76'
+            }, {
+                data : null,
+                title : '结算金额',
+                defaultContent : '14235'
+            }, {
+                data : null,
+                title : '结算价税合计',
+                defaultContent : '16654.95'
+            }, {
+                data : null,
+                title : '摘要',
+                defaultContent : ''
+            } ],
+        });
 		
+		
+        		
     $('#product_name').keyup(function(e){
         if(e.keyCode == 13)
         	table.draw();

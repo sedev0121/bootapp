@@ -8,86 +8,90 @@
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
       <li><a th:href="@{/admin/account}">用户管理</a></li>
-      <li class="active">新建用户</li>
+      <li class="active">用户详细</li>
     </ul>
-    <form>  
+    <form id="form" th:action="@{/admin/account/update}" method="post">  
+    <input type="hidden" id="id" name="id" th:value="${account.id}">
     <div class="panel panel-default">
       <div class="panel-body"> 
         <div class="row">
           <div class="content-form-page">
             <fieldset>
               <legend>基本信息</legend>
-              <div class="col-lg-3 col-md-3 form-group">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">真实姓名: </label>
-                <input type="text" id="document_date" class="form-control" th:value="${account.real_name}">
+                <input type="text" name="realname" class="form-control" th:value="${account.real_name}">
               </div>
-              <div class="col-lg-3 col-md-3 form-group">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">所属部门: </label>
-                <input type="text" id="document_date" class="form-control">
+                <input type="text" name="unit" class="form-control">
               </div>
-              <div class="col-lg-3 col-md-3 form-group">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">职位: </label>
-                <input type="text" id="document_date" class="form-control">
+                <input type="text" class="form-control">
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="document_date">权限: </label>
+                <input type="text" class="form-control" name="role" th:value="${account.role}">
               </div>
               <div class="col-lg-3 col-md-3 form-group">
                 <label for="document_date">入职日期: </label>
-                <input type="text" id="document_date" class="form-control datepicker" th:value="${account.entry_time}">
+                <input type="text" class="form-control datepicker" th:value="${account.entry_time}">
               </div>
-              <div class="col-lg-12 col-md-12 form-group">
-                <label for="document_date">权限: </label>
-                <input type="text" id="document_date" class="form-control" th:value="${account.role}">
-              </div>
-  
             </fieldset>
             <fieldset>
               <legend>账号信息</legend>
-              <div class="col-lg-3 col-md-3 form-group">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">用户名: </label>
-                <input type="text" id="document_date" class="form-control datepicker" th:value="${account.username}">
+                <input type="text" name="username" class="form-control" th:value="${account.username}">
               </div>
-              <div class="col-lg-3 col-md-3 form-group">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">密码: </label>
-                <input type="text" id="document_date" class="form-control datepicker">
+                <input type="password" name="password" class="form-control">
               </div>
-              <div class="col-lg-3 col-md-3 form-group">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">源代码账号: </label>
-                <input type="text" id="document_date" class="form-control datepicker">
+                <input type="text" class="form-control">
               </div>
             </fieldset>
             <fieldset>
               <legend>联系信息</legend>
-              <div class="col-lg-3 col-md-3 form-group">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">Skype: </label>
-                <input type="text" id="document_date" class="form-control datepicker" th:value="${account.skype}">
+                <input type="text" name="skype" class="form-control" th:value="${account.skype}">
               </div>
-              <div class="col-lg-3 col-md-3 form-group">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">QQ: </label>
-                <input type="text" id="document_date" class="form-control datepicker" th:value="${account.qq}">
+                <input type="text" name="qq" class="form-control" th:value="${account.qq}">
               </div>
-              <div class="col-lg-3 col-md-3 form-group">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">雅虎通: </label>
-                <input type="text" id="document_date" class="form-control datepicker" th:value="${account.yahoo}">
+                <input type="text" name="yahoo" class="form-control" th:value="${account.yahoo}">
               </div>
-              <div class="col-lg-3 col-md-3 form-group">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">GTalk: </label>
-                <input type="text" id="document_date" class="form-control datepicker" th:value="${account.gtalk}">
+                <input type="text" name="gtalk" class="form-control" th:value="${account.gtalk}">
               </div>
-              <div class="col-lg-3 col-md-3 form-group">
+              <div class="col-lg-4 col-md-4 form-group">
                 <label for="document_date">旺旺: </label>
-                <input type="text" id="document_date" class="form-control datepicker" th:value="${account.wangwang}">
+                <input type="text" name="wangwang" class="form-control" th:value="${account.wangwang}">
               </div>                                                
-              <div class="col-lg-3 col-md-3">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="effective_date">手机:</label>
-                <input type="text" id="effective_date" class="form-control datepicker" th:value="${account.mobile}">
+                <input type="text" name="mobile" class="form-control" th:value="${account.mobile}">
               </div>
               
-              <div class="col-lg-3 col-md-3">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="tax_rate">电话:</label>
-                <input type="text" id="tax_rate" name="tax_rate" class="form-control" th:value="${account.tel}">
+                <input type="text" name="tel" class="form-control" th:value="${account.tel}">
               </div>
-              <div class="col-lg-3 col-md-3">
-                <label for="effective_date1">通讯地址:</label>
-                <input type="text" id="effective_date1" class="form-control datepicker" th:value="${account.address}">
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="tax_rate">邮箱:</label>
+                <input type="text" name="email" class="form-control" th:value="${account.email}">
+              </div>
+              <div class="col-lg-6 col-md-6 form-group">
+                <label for="address">通讯地址:</label>
+                <input type="text" name="address" class="form-control datepicker" th:value="${account.address}">
               </div>
             </fieldset>
           </div>
@@ -95,13 +99,96 @@
       </div>
       <div class="panel-footer">
         <div class="text-right margin-right-20">
-            <a class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
-            <a class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
+            <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
+            <a class="btn btn-danger" id="del"><i class="fa fa-remove"></i> 删除</a>
             <a class="btn btn-default" th:href="@{/admin/account}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
       </div>
     </form>
-  </div>
+</div>
 </body>
 </html>
+
+
+<script th:inline="javascript">
+var edit_url = /*[[@{/admin/account/}]]*/'';
+
+jQuery(document).ready(function() {   
+    var is_add = $("#id").val().length==0;
+    $("#form" ).validate({
+        // define validation rules
+        rules: {
+            username: {
+                required: true
+            },    
+            password: {
+                required: true
+            },    
+            role: {
+                required: true
+            },    
+        },
+        
+        //display error alert on form submit  
+        invalidHandler: function(event, validator) {
+            swal({
+                "title": "输入有误", 
+                "text": "请输入正确的值", 
+                "type": "error"
+            });
+        },
+  
+        submitHandler: function (form) {
+            jQuery(form).ajaxSubmit({
+                success: function(res, status, xhr, form) {
+                    swal({
+                        "title": "操作成功", 
+                        "type": "success"
+                    }).then((result) => {
+                        if (is_add)
+                            window.location.href = edit_url + res.id + "/edit";
+                    });
+                },
+                error: function (res, status, xhr, form) {
+                    swal({
+                        "title": "操作失败", 
+                        "text": "请输入正确的值", 
+                        "type": "error"
+                    });
+                }
+            });
+        }
+      }); 
+    
+    $("#save").click(function() {
+        $("#form").submit();            
+    });
+    
+    $("#del").click(function(){
+        swal({
+          title: '确定要删除吗?',
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '是',
+          cancelButtonText: '否'
+        }).then((result) => {
+          if (result.value) {
+              var del_url = edit_url + $("#id").val() + "/delete";  
+              $.get(del_url, function(data, status){
+                swal({
+                      "title": "操作成功", 
+                      "type": "success"
+                  }).then((result) => {
+                      window.location.href = edit_url;
+                  });
+              });
+          }
+        })
+    });
+     
+
+});
+
+
+</script>
 

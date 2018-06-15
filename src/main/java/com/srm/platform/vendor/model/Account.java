@@ -20,7 +20,7 @@ public class Account {
 	private String username;
 
 	private String password;
-	private String role = "ROLE_USER";
+	private String role = "ROLE_BUYER";
 	private String real_name;
 	private String address;
 	private Instant entry_time;

@@ -79,13 +79,18 @@
 			},
 			
 			columns : [ {
+                data : null,
+                title : '对账单号',
+                render: function (data, display, record) {
+                  data = '000001';
+                  var edit_url = /*[[@{/buyer/purinvoice/}]]*/'';
+                  edit_url +=  data + '/edit';
+                  return '<a href="' + edit_url + '">' + data  + '</a>';
+                },
+                defaultContent : '000001'
+            }, {				
 				data : 'type',
 				title : '采购发票类型',
-				render: function (data, display, record) {
-      	  var edit_url = /*[[@{/buyer/purinvoice/}]]*/'';
-      	  edit_url +=  data + '/edit';
-      	  return '<a href="' + edit_url + '">' + data  + '</a>';
-        },
 				defaultContent : ''
 			}, {
 				data : 'cexchrate',

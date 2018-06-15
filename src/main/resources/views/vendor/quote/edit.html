@@ -143,49 +143,53 @@
 			},
 
 			columns : [ {
-				data : 'ccode',
-				title : '单据号',
-				defaultContent : ''
-			}, {
-				data : 'ddate',
-				title : '调价日期',
-				render: $.fn.date_renderer,
-				defaultContent : ''
-			}, {
-				data : 'cdepname',
-				title : '调价部门',
-				defaultContent : ''
-			}, {
-				data : 'cpersonname',
-				title : '调价业务员',
-				defaultContent : ''
-			}, {
-				data : 'btaxcost',
-				title : '价格标识',
-				defaultContent : ''
-			}, {
-				data : 'isupplytype',
-				title : '供应类型',
-				defaultContent : ''
-			}, {
-				data : 'cmainmemo',
-				title : '表头备注',
-				defaultContent : ''
-			}, {
-				data : 'cmaker',
-				title : '制单人',
-				defaultContent : ''
-			}, {
-				data : 'cverifier',
-				title : '审批人',
-				defaultContent : ''
-			}, {
-				data : 'dverifydate',
-				title : '审批日期',
-				render: $.fn.date_renderer,
-				defaultContent : ''
-					
-			} ],
+		        data : 'ccode',
+		        title : '商品编码',
+		        defaultContent : ''
+		      }, {
+		        data : null,
+		        title : '商品名称',
+		        defaultContent : '商品名称'
+		      }, {
+		        data : null,
+		        title : '规格型号',
+		        defaultContent : '规格型号'
+		      }, {
+		        data : null,
+		        title : '单位',
+		        defaultContent : '个'
+		      }, {
+		        data : null,
+		        title : '原价格',
+		        defaultContent : '100'
+		      }, {
+		        data : null,
+		        title : '最新未税报价',
+		        defaultContent : '110'
+		      }, {
+		        data : null,
+		        title : '最新含税报价',
+		        defaultContent : '120'
+		      }, {
+		          data : null,
+		          title : '税率',
+		          defaultContent : '17'
+		      }, {
+		        data : 'dverifydate',
+		        title : '生效日期',
+		        render: $.fn.date_renderer,
+		        defaultContent : ''
+		      }, {
+		          data : 'dverifydate',
+		          title : '有效日期',
+		          render: $.fn.date_renderer,
+		          defaultContent : ''
+		      }, {
+		          data : null,
+		          title : '备注',
+		          defaultContent : '备注'
+		          
+		      } ],
 		});
 
 		$("#btn_search").click(function() {

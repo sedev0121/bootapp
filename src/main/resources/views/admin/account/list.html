@@ -11,16 +11,8 @@
     </ul>
     <div class="search-content">
         <div class="search-cell width-18">
-          <label for="supplier_code">用户名：</label>
-          <input type="text" id="supplier_code" class="form-control">
-        </div>
-        <div class="search-cell width-18">
-          <label for="supplier_code">真实姓名：</label>
-          <input type="text" id="supplier_code" class="form-control">
-        </div>
-        <div class="search-cell width-18">
-          <label for="supplier_code">邮箱：</label>
-          <input type="text" id="supplier_code" class="form-control">
+          <label for="supplier_code">用户名/真实姓名/邮箱：</label>
+          <input type="text" id="search" class="form-control">
         </div>
         <div style="vertical-align: bottom" class="search-cell width-18 text-right">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
@@ -53,12 +45,16 @@ $(document).ready(function() {
       });
 
     var table = $('#example').DataTable({
+      ordering: true,
       ajax : {
         url : /*[[@{/admin/account_ajax}]]*/'',
         data : function(data) {
           var filter = {
             rows_per_page : data.length,
-            page_index : data.start / data.length + 1
+            page_index : data.start / data.length + 1,
+            order: data.columns[data.order[0].column].data,
+            dir:data.order[0].dir,
+            search: $('#search').val()
           }
           return filter;
         },
@@ -68,7 +64,7 @@ $(document).ready(function() {
           return json.content;
         },
       },
-
+      order: [ [0, 'asc'] ],
       columns : [ {
         data : 'real_name',
         title : '真实姓名',
@@ -108,6 +104,11 @@ $(document).ready(function() {
 
     $("#btn_search").click(function() {
       table.draw();
+    });
+    
+    $('#search').keyup(function(e){
+        if(e.keyCode == 13)
+            table.draw();
     });
 });
     </script>

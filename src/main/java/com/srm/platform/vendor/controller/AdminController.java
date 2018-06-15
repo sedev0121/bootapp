@@ -5,30 +5,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.util.StringUtils;
 
-import com.srm.platform.vendor.form.AccountForm;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.Unit;
@@ -73,26 +66,19 @@ public class AdminController {
 
 	// 用户管理->列表
 	@GetMapping("/account_ajax")
-	public @ResponseBody Page<Account> ajax_account_list(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<Account> account_list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "name");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String search = requestParams.getOrDefault("search", "");
+
 		page_index--;
-		PageRequest request = PageRequest.of(page_index, rows_per_page);
-		Page<Account> result = accountRepository.findAll(request);
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+		Page<Account> result = accountRepository.findBySearchTerm(search, request);
 
 		return result;
-	}
-
-	// 用户管理->列表
-	@GetMapping("/account_test")
-	public @ResponseBody Page<Account> ajax_account_test(@RequestParam Map<String, String> requestParams) {
-		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
-		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
-		page_index--;
-		PageRequest request = PageRequest.of(page_index, rows_per_page, Sort.Direction.DESC, "id");
-
-		return accountRepository.findBySearchTermNative("e", request);
-
 	}
 
 	// 用户管理->修改
@@ -118,14 +104,50 @@ public class AdminController {
 
 	// 用户修改
 	@PostMapping("/account/update")
-	public String account_update(@Valid @ModelAttribute AccountForm accountForm, Errors errors, RedirectAttributes ra) {
-		if (errors.hasErrors()) {
-			return "admin/account/edit";
+	public @ResponseBody Account account_update_ajax(@RequestParam Map<String, String> requestParams) {
+		String id = requestParams.get("id");
+		String username = requestParams.get("username");
+		String realname = requestParams.get("realname");
+		String skype = requestParams.get("skype");
+		String qq = requestParams.get("qq");
+		String yahoo = requestParams.get("yahoo");
+		String wangwang = requestParams.get("wangwang");
+		String mobile = requestParams.get("mobile");
+		String tel = requestParams.get("tel");
+		String address = requestParams.get("address");
+		String gtalk = requestParams.get("gtalk");
+		String email = requestParams.get("email");
+		String password = requestParams.get("password");
+		String role = requestParams.get("role");
+
+		Account account;
+		if (id != null && !id.isEmpty()) {
+			account = accountRepository.findOneById(Long.parseLong(id));
+		} else {
+			account = new Account();
 		}
 
-		accountService.save(accountForm.createAccount());
+		account.setUsername(username);
+		account.setReal_name(realname);
+		account.setSkype(skype);
+		account.setQq(qq);
+		account.setYahoo(yahoo);
+		account.setWangwang(wangwang);
+		account.setMobile(mobile);
+		account.setTel(tel);
+		account.setAddress(address);
+		account.setGtalk(gtalk);
+		account.setEmail(email);
+		account.setRole(role);
 
-		return "redirect:/admin/account";
+		if (password != null) {
+			account.setPassword(password);
+			account = accountService.save(account);
+		} else {
+			account = accountRepository.save(account);
+		}
+
+		return account;
 	}
 
 	// 组织架构管理
@@ -136,7 +158,7 @@ public class AdminController {
 
 	// 组织架构管理->下级组织列表
 	@GetMapping("/unit/{parent_id}/children")
-	public @ResponseBody List<Map<String, Object>> get_units(@PathVariable("parent_id") Long parent_id) {
+	public @ResponseBody List<Map<String, Object>> unit_list_ajax(@PathVariable("parent_id") Long parent_id) {
 		List<Unit> children = unitRepository.findByParentId(parent_id);
 
 		Unit temp;
@@ -160,7 +182,7 @@ public class AdminController {
 
 	// 组织架构管理->删除
 	@GetMapping("/unit/{id}/delete")
-	public @ResponseBody Boolean delete_unit(@PathVariable("id") Long id) {
+	public @ResponseBody Boolean unit_delete_ajax(@PathVariable("id") Long id) {
 		Unit unit = unitRepository.findOneById(id);
 		unitRepository.delete(unit);
 		return true;
@@ -168,7 +190,7 @@ public class AdminController {
 
 	// 组织架构管理->改名
 	@GetMapping("/unit/{id}/rename/{name}")
-	public @ResponseBody Unit rename_unit(@PathVariable("id") Long id, @PathVariable("name") String name) {
+	public @ResponseBody Unit unit_rename_ajax(@PathVariable("id") Long id, @PathVariable("name") String name) {
 		Unit unit = unitRepository.findOneById(id);
 		unit.setName(name);
 		unit = unitRepository.save(unit);
@@ -177,7 +199,7 @@ public class AdminController {
 
 	// 组织架构管理->移动
 	@GetMapping("/unit/{id}/move/{parent_id}")
-	public @ResponseBody Unit move_unit(@PathVariable("id") Long id, @PathVariable("parent_id") Long parent_id) {
+	public @ResponseBody Unit unit_move_ajax(@PathVariable("id") Long id, @PathVariable("parent_id") Long parent_id) {
 		Unit unit = unitRepository.findOneById(id);
 		unit.setParent_id(parent_id);
 		unit = unitRepository.save(unit);
@@ -186,7 +208,8 @@ public class AdminController {
 
 	// 组织架构管理->新建
 	@GetMapping("/unit/add/{parent_id}/{name}")
-	public @ResponseBody Unit add_unit(@PathVariable("parent_id") Long parentId, @PathVariable("name") String name) {
+	public @ResponseBody Unit unit_add_ajax(@PathVariable("parent_id") Long parentId,
+			@PathVariable("name") String name) {
 		Unit unit = new Unit(name, parentId);
 		unitRepository.save(unit);
 		return unit;
@@ -194,7 +217,7 @@ public class AdminController {
 
 	// 权限组管理->列表
 	@GetMapping("/permission_group_ajax")
-	public @ResponseBody Page<PermissionGroup> ajax_permission_group_list(
+	public @ResponseBody Page<PermissionGroup> permission_group_list_ajax(
 			@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
@@ -242,17 +265,22 @@ public class AdminController {
 
 	// 权限组管理->更新
 	@PostMapping("/permission_group/update")
-	public @ResponseBody PermissionGroup permission_group_update(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody PermissionGroup permission_group_update_ajax(@RequestParam Map<String, String> requestParams) {
 
 		String name = requestParams.get("name");
 		String description = requestParams.get("description");
 		String id = requestParams.get("id");
 		String accounts = requestParams.get("accounts");
 
-		PermissionGroup group = new PermissionGroup(name, description);
+		PermissionGroup group;
+		if (id != null && !id.isEmpty()) {
+			group = permissionGroupRepository.findOneById(Long.parseLong(id));
+		} else {
+			group = new PermissionGroup();
+		}
 
-		if (id != null && !id.isEmpty())
-			group.setId(Long.parseLong(id));
+		group.setName(name);
+		group.setDescription(description);
 
 		group = permissionGroupRepository.save(group);
 
@@ -261,23 +289,13 @@ public class AdminController {
 
 	// 权限组管理->删除
 	@GetMapping("/permission_group/{id}/delete")
-	public @ResponseBody Boolean permission_group_delete(@PathVariable("id") Long id) {
+	public @ResponseBody Boolean permission_group_delete_ajax(@PathVariable("id") Long id) {
 
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
 
 		permissionGroupRepository.delete(temp);
 
 		return true;
-	}
-
-	@GetMapping("/account/addaaa") // Map ONLY GET Requests
-	public @ResponseBody String addNewUser(@RequestParam String username, @RequestParam String password) {
-
-		logger.info("start user add");
-		Account n = new Account(username, password, "ROLE_VENDOR");
-		accountService.save(n);
-
-		return "Saved";
 	}
 
 }
