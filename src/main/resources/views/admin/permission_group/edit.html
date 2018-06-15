@@ -27,7 +27,7 @@
                 </div>
                 <div class="col-lg-12 col-md-12 form-group">
                   <label for="document_date">用户列表: </label>
-                  <textarea type="text" rows="5" id="accounts" name="accounts" class="form-control" th:text="${accounts}"></textarea>
+                  <input type="text" id="accounts" name="accounts" class="form-control" th:value="${accounts}"></input>
                 </div>
     
               </fieldset>
@@ -127,19 +127,19 @@ jQuery(document).ready(function() {
         event.preventDefault();
       }
     }).autocomplete({
-/*    	
-      source: function( request, response ) {
-        $.getJSON( "search.php", {
-          term: extractLast( request.term )
-        }, response );
-      },
-*/      
       source: function( request, response ) {
         $.ajax({
           url: account_url + extractLast( request.term ),
           dataType: "json",
           success: function( data ) {
-            response( data );
+        	var result =$.map(data.content, function (item) {
+                return {
+                    label: item.real_name + '(' + item.username + ')',
+                    value: item.real_name + '(' + item.username + ')'
+                };
+            });
+        	response(result);
+            
           }
         });
       },
