@@ -58,91 +58,62 @@
 			},
 			
 			columns : [ {
-				data : 'code',
-				title : '订单编号',
-				defaultContent : ''
-			}, {
-				data : 'date',
-				title : '订单日期',
-				render: $.fn.date_renderer,
-				defaultContent : ''
-			}, {
-				data : 'operation_type_code',
-				title : '采购业务类型',
-				defaultContent : ''
-			}, {
-				data : 'state',
-				title : '订单状态',
-				defaultContent : ''
-			}, {
-				data : 'purchase_type_code',
-				title : '采购类型编码',
-				defaultContent : ''
-			}, {
-				data : 'purchase_type_name',
-				title : '采购类型',
-				defaultContent : ''
-			}, {
-				data : 'vendorcode',
-				title : '供应商编码',
-				defaultContent : ''
-			}, {
-				data : 'vendorname',
-				title : '供应商名称',
-				defaultContent : ''
-			}, {
-				data : 'vendorabbname',
-				title : '供应商简称',
-				defaultContent : ''
-			}, {
-				data : 'deptcode',
-				title : '部门编码',
-				defaultContent : ''
-			}, {
-				data : 'deptcode',
-				title : '部门编码',
-				defaultContent : ''
-			}, {
-				data : 'deptname',
-				title : '部门名称',
-				defaultContent : ''
-			}, {
-				data : 'personcode',
-				title : '业务员编码',
-				defaultContent : ''
-			}, {
-				data : 'personname',
-				title : '业务员',
-				defaultContent : ''
-			}, {
-				data : 'remark',
-				title : '备注',
-				defaultContent : ''
-			}, {
-				data : 'currency_name',
-				title : '外币名称',
-				defaultContent : ''
-			}, {
-				data : 'currency_rate',
-				title : '汇率',
-				defaultContent : ''
-			}, {
-				data : 'maker',
-				title : '制单人',
-				defaultContent : ''
-			}, {
-				data : 'verifier',
-				title : '审核人',
-				defaultContent : ''
-			}, {
-				data : 'closer',
-				title : '关闭人',
-				defaultContent : ''
-			}, {
-				data : 'sum',
-				title : '原币价税合计',
-				defaultContent : ''
-			} ],
+                data : null,
+                title : '',
+                render: function(data, display, record) {
+                    return '<input type="checkbox" id="' + record.ccode + '"/>';
+                },
+                defaultContent : '1'
+            }, {
+                data : null,
+                title : '序号',
+                defaultContent : '1'
+            }, {
+                data : null,
+                title : '供应商编码',
+                defaultContent : '02002021202020'
+            }, {
+                data : null,
+                title : '供应商名称',
+                defaultContent : '供应商名称'
+            }, {
+                data : null,
+                title : '订单号',
+                defaultContent : '20180615122521'
+            }, {
+                data : null,
+                title : '订单行号',
+                defaultContent : '1'
+            }, {
+                data : null,
+                title : '商品编码',
+                defaultContent : '002010'
+            }, {
+                data : null,
+                title : '商品名称',
+                defaultContent : '商品名称'
+            }, {
+                data : null,
+                title : '单位',
+                defaultContent : '片'
+            }, {
+                data : 'cverifier',
+                title : '需求日期',
+                render: $.fn.date_renderer,
+                defaultContent : ''
+            }, {
+                data : null,
+                title : '订单数量',             
+                defaultContent : '6'
+            }, {
+                data : null,
+                title : '订单已送货数量',
+                defaultContent : '4'
+            }, {
+                data : null,
+                title : '本次送货数量',
+                defaultContent : '5'                
+            } ],
 		});
 		
     $("#btn_search").click(function() {

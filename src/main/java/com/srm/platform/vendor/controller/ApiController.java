@@ -5,11 +5,16 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.u8api.ApiClient;
 
 @RestController
@@ -19,6 +24,9 @@ public class ApiController {
 
 	@Autowired
 	private ApiClient apiClient;
+
+	@Autowired
+	private AccountRepository accountRepository;
 
 	// 供应商管理
 	@RequestMapping(value = "/vendor/batch_get", produces = "application/json")
@@ -70,5 +78,13 @@ public class ApiController {
 	@RequestMapping(value = "/shipment/batch_get", produces = "application/json")
 	public String shipment(@RequestParam Map<String, String> requestParams) {
 		return apiClient.getBatchVendor(requestParams);
+	}
+
+	// 用户名单
+	@RequestMapping(value = "/account/{search}", produces = "application/json")
+	public Page<Account> account_search(@PathVariable("search") String search) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "real_name");
+
+		return accountRepository.findForAutoComplete(search, request);
 	}
 }

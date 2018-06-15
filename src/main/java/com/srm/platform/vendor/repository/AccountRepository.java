@@ -28,4 +28,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	@Query(value = "SELECT * FROM account t WHERE "
 			+ "t.username LIKE CONCAT('%',:search, '%') or t.real_name LIKE CONCAT('%',:search, '%') or t.email LIKE CONCAT('%',:search, '%')", nativeQuery = true)
 	Page<Account> findBySearchTerm(@Param("search") String search, Pageable pageable);
+
+	@Query(value = "SELECT id, real_name, username FROM account t WHERE "
+			+ "t.username LIKE CONCAT('%',:search, '%') or t.real_name LIKE CONCAT('%',:search, '%')", nativeQuery = true)
+	Page<Account> findForAutoComplete(@Param("search") String search, Pageable pageable);
 }
