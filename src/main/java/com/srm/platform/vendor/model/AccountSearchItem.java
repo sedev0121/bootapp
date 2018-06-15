@@ -2,7 +2,7 @@ package com.srm.platform.vendor.model;
 
 public interface AccountSearchItem {
 
-	int getId();
+	Long getId();
 
 	String getUsername();
 

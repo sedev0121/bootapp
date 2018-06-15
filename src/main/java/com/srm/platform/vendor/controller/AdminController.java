@@ -23,10 +23,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.AccountSearchItem;
 import com.srm.platform.vendor.model.PermissionGroup;
+import com.srm.platform.vendor.model.PermissionGroupUser;
 import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
+import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.service.AccountService;
 
@@ -45,6 +48,9 @@ public class AdminController {
 
 	@Autowired
 	private AccountService accountService;
+
+	@Autowired
+	private PermissionGroupUserRepository permissionGroupUserReopsitory;
 
 	// Dashboard
 	@GetMapping({ "", "/" })
@@ -244,7 +250,15 @@ public class AdminController {
 	public String permission_group_edit(@PathVariable("id") Long id, Model model) {
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
 		model.addAttribute("permission_group", temp);
-		model.addAttribute("accounts", StringUtils.join(permissionGroupRepository.findAccountsInGroupById(id), ","));
+
+		List<AccountSearchItem> accounts = permissionGroupRepository.findAccountsInGroupById(id);
+		List<String> accountList = new ArrayList<>();
+		for (int i = 0; i < accounts.size(); i++) {
+			AccountSearchItem item = accounts.get(i);
+			logger.info(item.toString());
+			accountList.add(item.getReal_name() + "(" + item.getUsername() + ")");
+		}
+		model.addAttribute("accounts", StringUtils.join(accountList, ","));
 		return "admin/permission_group/edit";
 	}
 
@@ -283,6 +297,24 @@ public class AdminController {
 		group.setDescription(description);
 
 		group = permissionGroupRepository.save(group);
+
+		String[] account_list = StringUtils.split(accounts, ",");
+		List<String> usernameList = new ArrayList<>();
+		for (int i = 0; i < account_list.length; i++) {
+			String item = account_list[i];
+			if (item.lastIndexOf("(") >= 0 && item.lastIndexOf(")") >= 0) {
+				usernameList.add(item.substring(item.lastIndexOf("(") + 1, item.lastIndexOf(")")));
+			}
+		}
+
+		List<AccountSearchItem> accountItems = accountRepository.findAccountsByUsernames(usernameList);
+
+		logger.info(StringUtils.join(usernameList, ","));
+		logger.info(accountItems.toString());
+		permissionGroupUserReopsitory.deleteByGroupId(group.getId());
+		for (int i = 0; i < accountItems.size(); i++) {
+			permissionGroupUserReopsitory.save(new PermissionGroupUser(group.getId(), accountItems.get(i).getId()));
+		}
 
 		return group;
 	}

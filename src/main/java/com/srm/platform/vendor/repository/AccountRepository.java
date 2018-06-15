@@ -1,5 +1,7 @@
 package com.srm.platform.vendor.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,6 +33,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	Page<Account> findBySearchTerm(@Param("search") String search, Pageable pageable);
 
 	@Query(value = "SELECT id, username, real_name FROM account t WHERE "
-			+ "t.username LIKE CONCAT('%', :search, '%') or t.real_name LIKE CONCAT('%', :search, '%')", nativeQuery = true)
-	Page<AccountSearchItem> findForAutoComplete(@Param("search") String search, Pageable pageable);
+			+ "t.username LIKE %?1% or t.real_name LIKE %?1%", nativeQuery = true)
+	Page<AccountSearchItem> findForAutoComplete(String search, Pageable pageable);
+
+	@Query(value = "SELECT id, username, real_name FROM account t WHERE " + "t.username in ?1", nativeQuery = true)
+	List<AccountSearchItem> findAccountsByUsernames(List<String> usernames);
 }

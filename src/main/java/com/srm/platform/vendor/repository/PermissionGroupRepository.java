@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.srm.platform.vendor.model.AccountSearchItem;
 import com.srm.platform.vendor.model.PermissionGroup;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
@@ -19,8 +20,8 @@ public interface PermissionGroupRepository extends JpaRepository<PermissionGroup
 
 	PermissionGroup findOneByName(String name);
 
-	@Query(value = "select b.username from permission_group_user a left join account b on a.account_id = b.id where a.group_id=:group_id", nativeQuery = true)
-	List<String> findAccountsInGroupById(@Param("group_id") Long id);
+	@Query(value = "select distinct b.id, b.real_name, b.username from permission_group_user a left join account b on a.account_id = b.id where a.group_id=:group_id", nativeQuery = true)
+	List<AccountSearchItem> findAccountsInGroupById(@Param("group_id") Long id);
 
 	@Query(value = "SELECT * FROM permission_group t WHERE "
 			+ "t.name LIKE CONCAT('%',:search, '%') or t.description LIKE CONCAT('%',:search, '%')", nativeQuery = true)
