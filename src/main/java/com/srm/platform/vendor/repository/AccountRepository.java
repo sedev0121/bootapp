@@ -29,13 +29,13 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	Page<Account> findByUsername2(@Param("username") final String username, Pageable pageable);
 
 	@Query(value = "SELECT * FROM account t WHERE "
-			+ "t.username LIKE CONCAT('%',:search, '%') or t.real_name LIKE CONCAT('%',:search, '%') or t.email LIKE CONCAT('%',:search, '%')", nativeQuery = true)
+			+ "t.username LIKE CONCAT('%',:search, '%') or t.realname LIKE CONCAT('%',:search, '%') or t.email LIKE CONCAT('%',:search, '%')", nativeQuery = true)
 	Page<Account> findBySearchTerm(@Param("search") String search, Pageable pageable);
 
-	@Query(value = "SELECT id, username, real_name FROM account t WHERE "
-			+ "t.username LIKE %?1% or t.real_name LIKE %?1%", nativeQuery = true)
+	@Query(value = "SELECT id, username, realname FROM account t WHERE "
+			+ "t.username LIKE %?1% or t.realname LIKE %?1%", nativeQuery = true)
 	Page<AccountSearchItem> findForAutoComplete(String search, Pageable pageable);
 
-	@Query(value = "SELECT id, username, real_name FROM account t WHERE " + "t.username in ?1", nativeQuery = true)
+	@Query(value = "SELECT id, username, realname FROM account t WHERE " + "t.username in ?1", nativeQuery = true)
 	List<AccountSearchItem> findAccountsByUsernames(List<String> usernames);
 }

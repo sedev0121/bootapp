@@ -15,6 +15,14 @@ public class Function {
 
 	private String name;
 
+	public Function() {
+
+	}
+
+	public Function(String name) {
+		this.name = name;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -31,7 +39,4 @@ public class Function {
 		this.name = name;
 	}
 
-	public Function(String name) {
-		this.name = name;
-	}
 }

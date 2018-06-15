@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,16 +14,11 @@ public class PermissionGroupFunctionAction {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	private String name;
-	private String description;
+	@Column(name = "function_action_id")
+	private Long functionActionId;
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
+	@Column(name = "group_id")
+	private Long groupId;
 
 	public Long getId() {
 		return id;
@@ -32,16 +28,19 @@ public class PermissionGroupFunctionAction {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public Long getFunctionActionId() {
+		return functionActionId;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFunctionActionId(Long functionActionId) {
+		this.functionActionId = functionActionId;
 	}
 
-	public PermissionGroupFunctionAction(String name, String description) {
-		this.name = name;
-		this.description = description;
+	public Long getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(Long groupId) {
+		this.groupId = groupId;
 	}
 }

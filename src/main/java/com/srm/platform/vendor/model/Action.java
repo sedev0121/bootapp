@@ -15,6 +15,14 @@ public class Action {
 
 	private String name;
 
+	public Action() {
+
+	}
+
+	public Action(String name) {
+		this.name = name;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -31,7 +39,4 @@ public class Action {
 		this.name = name;
 	}
 
-	public Action(String name) {
-		this.name = name;
-	}
 }

@@ -134,7 +134,7 @@ public class AdminController {
 		}
 
 		account.setUsername(username);
-		account.setReal_name(realname);
+		account.setRealname(realname);
 		account.setSkype(skype);
 		account.setQq(qq);
 		account.setYahoo(yahoo);
@@ -256,7 +256,7 @@ public class AdminController {
 		for (int i = 0; i < accounts.size(); i++) {
 			AccountSearchItem item = accounts.get(i);
 			logger.info(item.toString());
-			accountList.add(item.getReal_name() + "(" + item.getUsername() + ")");
+			accountList.add(item.getRealname() + "(" + item.getUsername() + ")");
 		}
 		model.addAttribute("accounts", StringUtils.join(accountList, ","));
 		return "admin/permission_group/edit";

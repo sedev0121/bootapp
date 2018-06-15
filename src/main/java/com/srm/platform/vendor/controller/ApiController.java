@@ -83,7 +83,7 @@ public class ApiController {
 	// 用户名单
 	@RequestMapping(value = "/account/{search}", produces = "application/json")
 	public Page<AccountSearchItem> account_search(@PathVariable("search") String search) {
-		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "real_name");
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "realname");
 
 		return accountRepository.findForAutoComplete(search, request);
 	}

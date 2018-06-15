@@ -13,5 +13,7 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
 
 	Unit findOneById(Long id);
 
+	Unit findOneByName(String name);
+
 	List<Unit> findByParentId(Long parentId);
 }

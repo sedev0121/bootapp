@@ -134,8 +134,8 @@ jQuery(document).ready(function() {
           success: function( data ) {
         	var result =$.map(data.content, function (item) {
                 return {
-                    label: item.real_name + '(' + item.username + ')',
-                    value: item.real_name + '(' + item.username + ')'
+                    label: item.realname + '(' + item.username + ')',
+                    value: item.realname + '(' + item.username + ')'
                 };
             });
         	response(result);

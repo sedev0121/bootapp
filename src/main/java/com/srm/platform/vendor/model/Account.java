@@ -21,9 +21,10 @@ public class Account {
 
 	private String password;
 	private String role = "ROLE_BUYER";
-	private String real_name;
+	private String realname;
 	private String address;
-	private Instant entry_time;
+	@Column(name = "entry_time")
+	private Instant entryTime;
 	private Long unit_id;
 	private String email;
 	private String tel;
@@ -33,23 +34,8 @@ public class Account {
 	private String gtalk;
 	private String wangwang;
 	private String mobile;
-	private Instant modify_time;
-
-	public Instant getModify_time() {
-		return modify_time;
-	}
-
-	public void setModify_time(Instant modify_time) {
-		this.modify_time = modify_time;
-	}
-
-	public String getReal_name() {
-		return real_name;
-	}
-
-	public void setReal_name(String real_name) {
-		this.real_name = real_name;
-	}
+	@Column(name = "modify_time")
+	private Instant modifyTime;
 
 	public String getEmail() {
 		return email;
@@ -73,14 +59,6 @@ public class Account {
 
 	public void setQq(String qq) {
 		this.qq = qq;
-	}
-
-	public Instant getEntry_time() {
-		return entry_time;
-	}
-
-	public void setEntry_time(Instant entry_time) {
-		this.entry_time = entry_time;
 	}
 
 	public String getSkype() {
@@ -139,7 +117,7 @@ public class Account {
 		this.username = username;
 		this.password = password;
 		this.role = role;
-		this.modify_time = Instant.now();
+		this.modifyTime = Instant.now();
 	}
 
 	public Long getId() {
@@ -152,6 +130,30 @@ public class Account {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getRealname() {
+		return realname;
+	}
+
+	public void setRealname(String realname) {
+		this.realname = realname;
+	}
+
+	public Instant getEntryTime() {
+		return entryTime;
+	}
+
+	public void setEntryTime(Instant entryTime) {
+		this.entryTime = entryTime;
+	}
+
+	public Instant getModifyTime() {
+		return modifyTime;
+	}
+
+	public void setModifyTime(Instant modifyTime) {
+		this.modifyTime = modifyTime;
 	}
 
 	public String getRole() {

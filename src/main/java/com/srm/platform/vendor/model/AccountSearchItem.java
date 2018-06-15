@@ -6,6 +6,6 @@ public interface AccountSearchItem {
 
 	String getUsername();
 
-	String getReal_name();
+	String getRealname();
 
 }
