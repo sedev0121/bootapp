@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}">
-  
-
+<head>  
+</head>
 <body>
   <div class="container" layout:fragment="content">
     <ul class="breadcrumb">
@@ -17,191 +17,141 @@
       <div class="panel panel-default">
         <div class="panel-body"> 
           <div class="row">
-            <fieldset class="col-lg-4 col-md-4 ">
-              <legend>供应商档案管理 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
+            <fieldset class="col-lg-4 col-md-4 margin-top-10">
+              <legend>供应商档案管理 - 
+                <input type="checkbox" class="select-all" sub-class="class1">
+                <label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary select-unit" data="1"> 数据范围</a>
+              </legend>
               <div class="col-lg-4 col-md-4">
-                <input type="checkbox">
-                <label>查询 </label>
-              </div>
-            </fieldset>
-            <fieldset class="col-lg-4 col-md-4 ">
-              <legend>询价管理 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
-              <div class="col-lg-4 col-md-4 form-group">
-                <input type="checkbox">
-                <label>查询 </label>
+                
+                <label><input type="checkbox" class="class1" checked>查询 </label>
               </div>
               
-              <div class="col-lg-4 col-md-4 form-group">
-                <input type="checkbox">
-                <label>新建 </label>
-              </div>
-              <div class="col-lg-4 col-md-4 form-group">
-                <input type="checkbox">
-                <label>删除 </label>
-              </div>
-              <div class="col-lg-4 col-md-4 form-group">
-                <input type="checkbox">
-                <label>审核 </label>
-              </div>
-              <div class="col-lg-4 col-md-4 form-group">
-                <input type="checkbox">
-                <label>退回 </label>
-              </div>
-              <div class="col-lg-4 col-md-4 form-group">
-                <input type="checkbox">
-                <label>归档 </label>
-              </div>     
-              <div class="col-lg-6 col-md-6 form-group">
-                <input type="checkbox">
-                <label>提交(发布) </label>
-              </div>
+              
             </fieldset>
-            <fieldset class="col-lg-4 col-md-4 ">
-              <legend>报价管理 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
-              <div class="col-lg-4 col-md-4 form-group">
-                <input type="checkbox">
-                <label>查询 </label>
-              </div>
-              <div class="col-lg-4 col-md-4 form-group">
-                <input type="checkbox">
-                <label>确认 </label>
-              </div>
-              <div class="col-lg-4 col-md-4 form-group">
-                <input type="checkbox">
-                <label>拒绝 </label>
-              </div>
-              <div class="col-lg-4 col-md-4 form-group">
-                <input type="checkbox">
-                <label>审核 </label>
-              </div>     
-              <div class="col-lg-4 col-md-4 form-group">
-                <input type="checkbox">
-                <label>退回 </label>
-              </div>  
-            </fieldset>
-            </div>
-          <div class="row">
-          <fieldset class="col-lg-4 col-md-4 ">
-            <legend>采购订单发布 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>查询 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>发布 </label>
-            </div>            
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>退回 </label>
-            </div>            
-            <div class="col-lg-6 col-md-6 form-group">
-              <input type="checkbox">
-              <label>取U8数据 </label>
-            </div>
-          </fieldset>    
-          <fieldset class="col-lg-4 col-md-4 ">
-            <legend>对账单管理 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>查询 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>新建 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>发布 </label>
-            </div>            
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>退回 </label>
-            </div> 
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>审核 </label>
-            </div>            
-            <div class="col-lg-6 col-md-6 form-group">
-              <input type="checkbox">
-              <label>发票确认 </label>
-            </div> 
-          </fieldset>
-          <fieldset class="col-lg-4 col-md-4 ">
-            <legend>出货看板 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>查询 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>导出 </label>
-            </div>
-          </fieldset>
-          </div>
-          <div class="row">
-          <fieldset class="col-lg-4 col-md-4 ">
-            <legend>交期确认 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>查询 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>接受 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>协调 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>导出 </label>
-            </div>
-          </fieldset>
-          <fieldset class="col-lg-4 col-md-4 ">
-            <legend>订单发货 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>查询 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>导出 </label>
-            </div>
-            <div class="col-lg-6 col-md-6 form-group">
-              <input type="checkbox">
-              <label>导入送货单 </label>
-            </div>            
-          </fieldset>                          
-          <fieldset class="col-lg-4 col-md-4 ">
-            <legend>导入送货单 - <input type="checkbox"><label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary"> 数据范围</a></legend>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>查询 </label>
-            </div>
-            <div class="col-lg-6 col-md-6 form-group">
-              <input type="checkbox">
-              <label>导入数据 </label>
-            </div>
-            <div class="col-lg-4 col-md-4 form-group">
-              <input type="checkbox">
-              <label>校验 </label>
-            </div>            
-          </fieldset>  
           </div>
         </div>
         <div class="panel-footer">
           <div class="text-right margin-right-20">
               <a class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
-              <a class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
               <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
           </div>
         </div>
       </div>
     </form>
+    <div class="modal fade" id="tree_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                                                    选择数据范围
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <i class="fa fa-sitemap"></i> 组织结构
+                    <div id="tree_3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="save">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
   </div>
+
 </body>
 </html>
+
+<script th:inline="javascript">
+var url = /*[[@{/admin/unit/}]]*/'';
+$(function () {
+	$("#myBtn").click(function(){
+        $("#myModal").modal("toggle");
+    });
+	
+
+	$(".select-all").change(function(){  //"select all" change 
+		var sub_class = $(this).attr('sub-class');
+		sub_class = "." + sub_class;
+	    $(sub_class).prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
+	    $(sub_class).uniform();
+	});
+	
+	$(".select-unit").click(function(){  //"select all" change
+		$('#tree_3').jstree(true).deselect_all();
+		$('#tree_3').jstree(true).select_node([3,6]);
+		$('#tree_dialog').modal('show');
+    });
+	
+	$("#tree_3").jstree({
+		'plugins': ["checkbox", "types"],
+        'core': {
+            "themes" : {
+                "responsive": false
+            },    
+            'data': [{
+            	id:1,
+                
+                    "text": "Same but with checkboxes",
+                    "children": [{
+                    	id:2,
+                        "text": "initially selected",
+                        "state": {
+                            "selected": true
+                        }
+                    }, {
+                    	id:3,
+                        "text": "custom icon",
+                        "icon": "fa fa-warning m--font-danger"
+                    }, {
+                    	id:4,
+                        "text": "initially open",
+                        "icon" : "fa fa-folder m--font-default",
+                        "state": {
+                            "opened": true
+                        },
+                        "children": [{id:5, text:"Another node"}]
+                    }, {
+                    	id:6,
+                        "text": "custom icon",
+                        "icon": "fa fa-warning m--font-waring"
+                    }, {
+                    	id:7,
+                        "text": "disabled node",
+                        "icon": "fa fa-check m--font-success",
+                        "state": {
+                            "disabled": true
+                        }
+                    }]
+                },
+                {id:8, text:"And wholerow selection"}
+            ]
+        },
+        "checkbox" : {
+            "three_state" : false,
+      	},
+        "types" : {
+            "default" : {
+                "icon" : "fa fa-folder m--font-warning"
+            },
+            "file" : {
+                "icon" : "fa fa-file  m--font-warning"
+            }
+        },
+      })
+
+      $('#save').click(function(){
+    	  var checked_ids = []; 
+    	  $.each($("#tree_3").jstree("get_checked",true),function(){
+    		  checked_ids.push(this.id);
+  		  });
+          console.log(checked_ids);
+    	  $('#tree_dialog').modal('hide');//modal_1 is the id 1
+  	   });
+});
+</script>
 
 
