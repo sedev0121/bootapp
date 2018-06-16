@@ -207,7 +207,7 @@ public class AdminController {
 	@GetMapping("/unit/{id}/move/{parent_id}")
 	public @ResponseBody Unit unit_move_ajax(@PathVariable("id") Long id, @PathVariable("parent_id") Long parent_id) {
 		Unit unit = unitRepository.findOneById(id);
-		unit.setParent_id(parent_id);
+		unit.setParentId(parent_id);
 		unit = unitRepository.save(unit);
 		return unit;
 	}

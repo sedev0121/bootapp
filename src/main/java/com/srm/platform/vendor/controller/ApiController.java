@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -7,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.srm.platform.vendor.model.AccountSearchItem;
+import com.srm.platform.vendor.model.Unit;
+import com.srm.platform.vendor.model.UnitNode;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.u8api.ApiClient;
 
 @RestController
@@ -27,6 +32,9 @@ public class ApiController {
 
 	@Autowired
 	private AccountRepository accountRepository;
+
+	@Autowired
+	private UnitRepository unitRepository;
 
 	// 供应商管理
 	@RequestMapping(value = "/vendor/batch_get", produces = "application/json")
@@ -86,5 +94,25 @@ public class ApiController {
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "realname");
 
 		return accountRepository.findForAutoComplete(search, request);
+	}
+
+	// 用户名单
+	@RequestMapping(value = "/unit/tree", produces = "application/json")
+	public UnitNode unit_tree() {
+		List<Unit> units = unitRepository.findAll(Sort.by(Direction.ASC, "id"));
+
+		UnitNode root = null, tempNode;
+		Unit temp;
+		for (int i = 0; i < units.size(); i++) {
+			temp = units.get(i);
+			tempNode = new UnitNode(temp.getId(), temp.getName(), temp.getParentId());
+			if (i == 0) {
+				root = tempNode;
+			} else {
+				root.addNode(tempNode);
+			}
+		}
+
+		return root;
 	}
 }

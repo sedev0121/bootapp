@@ -19,12 +19,12 @@ public class Unit {
 	@Column(name = "parent_id")
 	private Long parentId;
 
-	public Long getParent_id() {
+	public Long getParentId() {
 		return parentId;
 	}
 
-	public void setParent_id(Long parent_id) {
-		this.parentId = parent_id;
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
 	}
 
 	public Long getId() {
@@ -47,8 +47,8 @@ public class Unit {
 
 	}
 
-	public Unit(String name, Long parent_id) {
+	public Unit(String name, Long parentId) {
 		this.name = name;
-		this.parentId = parent_id;
+		this.parentId = parentId;
 	}
 }

@@ -20,6 +20,7 @@
             <fieldset class="col-lg-4 col-md-4 margin-top-10">
               <legend>供应商档案管理 - 
                 <input type="checkbox" class="select-all" sub-class="class1">
+                <input type="hidden" id="class1" value="29,30,32">
                 <label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary select-unit" data="1"> 数据范围</a>
               </legend>
               <div class="col-lg-4 col-md-4">
@@ -67,12 +68,8 @@
 
 <script th:inline="javascript">
 var url = /*[[@{/admin/unit/}]]*/'';
+var tree_url = /*[[@{/api/unit/tree}]]*/'';
 $(function () {
-	$("#myBtn").click(function(){
-        $("#myModal").modal("toggle");
-    });
-	
-
 	$(".select-all").change(function(){  //"select all" change 
 		var sub_class = $(this).attr('sub-class');
 		sub_class = "." + sub_class;
@@ -82,53 +79,19 @@ $(function () {
 	
 	$(".select-unit").click(function(){  //"select all" change
 		$('#tree_3').jstree(true).deselect_all();
-		$('#tree_3').jstree(true).select_node([3,6]);
+		//$('#tree_3').jstree(true).select_node([3,6]);
+		$('#tree_3').jstree(true).select_node($('#class1').val().split(','));
 		$('#tree_dialog').modal('show');
     });
 	
 	$("#tree_3").jstree({
 		'plugins': ["checkbox", "types"],
         'core': {
-            "themes" : {
-                "responsive": false
-            },    
-            'data': [{
-            	id:1,
-                
-                    "text": "Same but with checkboxes",
-                    "children": [{
-                    	id:2,
-                        "text": "initially selected",
-                        "state": {
-                            "selected": true
-                        }
-                    }, {
-                    	id:3,
-                        "text": "custom icon",
-                        "icon": "fa fa-warning m--font-danger"
-                    }, {
-                    	id:4,
-                        "text": "initially open",
-                        "icon" : "fa fa-folder m--font-default",
-                        "state": {
-                            "opened": true
-                        },
-                        "children": [{id:5, text:"Another node"}]
-                    }, {
-                    	id:6,
-                        "text": "custom icon",
-                        "icon": "fa fa-warning m--font-waring"
-                    }, {
-                    	id:7,
-                        "text": "disabled node",
-                        "icon": "fa fa-check m--font-success",
-                        "state": {
-                            "disabled": true
-                        }
-                    }]
-                },
-                {id:8, text:"And wholerow selection"}
-            ]
+            'data' : {
+              'url' : function (node) {
+                return tree_url;
+              }
+            }
         },
         "checkbox" : {
             "three_state" : false,
@@ -141,7 +104,9 @@ $(function () {
                 "icon" : "fa fa-file  m--font-warning"
             }
         },
-      })
+      }).on('loaded.jstree', function() {
+    	  $(this).jstree("open_all");
+      });
 
       $('#save').click(function(){
     	  var checked_ids = []; 
@@ -149,6 +114,7 @@ $(function () {
     		  checked_ids.push(this.id);
   		  });
           console.log(checked_ids);
+          $("#class1").val(checked_ids.join(','));
     	  $('#tree_dialog').modal('hide');//modal_1 is the id 1
   	   });
 });
