@@ -20,15 +20,6 @@ public class FunctionAction {
 	@Column(name = "action_id")
 	private Long actionId;
 
-	public FunctionAction() {
-
-	}
-
-	public FunctionAction(Long functionId, Long actionId) {
-		this.functionId = functionId;
-		this.actionId = actionId;
-	}
-
 	public Long getFunctionId() {
 		return functionId;
 	}
@@ -43,6 +34,10 @@ public class FunctionAction {
 
 	public void setActionId(Long actionId) {
 		this.actionId = actionId;
+	}
+
+	public FunctionAction() {
+
 	}
 
 	public Long getId() {

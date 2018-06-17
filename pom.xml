@@ -128,8 +128,37 @@
     <org.thymeleaf.extras.springsecurity4-version>3.0.2.RELEASE</org.thymeleaf.extras.springsecurity4-version>
     <nz.net.ultraq.thymeleaflayout-version>2.3.0</nz.net.ultraq.thymeleaflayout-version>
     <thymeleaf-extras-java8time-version>3.0.0.RELEASE</thymeleaf-extras-java8time-version>
+    <activeProfile>production</activeProfile>
   </properties>
 
+  <profiles>
+    <!--Your default profile... selected if none specified -->
+    <profile>
+      <id>production</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <activeProfile>production</activeProfile>
+      </properties>
+    </profile>
+
+    <!--Profile 2 -->
+    <profile>
+      <id>development</id>
+      <properties>
+        <activeProfile>development</activeProfile>
+      </properties>
+    </profile>
+
+    <!--Profile 3 -->
+    <profile>
+      <id>otherprofile</id>
+      <properties>
+        <activeProfile>otherprofile</activeProfile>
+      </properties>
+    </profile>
+  </profiles>
 
 
   <build>

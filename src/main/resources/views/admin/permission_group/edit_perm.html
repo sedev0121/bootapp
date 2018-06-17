@@ -17,17 +17,17 @@
       <div class="panel panel-default">
         <div class="panel-body"> 
           <div class="row">
-            <fieldset class="col-lg-4 col-md-4 margin-top-10">
-              <legend>供应商档案管理 - 
+            <fieldset class="col-lg-4 col-md-4 margin-top-10" th:each="item : ${function_list}">
+              <legend><label th:text="${item.name}">供应商档案管理 </label>- 
                 <input type="checkbox" class="select-all" sub-class="class1">
                 <input type="hidden" id="class1" value="29,30,32">
                 <label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary select-unit" data="1"> 数据范围</a>
               </legend>
-              <div class="col-lg-4 col-md-4">
-                
-                <label><input type="checkbox" class="class1" checked>查询 </label>
+   
+              <div class="col-lg-4 col-md-4" th:each="action : ${item.Actions}">
+                <input type="checkbox" class="class1" th:attrappend="checked=${action.available}?true" th:value="${action.id}"><label th:text="${action.name}"> </label>
               </div>
-              
+   
               
             </fieldset>
           </div>

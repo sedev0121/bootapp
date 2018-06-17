@@ -24,10 +24,15 @@ import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.AccountSearchItem;
+import com.srm.platform.vendor.model.Action;
+import com.srm.platform.vendor.model.Function;
+import com.srm.platform.vendor.model.FunctionAction;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.PermissionGroupUser;
 import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.FunctionRepository;
+import com.srm.platform.vendor.repository.PermissionGroupFunctionActionRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
@@ -43,6 +48,13 @@ public class AdminController {
 	private AccountRepository accountRepository;
 	@Autowired
 	private PermissionGroupRepository permissionGroupRepository;
+
+	@Autowired
+	private FunctionRepository functionRepository;
+
+	@Autowired
+	private PermissionGroupFunctionActionRepository permissionGroupFunctionActionRepository;
+
 	@Autowired
 	private UnitRepository unitRepository;
 
@@ -266,7 +278,26 @@ public class AdminController {
 	@GetMapping("/permission_group/{id}/edit_perm")
 	public String permission_group_edit_perm(@PathVariable("id") Long id, Model model) {
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
+		List<Function> functionList = functionRepository.findAll();
+
+		for (int i = 0; i < functionList.size(); i++) {
+			Function tempF = functionList.get(i);
+			List<Action> actionList = tempF.getActions();
+			for (int j = 0; j < actionList.size(); j++) {
+				Action tempA = actionList.get(j);
+				tempA.setAvailable(false);
+				for (int k = 0; k < temp.getFunctionActions().size(); k++) {
+					FunctionAction tempG = temp.getFunctionActions().get(k);
+					if (tempG.getFunctionId() == tempF.getId() && tempG.getActionId() == tempA.getId()) {
+						tempA.setAvailable(true);
+						break;
+					}
+				}
+			}
+		}
+
 		model.addAttribute("permission_group", temp);
+		model.addAttribute("function_list", functionList);
 		return "admin/permission_group/edit_perm";
 	}
 
