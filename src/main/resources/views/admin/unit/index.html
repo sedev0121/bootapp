@@ -32,7 +32,14 @@ var url = /*[[@{/admin/unit/}]]*/'';
     jQuery(document).ready(function() {
         jQuery("#tree_3").jstree({
           core:{
-            check_callback: true,
+            check_callback: function (operation, node, node_parent, node_position, more) {
+            	console.log(operation);
+            	if (operation == 'delete_node') {
+            		return confirm("确定要删除吗?"); 
+            	}else{
+            		return true;
+            	}            	
+            },
             data: function (node, cb) {
             	$.ajax({
                     url: url + (node.id === "#" ? 0 : node.id) + "/children"
@@ -82,15 +89,13 @@ var url = /*[[@{/admin/unit/}]]*/'';
               data.instance.refresh();
             });
         }).on('delete_node.jstree', function (e, data) {
-            $.get(url + data.node.id + "/delete").done(function (d) {
-
+        	$.get(url + data.node.id + "/delete").done(function (d) {
+        	    
             })
             .fail(function () {
               data.instance.refresh();
-            });
-              
-            
-        })
+            });  
+        });
         
         $(document).bind("dnd_start.vakata", function(e, data) {
             

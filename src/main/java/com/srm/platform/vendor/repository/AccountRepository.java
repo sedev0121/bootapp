@@ -28,9 +28,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	@Query("select d from #{#entityName} d where d.username= :username")
 	Page<Account> findByUsername2(@Param("username") final String username, Pageable pageable);
 
-	@Query(value = "SELECT * FROM account t WHERE "
-			+ "t.username LIKE CONCAT('%',:search, '%') or t.realname LIKE CONCAT('%',:search, '%') or t.email LIKE CONCAT('%',:search, '%')", nativeQuery = true)
-	Page<Account> findBySearchTerm(@Param("search") String search, Pageable pageable);
+	@Query(value = "SELECT t.*, u.name unitname FROM account t left join unit u on t.unit_id=u.id WHERE "
+			+ "u.name LIKE %?1% or t.username LIKE %?1% or t.realname LIKE %?1% or t.duty LIKE %?1% or t.email LIKE %?1%", nativeQuery = true)
+	Page<Account> findBySearchTerm(String search, Pageable pageable);
 
 	@Query(value = "SELECT id, username, realname FROM account t WHERE "
 			+ "t.username LIKE %?1% or t.realname LIKE %?1%", nativeQuery = true)

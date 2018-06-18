@@ -14,7 +14,7 @@ import javax.persistence.UniqueConstraint;
 public class PermissionGroupUser {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name = "group_id")

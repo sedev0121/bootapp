@@ -5,7 +5,10 @@ import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -13,7 +16,7 @@ import javax.persistence.Table;
 public class Account {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(unique = true)
@@ -22,10 +25,16 @@ public class Account {
 	private String password;
 	private String role = "ROLE_BUYER";
 	private String realname;
+	private String duty;
+
 	private String address;
 	@Column(name = "entry_time")
 	private Instant entryTime;
-	private Long unit_id;
+
+	@JoinColumn(name = "unit_id")
+	@ManyToOne()
+	private Unit unit;
+
 	private String email;
 	private String tel;
 	private String qq;
@@ -36,6 +45,22 @@ public class Account {
 	private String mobile;
 	@Column(name = "modify_time")
 	private Instant modifyTime;
+
+	public String getDuty() {
+		return duty;
+	}
+
+	public void setDuty(String duty) {
+		this.duty = duty;
+	}
+
+	public Unit getUnit() {
+		return unit;
+	}
+
+	public void setUnit(Unit unit) {
+		this.unit = unit;
+	}
 
 	public String getEmail() {
 		return email;
@@ -176,12 +201,17 @@ public class Account {
 		this.id = id;
 	}
 
-	public Long getUnit_id() {
-		return unit_id;
-	}
-
-	public void setUnit_id(Long unit_id) {
-		this.unit_id = unit_id;
+	public String getRolename() {
+		switch (this.role) {
+		case "ROLE_BUYER":
+			return "采购员";
+		case "ROLE_VENDOR":
+			return "供应商";
+		case "ROLE_ADMIN":
+			return "管理员";
+		default:
+			return "";
+		}
 	}
 
 }

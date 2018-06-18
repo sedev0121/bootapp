@@ -126,9 +126,10 @@ public class AdminController {
 
 	// 用户管理->删除
 	@GetMapping("/account/{id}/delete")
-	public String account_delete(@PathVariable("id") Long id, Model model) {
-		model.addAttribute("account", accountRepository.findOneById(id));
-		return "admin/account/edit";
+	public @ResponseBody Boolean account_delete(@PathVariable("id") Long id, Model model) {
+		Account account = accountRepository.findOneById(id);
+		accountRepository.delete(account);
+		return true;
 	}
 
 	// 用户修改
@@ -139,6 +140,7 @@ public class AdminController {
 		String realname = requestParams.get("realname");
 		String skype = requestParams.get("skype");
 		String qq = requestParams.get("qq");
+		String unit = requestParams.get("unit");
 		String yahoo = requestParams.get("yahoo");
 		String wangwang = requestParams.get("wangwang");
 		String mobile = requestParams.get("mobile");
@@ -148,6 +150,7 @@ public class AdminController {
 		String email = requestParams.get("email");
 		String password = requestParams.get("password");
 		String role = requestParams.get("role");
+		String duty = requestParams.get("duty");
 
 		Account account;
 		if (id != null && !id.isEmpty()) {
@@ -168,6 +171,8 @@ public class AdminController {
 		account.setGtalk(gtalk);
 		account.setEmail(email);
 		account.setRole(role);
+		account.setDuty(duty);
+		account.setUnit(unitRepository.findOneById(Long.parseLong(unit)));
 
 		if (password != null) {
 			account.setPassword(password);
@@ -213,7 +218,12 @@ public class AdminController {
 	@GetMapping("/unit/{id}/delete")
 	public @ResponseBody Boolean unit_delete_ajax(@PathVariable("id") Long id) {
 		Unit unit = unitRepository.findOneById(id);
+
+		String childrenUnitIds = unitRepository.findChildrenByGroupId(id);
+
 		unitRepository.delete(unit);
+		unitRepository.deleteByChildIds(childrenUnitIds.split(","));
+
 		return true;
 	}
 

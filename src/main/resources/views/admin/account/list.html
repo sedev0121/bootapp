@@ -11,7 +11,7 @@
     </ul>
     <div class="search-content">
         <div class="search-cell width-18">
-          <label for="supplier_code">用户名/真实姓名/邮箱：</label>
+          <label for="supplier_code">用户名/真实姓名/所属部门/职位/邮箱：</label>
           <input type="text" id="search" class="form-control">
         </div>
         <div style="vertical-align: bottom" class="search-cell width-18 text-right">
@@ -66,21 +66,35 @@ $(document).ready(function() {
       },
       order: [ [0, 'asc'] ],
       columns : [ {
-        data : 'realname',
-        title : '真实姓名',
+        data : 'username',
+        title : '用户名',
         render: function (data, display, record) {
-      	  var edit_url = /*[[@{/admin/account/}]]*/'';
-      	  edit_url +=  record.id + '/edit';
-      	  return '<a href="' + edit_url + '">' + data  + '</a>';
+          var edit_url = /*[[@{/admin/account/}]]*/'';
+          edit_url +=  record.id + '/edit';
+          return '<a href="' + edit_url + '">' + data  + '</a>';
         },
         defaultContent : ''
       }, {
-        data : 'username',
-        title : '用户名',
+        data : 'realname',
+        title : '真实姓名',
         defaultContent : ''
       }, {
+          data : 'unit_id',
+          render: function (data, display, record) {
+            return record.unit.name;
+          },
+          title : '所属部门',
+          defaultContent : ''        
+      }, {
+          data : 'duty',
+          title : '职位',
+          defaultContent : ''        
+      }, {    	  
         data : 'role',
         title : '权限',
+        render: function (data, display, record) {
+          return record.rolename;
+        },
         defaultContent : ''
       }, {
         data : 'email',
@@ -91,13 +105,13 @@ $(document).ready(function() {
         title : '电话',
         defaultContent : ''
       }, {
-        data : 'qq',
-        title : 'QQ',
-        defaultContent : ''
-      }, {
           data : 'mobile',
           title : '手机',
           defaultContent : ''     
+      }, {
+          data : 'qq',
+          title : 'QQ',
+          defaultContent : ''
       
       } ],
     });

@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}">
+<head>
+<style>
+    .select-unit {background-color:#fff !important}
+</style>
+</head>  
 <body>
   <div class="container" layout:fragment="content">
     <ul class="breadcrumb">
@@ -24,15 +29,16 @@
               </div>
               <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">所属部门: </label>
-                <input type="text" name="unit" class="form-control">
+                <input type="hidden" id="unit" name="unit" th:value="${account.unit==null?'':account.unit.id}">
+                <input type="text" id="unit_name" name="unit_name" class="form-control select-unit" th:value="${account.unit==null?'':account.unit.name}" readonly>
               </div>
               <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">职位: </label>
-                <input type="text" class="form-control">
+                <input type="text" name="duty" th:value="${account.duty}" class="form-control">
               </div>
-              <div class="col-lg-3 col-md-3 form-group">
+              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">入职日期: </label>
-                <input type="text" class="form-control datepicker" th:value="${account.entryTime}">
+                <input type="text" class="form-control datepicker" th:value="${#dates.format(account.entryTime, 'yyyy-MM-dd')}">
               </div>
             </fieldset>
             <fieldset>
@@ -105,25 +111,56 @@
         </div>
       </div>
     </form>
-</div>
+    <div class="modal fade" id="tree_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                                                    选择所属部门
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <i class="fa fa-sitemap"></i> 组织结构
+                    <div id="tree_3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="save_unit">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
 </body>
 </html>
 
 
 <script th:inline="javascript">
 var edit_url = /*[[@{/admin/account/}]]*/'';
+var tree_url = /*[[@{/api/unit/tree}]]*/'';
 
 jQuery(document).ready(function() {   
     var is_add = $("#id").val().length==0;
     $("#form" ).validate({
         // define validation rules
         rules: {
+        	realname: {
+                required: true
+            }, 
+            duty: {
+                required: true
+            },
             username: {
                 required: true
             },    
             password: {
                 required: true
             },    
+            unit_name: {
+            	required: true
+            },
             role: {
                 required: true
             },    
@@ -185,7 +222,53 @@ jQuery(document).ready(function() {
           }
         })
     });
-     
+
+    $(".select-unit").click(function(){  //"select all" change
+        $('#tree_3').jstree(true).deselect_all();
+        var unit_id = $('#unit').val();
+        
+        $('#tree_3').jstree(true).select_node(unit_id);
+        $('#tree_dialog').modal('show');
+    });
+    
+    $("#tree_3").jstree({
+      'plugins': ["types"],
+      'core': {
+          'data' : {
+            'url' : function (node) {
+              return tree_url;
+            }
+          }
+      },
+      "types" : {
+          "default" : {
+              "icon" : "fa fa-folder m--font-warning"
+          },
+          "file" : {
+              "icon" : "fa fa-file  m--font-warning"
+          }
+      },
+    }).on('loaded.jstree', function() {
+        $(this).jstree("open_all");
+    });
+
+    $('#save_unit').click(function(){
+    	var selected_node = $("#tree_3").jstree("get_selected",true);
+    	
+    	if (selected_node.length == 0) {
+    		swal({
+                "title": "请选择一个部门", 
+                "type": "error"
+            });
+    		
+    		n;
+    	}
+        var selected_unit_id = selected_node[0].id; 
+        var selected_unit_name = selected_node[0].text;
+        $('#unit').val(selected_unit_id);
+        $('#unit_name').val(selected_unit_name);
+        $('#tree_dialog').modal('hide');//modal_1 is the id 1
+     });
 
 });
 

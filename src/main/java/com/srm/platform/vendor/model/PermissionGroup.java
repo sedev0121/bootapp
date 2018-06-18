@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "permission_group")
 public class PermissionGroup {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private String name;

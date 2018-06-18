@@ -62,55 +62,6 @@ public class AccountService implements UserDetailsService {
 	@PostConstruct
 	protected void initialize() {
 
-		Account temp = accountRepository.findOneByUsername("buyer");
-		if (temp == null) {
-			temp = new Account("buyer", "111", "ROLE_BUYER");
-			temp.setRealname("采购员");
-			temp.setEmail("buyer@gmail.com");
-			temp.setSkype("buyer");
-			temp.setQq("buyer@qq.com");
-			temp.setAddress("北京市朝阳区建国门外大街12号14-3");
-			temp.setTel("010-8828-1111");
-			temp.setMobile("15940800833");
-			temp.setWangwang("buyer@wangwang.com");
-			temp.setGtalk("buyer@gtalk.com");
-			temp.setYahoo("buyer@yahoo.com");
-			temp.setEntryTime(Instant.now());
-			save(temp);
-		}
-		temp = accountRepository.findOneByUsername("vendor");
-		if (temp == null) {
-			temp = new Account("vendor", "111", "ROLE_VENDOR");
-			temp.setRealname("供应商");
-			temp.setEmail("vendor@gmail.com");
-			temp.setSkype("vendor");
-			temp.setQq("vendor@qq.com");
-			temp.setAddress("北京市朝阳区建国门外大街12号14-1");
-			temp.setTel("010-8828-1112");
-			temp.setMobile("15940800834");
-			temp.setWangwang("vendor@wangwang.com");
-			temp.setGtalk("vendor@gtalk.com");
-			temp.setYahoo("vendor@yahoo.com");
-			temp.setEntryTime(Instant.now());
-			save(temp);
-		}
-		temp = accountRepository.findOneByUsername("admin");
-		if (temp == null) {
-			temp = new Account("admin", "111", "ROLE_ADMIN");
-			temp.setRealname("管理员");
-			temp.setEmail("admin@gmail.com");
-			temp.setSkype("admin");
-			temp.setQq("admin@qq.com");
-			temp.setAddress("北京市朝阳区建国门外大街12号14-4");
-			temp.setTel("010-8828-1121");
-			temp.setMobile("15940801833");
-			temp.setWangwang("admin@wangwang.com");
-			temp.setGtalk("admin@gtalk.com");
-			temp.setYahoo("admin@yahoo.com");
-			temp.setEntryTime(Instant.now());
-			save(temp);
-		}
-
 		Unit tempUnit = unitRepository.findOneByName("美尔凯特");
 		if (tempUnit == null) {
 			tempUnit = new Unit("美尔凯特", 0L);
@@ -129,25 +80,80 @@ public class AccountService implements UserDetailsService {
 		tempUnit = unitRepository.findOneByName("采购一组");
 		if (tempUnit == null) {
 			tempUnit = new Unit("采购一组", buyerId);
-			unitRepository.save(tempUnit);
+			tempUnit = unitRepository.save(tempUnit);
 		}
 
 		tempUnit = unitRepository.findOneByName("采购二组");
 		if (tempUnit == null) {
 			tempUnit = new Unit("采购二组", buyerId);
-			unitRepository.save(tempUnit);
+			tempUnit = unitRepository.save(tempUnit);
 		}
 
 		tempUnit = unitRepository.findOneByName("提供商");
 		if (tempUnit == null) {
 			tempUnit = new Unit("提供商", root_id);
-			unitRepository.save(tempUnit);
+			tempUnit = unitRepository.save(tempUnit);
 		}
 
 		tempUnit = unitRepository.findOneByName("销售部");
 		if (tempUnit == null) {
 			tempUnit = new Unit("销售部", root_id);
-			unitRepository.save(tempUnit);
+			tempUnit = unitRepository.save(tempUnit);
+		}
+
+		Account temp = accountRepository.findOneByUsername("buyer");
+		if (temp == null) {
+			temp = new Account("buyer", "111", "ROLE_BUYER");
+			temp.setRealname("采购员");
+			temp.setDuty("采购经理");
+			temp.setEmail("buyer@gmail.com");
+			temp.setSkype("buyer");
+			temp.setQq("buyer@qq.com");
+			temp.setAddress("北京市朝阳区建国门外大街12号14-3");
+			temp.setTel("010-8828-1111");
+			temp.setMobile("15940800833");
+			temp.setWangwang("buyer@wangwang.com");
+			temp.setGtalk("buyer@gtalk.com");
+			temp.setYahoo("buyer@yahoo.com");
+			temp.setUnit(tempUnit);
+			temp.setEntryTime(Instant.now());
+			save(temp);
+		}
+		temp = accountRepository.findOneByUsername("vendor");
+		if (temp == null) {
+			temp = new Account("vendor", "111", "ROLE_VENDOR");
+			temp.setRealname("供应商");
+			temp.setDuty("销售经理");
+			temp.setEmail("vendor@gmail.com");
+			temp.setSkype("vendor");
+			temp.setQq("vendor@qq.com");
+			temp.setAddress("北京市朝阳区建国门外大街12号14-1");
+			temp.setTel("010-8828-1112");
+			temp.setMobile("15940800834");
+			temp.setWangwang("vendor@wangwang.com");
+			temp.setGtalk("vendor@gtalk.com");
+			temp.setYahoo("vendor@yahoo.com");
+			temp.setUnit(tempUnit);
+			temp.setEntryTime(Instant.now());
+			save(temp);
+		}
+		temp = accountRepository.findOneByUsername("admin");
+		if (temp == null) {
+			temp = new Account("admin", "111", "ROLE_ADMIN");
+			temp.setRealname("管理员");
+			temp.setDuty("副总经理");
+			temp.setEmail("admin@gmail.com");
+			temp.setSkype("admin");
+			temp.setQq("admin@qq.com");
+			temp.setAddress("北京市朝阳区建国门外大街12号14-4");
+			temp.setTel("010-8828-1121");
+			temp.setMobile("15940801833");
+			temp.setWangwang("admin@wangwang.com");
+			temp.setGtalk("admin@gtalk.com");
+			temp.setYahoo("admin@yahoo.com");
+			temp.setUnit(tempUnit);
+			temp.setEntryTime(Instant.now());
+			save(temp);
 		}
 
 		PermissionGroup tempGroup = permissionGroupRepository.findOneByName("权限组1");
