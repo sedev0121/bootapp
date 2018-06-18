@@ -19,10 +19,10 @@
         <div class="panel-body"> 
           <div class="row">
             <fieldset class="col-lg-4 col-md-4 margin-top-10" th:each="item : ${function_list}">
+              <input type="hidden" th:id="'function_' + ${item.id}" th:name="'units_' + ${item.id}" th:value="${item.units}">
               <legend><label th:text="${item.name}">供应商档案管理 </label>- 
                 <input type="checkbox" class="select-all" th:attrappend="subclass=${item.id}?'class_' + ${item.id}">
-                <input type="hidden" id="class1" value="29,30,32">
-                <label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary select-unit" data="1"> 数据范围</a>
+                <label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary select-unit" th:attrappend="data=${item.id}?'function_' + ${item.id}"> 数据范围</a>
               </legend>
    
               <div class="col-lg-4 col-md-4" th:each="action : ${item.Actions}">
@@ -52,6 +52,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <input type="hidden" id="current_function" />
                     <i class="fa fa-sitemap"></i> 组织结构
                     <div id="tree_3"></div>
                 </div>
@@ -98,8 +99,10 @@ $(function () {
 	
 	$(".select-unit").click(function(){  //"select all" change
 		$('#tree_3').jstree(true).deselect_all();
-		//$('#tree_3').jstree(true).select_node([3,6]);
-		$('#tree_3').jstree(true).select_node($('#class1').val().split(','));
+	    var selected_function_id = $(this).attr('data');
+		$('#current_function').val(selected_function_id);
+		
+		$('#tree_3').jstree(true).select_node($('#' + selected_function_id).val().split(','));
 		$('#tree_dialog').modal('show');
     });
 	
@@ -133,7 +136,7 @@ $(function () {
     		  checked_ids.push(this.id);
   		  });
           console.log(checked_ids);
-          $("#class1").val(checked_ids.join(','));
+          $('#' + $('#current_function').val()).val(checked_ids.join(','));
     	  $('#tree_dialog').modal('hide');//modal_1 is the id 1
   	   });
 });

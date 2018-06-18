@@ -115,6 +115,38 @@ public class AccountService implements UserDetailsService {
 		if (tempUnit == null) {
 			tempUnit = new Unit("美尔凯特", 0L);
 			tempUnit.setId(1L);
+			tempUnit = unitRepository.save(tempUnit);
+		}
+
+		Long root_id = tempUnit.getId();
+		tempUnit = unitRepository.findOneByName("采购部");
+		if (tempUnit == null) {
+			tempUnit = new Unit("采购部", root_id);
+			tempUnit = unitRepository.save(tempUnit);
+		}
+
+		Long buyerId = tempUnit.getId();
+		tempUnit = unitRepository.findOneByName("采购一组");
+		if (tempUnit == null) {
+			tempUnit = new Unit("采购一组", buyerId);
+			unitRepository.save(tempUnit);
+		}
+
+		tempUnit = unitRepository.findOneByName("采购二组");
+		if (tempUnit == null) {
+			tempUnit = new Unit("采购二组", buyerId);
+			unitRepository.save(tempUnit);
+		}
+
+		tempUnit = unitRepository.findOneByName("提供商");
+		if (tempUnit == null) {
+			tempUnit = new Unit("提供商", root_id);
+			unitRepository.save(tempUnit);
+		}
+
+		tempUnit = unitRepository.findOneByName("销售部");
+		if (tempUnit == null) {
+			tempUnit = new Unit("销售部", root_id);
 			unitRepository.save(tempUnit);
 		}
 

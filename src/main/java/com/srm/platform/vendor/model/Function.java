@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "function")
@@ -27,6 +28,17 @@ public class Function {
 			@JoinColumn(name = "function_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "action_id", referencedColumnName = "id") })
 	private List<Action> actions;
+
+	@Transient
+	private String units;
+
+	public String getUnits() {
+		return units;
+	}
+
+	public void setUnits(String units) {
+		this.units = units;
+	}
 
 	public Function() {
 
