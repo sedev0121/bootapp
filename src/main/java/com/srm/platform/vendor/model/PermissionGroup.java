@@ -12,6 +12,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "permission_group")
 public class PermissionGroup {
@@ -22,6 +24,7 @@ public class PermissionGroup {
 	private String name;
 	private String description;
 
+	@JsonIgnore
 	@ManyToMany(cascade = { CascadeType.ALL })
 	@JoinTable(name = "permission_group_function_action", joinColumns = {
 			@JoinColumn(name = "group_id", referencedColumnName = "id") }, inverseJoinColumns = {

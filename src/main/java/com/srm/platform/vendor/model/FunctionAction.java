@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @Table(name = "function_action")
 public class FunctionAction {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name = "function_id")
@@ -38,6 +38,11 @@ public class FunctionAction {
 
 	public FunctionAction() {
 
+	}
+
+	public FunctionAction(Long functionId, Long actionId) {
+		this.functionId = functionId;
+		this.actionId = actionId;
 	}
 
 	public Long getId() {

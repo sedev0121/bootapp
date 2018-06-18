@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,7 +22,7 @@ public class Function {
 
 	private String name;
 
-	@ManyToMany(cascade = { CascadeType.ALL })
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
 	@JoinTable(name = "function_action", joinColumns = {
 			@JoinColumn(name = "function_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "action_id", referencedColumnName = "id") })

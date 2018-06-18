@@ -30,10 +30,6 @@
                 <label for="document_date">职位: </label>
                 <input type="text" class="form-control">
               </div>
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">权限: </label>
-                <input type="text" class="form-control" name="role" th:value="${account.role}">
-              </div>
               <div class="col-lg-3 col-md-3 form-group">
                 <label for="document_date">入职日期: </label>
                 <input type="text" class="form-control datepicker" th:value="${account.entryTime}">
@@ -50,8 +46,12 @@
                 <input type="password" name="password" class="form-control">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">源代码账号: </label>
-                <input type="text" class="form-control">
+                <label for="document_date">权限: </label>
+                <select name="role" class="form-control">
+                  <option value="ROLE_BUYER" th:selected="(${account.role}=='ROLE_BUYER')">采购员</option>
+                  <option value="ROLE_VENDOR" th:selected="(${account.role}=='ROLE_VENDOR')">供应商</option>
+                  <option value="ROLE_ADMIN"  th:selected="(${account.role}=='ROLE_ADMIN')">管理员</option>
+                </select>
               </div>
             </fieldset>
             <fieldset>

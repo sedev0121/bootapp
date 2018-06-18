@@ -12,20 +12,21 @@
       <li><a th:href="@{/admin/permission_group}">权限组管理</a></li>
       <li class="active">权限设置</li>
     </ul>
-    <form>  
+    <form id="form" th:action="@{/admin/permission_group/update/function}" method="post">  
       <h1 th:text="${permission_group.name}"></h1>
+      <input type="hidden" name="id" th:value="${permission_group.id}">
       <div class="panel panel-default">
         <div class="panel-body"> 
           <div class="row">
             <fieldset class="col-lg-4 col-md-4 margin-top-10" th:each="item : ${function_list}">
               <legend><label th:text="${item.name}">供应商档案管理 </label>- 
-                <input type="checkbox" class="select-all" sub-class="class1">
+                <input type="checkbox" class="select-all" th:attrappend="subclass=${item.id}?'class_' + ${item.id}">
                 <input type="hidden" id="class1" value="29,30,32">
                 <label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary select-unit" data="1"> 数据范围</a>
               </legend>
    
               <div class="col-lg-4 col-md-4" th:each="action : ${item.Actions}">
-                <input type="checkbox" class="class1" th:attrappend="checked=${action.available}?true" th:value="${action.id}"><label th:text="${action.name}"> </label>
+                <input type="checkbox" th:classappend="${item.id}?'class_' + ${item.id}" th:attrappend="checked=${action.available}?true" name="functions[]" th:value="${action.functionActionId}"><label th:text="${action.name}"> </label>
               </div>
    
               
@@ -34,7 +35,7 @@
         </div>
         <div class="panel-footer">
           <div class="text-right margin-right-20">
-              <a class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
+              <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
               <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
           </div>
         </div>
@@ -56,7 +57,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="save">保存</button>
+                    <button type="button" class="btn btn-primary" id="save_range">保存</button>
                 </div>
             </div>
         </div>
@@ -70,8 +71,26 @@
 var url = /*[[@{/admin/unit/}]]*/'';
 var tree_url = /*[[@{/api/unit/tree}]]*/'';
 $(function () {
+    $("#save").click(function() {
+    	jQuery(form).ajaxSubmit({
+            success: function(res, status, xhr, form) {
+                swal({
+                    "title": "操作成功", 
+                    "type": "success"
+                });
+            },
+            error: function (res, status, xhr, form) {
+                swal({
+                    "title": "操作失败", 
+                    "text": "请输入正确的值", 
+                    "type": "error"
+                });
+            }
+        });        
+    });
+    
 	$(".select-all").change(function(){  //"select all" change 
-		var sub_class = $(this).attr('sub-class');
+		var sub_class = $(this).attr('subclass');
 		sub_class = "." + sub_class;
 	    $(sub_class).prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
 	    $(sub_class).uniform();
@@ -108,7 +127,7 @@ $(function () {
     	  $(this).jstree("open_all");
       });
 
-      $('#save').click(function(){
+      $('#save_range').click(function(){
     	  var checked_ids = []; 
     	  $.each($("#tree_3").jstree("get_checked",true),function(){
     		  checked_ids.push(this.id);

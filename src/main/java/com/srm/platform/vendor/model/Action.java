@@ -19,6 +19,17 @@ public class Action {
 	@Transient
 	private boolean available = false;
 
+	@Transient
+	private Long functionActionId;
+
+	public Long getFunctionActionId() {
+		return functionActionId;
+	}
+
+	public void setFunctionActionId(Long functionActionId) {
+		this.functionActionId = functionActionId;
+	}
+
 	public boolean isAvailable() {
 		return available;
 	}

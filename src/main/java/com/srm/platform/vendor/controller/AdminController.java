@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.PermissionGroupUser;
 import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.FunctionActionRepository;
 import com.srm.platform.vendor.repository.FunctionRepository;
 import com.srm.platform.vendor.repository.PermissionGroupFunctionActionRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
@@ -51,6 +53,8 @@ public class AdminController {
 
 	@Autowired
 	private FunctionRepository functionRepository;
+	@Autowired
+	private FunctionActionRepository functionActionRepository;
 
 	@Autowired
 	private PermissionGroupFunctionActionRepository permissionGroupFunctionActionRepository;
@@ -279,6 +283,7 @@ public class AdminController {
 	public String permission_group_edit_perm(@PathVariable("id") Long id, Model model) {
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
 		List<Function> functionList = functionRepository.findAll();
+		List<FunctionAction> functionActionList = functionActionRepository.findAll();
 
 		for (int i = 0; i < functionList.size(); i++) {
 			Function tempF = functionList.get(i);
@@ -288,11 +293,20 @@ public class AdminController {
 				tempA.setAvailable(false);
 				for (int k = 0; k < temp.getFunctionActions().size(); k++) {
 					FunctionAction tempG = temp.getFunctionActions().get(k);
+
 					if (tempG.getFunctionId() == tempF.getId() && tempG.getActionId() == tempA.getId()) {
 						tempA.setAvailable(true);
 						break;
 					}
 				}
+				for (int k = 0; k < functionActionList.size(); k++) {
+					FunctionAction tempG = functionActionList.get(k);
+					if (tempG.getFunctionId() == tempF.getId() && tempG.getActionId() == tempA.getId()) {
+						tempA.setFunctionActionId(tempG.getId());
+						break;
+					}
+				}
+
 			}
 		}
 
@@ -346,6 +360,24 @@ public class AdminController {
 		for (int i = 0; i < accountItems.size(); i++) {
 			permissionGroupUserReopsitory.save(new PermissionGroupUser(group.getId(), accountItems.get(i).getId()));
 		}
+
+		return group;
+	}
+
+	// 权限组管理->更新
+	@PostMapping("/permission_group/update/function")
+	public @ResponseBody PermissionGroup permission_group_update_function_ajax(@RequestParam(value = "id") Long groupId,
+			@RequestParam(value = "functions[]") Long[] functions) {
+
+		logger.info(StringUtils.join(functions, ","));
+
+		permissionGroupFunctionActionRepository.deleteByGroupId(groupId);
+		PermissionGroup group = permissionGroupRepository.findOneById(groupId);
+		List<FunctionAction> list = functionActionRepository.findAllById(Arrays.asList(functions));
+		logger.info(list.toString());
+		group.setFunctionActions(list);
+
+		permissionGroupRepository.save(group);
 
 		return group;
 	}

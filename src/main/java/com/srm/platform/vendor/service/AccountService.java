@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Action;
 import com.srm.platform.vendor.model.Function;
+import com.srm.platform.vendor.model.FunctionAction;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.repository.AccountRepository;
@@ -200,50 +201,56 @@ public class AccountService implements UserDetailsService {
 			actionRepository.save(tempAction);
 		}
 
-		/*
-		 * tempFunction = functionRepository.findOneByName("供应商档案管理"); tempAction =
-		 * actionRepository.findOneByName("查询"); FunctionAction tempFunctionAction =
-		 * functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
-		 * if (tempFunctionAction == null) { tempFunctionAction = new
-		 * FunctionAction(tempFunction.getId(), tempAction.getId());
-		 * functionActionRepository.save(tempFunctionAction); } tempFunction =
-		 * functionRepository.findOneByName("询价管理"); tempAction =
-		 * actionRepository.findOneByName("查询"); tempFunctionAction =
-		 * functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
-		 * if (tempFunctionAction == null) { tempFunctionAction = new
-		 * FunctionAction(tempFunction.getId(), tempAction.getId());
-		 * functionActionRepository.save(tempFunctionAction); } tempFunction =
-		 * functionRepository.findOneByName("询价管理"); tempAction =
-		 * actionRepository.findOneByName("新建"); tempFunctionAction =
-		 * functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
-		 * if (tempFunctionAction == null) { tempFunctionAction = new
-		 * FunctionAction(tempFunction.getId(), tempAction.getId());
-		 * functionActionRepository.save(tempFunctionAction); } tempFunction =
-		 * functionRepository.findOneByName("询价管理"); tempAction =
-		 * actionRepository.findOneByName("归档"); tempFunctionAction =
-		 * functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
-		 * if (tempFunctionAction == null) { tempFunctionAction = new
-		 * FunctionAction(tempFunction.getId(), tempAction.getId());
-		 * functionActionRepository.save(tempFunctionAction); } tempFunction =
-		 * functionRepository.findOneByName("询价管理"); tempAction =
-		 * actionRepository.findOneByName("审核"); tempFunctionAction =
-		 * functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
-		 * if (tempFunctionAction == null) { tempFunctionAction = new
-		 * FunctionAction(tempFunction.getId(), tempAction.getId());
-		 * functionActionRepository.save(tempFunctionAction); } tempFunction =
-		 * functionRepository.findOneByName("报价管理"); tempAction =
-		 * actionRepository.findOneByName("查询"); tempFunctionAction =
-		 * functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
-		 * if (tempFunctionAction == null) { tempFunctionAction = new
-		 * FunctionAction(tempFunction.getId(), tempAction.getId());
-		 * functionActionRepository.save(tempFunctionAction); } tempFunction =
-		 * functionRepository.findOneByName("采购订单发布"); tempAction =
-		 * actionRepository.findOneByName("查询"); tempFunctionAction =
-		 * functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
-		 * if (tempFunctionAction == null) { tempFunctionAction = new
-		 * FunctionAction(tempFunction.getId(), tempAction.getId());
-		 * functionActionRepository.save(tempFunctionAction); }
-		 */
+		tempFunction = functionRepository.findOneByName("供应商档案管理");
+		tempAction = actionRepository.findOneByName("查询");
+		FunctionAction tempFunctionAction = functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
+		if (tempFunctionAction == null) {
+			tempFunctionAction = new FunctionAction(tempFunction.getId(), tempAction.getId());
+			functionActionRepository.save(tempFunctionAction);
+		}
+		tempFunction = functionRepository.findOneByName("询价管理");
+		tempAction = actionRepository.findOneByName("查询");
+		tempFunctionAction = functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
+		if (tempFunctionAction == null) {
+			tempFunctionAction = new FunctionAction(tempFunction.getId(), tempAction.getId());
+			functionActionRepository.save(tempFunctionAction);
+		}
+		tempFunction = functionRepository.findOneByName("询价管理");
+		tempAction = actionRepository.findOneByName("新建");
+		tempFunctionAction = functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
+		if (tempFunctionAction == null) {
+			tempFunctionAction = new FunctionAction(tempFunction.getId(), tempAction.getId());
+			functionActionRepository.save(tempFunctionAction);
+		}
+		tempFunction = functionRepository.findOneByName("询价管理");
+		tempAction = actionRepository.findOneByName("归档");
+		tempFunctionAction = functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
+		if (tempFunctionAction == null) {
+			tempFunctionAction = new FunctionAction(tempFunction.getId(), tempAction.getId());
+			functionActionRepository.save(tempFunctionAction);
+		}
+		tempFunction = functionRepository.findOneByName("询价管理");
+		tempAction = actionRepository.findOneByName("审核");
+		tempFunctionAction = functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
+		if (tempFunctionAction == null) {
+			tempFunctionAction = new FunctionAction(tempFunction.getId(), tempAction.getId());
+			functionActionRepository.save(tempFunctionAction);
+		}
+		tempFunction = functionRepository.findOneByName("报价管理");
+		tempAction = actionRepository.findOneByName("查询");
+		tempFunctionAction = functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
+		if (tempFunctionAction == null) {
+			tempFunctionAction = new FunctionAction(tempFunction.getId(), tempAction.getId());
+			functionActionRepository.save(tempFunctionAction);
+		}
+		tempFunction = functionRepository.findOneByName("采购订单发布");
+		tempAction = actionRepository.findOneByName("查询");
+		tempFunctionAction = functionActionRepository.findOne(tempFunction.getId(), tempAction.getId());
+		if (tempFunctionAction == null) {
+			tempFunctionAction = new FunctionAction(tempFunction.getId(), tempAction.getId());
+			functionActionRepository.save(tempFunctionAction);
+		}
+
 	}
 
 	@Transactional
