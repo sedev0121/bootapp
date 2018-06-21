@@ -26,11 +26,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
-import com.srm.platform.vendor.model.AccountSearchItem;
 import com.srm.platform.vendor.model.Action;
 import com.srm.platform.vendor.model.Function;
 import com.srm.platform.vendor.model.FunctionAction;
-import com.srm.platform.vendor.model.IGroupFunctionUnit;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.PermissionGroupFunctionUnit;
 import com.srm.platform.vendor.model.PermissionGroupUser;
@@ -44,6 +42,8 @@ import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.service.AccountService;
+import com.srm.platform.vendor.utility.AccountSearchItem;
+import com.srm.platform.vendor.utility.IGroupFunctionUnit;
 
 @Controller
 @RequestMapping(path = "/admin")

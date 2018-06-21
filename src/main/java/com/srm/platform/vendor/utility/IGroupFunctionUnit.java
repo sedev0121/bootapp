@@ -1,4 +1,4 @@
-package com.srm.platform.vendor.model;
+package com.srm.platform.vendor.utility;
 
 public interface IGroupFunctionUnit {
 

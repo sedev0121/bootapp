@@ -11,76 +11,22 @@ public class AppProperties {
 	private String app_key;
 	private int error_code_success;
 
-	private System system;
-	private Vendor vendor;
-	private PurchaseOrder purchaseOrder;
-	private PurInvoice purInvoice;
-	private PurchaseIn purchaseIn;
-	private Inventory inventory;
-	private VenPriceAdjust venPriceAdjust;
+	private PropertySystem system;
+	private PropertyVendor vendor;
+	private PropertyPurchaseOrder purchaseOrder;
+	private PropertyPurInvoice purInvoice;
+	private PropertyPurchaseIn purchaseIn;
+	private PropertyInventory inventory;
+	private PropertyMeasurementUnit measurementUnit;
+	private PropertyInventoryClass inventoryClass;
+	private PropertyVenPriceAdjust venPriceAdjust;
 
-	public System getSystem() {
-		return system;
+	public String getFrom_account() {
+		return from_account;
 	}
 
-	public void setSystem(System system) {
-		this.system = system;
-	}
-
-	public Vendor getVendor() {
-		return vendor;
-	}
-
-	public void setVendor(Vendor vendor) {
-		this.vendor = vendor;
-	}
-
-	public PurchaseOrder getPurchaseOrder() {
-		return purchaseOrder;
-	}
-
-	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
-		this.purchaseOrder = purchaseOrder;
-	}
-
-	public PurInvoice getPurInvoice() {
-		return purInvoice;
-	}
-
-	public void setPurInvoice(PurInvoice purInvoice) {
-		this.purInvoice = purInvoice;
-	}
-
-	public PurchaseIn getPurchaseIn() {
-		return purchaseIn;
-	}
-
-	public void setPurchaseIn(PurchaseIn purchaseIn) {
-		this.purchaseIn = purchaseIn;
-	}
-
-	public Inventory getInventory() {
-		return inventory;
-	}
-
-	public void setInventory(Inventory inventory) {
-		this.inventory = inventory;
-	}
-
-	public VenPriceAdjust getVenPriceAdjust() {
-		return venPriceAdjust;
-	}
-
-	public void setVenPriceAdjust(VenPriceAdjust venPriceAdjust) {
-		this.venPriceAdjust = venPriceAdjust;
-	}
-
-	public int getError_code_success() {
-		return error_code_success;
-	}
-
-	public void setError_code_success(int error_code_success) {
-		this.error_code_success = error_code_success;
+	public void setFrom_account(String from_account) {
+		this.from_account = from_account;
 	}
 
 	public String getApp_key() {
@@ -91,15 +37,87 @@ public class AppProperties {
 		this.app_key = app_key;
 	}
 
-	public String getFrom_account() {
-		return from_account;
+	public int getError_code_success() {
+		return error_code_success;
 	}
 
-	public void setFrom_account(String from_account) {
-		this.from_account = from_account;
+	public void setError_code_success(int error_code_success) {
+		this.error_code_success = error_code_success;
 	}
 
-	public static class Vendor {
+	public PropertySystem getSystem() {
+		return system;
+	}
+
+	public void setSystem(PropertySystem system) {
+		this.system = system;
+	}
+
+	public PropertyVendor getVendor() {
+		return vendor;
+	}
+
+	public void setVendor(PropertyVendor vendor) {
+		this.vendor = vendor;
+	}
+
+	public PropertyPurchaseOrder getPurchaseOrder() {
+		return purchaseOrder;
+	}
+
+	public void setPurchaseOrder(PropertyPurchaseOrder purchaseOrder) {
+		this.purchaseOrder = purchaseOrder;
+	}
+
+	public PropertyPurInvoice getPurInvoice() {
+		return purInvoice;
+	}
+
+	public void setPurInvoice(PropertyPurInvoice purInvoice) {
+		this.purInvoice = purInvoice;
+	}
+
+	public PropertyPurchaseIn getPurchaseIn() {
+		return purchaseIn;
+	}
+
+	public void setPurchaseIn(PropertyPurchaseIn purchaseIn) {
+		this.purchaseIn = purchaseIn;
+	}
+
+	public PropertyInventory getInventory() {
+		return inventory;
+	}
+
+	public void setInventory(PropertyInventory inventory) {
+		this.inventory = inventory;
+	}
+
+	public PropertyMeasurementUnit getMeasurementUnit() {
+		return measurementUnit;
+	}
+
+	public void setMeasurementUnit(PropertyMeasurementUnit measurementUnit) {
+		this.measurementUnit = measurementUnit;
+	}
+
+	public PropertyInventoryClass getInventoryClass() {
+		return inventoryClass;
+	}
+
+	public void setInventoryClass(PropertyInventoryClass inventoryClass) {
+		this.inventoryClass = inventoryClass;
+	}
+
+	public PropertyVenPriceAdjust getVenPriceAdjust() {
+		return venPriceAdjust;
+	}
+
+	public void setVenPriceAdjust(PropertyVenPriceAdjust venPriceAdjust) {
+		this.venPriceAdjust = venPriceAdjust;
+	}
+
+	public static class PropertyVendor {
 		private String batch_get;
 		private String get;
 
@@ -121,7 +139,7 @@ public class AppProperties {
 
 	}
 
-	public static class PurchaseOrder {
+	public static class PropertyPurchaseOrder {
 		private String batch_get;
 		private String get;
 
@@ -143,7 +161,7 @@ public class AppProperties {
 
 	}
 
-	public static class PurInvoice {
+	public static class PropertyPurInvoice {
 		private String batch_get;
 
 		public String getBatch_get() {
@@ -156,7 +174,7 @@ public class AppProperties {
 
 	}
 
-	public static class System {
+	public static class PropertySystem {
 		private String token;
 
 		public String getToken() {
@@ -169,7 +187,7 @@ public class AppProperties {
 
 	}
 
-	public static class PurchaseIn {
+	public static class PropertyPurchaseIn {
 		private String batch_get;
 
 		public String getBatch_get() {
@@ -181,7 +199,7 @@ public class AppProperties {
 		}
 	}
 
-	public static class Inventory {
+	public static class PropertyInventory {
 		private String batch_get;
 
 		public String getBatch_get() {
@@ -193,7 +211,31 @@ public class AppProperties {
 		}
 	}
 
-	public static class VenPriceAdjust {
+	public static class PropertyInventoryClass {
+		private String batch_get;
+
+		public String getBatch_get() {
+			return batch_get;
+		}
+
+		public void setBatch_get(String batch_get) {
+			this.batch_get = batch_get;
+		}
+	}
+
+	public static class PropertyMeasurementUnit {
+		private String batch_get;
+
+		public String getBatch_get() {
+			return batch_get;
+		}
+
+		public void setBatch_get(String batch_get) {
+			this.batch_get = batch_get;
+		}
+	}
+
+	public static class PropertyVenPriceAdjust {
 		private String batch_get;
 		private String get;
 

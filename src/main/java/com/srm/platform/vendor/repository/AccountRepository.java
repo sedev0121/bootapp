@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.srm.platform.vendor.model.Account;
-import com.srm.platform.vendor.model.AccountSearchItem;
+import com.srm.platform.vendor.utility.AccountSearchItem;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {

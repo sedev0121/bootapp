@@ -120,6 +120,44 @@ public class ApiClient {
 		return response;
 	}
 
+	public String getBatchMeasurementUnit(Map<String, String> requestParams) {
+
+		checkToken();
+
+		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
+		String page_index = requestParams.getOrDefault("page_index", "1");
+		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
+		String name = requestParams.getOrDefault("name", "");
+
+		logger.info("start getBatchVendor api");
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getMeasurementUnit().getBatch_get(), token_id, rows_per_page,
+				page_index, ds_sequence, name);
+		logger.info(String.format("url=>%s", url));
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+		return response;
+	}
+
+	public String getBatchInventoryClass(Map<String, String> requestParams) {
+
+		checkToken();
+
+		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
+		String page_index = requestParams.getOrDefault("page_index", "1");
+		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
+		String name = requestParams.getOrDefault("name", "");
+
+		logger.info("start getBatchVendor api");
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getInventoryClass().getBatch_get(), token_id, rows_per_page,
+				page_index, ds_sequence, name);
+		logger.info(String.format("url=>%s", url));
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+		return response;
+	}
+
 	public String getBatchVenPriceAdjust(Map<String, String> requestParams) {
 
 		checkToken();

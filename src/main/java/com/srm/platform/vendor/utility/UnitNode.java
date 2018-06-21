@@ -1,4 +1,4 @@
-package com.srm.platform.vendor.model;
+package com.srm.platform.vendor.utility;
 
 import java.util.ArrayList;
 import java.util.List;

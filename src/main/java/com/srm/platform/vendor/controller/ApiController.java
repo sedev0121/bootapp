@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.srm.platform.vendor.model.AccountSearchItem;
 import com.srm.platform.vendor.model.Unit;
-import com.srm.platform.vendor.model.UnitNode;
+import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
+import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.u8api.ApiClient;
+import com.srm.platform.vendor.utility.AccountSearchItem;
+import com.srm.platform.vendor.utility.UnitNode;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -36,10 +39,27 @@ public class ApiController {
 	@Autowired
 	private UnitRepository unitRepository;
 
-	// 供应商管理
+	@Autowired
+	private VendorRepository vendorRepository;
+
+	@Autowired
+	private InventoryRepository inventoryRepository;
+
+	// 供应商管理列表查询
 	@RequestMapping(value = "/vendor/batch_get", produces = "application/json")
-	public String vendor(@RequestParam Map<String, String> requestParams) {
-		return apiClient.getBatchVendor(requestParams);
+	public Page<Vendor> vendor_list_ajax(@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "name");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String search = requestParams.getOrDefault("search", "");
+
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+		Page<Vendor> result = vendorRepository.findBySearchTerm(search, request);
+
+		return result;
 	}
 
 	@RequestMapping(value = "/vendor/get/{id}", produces = "application/json")
