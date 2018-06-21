@@ -48,7 +48,7 @@ $(document).ready(function() {
         format: 'YYYY-MM-DD'
       },
       startDate: moment().subtract('days', 10),
-      endDate: moment()
+      endDate: moment().add('days', 10)
     }, function(start, end, label) {
       table.draw();
     });
