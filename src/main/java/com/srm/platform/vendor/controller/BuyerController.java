@@ -1,17 +1,29 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.srm.platform.vendor.model.Vendor;
+import com.srm.platform.vendor.repository.VendorRepository;
 
 @Controller
 @RequestMapping(path = "/buyer")
 @PreAuthorize("hasRole('ROLE_BUYER')")
 public class BuyerController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@Autowired
+	private VendorRepository vendorRepository;
 
 	// Home
 	@GetMapping({ "", "/" })
@@ -68,8 +80,13 @@ public class BuyerController {
 	}
 
 	// 供应商管理->修改
-	@GetMapping("/vendor/{id}/edit")
-	public String vendor_edit() {
+	@GetMapping("/vendor/{code}/edit")
+	public String vendor_edit(@PathVariable("code") String code, Model model) {
+		Vendor vendor = new Vendor();
+		vendor.setCode(code);
+		Example<Vendor> example = Example.of(vendor);
+		Optional<Vendor> result = vendorRepository.findOne(example);
+		model.addAttribute("data", result.isPresent() ? result.get() : new Vendor());
 		return "buyer/vendor/edit";
 	}
 

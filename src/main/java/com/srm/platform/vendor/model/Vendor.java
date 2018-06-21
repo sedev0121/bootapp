@@ -22,6 +22,7 @@ public class Vendor {
 	private String sortCode;
 	private String industry;
 	private String address;
+	private String phone;
 
 	@Column(name = "bank_open")
 	private String bankOpen;
@@ -33,6 +34,14 @@ public class Vendor {
 
 	public Vendor() {
 
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public String getCode() {
