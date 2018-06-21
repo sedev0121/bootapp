@@ -20,10 +20,10 @@ public class Inventory {
 	private String specs;
 
 	@Column(name = "ref_sale_price")
-	private float refSalePrice;
+	private Float refSalePrice;
 
 	@Column(name = "bottom_sale_price")
-	private float bottomSalePrice;
+	private Float bottomSalePrice;
 
 	@Column(name = "start_date")
 	private Date startDate;
@@ -34,53 +34,57 @@ public class Inventory {
 	private Date modifyDate;
 
 	@Column(name = "unitgroup_type")
-	private float unitgroupType;
+	private Integer unitgroupType;
 
 	@Column(name = "unitgroup_code")
 	private String unitgroupCode;
 
-	@Column(name = "saunitCode")
-	private String saunit_code;
+	@Column(name = "saunit_code")
+	private String saunitCode;
 
-	@Column(name = "puunitCode")
-	private String puunit_code;
+	@Column(name = "puunit_code")
+	private String puunitCode;
 
-	@Column(name = "stunitCode")
-	private String stunit_code;
+	@Column(name = "stunit_code")
+	private String stunitCode;
 
-	@Column(name = "mainMeasure")
-	private String main_measure;
+	@Column(name = "main_measure")
+	private String mainMeasure;
 
-	@Column(name = "puunitName")
-	private String puunit_name;
+	@Column(name = "puunit_name")
+	private String puunitName;
 
-	@Column(name = "puunitIchangrate")
-	private float puunit_ichangrate;
+	@Column(name = "puunit_ichangrate")
+	private Float puunitIchangrate;
 
-	@Column(name = "saunitName")
-	private String saunit_name;
+	@Column(name = "saunit_name")
+	private String saunitName;
 
 	@Column(name = "saunit_ichangrate")
-	private float saunitIchangrate;
+	private Float saunitIchangrate;
 
 	@Column(name = "stunit_name")
 	private String stunitName;
 
 	@Column(name = "stunit_ichangrate")
-	private float stunitIchangrate;
+	private Float stunitIchangrate;
 
 	private String defwarehouse;
 
 	private String defwarehousename;
 
-	private String iSupplyType;
+	private String isupplytype;
 
 	private String drawtype;
 
-	private float iimptaxrate;
+	private Float iimptaxrate;
 
 	@Column(name = "tax_rate")
-	private float tax_rate;
+	private Float taxRate;
+
+	public Inventory() {
+
+	}
 
 	@Column(name = "self_define1")
 	private String selfDefine1;
@@ -130,20 +134,20 @@ public class Inventory {
 	}
 
 	@JsonProperty("ref_sale_price")
-	public float getRefSalePrice() {
+	public Float getRefSalePrice() {
 		return refSalePrice;
 	}
 
-	public void setRefSalePrice(float refSalePrice) {
+	public void setRefSalePrice(Float refSalePrice) {
 		this.refSalePrice = refSalePrice;
 	}
 
 	@JsonProperty("bottom_sale_price")
-	public float getBottomSalePrice() {
+	public Float getBottomSalePrice() {
 		return bottomSalePrice;
 	}
 
-	public void setBottomSalePrice(float bottomSalePrice) {
+	public void setBottomSalePrice(Float bottomSalePrice) {
 		this.bottomSalePrice = bottomSalePrice;
 	}
 
@@ -175,11 +179,11 @@ public class Inventory {
 	}
 
 	@JsonProperty("unit_group_type")
-	public float getUnitgroupType() {
+	public Integer getUnitgroupType() {
 		return unitgroupType;
 	}
 
-	public void setUnitgroupType(float unitgroupType) {
+	public void setUnitgroupType(Integer unitgroupType) {
 		this.unitgroupType = unitgroupType;
 	}
 
@@ -193,72 +197,72 @@ public class Inventory {
 	}
 
 	@JsonProperty("saunit_code")
-	public String getSaunit_code() {
-		return saunit_code;
+	public String getSaunitCode() {
+		return saunitCode;
 	}
 
-	public void setSaunit_code(String saunit_code) {
-		this.saunit_code = saunit_code;
+	public void setSaunitCode(String saunit_code) {
+		this.saunitCode = saunit_code;
 	}
 
 	@JsonProperty("puunit_code")
-	public String getPuunit_code() {
-		return puunit_code;
+	public String getPuunitCode() {
+		return puunitCode;
 	}
 
-	public void setPuunit_code(String puunit_code) {
-		this.puunit_code = puunit_code;
+	public void setPuunitCode(String puunit_code) {
+		this.puunitCode = puunit_code;
 	}
 
 	@JsonProperty("stunit_code")
-	public String getStunit_code() {
-		return stunit_code;
+	public String getStunitCode() {
+		return stunitCode;
 	}
 
-	public void setStunit_code(String stunit_code) {
-		this.stunit_code = stunit_code;
+	public void setStunitCode(String stunit_code) {
+		this.stunitCode = stunit_code;
 	}
 
 	@JsonProperty("main_measure")
-	public String getMain_measure() {
-		return main_measure;
+	public String getMainMeasure() {
+		return mainMeasure;
 	}
 
-	public void setMain_measure(String main_measure) {
-		this.main_measure = main_measure;
+	public void setMainMeasure(String main_measure) {
+		this.mainMeasure = main_measure;
 	}
 
 	@JsonProperty("puunit_name")
-	public String getPuunit_name() {
-		return puunit_name;
+	public String getPuunitName() {
+		return puunitName;
 	}
 
-	public void setPuunit_name(String puunit_name) {
-		this.puunit_name = puunit_name;
+	public void setPuunitName(String puunit_name) {
+		this.puunitName = puunit_name;
 	}
 
-	public float getPuunit_ichangrate() {
-		return puunit_ichangrate;
+	public Float getPuunitIchangrate() {
+		return puunitIchangrate;
 	}
 
-	public void setPuunit_ichangrate(float puunit_ichangrate) {
-		this.puunit_ichangrate = puunit_ichangrate;
+	public void setPuunit_ichangrate(Float puunit_ichangrate) {
+		this.puunitIchangrate = puunit_ichangrate;
 	}
 
-	public String getSaunit_name() {
-		return saunit_name;
+	public String getSaunitName() {
+		return saunitName;
 	}
 
-	public void setSaunit_name(String saunit_name) {
-		this.saunit_name = saunit_name;
+	public void setSaunitName(String saunit_name) {
+		this.saunitName = saunit_name;
 	}
 
 	@JsonProperty("saunit_ichangrate")
-	public float getSaunitIchangrate() {
+	public Float getSaunitIchangrate() {
 		return saunitIchangrate;
 	}
 
-	public void setSaunitIchangrate(float saunitIchangrate) {
+	public void setSaunitIchangrate(Float saunitIchangrate) {
 		this.saunitIchangrate = saunitIchangrate;
 	}
 
@@ -272,11 +276,11 @@ public class Inventory {
 	}
 
 	@JsonProperty("stunit_ichangrate")
-	public float getStunitIchangrate() {
+	public Float getStunitIchangrate() {
 		return stunitIchangrate;
 	}
 
-	public void setStunitIchangrate(float stunitIchangrate) {
+	public void setStunitIchangrate(Float stunitIchangrate) {
 		this.stunitIchangrate = stunitIchangrate;
 	}
 
@@ -297,11 +301,11 @@ public class Inventory {
 	}
 
 	public String getiSupplyType() {
-		return iSupplyType;
+		return isupplytype;
 	}
 
 	public void setiSupplyType(String iSupplyType) {
-		this.iSupplyType = iSupplyType;
+		this.isupplytype = iSupplyType;
 	}
 
 	public String getDrawtype() {
@@ -312,21 +316,21 @@ public class Inventory {
 		this.drawtype = drawtype;
 	}
 
-	public float getIimptaxrate() {
+	public Float getIimptaxrate() {
 		return iimptaxrate;
 	}
 
-	public void setIimptaxrate(float iimptaxrate) {
+	public void setIimptaxrate(Float iimptaxrate) {
 		this.iimptaxrate = iimptaxrate;
 	}
 
 	@JsonProperty("tax_rate")
-	public float getTax_rate() {
-		return tax_rate;
+	public Float getTaxRate() {
+		return taxRate;
 	}
 
-	public void setTax_rate(float tax_rate) {
-		this.tax_rate = tax_rate;
+	public void setTaxRate(Float taxRate) {
+		this.taxRate = taxRate;
 	}
 
 	public String getSelfDefine1() {

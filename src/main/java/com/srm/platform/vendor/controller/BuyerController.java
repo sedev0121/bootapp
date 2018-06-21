@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Vendor;
+import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 
 @Controller
@@ -24,6 +26,9 @@ public class BuyerController {
 
 	@Autowired
 	private VendorRepository vendorRepository;
+
+	@Autowired
+	private InventoryRepository inventoryRepository;
 
 	// Home
 	@GetMapping({ "", "/" })
@@ -65,6 +70,17 @@ public class BuyerController {
 	@GetMapping("/inventory")
 	public String inventory() {
 		return "buyer/inventory/index";
+	}
+
+	// 供应商管理->修改
+	@GetMapping("/inventory/{code}/edit")
+	public String inventory_edit(@PathVariable("code") String code, Model model) {
+		Inventory data = new Inventory();
+		data.setCode(code);
+		Example<Inventory> example = Example.of(data);
+		Optional<Inventory> result = inventoryRepository.findOne(example);
+		model.addAttribute("data", result.isPresent() ? result.get() : new Inventory());
+		return "buyer/inventory/edit";
 	}
 
 	// 商品管理->商品价格查询

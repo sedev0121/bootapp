@@ -194,7 +194,7 @@ public class SyncController {
 							inventory.setIimptaxrate(Float.parseFloat(temp.get("iimptaxrate")));
 						inventory.setInvaddcode(temp.get("invaddcode"));
 						inventory.setiSupplyType(temp.get("iSupplyType"));
-						inventory.setMain_measure(temp.get("main_measure"));
+						inventory.setMainMeasure(temp.get("main_measure"));
 
 						tempValue = temp.get("ModifyDate");
 						if (tempValue != null)
@@ -206,18 +206,18 @@ public class SyncController {
 							}
 
 						inventory.setName(temp.get("name"));
-						inventory.setPuunit_code(temp.get("puunit_code"));
+						inventory.setPuunitCode(temp.get("puunit_code"));
 
 						tempValue = temp.get("puunit_ichangrate");
 						if (tempValue != null)
 							inventory.setPuunit_ichangrate(Float.parseFloat(tempValue));
-						inventory.setPuunit_name(temp.get("puunit_name"));
+						inventory.setPuunitName(temp.get("puunit_name"));
 
 						tempValue = temp.get("ref_sale_price");
 						if (tempValue != null)
 							inventory.setRefSalePrice(Float.parseFloat(tempValue));
-						inventory.setSaunit_code(temp.get("saunit_code"));
-						inventory.setSaunit_name(temp.get("saunit_name"));
+						inventory.setSaunitCode(temp.get("saunit_code"));
+						inventory.setSaunitName(temp.get("saunit_name"));
 						tempValue = temp.get("saunit_ichangrate");
 						if (tempValue != null)
 							inventory.setSaunitIchangrate(Float.parseFloat(tempValue));
@@ -230,7 +230,7 @@ public class SyncController {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-						inventory.setStunit_code(temp.get("stunit_code"));
+						inventory.setStunitCode(temp.get("stunit_code"));
 
 						tempValue = temp.get("stunit_ichangrate");
 						if (tempValue != null)
@@ -239,12 +239,12 @@ public class SyncController {
 
 						tempValue = temp.get("tax_rate");
 						if (tempValue != null)
-							inventory.setTax_rate(Float.parseFloat(tempValue));
+							inventory.setTaxRate(Float.parseFloat(tempValue));
 						inventory.setUnitgroupCode(temp.get("unitgroup_code"));
 
 						tempValue = temp.get("tax_rate");
 						if (tempValue != null)
-							inventory.setUnitgroupType(Float.parseFloat(tempValue));
+							inventory.setUnitgroupType(Integer.parseInt(tempValue));
 						inventory.setSelfDefine1(temp.get("self_define1"));
 						inventory.setSelfDefine2(temp.get("self_define2"));
 						inventory.setSelfDefine3(temp.get("self_define3"));

@@ -70,6 +70,11 @@
 			columns : [ {
 				data : 'code',
 				title : '存货编码',
+				render: function (data, display, record) {
+		          var edit_url = /*[[@{/buyer/inventory/}]]*/'';
+		          edit_url +=  record.code + '/edit';
+		          return '<a href="' + edit_url + '">' + data  + '</a>';
+		        },
 				defaultContent : ''
 			}, {
 				data : 'name',
