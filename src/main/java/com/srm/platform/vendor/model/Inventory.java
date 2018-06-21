@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "inventory")
 public class Inventory {
@@ -127,6 +129,7 @@ public class Inventory {
 		this.specs = specs;
 	}
 
+	@JsonProperty("ref_sale_price")
 	public float getRefSalePrice() {
 		return refSalePrice;
 	}
@@ -135,6 +138,7 @@ public class Inventory {
 		this.refSalePrice = refSalePrice;
 	}
 
+	@JsonProperty("bottom_sale_price")
 	public float getBottomSalePrice() {
 		return bottomSalePrice;
 	}
@@ -143,6 +147,7 @@ public class Inventory {
 		this.bottomSalePrice = bottomSalePrice;
 	}
 
+	@JsonProperty("start_date")
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -151,6 +156,7 @@ public class Inventory {
 		this.startDate = startDate;
 	}
 
+	@JsonProperty("end_date")
 	public Date getEndDate() {
 		return endDate;
 	}
@@ -159,6 +165,7 @@ public class Inventory {
 		this.endDate = endDate;
 	}
 
+	@JsonProperty("modify_date")
 	public Date getModifyDate() {
 		return modifyDate;
 	}
@@ -167,6 +174,7 @@ public class Inventory {
 		this.modifyDate = modifyDate;
 	}
 
+	@JsonProperty("unit_group_type")
 	public float getUnitgroupType() {
 		return unitgroupType;
 	}
@@ -175,6 +183,7 @@ public class Inventory {
 		this.unitgroupType = unitgroupType;
 	}
 
+	@JsonProperty("unit_group_code")
 	public String getUnitgroupCode() {
 		return unitgroupCode;
 	}
@@ -183,6 +192,7 @@ public class Inventory {
 		this.unitgroupCode = unitgroupCode;
 	}
 
+	@JsonProperty("saunit_code")
 	public String getSaunit_code() {
 		return saunit_code;
 	}
@@ -191,6 +201,7 @@ public class Inventory {
 		this.saunit_code = saunit_code;
 	}
 
+	@JsonProperty("puunit_code")
 	public String getPuunit_code() {
 		return puunit_code;
 	}
@@ -199,6 +210,7 @@ public class Inventory {
 		this.puunit_code = puunit_code;
 	}
 
+	@JsonProperty("stunit_code")
 	public String getStunit_code() {
 		return stunit_code;
 	}
@@ -207,6 +219,7 @@ public class Inventory {
 		this.stunit_code = stunit_code;
 	}
 
+	@JsonProperty("main_measure")
 	public String getMain_measure() {
 		return main_measure;
 	}
@@ -215,6 +228,7 @@ public class Inventory {
 		this.main_measure = main_measure;
 	}
 
+	@JsonProperty("puunit_name")
 	public String getPuunit_name() {
 		return puunit_name;
 	}
@@ -239,6 +253,7 @@ public class Inventory {
 		this.saunit_name = saunit_name;
 	}
 
+	@JsonProperty("saunit_ichangrate")
 	public float getSaunitIchangrate() {
 		return saunitIchangrate;
 	}
@@ -247,6 +262,7 @@ public class Inventory {
 		this.saunitIchangrate = saunitIchangrate;
 	}
 
+	@JsonProperty("stunit_name")
 	public String getStunitName() {
 		return stunitName;
 	}
@@ -255,6 +271,7 @@ public class Inventory {
 		this.stunitName = stunitName;
 	}
 
+	@JsonProperty("stunit_ichangrate")
 	public float getStunitIchangrate() {
 		return stunitIchangrate;
 	}
@@ -303,6 +320,7 @@ public class Inventory {
 		this.iimptaxrate = iimptaxrate;
 	}
 
+	@JsonProperty("tax_rate")
 	public float getTax_rate() {
 		return tax_rate;
 	}

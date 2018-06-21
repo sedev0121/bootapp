@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
@@ -75,8 +76,19 @@ public class ApiController {
 
 	// 商品管理
 	@RequestMapping(value = "/inventory/batch_get", produces = "application/json")
-	public String inventory(@RequestParam Map<String, String> requestParams) {
-		return apiClient.getBatchInventory(requestParams);
+	public Page<Inventory> inventory(@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "name");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String search = requestParams.getOrDefault("search", "");
+
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+		Page<Inventory> result = inventoryRepository.findBySearchTerm(search, request);
+
+		return result;
 	}
 
 	// 外购入库单

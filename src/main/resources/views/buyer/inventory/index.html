@@ -10,13 +10,9 @@
           <li><a href="#">商品管理</a></li>
           <li class="active">商品档案表</li>
         </ul>
-        <div class="search-content">
+        <div class="search-content form-inline">
             <div class="search-cell width-18">
-                <label for="product_code">商品编码:</label>
-                <input type="text" id="product_code" class="form-control">
-            </div>
-            <div class="search-cell width-18">
-                <label for="product_name">商品名称:</label>
+                <label for="product_name">商品编码/名称:</label>
                 <input type="text" id="product_name" class="form-control">
             </div>
             <div style="vertical-align: bottom" class="search-cell width-15 text-right">
@@ -51,26 +47,23 @@
 	///*[[@{/api/vendor/batch_get}]]*/ ''
 	$(document).ready(function() {
 		var table = $('#example').DataTable({
+			ordering: true,
 			ajax : {
 				url : /*[[@{/api/inventory/batch_get}]]*/'',
 				data : function(data) {
 					var filter = {
-						rows_per_page : data.length,
-						page_index : data.start / data.length + 1
+							rows_per_page : data.length,
+	                        page_index : data.start / data.length + 1,
+	                        order: data.columns[data.order[0].column].data,
+	                        dir:data.order[0].dir,
+	                        search: $('#product_name').val()
 					}
 					return filter;
 				},
 				dataSrc : function(json) {
-					if (json.errcode != 0) {
-						alert(json.errmsg);
-						json.recordsTotal = 0
-						json.recordsFiltered = 0;
-						json.inventory = [];
-					} else {
-						json.recordsTotal = json.row_count;
-						json.recordsFiltered = json.row_count;
-					}
-					return json.inventory;
+                  json.recordsTotal = json.totalElements;
+                  json.recordsFiltered = json.totalElements;
+                  return json.content;
 				},
 			},
 
@@ -91,17 +84,33 @@
 				title : '规格型号',
 				defaultContent : ''
 			}, {
-				data : 'sort_code',
-				title : '所属分类码',
-				defaultContent : ''
+                data : 'ref_sale_price',
+                title : '参考售价',
+                defaultContent : ''
+            }, {
+                data : 'bottom_sale_price',
+                title : '最低售价',
+                defaultContent : ''
 			}, {
 				data : 'main_measure',
 				title : '主计量单位',
 				defaultContent : ''
-			}, {
-				data : 'ref_sale_price',
-				title : '参考售价',
-				defaultContent : ''
+            }, {
+                data : 'unitgroup_code',
+                title : '计量单位组编码',
+                defaultContent : ''
+            }, {
+                data : 'saunit_code',
+                title : '销售默认单位编码',
+                defaultContent : ''
+            }, {
+                data : 'puunit_code',
+                title : '采购默认单位编码',
+                defaultContent : ''
+            }, {
+                data : 'stunit_code',
+                title : '库存默认单位编码',
+                defaultContent : ''
 			}, {
 				data : 'tax_rate',
 				title : '销项税率',
@@ -127,25 +136,21 @@
 				title : '库存默认单位名称',
 				defaultContent : ''
 			}, {
-				data : 'bottom_sale_price',
-				title : '最低售价',
-				defaultContent : ''
-			}, {
 				data : 'defwarehousename',
 				title : '默认仓库名称',
 				defaultContent : ''
 			}, {
 				data : 'start_date',
 				title : '启用日期',
-				render: $.fn.date_renderer,
+				type : 'date',
 				defaultContent : ''
 			}, {
 				data : 'end_date',
+				type : 'date',
 				title : '停用日期',
-				render: $.fn.date_renderer,
 				defaultContent : ''
 			}, {
-				data : 'ModifyDate',
+				data : 'modify_date',
 				title : '变更日期',
 				render: $.fn.date_renderer,
 				defaultContent : ''				
