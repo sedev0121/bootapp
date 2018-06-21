@@ -242,7 +242,7 @@ public class SyncController {
 							inventory.setTaxRate(Float.parseFloat(tempValue));
 						inventory.setUnitgroupCode(temp.get("unitgroup_code"));
 
-						tempValue = temp.get("tax_rate");
+						tempValue = temp.get("unit_group_type");
 						if (tempValue != null)
 							inventory.setUnitgroupType(Integer.parseInt(tempValue));
 						inventory.setSelfDefine1(temp.get("self_define1"));

@@ -20,7 +20,7 @@
           </div>
           <div class="search-cell width-10">
             <label for="date_range">有效日期: </label>
-            <input type="text" name="daterange" value="" class="form-control" />
+            <input type="text" id="daterange" value="" class="form-control" />
           </div>
           <div style="vertical-align: bottom" class="search-cell width-15 text-right">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
@@ -39,122 +39,144 @@
 
 <script th:inline="javascript">
 
-	$(document).ready(function() {
-		
-    $('input[name="daterange"]').daterangepicker({
-        opens: 'right',
-        locale: {
-          format: 'YYYY/MM/DD'
-        }
-      }, function(start, end, label) {
-        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-      });
-    var table = $('#example').DataTable({
+$(document).ready(function() {	
+    var table;
+    
+    $('#daterange').daterangepicker({
+      opens: 'right',
+      locale: {
+        format: 'YYYY-MM-DD'
+      },
+      startDate: moment().subtract('days', 10),
+      endDate: moment()
+    }, function(start, end, label) {
+      table.draw();
+    });
+    
+    table = $('#example').DataTable({
+    	ordering: true,
   		ajax : {
-  			url : /*[[@{/api/inventory/batch_get}]]*/'',
+  			url : /*[[@{/api/price/batch_get}]]*/'',
   			data : function(data) {
   				var filter = {
-  					rows_per_page : data.length,
-  					page_index : data.start / data.length + 1
+  						rows_per_page : data.length,
+                        page_index : data.start / data.length + 1,
+                        order: data.columns[data.order[0].column].data,
+                        dir:data.order[0].dir,
+                        vendor: $('#vendor').val(),
+                        inventory: $('#inventory').val(),
+                        start: $('#daterange').data('daterangepicker').startDate.format('YYYY-MM-DD'),
+                        end:$('#daterange').data('daterangepicker').endDate.format('YYYY-MM-DD')
   				}
   				return filter;
   			},
   			dataSrc : function(json) {
-  				if (json.errcode != 0) {
-  					alert(json.errmsg);
-  					json.recordsTotal = 0
-  					json.recordsFiltered = 0;
-  					json.inventory = [];
-  				} else {
-  					json.recordsTotal = json.row_count;
-  					json.recordsFiltered = json.row_count;
-  				}
-  				return json.inventory;
+  				json.recordsTotal = json.totalElements;
+                json.recordsFiltered = json.totalElements;
+                return json.content;
   			},
   		},
   
   		columns : [ {
-  			data : 'code',
-  			title : '存货编码',
+            data : 'fsupplyno',
+            render: function (data, display, record) {
+            	return data.name;
+            },
+            title : '供应商名称',
+            defaultContent : ''
+        }, {
+            data : 'cinvcode',
+            render: function (data, display, record) {
+            	var edit_url = /*[[@{/buyer/price/}]]*/'';
+                edit_url +=  record.id + '/edit';
+                return '<a href="' + edit_url + '">' + data.name  + '</a>';
+            },
+            title : '存货名称',
+            defaultContent : ''
+        }, {
+  			data : 'description',
+  			title : '描述',
   			defaultContent : ''
   		}, {
-  			data : 'name',
-  			title : '存货名称',
-  			defaultContent : ''
-  		}, {
-  			data : 'invaddcode',
-  			title : '存货代码',
-  			defaultContent : ''
-  		}, {
-  			data : 'specs',
-  			title : '规格型号',
-  			defaultContent : ''
-  		}, {
-  			data : 'sort_code',
-  			title : '所属分类码',
-  			defaultContent : ''
-  		}, {
-  			data : 'main_measure',
-  			title : '主计量单位',
-  			defaultContent : ''
-  		}, {
-  			data : 'ref_sale_price',
-  			title : '参考售价',
-  			defaultContent : ''
-  		}, {
-  			data : 'tax_rate',
-  			title : '销项税率',
-  			defaultContent : ''
-  		}, {
-  			data : 'iimptaxrate',
-  			title : '进项税率',
-  			defaultContent : ''
-  		}, {
-  			data : 'iSupplyType',
-  			title : '供应类型',
-  			defaultContent : ''
-  		}, {
-  			data : 'puunit_name',
-  			title : '采购默认单位名称',
-  			defaultContent : ''
-  		}, {
-  			data : 'saunit_name',
-  			title : '销售默认单位名称',
-  			defaultContent : ''
-  		}, {
-  			data : 'stunit_name',
-  			title : '库存默认单位名称',
-  			defaultContent : ''
-  		}, {
-  			data : 'bottom_sale_price',
-  			title : '最低售价',
-  			defaultContent : ''
-  		}, {
-  			data : 'defwarehousename',
-  			title : '默认仓库名称',
-  			defaultContent : ''
-  		}, {
-  			data : 'start_date',
-  			title : '启用日期',
-  			render: $.fn.date_renderer,
-  			defaultContent : ''
-  		}, {
-  			data : 'end_date',
-  			title : '停用日期',
-  			render: $.fn.date_renderer,
-  			defaultContent : ''
-  		}, {
-  			data : 'ModifyDate',
-  			title : '变更日期',
-  			render: $.fn.date_renderer,
+  			data : 'fauxunit',
+  			title : '辅助单位',
   			defaultContent : ''				
+        }, {
+            data : 'fprice',
+            title : '未税单价',
+            defaultContent : ''             
+        }, {
+            data : 'ftax',
+            title : '税率',
+            defaultContent : ''             
+        }, {
+            data : 'ftaxprice',
+            title : '含税单价',
+            defaultContent : ''             
+        }, {
+            data : 'faddqty',
+            title : '订货增量',
+            defaultContent : ''             
+        }, {
+            data : 'foldcheckdate',
+            title : '原调价时间',
+            defaultContent : ''             
+        }, {
+            data : 'cinvdate',
+            title : '单据日期',
+            defaultContent : ''             
+        }, {
+            data : 'fcheckdate',
+            title : '调价时间',
+            defaultContent : ''             
+        }, {
+            data : 'foldavdate',
+            title : '有效日期',
+            defaultContent : ''             
+        }, {
+            data : 'favdate',
+            title : '报价有效期',
+            defaultContent : ''             
+        }, {
+            data : 'fcancelno',
+            title : '失效人',
+            defaultContent : ''             
+        }, {
+            data : 'fcanceldate',
+            title : '失效日期',
+            defaultContent : ''             
+        }, {
+            data : 'fisoutside',
+            title : '是否失效',
+            defaultContent : ''             
+        }, {
+            data : 'funitid',
+            title : '单位',
+            defaultContent : ''             
+        }, {
+            data : 'createby',
+            title : '制单人',
+            defaultContent : ''             
+        }, {
+            data : 'createdate',
+            title : '制单日期',
+            defaultContent : ''             
+        }, {
+            data : 'fnote',
+            title : '备注',
+            defaultContent : ''             
   		} ],
   	});
   	
-  $("#btn_search").click(function() {
-  	table.draw();
-  });
+    $("#btn_search").click(function() {
+    	table.draw();
+    });
+  
+    $('#vendor, #inventory').keyup(function(e){
+        if(e.keyCode == 13)
+            table.draw();
+    });		
+    
 
-		
-	});
+});
 </script>

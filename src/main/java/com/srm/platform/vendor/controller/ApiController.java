@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.srm.platform.vendor.model.Inventory;
+import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
+import com.srm.platform.vendor.repository.PriceRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.u8api.ApiClient;
@@ -41,6 +43,9 @@ public class ApiController {
 	private UnitRepository unitRepository;
 
 	@Autowired
+	private PriceRepository priceRepository;
+
+	@Autowired
 	private VendorRepository vendorRepository;
 
 	@Autowired
@@ -59,6 +64,28 @@ public class ApiController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 		Page<Vendor> result = vendorRepository.findBySearchTerm(search, request);
+
+		return result;
+	}
+
+	// 供应商管理列表查询
+	@RequestMapping(value = "/price/batch_get", produces = "application/json")
+	public Page<Price> price_list_ajax(@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "name");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String search_vendor = requestParams.getOrDefault("vendor", "");
+		String search_inventory = requestParams.getOrDefault("inventory", "");
+		String startDate = requestParams.getOrDefault("start", "");
+		String endDate = requestParams.getOrDefault("end", "");
+
+		logger.info(startDate + " ~ " + endDate);
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+		Page<Price> result = priceRepository.findBySearchTerm(search_vendor, search_inventory, startDate, endDate,
+				request);
 
 		return result;
 	}
