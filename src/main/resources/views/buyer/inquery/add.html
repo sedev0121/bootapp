@@ -19,8 +19,37 @@
           <input type="text" name="single_number" id="single_number" value="" class="form-control" readonly />
         </div>
         <div class="col-lg-3 col-md-3">
-          <label for="document_date">单据日期: </label>
-          <input type="text" id="document_date" class="form-control datepicker">
+          <label for="supplier">供应商:</label>
+          <select name="supplier" id="supplier" class="form-control">
+            <option value=""></option>
+            <option value="嘉兴市华年电机有限公司">嘉兴市华年电机有限公司</option>
+            <option value="嘉兴市华年电机有限公司1">嘉兴市华年电机有限公司1</option>
+            <option value="嘉兴市华年电机有限公司2">嘉兴市华年电机有限公司2</option>
+            <option value="嘉兴市华年电机有限公司3">嘉兴市华年电机有限公司3</option>
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-3">
+          <label for="tax_rate">税率:</label>
+          <input type="number" id="tax_rate" name="tax_rate" class="form-control">
+        </div>
+        
+        <div class="col-lg-3 col-md-3">
+          <label for="status">状态:</label>
+          <select name="status" id="status" class="form-control">
+            <option value=""></option>
+            <option value="新建">新建</option>
+            <option value="审核">审核</option>
+            <option value="拒绝">拒绝</option>
+            <option value="发布">发布</option>
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-3">
+          <label for="effective_date1">有效日期:</label>
+          <input type="text" id="effective_date1" class="form-control datepicker">
+        </div>        
+        <div class="col-lg-3 col-md-3">
+          <label for="effective_date">生效日期:</label>
+          <input type="text" id="effective_date" class="form-control datepicker">
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="supplier_name">制单人:</label>
@@ -33,28 +62,8 @@
           </select>
         </div>
         <div class="col-lg-3 col-md-3">
-          <label for="confirm">确认:</label>
-          <select name="confirm" id="confirm" class="form-control">
-            <option value=""></option>
-            <option value="AAA">AAA</option>
-            <option value="BBB">BBB</option>
-            <option value="CCC">CCC</option>
-            <option value="DDD">DDD</option>
-          </select>                      
-        </div>
-        <div class="col-lg-3 col-md-3">
-          <label for="supplier">供应商:</label>
-          <select name="supplier" id="supplier" class="form-control">
-            <option value=""></option>
-            <option value="嘉兴市华年电机有限公司">嘉兴市华年电机有限公司</option>
-            <option value="嘉兴市华年电机有限公司1">嘉兴市华年电机有限公司1</option>
-            <option value="嘉兴市华年电机有限公司2">嘉兴市华年电机有限公司2</option>
-            <option value="嘉兴市华年电机有限公司3">嘉兴市华年电机有限公司3</option>
-          </select>
-        </div>
-        <div class="col-lg-3 col-md-3">
-          <label for="effective_date">生效日期:</label>
-          <input type="text" id="effective_date" class="form-control datepicker">
+          <label for="document_date">单据日期: </label>
+          <input type="text" id="document_date" class="form-control datepicker">
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">确认人:</label>
@@ -67,23 +76,10 @@
           </select>
         </div>
         <div class="col-lg-3 col-md-3">
-          <label for="status">状态:</label>
-          <select name="status" id="status" class="form-control">
-            <option value=""></option>
-            <option value="新建">新建</option>
-            <option value="审核">审核</option>
-            <option value="拒绝">拒绝</option>
-            <option value="发布">发布</option>
-          </select>
+          <label for="document_date">确认日期: </label>
+          <input type="text" id="document_date" class="form-control datepicker">
         </div>
-        <div class="col-lg-3 col-md-3">
-          <label for="tax_rate">税率:</label>
-          <input type="number" id="tax_rate" name="tax_rate" class="form-control">
-        </div>
-        <div class="col-lg-3 col-md-3">
-          <label for="effective_date1">有效日期:</label>
-          <input type="text" id="effective_date1" class="form-control datepicker">
-        </div>
+
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">审核人:</label>                      
           <select name="reviewer" id="reviewer" class="form-control">
@@ -93,6 +89,10 @@
             <option value="CCC">CCC</option>
             <option value="DDD">DDD</option>
           </select>
+        </div>
+        <div class="col-lg-3 col-md-3">
+          <label for="reviewer">审核日期:</label>
+          <input type="text" id="effective_date1" class="form-control datepicker">
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">归档人:</label>

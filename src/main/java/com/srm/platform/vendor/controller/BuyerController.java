@@ -110,6 +110,12 @@ public class BuyerController {
 		return "buyer/vendor/index";
 	}
 
+	// 报表中心
+	@GetMapping("/report")
+	public String report() {
+		return "buyer/report/index";
+	}
+
 	// 供应商管理->修改
 	@GetMapping("/vendor/{code}/edit")
 	public String vendor_edit(@PathVariable("code") String code, Model model) {

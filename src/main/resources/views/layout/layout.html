@@ -67,28 +67,29 @@
                 <li><a th:href="@{/buyer/quote}">报价管理</a></li>
               </ul>
             </li>         
-            <li class="dropdown" th:classappend="${#strings.contains(#httpServletRequest.requestURI,'inventory')} or ${#strings.contains(#httpServletRequest.requestURI,'price')}? active : ''" >   
-              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">商品管理 </a>
-                
-              <ul class="dropdown-menu">
-                <li><a th:href="@{/buyer/inventory}">商品档案表</a></li>
-                <li><a th:href="@{/buyer/price}">商品价格查询</a></li>
-              </ul>
-            </li>
-            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'vendor')} ? active : ''" >
-              <a th:href="@{/buyer/vendor}">供应商管理</a>
-            </li>
             <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purchaseorder')} ? active : ''" >
               <a th:href="@{/buyer/purchaseorder}">订单管理</a>
             </li>
             <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'shipment')} ? active : ''" >
               <a th:href="@{/buyer/shipment}">出货看板</a>
             </li>
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purchasein')} ? active : ''" >
+              <a th:href="@{/buyer/purchasein}">出入库单据</a>
+            </li>
             <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purinvoice')} ? active : ''" >
               <a th:href="@{/buyer/purinvoice}">对账单管理</a>
             </li>
-            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purchasein')} ? active : ''" >
-              <a th:href="@{/buyer/purchasein}">外购入库单</a>
+            <li class="dropdown" th:classappend="${#strings.contains(#httpServletRequest.requestURI,'inventory')} or ${#strings.contains(#httpServletRequest.requestURI,'price')}? active : ''" >   
+              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
+                
+              <ul class="dropdown-menu">
+                <li><a th:href="@{/buyer/vendor}">供应商档案表</a></li>
+                <li><a th:href="@{/buyer/inventory}">商品档案表</a></li>
+                <li><a th:href="@{/buyer/price}">商品价格查询</a></li>
+              </ul>
+            </li>
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'report')} ? active : ''" >
+              <a th:href="@{/buyer/report}">报表中心</a>
             </li>
           </ul>
         </div>
