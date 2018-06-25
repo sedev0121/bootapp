@@ -52,6 +52,17 @@
           <input type="text" id="effective_date" class="form-control datepicker">
         </div>
         <div class="col-lg-3 col-md-3">
+          <label for="status">状态:</label>
+          <select name="status" id="status" class="form-control">
+            <option value=""></option>
+            <option value="新建">新建</option>
+            <option value="审核">审核</option>
+            <option value="拒绝">拒绝</option>
+            <option value="发布">发布</option>
+          </select>
+        </div>
+        
+        <div class="col-lg-3 col-md-3">
           <label for="supplier_name">制单人:</label>
           <select name="supplier" id="supplier" class="form-control">
             <option value=""></option>

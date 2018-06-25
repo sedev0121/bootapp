@@ -4,14 +4,18 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,7 +59,7 @@ public class SyncController {
 
 	@GetMapping({ "", "/", "/all" })
 	public boolean index() {
-		this.vendor();
+		this.vendorUpdateAll();
 		this.inventory();
 		this.measurementunit();
 		this.inventoryClass();
@@ -63,8 +67,42 @@ public class SyncController {
 		return true;
 	}
 
-	@RequestMapping(value = "/vendor")
-	public boolean vendor() {
+	@RequestMapping(value = "/vendor/part")
+	public boolean vendorUpatePart() {
+		return vendor(false);
+	}
+
+	@RequestMapping(value = "/vendor/all")
+	public boolean vendorUpdateAll() {
+		return vendor(true);
+	}
+
+	private Long getLastSyncTime() {
+
+		Date today = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal.getTime().getTime();
+	}
+
+	private Long getTime(String time) {
+		Long result = 0L;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:");
+		try {
+			result = dateFormat.parse(time).getTime();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			// e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	private boolean vendor(boolean isAll) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -74,7 +112,8 @@ public class SyncController {
 
 		Map<String, Object> map = new HashMap<>();
 
-		vendorRepository.deleteAll();
+		if (isAll)
+			vendorRepository.deleteAll();
 
 		try {
 			do {
@@ -98,7 +137,16 @@ public class SyncController {
 					vendorList = (List<LinkedHashMap<String, String>>) map.get("vendor");
 					for (LinkedHashMap<String, String> temp : vendorList) {
 						logger.info(temp.get("code") + " " + temp.get("name"));
+
 						Vendor vendor = new Vendor();
+						vendor.setCode(temp.get("code"));
+						if (this.getTime(temp.get("timeStamp")) >= getLastSyncTime()) {
+							Example<Vendor> example = Example.of(vendor);
+							Optional<Vendor> result = vendorRepository.findOne(example);
+							if (result.isPresent())
+								vendor = result.get();
+						}
+
 						vendor.setAbbrname(temp.get("abbrname"));
 						vendor.setAddress(temp.get("address"));
 						vendor.setBankAccNumber(temp.get("bank_acc_number"));

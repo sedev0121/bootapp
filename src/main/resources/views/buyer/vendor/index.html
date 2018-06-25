@@ -16,6 +16,7 @@
           </div>
           <div style="vertical-align: bottom" class="search-cell width-18 text-right">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+            <button class="btn btn-success" id="btn_sync_vendor"><i class="fa fa-download"></i> 同步U8供应商</button>
           </div>
       </div>
       <div class="row">
@@ -30,6 +31,7 @@
 
 
 <script th:inline="javascript">
+    var sync_vendor_url = /*[[@{/sync/vendor/part}]]*/'';
 	$.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
 		var product_code = $('#product_code').val();
 		var product_name = $('#product_name').val();
@@ -135,6 +137,28 @@
 		
     $("#btn_search").click(function() {
     	table.draw();
+    });
+    
+    $("#btn_sync_vendor").click(function() {
+      App.showConfirmDialog('确定要同步吗?', function() {
+        $.ajax({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          }, 
+          url : sync_vendor_url,
+          success : function(data, res) {
+            if (data == true) {
+              App.showSuccessDialog("同步成功");
+            }else{
+              App.showSuccessDialog("同步失败");
+            }
+          }
+        });
+      });
+      
     });
     
     $('#product_name').keyup(function(e){

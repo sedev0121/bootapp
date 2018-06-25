@@ -5,6 +5,83 @@ function extractLast( term ) {
   return split( term ).pop();
 }
 
+var App = function() {
+  return {
+    blockUI : function(options) {
+      options = $.extend(true, {}, options);
+      if (options.message == undefined)
+        options.message = "操作过程当中...";
+      
+      if (options.target) { // element blocking
+        var el = $(options.target);
+        el.block({
+          message : ons.message,
+          css : {
+            border: 'none', 
+            padding: '25px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '4px', 
+            '-moz-border-radius': '4px', 
+            opacity: .3, 
+            color: '#fff' 
+          },
+        });
+      } else { // page blocking
+        $.blockUI({
+          message : options.message,
+          css : {
+            border: 'none', 
+            padding: '25px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '4px', 
+            '-moz-border-radius': '4px', 
+            opacity: .3, 
+            color: '#fff' 
+          },
+        });
+      }
+    },
+
+    // wrApper function to un-block element(finish loading)
+    unblockUI : function(target) {
+      if (target) {
+        $(target).unblock();
+      } else {
+        $.unblockUI();
+      }
+    },
+    
+    showSuccessDialog: function(title, text) {
+      swal({
+        "title": title,
+        "text": text,
+        "type": "success"
+      })
+    },
+    showErrorDialog: function(title, text) {
+      swal({
+        "title": title,
+        "text": text,
+        "type": "error"
+      })
+    },
+    showConfirmDialog: function(title, callback) {
+      swal({
+        title: title,
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '是',
+        cancelButtonText: '否'
+      }).then((result) => {
+        if (result.value) {
+          callback();
+        }
+      })
+    },
+  }
+}();
+
+
 $(document).ready(function() {
 	$.extend(true, $.fn.DataTable.defaults, {
 		processing : true,
@@ -59,4 +136,5 @@ $(document).ready(function() {
 	    max: jQuery.validator.format("请输入不大于 {0}的值."),
 	    min: jQuery.validator.format("请输入不小于{0}的值.")
 	});
+	
 });

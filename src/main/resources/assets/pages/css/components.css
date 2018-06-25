@@ -1,7 +1,6 @@
 /* Reset rounded corners for all elements */
 div,
 input,
-select,
 textarea,
 span,
 img,
@@ -16,9 +15,15 @@ ul,
 code,
 pre,
 li {
-    -webkit-border-radius: 0 !important;
-    -moz-border-radius: 0 !important;
-    border-radius: 0 !important;
+    -webkit-border-radius: 0 ;
+    -moz-border-radius: 0;
+    border-radius: 0;
+}
+
+select {
+    -webkit-border-radius: 4px ;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
 }
 
 a,
