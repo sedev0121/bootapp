@@ -5,8 +5,32 @@ function extractLast( term ) {
   return split( term ).pop();
 }
 
+
 var App = function() {
+  var inquery_state_data = [{id:1, text:"新建"}, {id:2, text:"确认"}, {id:3, text:"通过"}, {id:4, text:"审核"}, {id:5, text:"归档"}];
+  var inquery_type = [{id:1, text:'常规报价'}, {id:1, text:'区间报价'}];
+  var inquery_provide_type = [{id:1, text:'采购'}, {id:1, text:'委外'}];
+  
+  
   return {
+    getInqueryStateData: function() {
+      return inquery_state_data;
+    },
+    getInqueryStateDataWithAll: function() {
+      return [{id:0, text:"---"}, ...inquery_state_data];
+    },
+    getInqueryTypeData: function() {
+      return inquery_type;
+    },
+    getInqueryTypeDataWithAll: function() {
+      return [{id:0, text:"---"}, ...inquery_type];
+    },
+    getInqueryProvideTypeData: function() {
+      return inquery_provide_type;
+    },
+    getInqueryProvideDataWithAll: function() {
+      return [{id:0, text:"---"}, ...inquery_provide_type];
+    },    
     blockUI : function(options) {
       options = $.extend(true, {}, options);
       if (options.message == undefined)
@@ -83,6 +107,30 @@ var App = function() {
 
 
 $(document).ready(function() {
+  $.datepicker.regional[ "zh-CN" ] = {
+    closeText: "关闭",
+    prevText: "&#x3C;上月",
+    nextText: "下月&#x3E;",
+    currentText: "今天",
+    monthNames: [ "一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月" ],
+    monthNamesShort: [ "一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月" ],
+    dayNames: [ "星期日","星期一","星期二","星期三","星期四","星期五","星期六" ],
+    dayNamesShort: [ "周日","周一","周二","周三","周四","周五","周六" ],
+    dayNamesMin: [ "日","一","二","三","四","五","六" ],
+    weekHeader: "周",
+    dateFormat: "yy-mm-dd",
+    firstDay: 1,
+    isRTL: false,
+    showMonthAfterYear: true,
+    yearSuffix: "年" };
+
+  $.datepicker.setDefaults(
+    $.extend({},
+      {'dateFormat':'yy-mm-dd', showButtonPanel: true},
+      $.datepicker.regional['zh-CN']
+    )
+  );
+  
 	$.extend(true, $.fn.DataTable.defaults, {
 		processing : true,
 		serverSide : true,

@@ -33,8 +33,10 @@
   <link th:href="@{/assets/plugins/jquery-ui/jquery-ui.min.css}" rel="stylesheet" type="text/css">
   <link th:href="@{/assets/plugins/jquery-ui/jquery-ui.structure.min.css}" rel="stylesheet" type="text/css">
   <link th:href="@{/assets/plugins/jquery-ui/jquery-ui.theme.min.css}" rel="stylesheet" type="text/css">
-  <link th:href="@{/assets/plugins/select2/css/select2.min.css}" rel="stylesheet" type="text/css">
+  <link th:href="@{/assets/plugins/select2/css/select2.css}" rel="stylesheet" type="text/css">
 
+  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/datepicker3.css}" rel="stylesheet" type="text/css"></script>
+  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/datepicker.css}" rel="stylesheet" type="text/css"></script>
   <link href="https://cdn.datatables.net/responsive/2.2.1/css/responsive.dataTables.min.css" rel="stylesheet">
   <link href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css" rel="stylesheet">
   <link href="https://cdn.datatables.net/select/1.2.5/css/select.dataTables.min.css" rel="stylesheet">
@@ -214,38 +216,34 @@
       </div>
     </div>
     <!-- END FOOTER -->
-    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> -->
+
     <script th:src="@{/assets/plugins/jquery.min.js}" type="text/javascript"></script>
     <script th:src="@{/assets/plugins/jquery-migrate.min.js}" type="text/javascript"></script>
     <script th:src="@{/assets/plugins/bootstrap/js/bootstrap.min.js}" type="text/javascript"></script>      
     <script th:src="@{/assets/corporate/scripts/back-to-top.js}" type="text/javascript"></script>
-    <!-- END CORE PLUGINS -->
-
-    <!-- BEGIN PAGE LEVEL JAVASCRIPTS (REQUIRED ONLY FOR CURRENT PAGE) -->
     <script th:src="@{/assets/plugins/fancybox/source/jquery.fancybox.pack.js}" type="text/javascript"></script><!-- pop up -->
     <script th:src="@{/assets/plugins/owl.carousel/owl.carousel.min.js}" type="text/javascript"></script><!-- slider for products -->
-
-    <script th:src="@{/assets/corporate/scripts/layout.js}" type="text/javascript"></script>
-    <script th:src="@{/assets/corporate/scripts/app.js}" type="text/javascript"></script>
     <script th:src="@{/assets/pages/scripts/bs-carousel.js}" type="text/javascript"></script>
-
     <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/select/1.2.5/js/dataTables.select.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
-    <!-- END PAGE LEVEL JAVASCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
-    <script type="text/javascript" th:src="@{/assets/plugins/data-table/datatable-input.js}"></script>
-    <script type="text/javascript" th:src="@{/assets/plugins/jquery-validate/jquery.validate.js}"></script>
-    <script type="text/javascript" th:src="@{/assets/plugins/sweetalert/sweetalert2.min.js}"></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js}"  type="text/javascript" ></script>
+    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js}" type="text/javascript" ></script>
+    <script th:src="@{/assets/plugins/data-table/datatable-input.js}" type="text/javascript" ></script>
+    <script th:src="@{/assets/plugins/jquery-validate/jquery.validate.js}" type="text/javascript" ></script>
+    <script th:src="@{/assets/plugins/sweetalert/sweetalert2.min.js}" type="text/javascript" ></script>
     <script th:src="@{/assets/plugins/uniform/jquery.uniform.min.js}" type="text/javascript"></script>
     <script th:src="@{/assets/plugins/jquery.form.min.js}" type="text/javascript"></script>
     <script th:src="@{/assets/plugins/jquery-ui/jquery-ui.min.js}" type="text/javascript"></script>
     <script th:src="@{/assets/plugins/jstree/jstree.min.js}" type="text/javascript"></script>
     <script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
     <script th:src="@{/assets/plugins/jquery.blockui.min.js}" type="text/javascript"></script>
+    <script th:src="@{/assets/corporate/scripts/layout.js}" type="text/javascript"></script>
+    <script th:src="@{/assets/corporate/scripts/app.js}" type="text/javascript"></script>
 </body>
 <!-- END BODY -->
 <script type="text/javascript">

@@ -34,90 +34,60 @@
         </div>
         
         <div class="col-lg-3 col-md-3">
-          <label for="status">状态:</label>
-          <select name="status" id="status" class="form-control">
-            <option value=""></option>
-            <option value="新建">新建</option>
-            <option value="审核">审核</option>
-            <option value="拒绝">拒绝</option>
-            <option value="发布">发布</option>
+          <label for="state">状态:</label>
+          <select name="state" id="state" class="form-control" readonly>
           </select>
         </div>
         <div class="col-lg-3 col-md-3">
-          <label for="effective_date1">有效日期:</label>
-          <input type="text" id="effective_date1" class="form-control datepicker">
+          <label for="end_date">生效日期:</label>
+          <input type="text" id="start_date" class="form-control datepicker">
+        </div>
+        <div class="col-lg-3 col-md-3">
+          <label for="end_date">有效日期:</label>
+          <input type="text" id="end_date" class="form-control datepicker">
         </div>        
         <div class="col-lg-3 col-md-3">
-          <label for="effective_date">生效日期:</label>
-          <input type="text" id="effective_date" class="form-control datepicker">
-        </div>
-        <div class="col-lg-3 col-md-3">
-          <label for="status">状态:</label>
-          <select name="status" id="status" class="form-control">
-            <option value=""></option>
-            <option value="新建">新建</option>
-            <option value="审核">审核</option>
-            <option value="拒绝">拒绝</option>
-            <option value="发布">发布</option>
+          <label for="type">报价形式:</label>
+          <select name="type" id="type" class="form-control">
           </select>
         </div>
-        
+        <div class="col-lg-3 col-md-3">
+          <label for="provide_type">供应类型:</label>
+          <select name="provide_type" id="provide_type" class="form-control">
+          </select>
+        </div>
         <div class="col-lg-3 col-md-3">
           <label for="supplier_name">制单人:</label>
-          <select name="supplier" id="supplier" class="form-control">
-            <option value=""></option>
-            <option value="AAA">AAA</option>
-            <option value="BBB">BBB</option>
-            <option value="CCC">CCC</option>
-            <option value="DDD">DDD</option>
-          </select>
+          <input type="text" value="" class="form-control" readonly>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="document_date">单据日期: </label>
-          <input type="text" id="document_date" class="form-control datepicker">
+          <input type="text" id="document_date" class="form-control datepicker" readonly>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">确认人:</label>
-          <select name="reviewer" id="reviewer" class="form-control">
-            <option value=""></option>
-            <option value="AAA">AAA</option>
-            <option value="BBB">BBB</option>
-            <option value="CCC">CCC</option>
-            <option value="DDD">DDD</option>
-          </select>
+          <input type="text" value="" class="form-control" readonly>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="document_date">确认日期: </label>
-          <input type="text" id="document_date" class="form-control datepicker">
+          <input type="text" value="" class="form-control datepicker" readonly>
         </div>
 
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">审核人:</label>                      
-          <select name="reviewer" id="reviewer" class="form-control">
-            <option value=""></option>
-            <option value="AAA">AAA</option>
-            <option value="BBB">BBB</option>
-            <option value="CCC">CCC</option>
-            <option value="DDD">DDD</option>
-          </select>
+          <input type="text" value="" class="form-control" readonly>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">审核日期:</label>
-          <input type="text" id="effective_date1" class="form-control datepicker">
+          <input type="text" id="effective_date1" class="form-control datepicker" readonly>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">归档人:</label>
-          <select name="reviewer" id="reviewer" class="form-control">
-            <option value=""></option>
-            <option value="AAA">AAA</option>
-            <option value="BBB">BBB</option>
-            <option value="CCC">CCC</option>
-            <option value="DDD">DDD</option>
-          </select>
+          <input type="text" value="" class="form-control" readonly>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">归档日期:</label>
-          <input type="text" id="effective_date1" class="form-control datepicker">
+          <input type="text" id="effective_date1" class="form-control datepicker" readonly>
         </div>
     </div>
     <div class="row margin-top-10">
@@ -141,28 +111,16 @@
 </body>
 </html>
 <script th:inline="javascript">
-  $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-    var supplier_code = $('#supplier_code').val();
-    var supplier_name = $('#supplier_name').val();
-    var product_code = $('#product_code').val();
-    var product_name = $('#product_name').val();
-    var status = $('#status').val();
-
-    if (data[3] == supplier_code || supplier_code == '') {
-      if (data[4] == supplier_name || supplier_name == '') {
-        if (data[9] == product_code || product_code == '') {
-          if (data[10] == product_name || product_name == '') {
-            if (data[6] == status || status == '') {
-              return true;
-            }
-          }
-        }
-      }
-    }
-    return false;
-  });
-  
+ 
   $(document).ready(function() {
+    
+    $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1, disabled: true });
+    $("#type").select2({ data: App.getInqueryTypeData(),minimumResultsForSearch: -1 });
+    $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 });
+    
+    $('#start_date').datepicker().datepicker("setDate", new Date());;
+    $('#end_date').datepicker().datepicker("setDate","+1m +7d");;
+
     var table = $('#example').DataTable({
       ajax : {
         url : /*[[@{/api/venpriceadjust/batch_get}]]*/'',
@@ -196,19 +154,19 @@
         title : '商品名称',
         defaultContent : '商品名称'
       }, {
-    	data : null,
+        data : null,
         title : '规格型号',
         defaultContent : '规格型号'
       }, {
-    	data : null,
+        data : null,
         title : '单位',
         defaultContent : '个'
       }, {
-    	data : null,
+        data : null,
         title : '原价格',
         defaultContent : '100'
       }, {
-    	data : null,
+        data : null,
         title : '最新未税报价',
         defaultContent : '110'
       }, {
@@ -216,24 +174,24 @@
         title : '最新含税报价',
         defaultContent : '120'
       }, {
-          data : null,
-          title : '税率',
-          defaultContent : '17'
+        data : null,
+        title : '税率',
+        defaultContent : '17'
       }, {
         data : 'dverifydate',
         title : '生效日期',
-        render: $.fn.date_renderer,
+        render : $.fn.date_renderer,
         defaultContent : ''
       }, {
-          data : 'dverifydate',
-          title : '有效日期',
-          render: $.fn.date_renderer,
-          defaultContent : ''
+        data : 'dverifydate',
+        title : '有效日期',
+        render : $.fn.date_renderer,
+        defaultContent : ''
       }, {
-          data : null,
-          title : '备注',
-          defaultContent : '备注'
-          
+        data : null,
+        title : '备注',
+        defaultContent : '备注'
+
       } ],
     });
 
