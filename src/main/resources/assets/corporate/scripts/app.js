@@ -5,14 +5,71 @@ function extractLast( term ) {
   return split( term ).pop();
 }
 
-
 var App = function() {
   var inquery_state_data = [{id:1, text:"新建"}, {id:2, text:"确认"}, {id:3, text:"通过"}, {id:4, text:"审核"}, {id:5, text:"归档"}];
   var inquery_type = [{id:1, text:'常规报价'}, {id:1, text:'区间报价'}];
   var inquery_provide_type = [{id:1, text:'采购'}, {id:1, text:'委外'}];
-  
+  var select2_default_options = {
+      language: "zh-CN",
+      ajax: {
+          dataType: 'json',
+          delay: 250,
+          data: function(params) {
+              return {
+                  q: params.term
+              };
+          },
+          processResults: function(data, page) {
+              return {
+                  results: data.content
+              };
+          },
+          cache: true
+      },
+      escapeMarkup: function(markup) {
+          return markup;
+      }, // let our custom formatter work
+      minimumInputLength: 1,
+      templateResult: function(item) {
+        return "<div>" + item.title + "</div>";
+      },
+      templateSelection: function(item) {
+        return item.title;
+      }
+  };
   
   return {
+    generatePaperCode: function() {
+      var now = new Date();
+      var hours = now.getHours();
+      if (hours<10)
+        hours = "0" + hours;
+      var minutes = now.getMinutes();
+      if (minutes<10)
+        minutes = "0" + minutes;
+      var seconds = now.getSeconds();
+      if (seconds<10)
+        seconds = "0" + seconds;
+      
+      var millisecs = now.getMilliseconds();
+      if (millisecs < 10)
+        millisecs = '00' + millisecs;
+      else if (millisecs < 100)
+        millisecs = '0' + millisecs;
+      
+      var suffix = Math.floor(Math.random() * 1000);
+      if (suffix < 10)
+        suffix = "0" + suffix;
+      else if (suffix < 100)
+        suffix = '0' + suffix;
+
+      return $.datepicker.formatDate('yymmdd', new Date()) + hours + minutes + seconds + millisecs + suffix;
+    },
+    
+    getSelect2Options: function(search_url) {
+      return $.extend(true, {ajax:{url:search_url}}, select2_default_options);
+    },
+  
     getInqueryStateData: function() {
       return inquery_state_data;
     },

@@ -15,17 +15,14 @@
         <div class="panel-body">     
     <div class="row">
         <div class="col-lg-3 col-md-3">
-          <label for="single_number">单号: </label>
-          <input type="text" name="single_number" id="single_number" value="" class="form-control" readonly />
+          <label for="code">单号: </label>
+          <input type="text" id="code" value="" class="form-control" readonly />
         </div>
         <div class="col-lg-3 col-md-3">
-          <label for="supplier">供应商:</label>
-          <select name="supplier" id="supplier" class="form-control">
-            <option value=""></option>
-            <option value="嘉兴市华年电机有限公司">嘉兴市华年电机有限公司</option>
-            <option value="嘉兴市华年电机有限公司1">嘉兴市华年电机有限公司1</option>
-            <option value="嘉兴市华年电机有限公司2">嘉兴市华年电机有限公司2</option>
-            <option value="嘉兴市华年电机有限公司3">嘉兴市华年电机有限公司3</option>
+          <label for="vendor">供应商:</label>
+          <select id="vendor" class="form-control">
+          <option value="2126244" selected="selected">twbs/bootstrap</option>
+            <option value="3017" selected="selected">NEC（日电）有限公司</option>
           </select>
         </div>
         <div class="col-lg-3 col-md-3">
@@ -40,7 +37,7 @@
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="end_date">生效日期:</label>
-          <input type="text" id="start_date" class="form-control datepicker">
+          <input type="text" id="start_date" value="2018-06-24" class="form-control datepicker">
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="end_date">有效日期:</label>
@@ -111,16 +108,23 @@
 </body>
 </html>
 <script th:inline="javascript">
- 
+  var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
   $(document).ready(function() {
+    var is_add = true;
+    $('#start_date').datepicker().datepicker();
+    $('#end_date').datepicker().datepicker();
     
-    $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1, disabled: true });
+    if (is_add) {
+      $("#code").val(App.generatePaperCode());  
+      $('#start_date').datepicker().datepicker("setDate", new Date());
+      $('#end_date').datepicker().datepicker("setDate","+1m +7d");
+    }
+    
+    $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1, disabled: true }).select2("val", "5");
     $("#type").select2({ data: App.getInqueryTypeData(),minimumResultsForSearch: -1 });
     $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 });
+    $("#vendor").select2(App.getSelect2Options(vendor_search_url));
     
-    $('#start_date').datepicker().datepicker("setDate", new Date());;
-    $('#end_date').datepicker().datepicker("setDate","+1m +7d");;
-
     var table = $('#example').DataTable({
       ajax : {
         url : /*[[@{/api/venpriceadjust/batch_get}]]*/'',

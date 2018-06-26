@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.Vendor;
+import com.srm.platform.vendor.utility.VendorSearchItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
@@ -13,4 +14,8 @@ import com.srm.platform.vendor.model.Vendor;
 public interface VendorRepository extends JpaRepository<Vendor, Long> {
 	@Query(value = "SELECT * FROM vendor WHERE code LIKE %?1% or name LIKE %?1% ", nativeQuery = true)
 	Page<Vendor> findBySearchTerm(String search, Pageable pageable);
+
+	@Query(value = "SELECT code, name FROM vendor t WHERE "
+			+ "t.abbrname LIKE %?1% or t.name LIKE %?1%", nativeQuery = true)
+	Page<VendorSearchItem> findForSelect(String search, Pageable pageable);
 }

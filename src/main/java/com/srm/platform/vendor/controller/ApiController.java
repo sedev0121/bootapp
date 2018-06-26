@@ -27,6 +27,7 @@ import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.utility.AccountSearchItem;
 import com.srm.platform.vendor.utility.UnitNode;
+import com.srm.platform.vendor.utility.VendorSearchItem;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -153,6 +154,14 @@ public class ApiController {
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "realname");
 
 		return accountRepository.findForAutoComplete(search, request);
+	}
+
+	// 用户名单
+	@RequestMapping(value = "/vendor/select", produces = "application/json")
+	public Page<VendorSearchItem> vendor_search(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
+
+		return vendorRepository.findForSelect(search, request);
 	}
 
 	// 用户名单
