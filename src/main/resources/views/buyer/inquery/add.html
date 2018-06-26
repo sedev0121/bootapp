@@ -115,6 +115,8 @@
 </body>
 </html>
 <script th:inline="javascript">
+  var editor;
+  var url = /*[[@{/assets/sample.json}]]*/'';
   var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
   $(document).ready(function() {
     var is_add = true;
@@ -134,30 +136,29 @@
     $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 });
     $("#vendor").select2(App.getSelect2Options(vendor_search_url));
    
-    var table = $('#example').DataTable({
-      ajax : {
-        url : /*[[@{/api/venpriceadjust/batch_get}]]*/'',
-        data : function(data) {
-          var filter = {
-            rows_per_page : data.length,
-            page_index : data.start / data.length + 1
-          }
-          return filter;
-        },
-        dataSrc : function(json) {
-          if (json.errcode != 0) {
-            alert(json.errmsg);
-            json.recordsTotal = 0
-            json.recordsFiltered = 0;
-            json.venpriceadjustlist = [];
-          } else {
-            json.recordsTotal = json.row_count;
-            json.recordsFiltered = json.row_count;
-          }
-          return json.venpriceadjustlist;
-        },
-      },
+    editor = new $.fn.dataTable.Editor( {
+      table: "#example",
+      fields: [ {
+          label: "First name:",
+          name: "first_name"
+      }, {
+          label: "Last name:",
+          name: "last_name"
+      }, {
+          label: "Position:",
+          name: "position"
+      }, {
+          label: "Office:",
+          name: "office"
+      }]
+    } );
 
+    $('#example').DataTable( {
+      serverSide:false,
+      dom: "Bfrtip",
+      ajax: {
+        url: url,
+      },      
       columns : [ {
         data : 'ccode',
         title : '商品编码',
@@ -206,7 +207,15 @@
         defaultContent : '备注'
 
       } ],
-    });
+      select: true,
+      buttons: [
+          { extend: "create", editor: editor },
+          { extend: "edit",   editor: editor },
+          { extend: "remove", editor: editor }
+      ]
+    } );
+
+
 
     $("#btn_search").click(function() {
       table.draw();

@@ -36,14 +36,19 @@
   <link th:href="@{/assets/plugins/select2/css/select2.css}" rel="stylesheet" type="text/css">
   <link th:href="@{/assets/plugins/select2/css/select2-bootstrap.min.css}" rel="stylesheet" type="text/css">
 
-  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/datepicker3.css}" rel="stylesheet" type="text/css"></script>
-  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/datepicker.css}" rel="stylesheet" type="text/css"></script>
+  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/datepicker3.css}" rel="stylesheet" type="text/css">
+  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/datepicker.css}" rel="stylesheet" type="text/css">
   <link href="https://cdn.datatables.net/responsive/2.2.1/css/responsive.dataTables.min.css" rel="stylesheet">
   <link href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css" rel="stylesheet">
   <link href="https://cdn.datatables.net/select/1.2.5/css/select.dataTables.min.css" rel="stylesheet">
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/semantic.min.css" rel="stylesheet">
   <link href="https://cdn.datatables.net/1.10.16/css/dataTables.semanticui.min.css" rel="stylesheet">
+  
+  <link th:href="@{/assets/plugins/data-table/editor/css/buttons.dataTables.min.css}" rel="stylesheet" type="text/css">
+  <link th:href="@{/assets/plugins/data-table/editor/css/select.dataTables.min.css}" rel="stylesheet" type="text/css">
+  <link th:href="@{/assets/plugins/data-table/editor/css/editor.dataTables.min.css}" rel="stylesheet" type="text/css">
+  <link th:href="@{/assets/plugins/data-table/editor/css/editor.semanticui.min.css}" rel="stylesheet" type="text/css">
   <!-- Theme styles END -->
 
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
@@ -226,16 +231,18 @@
     <script th:src="@{/assets/plugins/fancybox/source/jquery.fancybox.pack.js}" type="text/javascript"></script><!-- pop up -->
     <script th:src="@{/assets/plugins/owl.carousel/owl.carousel.min.js}" type="text/javascript"></script><!-- slider for products -->
     <script th:src="@{/assets/pages/scripts/bs-carousel.js}" type="text/javascript"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/select/1.2.5/js/dataTables.select.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
+    <script src="https://cdn.datatables.net/1.10.17/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/select/1.2.5/js/dataTables.select.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
+    <script th:src="@{/assets/plugins/data-table/datatable-input.js}" type="text/javascript" ></script>
+    <script th:src="@{/assets/plugins/data-table/dataTables.buttons.min.js}" type="text/javascript" ></script>
+    <script th:src="@{/assets/plugins/data-table/editor/js/dataTables.editor.min.js}" type="text/javascript" ></script>
     
     <script th:src="@{/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js}"  type="text/javascript" ></script>
     <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js}"  type="text/javascript" ></script>
-    <script th:src="@{/assets/plugins/data-table/datatable-input.js}" type="text/javascript" ></script>
     <script th:src="@{/assets/plugins/jquery-validate/jquery.validate.js}" type="text/javascript" ></script>
     <script th:src="@{/assets/plugins/sweetalert/sweetalert2.min.js}" type="text/javascript" ></script>
     <script th:src="@{/assets/plugins/uniform/jquery.uniform.min.js}" type="text/javascript"></script>
@@ -253,6 +260,6 @@
     jQuery(document).ready(function() {
         Layout.init();
         Layout.initUniform();
-  	});
+    });
 </script>
 </html>

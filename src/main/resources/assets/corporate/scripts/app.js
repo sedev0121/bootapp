@@ -210,7 +210,11 @@ $(document).ready(function() {
 				"last" : "<i class='fa fa-angle-double-right'></i>",
 				"previous" : "<i class='fa fa-angle-left'></i>",
 				"next" : "<i class='fa fa-angle-right'></i>"
+			},
+			"select" : {
+			  "rows":"选了%d行"
 			}
+	    
 		},
 		ajax: {
 			timeout: 15000, 
