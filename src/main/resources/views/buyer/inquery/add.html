@@ -21,7 +21,6 @@
         <div class="col-lg-3 col-md-3">
           <label for="vendor">供应商:</label>
           <select id="vendor" class="form-control">
-          <option value="2126244" selected="selected">twbs/bootstrap</option>
             <option value="3017" selected="selected">NEC（日电）有限公司</option>
           </select>
         </div>
@@ -124,7 +123,7 @@
     $("#type").select2({ data: App.getInqueryTypeData(),minimumResultsForSearch: -1 });
     $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 });
     $("#vendor").select2(App.getSelect2Options(vendor_search_url));
-    
+   
     var table = $('#example').DataTable({
       ajax : {
         url : /*[[@{/api/venpriceadjust/batch_get}]]*/'',

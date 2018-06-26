@@ -34,7 +34,7 @@ var App = function() {
         return "<div>" + item.title + "</div>";
       },
       templateSelection: function(item) {
-        return item.title;
+        return item.title || item.text;
       }
   };
   
