@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.security.Principal;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.model.Vendor;
+import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PriceRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
@@ -35,6 +38,9 @@ public class BuyerController {
 	@Autowired
 	private PriceRepository priceRepository;
 
+	@Autowired
+	private AccountRepository accountRepository;
+
 	// Home
 	@GetMapping({ "", "/" })
 	public String home() {
@@ -49,7 +55,9 @@ public class BuyerController {
 
 	// 价格管理->询价管理->新建
 	@GetMapping({ "/inquery/add" })
-	public String inquery_add() {
+	public String inquery_add(Principal principal, Model model) {
+		Account currentUser = accountRepository.findOneByUsername(principal.getName());
+		model.addAttribute("user", currentUser);
 		return "buyer/inquery/add";
 	}
 

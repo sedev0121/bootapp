@@ -53,37 +53,45 @@
           </select>
         </div>
         <div class="col-lg-3 col-md-3">
-          <label for="supplier_name">制单人:</label>
-          <input type="text" value="" class="form-control" readonly>
+          <label for="maker_id">制单人:</label>
+          <select name="maker_id" id="maker_id" class="form-control" disabled>
+            <option th:value="${user.id}" th:text="${user.realname}" selected="selected"></option>
+          </select>
         </div>
         <div class="col-lg-3 col-md-3">
-          <label for="document_date">单据日期: </label>
-          <input type="text" id="document_date" class="form-control datepicker" readonly>
+          <label for="make_date">单据日期: </label>
+          <input type="text" id="make_date" class="form-control datepicker" disabled>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">确认人:</label>
-          <input type="text" value="" class="form-control" readonly>
+          <select name="maker_id" id="maker_id" class="form-control" disabled>
+            <option th:value="${user.id}" th:text="${user.realname}" selected="selected"></option>
+          </select>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="document_date">确认日期: </label>
-          <input type="text" value="" class="form-control datepicker" readonly>
+          <input type="text" value="2018-06-25" class="form-control datepicker" disabled>
         </div>
 
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">审核人:</label>                      
-          <input type="text" value="" class="form-control" readonly>
+          <select name="maker_id" id="maker_id" class="form-control" disabled>
+            <option th:value="${user.id}" th:text="${user.realname}" selected="selected"></option>
+          </select>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">审核日期:</label>
-          <input type="text" id="effective_date1" class="form-control datepicker" readonly>
+          <input type="text" id="effective_date1" class="form-control datepicker" disabled>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">归档人:</label>
-          <input type="text" value="" class="form-control" readonly>
+          <select name="maker_id" id="maker_id" class="form-control" disabled>
+            <option th:value="${user.id}" th:text="${user.realname}" selected="selected"></option>
+          </select>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">归档日期:</label>
-          <input type="text" id="effective_date1" class="form-control datepicker" readonly>
+          <input type="text" id="effective_date1" class="form-control datepicker" disabled>
         </div>
     </div>
     <div class="row margin-top-10">
@@ -112,11 +120,13 @@
     var is_add = true;
     $('#start_date').datepicker().datepicker();
     $('#end_date').datepicker().datepicker();
+    $('#make_date').datepicker().datepicker();
     
     if (is_add) {
       $("#code").val(App.generatePaperCode());  
       $('#start_date').datepicker().datepicker("setDate", new Date());
       $('#end_date').datepicker().datepicker("setDate","+1m +7d");
+      $('#make_date').datepicker().datepicker("setDate", new Date());
     }
     
     $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1, disabled: true }).select2("val", "5");

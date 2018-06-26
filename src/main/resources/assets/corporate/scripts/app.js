@@ -183,7 +183,7 @@ $(document).ready(function() {
 
   $.datepicker.setDefaults(
     $.extend({},
-      {'dateFormat':'yy-mm-dd', showButtonPanel: true},
+      {autoclose: true, dateFormat:'yy-mm-dd', showButtonPanel: true},
       $.datepicker.regional['zh-CN']
     )
   );
