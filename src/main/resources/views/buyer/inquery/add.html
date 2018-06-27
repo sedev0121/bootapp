@@ -16,17 +16,17 @@
     <div class="row">
         <div class="col-lg-3 col-md-3">
           <label for="code">单号: </label>
-          <input type="text" id="code" value="" class="form-control" readonly />
+          <input type="text" id="code" th:value="${main.ccode}" class="form-control" readonly />
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="vendor">供应商:</label>
           <select id="vendor" class="form-control">
-            <option value="3017" selected="selected">NEC（日电）有限公司</option>
+            <option th:if="main.vendor != null" th:value="${main.vendor.code}" th:text="${main.vendor.name}" selected="selected">NEC（日电）有限公司</option>
           </select>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="tax_rate">税率:</label>
-          <input type="number" id="tax_rate" name="tax_rate" class="form-control">
+          <input type="number" id="tax_rate" th:value="${main.itaxrate}" name="tax_rate" class="form-control">
         </div>
         
         <div class="col-lg-3 col-md-3">
@@ -36,11 +36,11 @@
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="end_date">生效日期:</label>
-          <input type="text" id="start_date" value="2018-06-24" class="form-control datepicker">
+          <input type="text" id="start_date" th:value="${#dates.format(main.dstartdate, 'yyyy-MM-dd')}" class="form-control datepicker">
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="end_date">有效日期:</label>
-          <input type="text" id="end_date" class="form-control datepicker">
+          <input type="text" id="end_date" th:value="${#dates.format(main.denddate, 'yyyy-MM-dd')}" class="form-control datepicker">
         </div>        
         <div class="col-lg-3 col-md-3">
           <label for="type">报价形式:</label>
@@ -55,43 +55,43 @@
         <div class="col-lg-3 col-md-3">
           <label for="maker_id">制单人:</label>
           <select name="maker_id" id="maker_id" class="form-control" disabled>
-            <option th:value="${user.id}" th:text="${user.realname}" selected="selected"></option>
+            <option th:value="${main.maker.id}" th:text="${main.maker.realname}" selected="selected"></option>
           </select>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="make_date">单据日期: </label>
-          <input type="text" id="make_date" class="form-control datepicker" disabled>
+          <input type="text" id="make_date" th:value="${#dates.format(main.dmakedate, 'yyyy-MM-dd')}" class="form-control datepicker" disabled>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">确认人:</label>
           <select name="maker_id" id="maker_id" class="form-control" disabled>
-            <option th:value="${user.id}" th:text="${user.realname}" selected="selected"></option>
+            <option th:value="${main.reviewer.id}" th:text="${main.reviewer.realname}" selected="selected"></option>
           </select>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="document_date">确认日期: </label>
-          <input type="text" value="2018-06-25" class="form-control datepicker" disabled>
+          <input type="text" th:value="${#dates.format(main.dreviewdate, 'yyyy-MM-dd')}" class="form-control datepicker" disabled>
         </div>
 
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">审核人:</label>                      
           <select name="maker_id" id="maker_id" class="form-control" disabled>
-            <option th:value="${user.id}" th:text="${user.realname}" selected="selected"></option>
+            <option th:value="${main.verifier.id}" th:text="${main.verifier.realname}" selected="selected"></option>
           </select>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">审核日期:</label>
-          <input type="text" id="effective_date1" class="form-control datepicker" disabled>
+          <input type="text" id="effective_date1" th:value="${#dates.format(main.dverifydate, 'yyyy-MM-dd')}" class="form-control datepicker" disabled>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">归档人:</label>
           <select name="maker_id" id="maker_id" class="form-control" disabled>
-            <option th:value="${user.id}" th:text="${user.realname}" selected="selected"></option>
+            <option th:value="${main.publisher.id}" th:text="${main.publisher.realname}" selected="selected"></option>
           </select>
         </div>
         <div class="col-lg-3 col-md-3">
           <label for="reviewer">归档日期:</label>
-          <input type="text" id="effective_date1" class="form-control datepicker" disabled>
+          <input type="text" id="effective_date1" th:value="${#dates.format(main.dpublishdate, 'yyyy-MM-dd')}" class="form-control datepicker" disabled>
         </div>
     </div>
     <div class="row margin-top-10">
@@ -116,49 +116,77 @@
 </html>
 <script th:inline="javascript">
   var editor;
-  var url = /*[[@{/assets/sample.json}]]*/'';
+  /*[+
+  var detail_url = [[@{/api/venpriceadjust/}]] + [[${main.ccode}]] + "/details";
+  +]*/ 
   var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
+  var state = /*[[${main.iverifystate}]]*/'';
+  var type = /*[[${main.type}]]*/'';
+  var supply_type = /*[[${main.isupplytype}]]*/'';
+  
   $(document).ready(function() {
     var is_add = true;
-    $('#start_date').datepicker().datepicker();
-    $('#end_date').datepicker().datepicker();
-    $('#make_date').datepicker().datepicker();
+    $('#start_date').datepicker();
+    $('#end_date').datepicker();
+    $('#make_date').datepicker();
     
-    if (is_add) {
-      $("#code").val(App.generatePaperCode());  
-      $('#start_date').datepicker().datepicker("setDate", new Date());
-      $('#end_date').datepicker().datepicker("setDate","+1m +7d");
-      $('#make_date').datepicker().datepicker("setDate", new Date());
-    }
-    
-    $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1, disabled: true }).select2("val", "5");
-    $("#type").select2({ data: App.getInqueryTypeData(),minimumResultsForSearch: -1 });
-    $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 });
+    $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1, disabled: true }).select2("val", state.toString());
+    $("#type").select2({ data: App.getInqueryTypeData(),minimumResultsForSearch: -1 }).select2("val", type.toString());
+    $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 }).select2("val", supply_type.toString());
     $("#vendor").select2(App.getSelect2Options(vendor_search_url));
    
+    
     editor = new $.fn.dataTable.Editor( {
-      table: "#example",
+      table: "#example",  
+      idSrc: "ccode",
       fields: [ {
-          label: "First name:",
-          name: "first_name"
-      }, {
-          label: "Last name:",
-          name: "last_name"
-      }, {
-          label: "Position:",
-          name: "position"
-      }, {
-          label: "Office:",
-          name: "office"
-      }]
-    } );
-
-    $('#example').DataTable( {
+              label: "First name:",
+              name: "ccode"
+          }
+      ],
+      i18n: {
+          create: {
+              button: "添加商品",
+              title:  "添加",
+              submit: "保存"
+          },
+          edit: {
+              button: "修改商品",
+              title:  "修改",
+              submit: "保存"
+          },
+          remove: {
+              button: "删除商品",
+              title:  "删除",
+              submit: "是",
+              confirm: {
+                  _: "确定要删除%d行商品吗?",
+                  1: "确定要删除吗?"
+              }
+          },
+          error: {
+              system: "发生错误！"
+          }
+      }
+    });
+    
+    var table = $('#example').DataTable({
       serverSide:false,
+      processing:false,
       dom: "Bfrtip",
-      ajax: {
-        url: url,
-      },      
+      select: true,
+      buttons: [
+          { extend: "create", editor: editor },
+          { extend: "edit",   editor: editor },
+          { extend: "remove", editor: editor }
+      ],
+      ajax : {
+        url : detail_url,
+        dataSrc : function(json) {
+          return json;
+        },
+      },
+
       columns : [ {
         data : 'ccode',
         title : '商品编码',
@@ -177,20 +205,28 @@
         defaultContent : '个'
       }, {
         data : null,
+        title : '数少数量',
+        defaultContent : '10'
+      }, {
+        data : null,
+        title : '最大数量',
+        defaultContent : '100'
+      }, {
+        data : null,
         title : '原价格',
         defaultContent : '100'
       }, {
         data : null,
-        title : '最新未税报价',
-        defaultContent : '110'
+        title : '税率',
+        defaultContent : '17'
       }, {
         data : null,
         title : '最新含税报价',
         defaultContent : '120'
       }, {
         data : null,
-        title : '税率',
-        defaultContent : '17'
+        title : '是否有效',
+        defaultContent : '有效'
       }, {
         data : 'dverifydate',
         title : '生效日期',
@@ -207,15 +243,7 @@
         defaultContent : '备注'
 
       } ],
-      select: true,
-      buttons: [
-          { extend: "create", editor: editor },
-          { extend: "edit",   editor: editor },
-          { extend: "remove", editor: editor }
-      ]
-    } );
-
-
+    });
 
     $("#btn_search").click(function() {
       table.draw();

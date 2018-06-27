@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.model.Unit;
+import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PriceRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
+import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.utility.AccountSearchItem;
@@ -45,6 +47,9 @@ public class ApiController {
 
 	@Autowired
 	private PriceRepository priceRepository;
+
+	@Autowired
+	private VenPriceAdjustDetailRepository venPriceAdjustDetailRepository;
 
 	@Autowired
 	private VendorRepository vendorRepository;
@@ -89,6 +94,13 @@ public class ApiController {
 				request);
 
 		return result;
+	}
+
+	@RequestMapping(value = "/venpriceadjust/{mainId}/details", produces = "application/json")
+	public List<VenPriceAdjustDetail> inventory_list_of_venpriceadjust_ajax(@PathVariable("mainId") String mainId) {
+		List<VenPriceAdjustDetail> list = venPriceAdjustDetailRepository.findByMainId(mainId);
+
+		return list;
 	}
 
 	@RequestMapping(value = "/vendor/get/{id}", produces = "application/json")

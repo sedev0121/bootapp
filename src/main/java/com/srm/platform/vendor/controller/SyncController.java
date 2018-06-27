@@ -91,7 +91,7 @@ public class SyncController {
 
 	private Long getTime(String time) {
 		Long result = 0L;
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
 			result = dateFormat.parse(time).getTime();
 		} catch (Exception e) {
