@@ -1,6 +1,8 @@
 package com.srm.platform.vendor.controller;
 
-import java.security.Principal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -12,7 +14,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Price;
@@ -21,6 +26,8 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PriceRepository;
+import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
+import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 
 @Controller
@@ -28,6 +35,7 @@ import com.srm.platform.vendor.repository.VendorRepository;
 @PreAuthorize("hasRole('ROLE_BUYER')")
 public class BuyerController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Autowired
 	private VendorRepository vendorRepository;
@@ -40,6 +48,12 @@ public class BuyerController {
 
 	@Autowired
 	private AccountRepository accountRepository;
+
+	@Autowired
+	private VenPriceAdjustMainRepository venPriceAdjustMainRepository;
+
+	@Autowired
+	private VenPriceAdjustDetailRepository venPriceAdjustDetailRepository;
 
 	// Home
 	@GetMapping({ "", "/" })
@@ -55,16 +69,59 @@ public class BuyerController {
 
 	// 价格管理->询价管理->新建
 	@GetMapping({ "/inquery/add" })
-	public String inquery_add(Principal principal, Model model) {
+	public String inquery_add(Model model) {
 		VenPriceAdjustMain main = new VenPriceAdjustMain(accountRepository);
 		model.addAttribute("main", main);
-		return "buyer/inquery/add";
+		return "buyer/inquery/edit";
 	}
 
 	// 价格管理->询价管理->新建
-	@GetMapping({ "/inquery/{id}/edit" })
-	public String inquery_edit() {
-		return "buyer/inquery/add";
+	@GetMapping({ "/inquery/{ccode}/edit" })
+	public String inquery_edit(@PathVariable("ccode") String ccode, Model model) {
+		model.addAttribute("main", this.venPriceAdjustMainRepository.findOneByCcode(ccode));
+		return "buyer/inquery/edit";
+	}
+
+	@PostMapping("/inquery/update")
+	public @ResponseBody VenPriceAdjustMain inquery_update_ajax(@RequestParam Map<String, String> requestParams) {
+		String ccode = requestParams.get("ccode");
+		String vendor = requestParams.get("vendor");
+		String tax_rate = requestParams.get("tax_rate");
+		String state = requestParams.get("state");
+		String start_date = requestParams.get("start_date");
+		String end_date = requestParams.get("end_date");
+		String type = requestParams.get("type");
+		String provide_type = requestParams.get("provide_type");
+		String maker = requestParams.get("maker");
+		String make_date = requestParams.get("make_date");
+
+		VenPriceAdjustMain venPriceAdjustMain = new VenPriceAdjustMain();
+		venPriceAdjustMain.setCcode(ccode);
+
+		Example<VenPriceAdjustMain> example = Example.of(venPriceAdjustMain);
+		Optional<VenPriceAdjustMain> result = venPriceAdjustMainRepository.findOne(example);
+		if (result.isPresent())
+			venPriceAdjustMain = result.get();
+
+		venPriceAdjustMain.setType(Integer.parseInt(type));
+		venPriceAdjustMain.setIsupplytype(Integer.parseInt(provide_type));
+		venPriceAdjustMain.setItaxrate(Integer.parseInt(tax_rate));
+		venPriceAdjustMain.setIverifystate(Integer.parseInt(state));
+
+		try {
+			venPriceAdjustMain.setDstartdate(dateFormatter.parse(start_date));
+			venPriceAdjustMain.setDenddate(dateFormatter.parse(end_date));
+			venPriceAdjustMain.setDmakedate(dateFormatter.parse(make_date));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		venPriceAdjustMain.setVendor(vendorRepository.findOneByCode(vendor));
+		venPriceAdjustMain.setMaker(accountRepository.findOneById(Long.parseLong(maker)));
+
+		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
+
+		return venPriceAdjustMain;
 	}
 
 	// 价格管理->报价管理

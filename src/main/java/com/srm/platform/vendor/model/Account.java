@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "account")
 public class Account {
@@ -22,6 +24,7 @@ public class Account {
 	@Column(unique = true)
 	private String username;
 
+	@JsonIgnore
 	private String password;
 	private String role = "ROLE_BUYER";
 	private String realname;

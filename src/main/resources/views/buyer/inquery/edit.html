@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
+<body>
+  <div class="container" layout:fragment="content">
+    <ul class="breadcrumb">
+      <li>
+        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+      </li>
+      <li>价格管理</li>
+      <li><a th:href="@{/buyer/inquery}" class="active">询价管理</a></li>
+      <li class="active">询价单</li>
+    </ul>       
+    <div class="panel panel-default">
+        <div class="panel-body"> 
+        <form id="form" th:action="@{/buyer/inquery/update}" method="post">      
+            <div class="row">
+                <div class="col-lg-3 col-md-3">
+                  <label for="code">单号: </label>
+                  <input type="text" id="code" name="ccode" th:value="${main.ccode}" class="form-control" readonly />
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="vendor">供应商:</label>
+                  <select id="vendor" name="vendor" class="form-control">
+                    <option th:if="main.vendor != null" th:value="${main.vendor.code}" th:text="${main.vendor.name}" selected="selected">NEC（日电）有限公司</option>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="tax_rate">税率:</label>
+                  <input type="number" id="tax_rate" th:value="${main.itaxrate}" name="tax_rate" class="form-control">
+                </div>
+                
+                <div class="col-lg-3 col-md-3">
+                  <label for="state">状态:</label>
+                  <select name="state" id="state" class="form-control" readonly>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="end_date">生效日期:</label>
+                  <input type="text" name="start_date" id="start_date" th:value="${#dates.format(main.dstartdate, 'yyyy-MM-dd')}" class="form-control datepicker">
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="end_date">有效日期:</label>
+                  <input type="text" name="end_date" id="end_date" th:value="${#dates.format(main.denddate, 'yyyy-MM-dd')}" class="form-control datepicker">
+                </div>        
+                <div class="col-lg-3 col-md-3">
+                  <label for="type">报价形式:</label>
+                  <select name="type" id="type" class="form-control">
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="provide_type">供应类型:</label>
+                  <select name="provide_type" id="provide_type" class="form-control">
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="maker_id">制单人:</label>
+                  <select name="maker" id="maker" class="form-control select2" readonly>
+                    <option th:value="${main.maker.id}" th:text="${main.maker.realname}" selected="selected"></option>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="make_date">单据日期: </label>
+                  <input type="text" name="make_date" id="make_date" th:value="${#dates.format(main.dmakedate, 'yyyy-MM-dd')}" class="form-control" readonly>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label>确认人:</label>
+                  <select class="form-control select2" readonly>
+                    <option th:value="${main.reviewer?.id}" th:text="${main.reviewer?.realname}" selected="selected"></option>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label>确认日期: </label>
+                  <input type="text" th:value="${#dates.format(main.dreviewdate, 'yyyy-MM-dd')}" class="form-control" readonly>
+                </div>
+        
+                <div class="col-lg-3 col-md-3">
+                  <label>审核人:</label>                      
+                  <select class="form-control select2" readonly>
+                    <option th:value="${main.verifier?.id}" th:text="${main.verifier?.realname}" selected="selected"></option>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label>审核日期:</label>
+                  <input type="text" th:value="${#dates.format(main.dverifydate, 'yyyy-MM-dd')}" class="form-control" readonly>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label>归档人:</label>
+                  <select class="form-control select2" readonly>
+                    <option th:value="${main.publisher?.id}" th:text="${main.publisher?.realname}" selected="selected"></option>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label>归档日期:</label>
+                  <input type="text" th:value="${#dates.format(main.dpublishdate, 'yyyy-MM-dd')}" class="form-control" readonly>
+                </div>
+            </div>
+            <div class="row margin-top-10">
+              <div class="col-lg-12">
+                  <table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
+                  </table>
+              </div>
+            </div>
+        </form>
+    </div>
+    <div class="panel-footer"> 
+      <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
+        <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
+        <a class="btn btn-primary" id="make"><i class="fa fa-save"></i> 提交</a>
+        <a class="btn btn-primary" id="review"><i class="fa fa-arrow-up"></i> 确认</a>
+        <a class="btn btn-primary" id="confirm"><i class="fa fa-arrow-up"></i> 通过</a>
+        <a class="btn btn-primary" id="verify"><i class="fa fa-check-square"></i> 审核</a>
+        <a class="btn btn-primary" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+        <a class="btn btn-primary" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
+        <a class="btn btn-default" th:href="@{/buyer/inquery}"><i class="fa fa-arrow-left"></i> 返回</a>
+      </div>
+    </div> 
+  </div>
+</body>
+</html>
+<script th:inline="javascript">
+  var editor;
+  /*[+
+  var detail_url = [[@{/api/venpriceadjust/}]] + [[${main.ccode}]] + "/details";
+  var edit_url = [[@{/buyer/inquery/}]];
+  +]*/ 
+  var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
+  var state = /*[[${main.iverifystate}]]*/'';
+  var type = /*[[${main.type}]]*/'';
+  var supply_type = /*[[${main.isupplytype}]]*/'';
+  
+  $(document).ready(function() {
+    var is_add = true;
+    $('#start_date').datepicker();
+    $('#end_date').datepicker();
+    
+    $(".select2").select2();
+    $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
+    $("#type").select2({ data: App.getInqueryTypeData(),minimumResultsForSearch: -1 }).select2("val", type.toString());
+    $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 }).select2("val", supply_type.toString());
+    $("#vendor").select2(App.getSelect2Options(vendor_search_url));
+   
+    
+    editor = new $.fn.dataTable.Editor( {
+      table: "#example",  
+      idSrc: "ccode",
+      fields: [ {
+              label: "First name:",
+              name: "ccode"
+          }
+      ],
+      i18n: {
+          create: {
+              button: "添加商品",
+              title:  "添加",
+              submit: "保存"
+          },
+          edit: {
+              button: "修改商品",
+              title:  "修改",
+              submit: "保存"
+          },
+          remove: {
+              button: "删除商品",
+              title:  "删除",
+              submit: "是",
+              confirm: {
+                  _: "确定要删除%d行商品吗?",
+                  1: "确定要删除吗?"
+              }
+          },
+          error: {
+              system: "发生错误！"
+          }
+      }
+    });
+    
+    var table = $('#example').DataTable({
+      serverSide:false,
+      processing:false,
+      dom: "Bfrtip",
+      select: true,
+      buttons: [
+          { extend: "create", editor: editor },
+          { extend: "edit",   editor: editor },
+          { extend: "remove", editor: editor }
+      ],
+      ajax : {
+        url : detail_url,
+        dataSrc : function(json) {
+          return json;
+        },
+      },
+
+      columns : [ {
+        data : 'ccode',
+        title : '商品编码',
+        defaultContent : ''
+      }, {
+        data : null,
+        title : '商品名称',
+        defaultContent : '商品名称'
+      }, {
+        data : null,
+        title : '规格型号',
+        defaultContent : '规格型号'
+      }, {
+        data : null,
+        title : '单位',
+        defaultContent : '个'
+      }, {
+        data : null,
+        title : '数少数量',
+        defaultContent : '10'
+      }, {
+        data : null,
+        title : '最大数量',
+        defaultContent : '100'
+      }, {
+        data : null,
+        title : '原价格',
+        defaultContent : '100'
+      }, {
+        data : null,
+        title : '税率',
+        defaultContent : '17'
+      }, {
+        data : null,
+        title : '最新含税报价',
+        defaultContent : '120'
+      }, {
+        data : null,
+        title : '是否有效',
+        defaultContent : '有效'
+      }, {
+        data : 'dverifydate',
+        title : '生效日期',
+        render : $.fn.date_renderer,
+        defaultContent : ''
+      }, {
+        data : 'dverifydate',
+        title : '有效日期',
+        render : $.fn.date_renderer,
+        defaultContent : ''
+      }, {
+        data : null,
+        title : '备注',
+        defaultContent : '备注'
+
+      } ],
+    });
+
+    $("#form" ).validate({
+      // define validation rules
+      rules: {
+          vendor: {
+              required: true
+          }, 
+          tax_rate: {
+              required: true
+          },
+          start_date: {
+              required: true
+          },    
+          end_date: {
+              required: true
+          },    
+      },
+      
+      //display error alert on form submit  
+      invalidHandler: function(event, validator) {
+          swal({
+              "title": "输入有误", 
+              "text": "请输入正确的值", 
+              "type": "error"
+          });
+      },
+
+      submitHandler: function (form) {
+          jQuery(form).ajaxSubmit({
+              success: function(res, status, xhr, form) {
+                  swal({
+                      "title": "操作成功", 
+                      "type": "success"
+                  }).then((result) => {
+                       window.location.href = edit_url + res.ccode + "/edit";
+                  });
+              },
+              error: function (res, status, xhr, form) {
+                  swal({
+                      "title": "操作失败", 
+                      "text": "请输入正确的值", 
+                      "type": "error"
+                  });
+              }
+          });
+      }
+    }); 
+    
+    
+    $("#save").click(function() {
+        $("#form").submit();            
+    });
+    
+  });
+</script>
+

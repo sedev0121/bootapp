@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public interface VendorSearchItem {
 
 	@JsonProperty("id")
-	Long getCode();
+	String getCode();
 
 	@JsonProperty("title")
 	String getName();

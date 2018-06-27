@@ -84,6 +84,10 @@ public class VenPriceAdjustMain {
 
 	}
 
+	public VenPriceAdjustMain() {
+
+	}
+
 	public String getCcode() {
 		return ccode;
 	}

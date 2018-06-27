@@ -18,4 +18,6 @@ public interface VendorRepository extends JpaRepository<Vendor, Long> {
 	@Query(value = "SELECT code, name FROM vendor t WHERE "
 			+ "t.abbrname LIKE %?1% or t.name LIKE %?1%", nativeQuery = true)
 	Page<VendorSearchItem> findForSelect(String search, Pageable pageable);
+
+	Vendor findOneByCode(String code);
 }
