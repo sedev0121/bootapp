@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}">
+<head>
+<style>
+.DTED_Lightbox_Close {visibility: hidden;}
+#customForm {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+
+</style>
+</head>   
 <body>
   <div class="container" layout:fragment="content">
     <ul class="breadcrumb">
@@ -115,6 +126,34 @@
         <a class="btn btn-default" th:href="@{/buyer/inquery}"><i class="fa fa-arrow-left"></i> 返回</a>
       </div>
     </div> 
+    <div id="customForm" class="hidden">
+        <div class="row">
+            <div class="col-lg-3 col-md-3">
+              <label for="code">商品名称: </label>
+              <input type="text" id="code" class="form-control" />
+            </div>
+            <div class="col-lg-3 col-md-3">
+              <label for="vendor">规格型号:</label>
+              <input type="text" id="code" class="form-control" />
+            </div>
+            <div class="col-lg-3 col-md-3">
+              <label for="tax_rate">单位:</label>
+              <input type="text" id="code" class="form-control" />
+            </div>                
+            <div class="col-lg-3 col-md-3">
+              <label for="state">数少数量:</label>
+              <input type="text" id="code" class="form-control" />
+            </div>
+            <div class="col-lg-3 col-md-3">
+              <label for="end_date">生效日期:</label>
+              <input type="text" class="form-control datepicker">
+            </div>
+            <div class="col-lg-3 col-md-3">
+              <label for="end_date">有效日期:</label>
+              <input type="text" class="form-control datepicker">
+            </div>    
+        </div>
+    </div>
   </div>
 </body>
 </html>
@@ -130,7 +169,7 @@
   var supply_type = /*[[${main.isupplytype}]]*/'';
   
   $(document).ready(function() {
-    var is_add = true;
+
     $('#start_date').datepicker();
     $('#end_date').datepicker();
     
@@ -143,12 +182,48 @@
     
     editor = new $.fn.dataTable.Editor( {
       table: "#example",  
-      idSrc: "ccode",
+      idSrc: "inventory.code",
+      //template: '#customForm',
       fields: [ {
-              label: "First name:",
-              name: "ccode"
-          }
-      ],
+          label: "商品編碼:",
+          name: "inventory.code"
+        },{
+          label: "商品名称:",
+          name: "inventory.name"
+        },{
+          label: "规格型号:",
+          name: "inventory.specs"  
+        },{
+          label: "单位:",
+          name: "inventory.puunit_name"            
+        },{
+          label: "数少数量:",
+          name: "fminquantity"    
+        },{
+          label: "最大数量:",
+          name: "fmaxquantity"  
+        },{
+          label: "原价格:",
+          name: "iunitprice"            
+        },{
+          label: "税率:",
+          name: "itaxrate"            
+        },{
+          label: "最新含税报价:",
+          name: "itaxunitprice"            
+        },{
+          label: "生效日期:",
+          name: "dstartdate"            
+        },{
+          label: "有效日期:",
+          name: "denddate"            
+        },{
+          label: "是否有效:",
+          name: "ivalid"            
+        },{
+          label: "备注:",
+          name: "cbodymemo"            
+        }],
       i18n: {
           create: {
               button: "添加商品",
@@ -173,7 +248,13 @@
               system: "发生错误！"
           }
       }
-    });
+    }).submit(function () {
+          alert( 'Form successfully submitted!' );
+      },
+      function () {
+          alert( 'Form  encountered an error :-(' );
+      }
+    );
     
     var table = $('#example').DataTable({
       serverSide:false,
@@ -193,59 +274,55 @@
       },
 
       columns : [ {
-        data : 'ccode',
+        data : 'inventory.code',
         title : '商品编码',
         defaultContent : ''
       }, {
-        data : null,
-        title : '商品名称',
-        defaultContent : '商品名称'
+        data : 'inventory.name',
+        title : '商品名称'
       }, {
-        data : null,
+        data : 'inventory.specs',
         title : '规格型号',
-        defaultContent : '规格型号'
       }, {
-        data : null,
+        data : 'inventory.puunit_name',
         title : '单位',
         defaultContent : '个'
       }, {
-        data : null,
+        data : 'fminquantity',
         title : '数少数量',
-        defaultContent : '10'
       }, {
-        data : null,
+        data : 'fmaxquantity',
         title : '最大数量',
-        defaultContent : '100'
       }, {
-        data : null,
+        data : 'iunitprice',
         title : '原价格',
-        defaultContent : '100'
       }, {
-        data : null,
+        data : 'itaxrate',
         title : '税率',
-        defaultContent : '17'
       }, {
-        data : null,
+        data : 'itaxunitprice',
         title : '最新含税报价',
-        defaultContent : '120'
       }, {
-        data : null,
-        title : '是否有效',
-        defaultContent : '有效'
-      }, {
-        data : 'dverifydate',
+        data : 'dstartdate',
         title : '生效日期',
         render : $.fn.date_renderer,
         defaultContent : ''
       }, {
-        data : 'dverifydate',
+        data : 'denddate',
         title : '有效日期',
         render : $.fn.date_renderer,
-        defaultContent : ''
       }, {
-        data : null,
+        data : 'ivalid',
+        title : '是否有效',
+        render: function(data) {
+          if (data == 1)
+            return '有效';
+          else
+            return '無效';
+        }
+      }, {
+        data : 'cbodymemo',
         title : '备注',
-        defaultContent : '备注'
 
       } ],
     });

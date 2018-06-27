@@ -237,7 +237,14 @@ $(document).ready(function() {
 		if (date_str == undefined) {
 			return '';
 		}
-	    var temp = date_str.split(' ');
+
+		var splitter = " ";
+		if (date_str.includes(" ")) {
+		  splitter = " ";
+		}else if (date_str.includes("T")) {
+		  splitter = "T";
+		}
+	    var temp = date_str.split(splitter);
 	    if (temp.length>0){
 	    	return temp[0]
 	    }else{
