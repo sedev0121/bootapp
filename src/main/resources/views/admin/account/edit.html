@@ -52,13 +52,19 @@
                 <input type="password" name="password" class="form-control">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">权限: </label>
-                <select name="role" class="form-control">
+                <label for="document_date">角色: </label>
+                <select name="role" id="role" class="form-control">
                   <option value="ROLE_BUYER" th:selected="(${account.role}=='ROLE_BUYER')">采购员</option>
                   <option value="ROLE_VENDOR" th:selected="(${account.role}=='ROLE_VENDOR')">供应商</option>
                   <option value="ROLE_ADMIN"  th:selected="(${account.role}=='ROLE_ADMIN')">管理员</option>
                 </select>
               </div>
+              <div class="col-lg-6 col-md-6 form-group">
+                  <label for="vendor">供应商:</label>
+                  <select id="vendor" name="vendor" class="form-control">
+                    <option th:if="${account.vendor != null}" th:value="${account.vendor.code}" th:text="${account.vendor.name}" selected="selected"></option>
+                  </select>
+                </div>
             </fieldset>
             <fieldset>
               <legend>联系信息</legend>
@@ -140,8 +146,24 @@
 <script th:inline="javascript">
 var edit_url = /*[[@{/admin/account/}]]*/'';
 var tree_url = /*[[@{/api/unit/tree}]]*/'';
+var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
 
 jQuery(document).ready(function() {   
+    $('#role').select2({minimumResultsForSearch: -1});
+    $("#vendor").select2(App.getSelect2Options(vendor_search_url));
+    
+    $('#role').change(function() {
+      if ($('#role').val() == 'ROLE_VENDOR') {
+        $('#vendor').removeClass('hidden');
+        $('#vendor').prop('disabled', false);
+      }else{
+        $('#vendor').addClass('hidden');
+        $('#vendor').prop('disabled', true);
+      }
+    });
+    
+    $('#role').trigger('change');
+    
     var is_add = $("#id").val().length==0;
     $("#form" ).validate({
         // define validation rules

@@ -41,6 +41,7 @@ import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
+import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.service.AccountService;
 import com.srm.platform.vendor.utility.AccountSearchItem;
 import com.srm.platform.vendor.utility.IGroupFunctionUnit;
@@ -53,6 +54,10 @@ public class AdminController {
 
 	@Autowired
 	private AccountRepository accountRepository;
+
+	@Autowired
+	private VendorRepository vendorRepository;
+
 	@Autowired
 	private PermissionGroupRepository permissionGroupRepository;
 
@@ -101,6 +106,9 @@ public class AdminController {
 		String order = requestParams.getOrDefault("order", "name");
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
+
+		if (order.equals("vendor"))
+			order = "v.name";
 
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
@@ -151,6 +159,7 @@ public class AdminController {
 		String password = requestParams.get("password");
 		String role = requestParams.get("role");
 		String duty = requestParams.get("duty");
+		String vendorCode = requestParams.get("vendor");
 
 		Account account;
 		if (id != null && !id.isEmpty()) {
@@ -173,6 +182,11 @@ public class AdminController {
 		account.setRole(role);
 		account.setDuty(duty);
 		account.setUnit(unitRepository.findOneById(Long.parseLong(unit)));
+
+		if (vendorCode != null && !vendorCode.isEmpty())
+			account.setVendor(vendorRepository.findOneByCode(vendorCode));
+		else
+			account.setVendor(null);
 
 		if (password != null) {
 			account.setPassword(password);

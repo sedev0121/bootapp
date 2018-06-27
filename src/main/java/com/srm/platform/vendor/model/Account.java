@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,6 +38,10 @@ public class Account {
 	@JoinColumn(name = "unit_id")
 	@ManyToOne()
 	private Unit unit;
+
+	@OneToOne()
+	@JoinColumn(name = "vendor_code", referencedColumnName = "code")
+	private Vendor vendor;
 
 	private String email;
 	private String tel;
@@ -135,6 +140,14 @@ public class Account {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public Vendor getVendor() {
+		return vendor;
+	}
+
+	public void setVendor(Vendor vendor) {
+		this.vendor = vendor;
 	}
 
 	public Account() {

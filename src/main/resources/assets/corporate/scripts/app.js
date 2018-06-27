@@ -76,6 +76,15 @@ var App = function() {
     getInqueryStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...inquery_state_data];
     },
+    getQuoteStateDataWithAll: function() {
+      var result = [];
+      
+      $.each(inquery_state_data, function(key, item){
+        if (item.id > 1)
+          result.push(item);
+      })
+      return [{id:0, text:"　"}, ...result];
+    },
     getInqueryStateOfId: function(id) {
       var title = "";
       $.each(inquery_state_data, function(key, item){

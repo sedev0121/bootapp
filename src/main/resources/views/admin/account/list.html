@@ -73,46 +73,39 @@ $(document).ready(function() {
           edit_url +=  record.id + '/edit';
           return '<a href="' + edit_url + '">' + data  + '</a>';
         },
-        defaultContent : ''
       }, {
         data : 'realname',
         title : '真实姓名',
-        defaultContent : ''
       }, {
           data : 'unit_id',
           render: function (data, display, record) {
             return record.unit.name;
           },
           title : '所属部门',
-          defaultContent : ''        
       }, {
           data : 'duty',
           title : '职位',
-          defaultContent : ''        
       }, {    	  
         data : 'role',
-        title : '权限',
+        title : '角色',
         render: function (data, display, record) {
           return record.rolename;
         },
-        defaultContent : ''
+      }, {
+        data : 'vendor',
+        title : '供应商',
+        render: function (data, display, record) {
+          return record.vendor==null?'':record.vendor.name;
+        },
       }, {
         data : 'email',
         title : '邮箱',
-        defaultContent : ''
       }, {
         data : 'tel',
         title : '电话',
-        defaultContent : ''
       }, {
           data : 'mobile',
           title : '手机',
-          defaultContent : ''     
-      }, {
-          data : 'qq',
-          title : 'QQ',
-          defaultContent : ''
-      
       } ],
     });
 
