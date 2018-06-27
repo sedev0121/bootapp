@@ -28,7 +28,7 @@
             <div class="row">
                 <div class="col-lg-3 col-md-3">
                   <label for="code">单号: </label>
-                  <input type="text" id="code" name="ccode" th:value="${main.ccode}" class="form-control" readonly />
+                  <input type="text" id="ccode" name="ccode" th:value="${main.ccode}" class="form-control" readonly />
                 </div>
                 <div class="col-lg-3 col-md-3">
                   <label for="vendor">供应商:</label>
@@ -118,8 +118,6 @@
       <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
         <a class="btn btn-primary" th:if="${main.iverifystate==1}" id="save"><i class="fa fa-save"></i> 保存</a>
         <a class="btn btn-primary" th:if="${main.iverifystate==1}" id="submit"><i class="fa fa-save"></i> 提交</a>
-        <a class="btn btn-primary" th:if="${main.iverifystate==2}" id="confirm"><i class="fa fa-arrow-up"></i> 确认</a>
-        <a class="btn btn-primary" th:if="${main.iverifystate==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
         <a class="btn btn-primary" th:if="${main.iverifystate==3 || main.iverifystate==4}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
         <a class="btn btn-primary" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
         <a class="btn btn-primary" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
@@ -179,7 +177,11 @@
     $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 }).select2("val", supply_type.toString());
     $("#vendor").select2(App.getSelect2Options(vendor_search_url));
    
-    
+    if (state > 1) {
+      $('input').attr("readonly", true);
+      $('select').attr("readonly", true);
+    }
+
     editor = new $.fn.dataTable.Editor( {
       table: "#example",  
       idSrc: "inventory.code",
@@ -256,76 +258,80 @@
       }
     );
     
-    var table = $('#example').DataTable({
-      serverSide:false,
-      processing:false,
-      dom: "Bfrtip",
-      select: true,
-      buttons: [
-          { extend: "create", editor: editor },
-          { extend: "edit",   editor: editor },
-          { extend: "remove", editor: editor }
-      ],
-      ajax : {
-        url : detail_url,
-        dataSrc : function(json) {
-          return json;
+    var table_options = {
+        serverSide:false,
+        processing:false,
+        select: true,
+        buttons: [
+            { extend: "create", editor: editor },
+            { extend: "edit",   editor: editor },
+            { extend: "remove", editor: editor }
+        ],
+        ajax : {
+          url : detail_url,
+          dataSrc : function(json) {
+            return json;
+          },
         },
-      },
 
-      columns : [ {
-        data : 'inventory.code',
-        title : '商品编码',
-        defaultContent : ''
-      }, {
-        data : 'inventory.name',
-        title : '商品名称'
-      }, {
-        data : 'inventory.specs',
-        title : '规格型号',
-      }, {
-        data : 'inventory.puunit_name',
-        title : '单位',
-        defaultContent : '个'
-      }, {
-        data : 'fminquantity',
-        title : '数少数量',
-      }, {
-        data : 'fmaxquantity',
-        title : '最大数量',
-      }, {
-        data : 'iunitprice',
-        title : '原价格',
-      }, {
-        data : 'itaxrate',
-        title : '税率',
-      }, {
-        data : 'itaxunitprice',
-        title : '最新含税报价',
-      }, {
-        data : 'dstartdate',
-        title : '生效日期',
-        render : $.fn.date_renderer,
-        defaultContent : ''
-      }, {
-        data : 'denddate',
-        title : '有效日期',
-        render : $.fn.date_renderer,
-      }, {
-        data : 'ivalid',
-        title : '是否有效',
-        render: function(data) {
-          if (data == 1)
-            return '有效';
-          else
-            return '無效';
-        }
-      }, {
-        data : 'cbodymemo',
-        title : '备注',
+        columns : [ {
+          data : 'inventory.code',
+          title : '商品编码',
+          defaultContent : ''
+        }, {
+          data : 'inventory.name',
+          title : '商品名称'
+        }, {
+          data : 'inventory.specs',
+          title : '规格型号',
+        }, {
+          data : 'inventory.puunit_name',
+          title : '单位',
+          defaultContent : '个'
+        }, {
+          data : 'fminquantity',
+          title : '数少数量',
+        }, {
+          data : 'fmaxquantity',
+          title : '最大数量',
+        }, {
+          data : 'iunitprice',
+          title : '原价格',
+        }, {
+          data : 'itaxrate',
+          title : '税率',
+        }, {
+          data : 'itaxunitprice',
+          title : '最新含税报价',
+        }, {
+          data : 'dstartdate',
+          title : '生效日期',
+          render : $.fn.date_renderer,
+          defaultContent : ''
+        }, {
+          data : 'denddate',
+          title : '有效日期',
+          render : $.fn.date_renderer,
+        }, {
+          data : 'ivalid',
+          title : '是否有效',
+          render: function(data) {
+            if (data == 1)
+              return '有效';
+            else
+              return '無效';
+          }
+        }, {
+          data : 'cbodymemo',
+          title : '备注',
 
-      } ],
-    });
+        } ],
+      };
+    
+    if (state == 1)
+      table_options.dom = "Bfrtip";
+
+    var table = $('#example').DataTable(table_options);
 
     $("#form" ).validate({
       // define validation rules

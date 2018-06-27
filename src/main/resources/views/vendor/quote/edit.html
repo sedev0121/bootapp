@@ -257,7 +257,10 @@
     });
 
     $("#confirm").click(function() {
-      $('#state').val(3);
+      if ($('#type').val() == 1)
+        $('#state').val(5);
+      else
+        $('#state').val(3);
       $("#form").submit();            
     });
     

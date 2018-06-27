@@ -37,8 +37,8 @@
                 <input type="text" name="duty" th:value="${account.duty}" class="form-control">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">入职日期: </label>
-                <input type="text" class="form-control datepicker" th:value="${#dates.format(account.entryTime, 'yyyy-MM-dd')}">
+                <label for="entry_date">入职日期: </label>
+                <input type="text" class="form-control datepicker" name="entry_date" id="entry_date" th:value="${#dates.format(account.entryTime, 'yyyy-MM-dd')}">
               </div>
             </fieldset>
             <fieldset>
@@ -149,6 +149,7 @@ var tree_url = /*[[@{/api/unit/tree}]]*/'';
 var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
 
 jQuery(document).ready(function() {   
+    $('.datepicker').datepicker();
     $('#role').select2({minimumResultsForSearch: -1});
     $("#vendor").select2(App.getSelect2Options(vendor_search_url));
     

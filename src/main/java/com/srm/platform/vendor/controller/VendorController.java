@@ -77,14 +77,21 @@ public class VendorController {
 	}
 
 	@PostMapping("/quote/update")
-	public @ResponseBody VenPriceAdjustMain inquery_update_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody VenPriceAdjustMain inquery_update_ajax(Principal principal,
+			@RequestParam Map<String, String> requestParams) {
 		String ccode = requestParams.get("ccode");
 		String state = requestParams.get("state");
 
 		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(ccode);
 		venPriceAdjustMain.setIverifystate(Integer.parseInt(state));
-		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 
+		if (Integer.parseInt(state) == 3 || Integer.parseInt(state) == 4) {
+			Account account = accountRepository.findOneByUsername(principal.getName());
+			venPriceAdjustMain.setReviewer(account);
+			venPriceAdjustMain.setDreviewdate(new Date());
+		}
+
+		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 		return venPriceAdjustMain;
 	}
 

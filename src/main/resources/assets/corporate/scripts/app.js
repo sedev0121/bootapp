@@ -7,8 +7,8 @@ function extractLast( term ) {
 
 var App = function() {
   var inquery_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"通过"}, {id:6, text:"审核"}, {id:7, text:"归档"}];
-  var inquery_type = [{id:1, text:'常规报价'}, {id:1, text:'区间报价'}];
-  var inquery_provide_type = [{id:1, text:'采购'}, {id:1, text:'委外'}];
+  var inquery_type = [{id:1, text:'常规报价'}, {id:2, text:'区间报价'}];
+  var inquery_provide_type = [{id:1, text:'采购'}, {id:2, text:'委外'}];
   var select2_default_options = {
       language: "zh-CN",
       ajax: {

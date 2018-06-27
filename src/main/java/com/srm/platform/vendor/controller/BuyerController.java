@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
@@ -158,7 +160,8 @@ public class BuyerController {
 	}
 
 	@PostMapping("/inquery/update")
-	public @ResponseBody VenPriceAdjustMain inquery_update_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody VenPriceAdjustMain inquery_update_ajax(@RequestParam Map<String, String> requestParams,
+			Principal principal) {
 		String ccode = requestParams.get("ccode");
 		String vendor = requestParams.get("vendor");
 		String tax_rate = requestParams.get("tax_rate");
@@ -191,6 +194,17 @@ public class BuyerController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		Account account = accountRepository.findOneByUsername(principal.getName());
+		if (Integer.parseInt(state) == 6) {
+			venPriceAdjustMain.setVerifier(account);
+			venPriceAdjustMain.setDverifydate(new Date());
+		}
+		if (Integer.parseInt(state) == 7) {
+			venPriceAdjustMain.setPublisher(account);
+			venPriceAdjustMain.setDpublishdate(new Date());
+		}
+
 		venPriceAdjustMain.setVendor(vendorRepository.findOneByCode(vendor));
 		venPriceAdjustMain.setMaker(accountRepository.findOneById(Long.parseLong(maker)));
 

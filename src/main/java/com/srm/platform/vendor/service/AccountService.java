@@ -3,8 +3,6 @@ package com.srm.platform.vendor.service;
 import java.time.Instant;
 import java.util.Collections;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -59,7 +57,7 @@ public class AccountService implements UserDetailsService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	@PostConstruct
+	// @PostConstruct
 	protected void initialize() {
 
 		Unit tempUnit = unitRepository.findOneByName("美尔凯特");
