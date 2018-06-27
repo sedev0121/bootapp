@@ -2,13 +2,23 @@ package com.srm.platform.vendor.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +39,7 @@ import com.srm.platform.vendor.repository.PriceRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 
 @Controller
 @RequestMapping(path = "/buyer")
@@ -36,6 +47,9 @@ import com.srm.platform.vendor.repository.VendorRepository;
 public class BuyerController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+
+	@PersistenceContext
+	private EntityManager em;
 
 	@Autowired
 	private VendorRepository vendorRepository;
@@ -80,6 +94,67 @@ public class BuyerController {
 	public String inquery_edit(@PathVariable("ccode") String ccode, Model model) {
 		model.addAttribute("main", this.venPriceAdjustMainRepository.findOneByCcode(ccode));
 		return "buyer/inquery/edit";
+	}
+
+	public void test(@RequestParam Map<String, String> requestParams) {
+		Query q = em.createNativeQuery("select id from users where username = :username");
+		q.setParameter("username", "lt");
+		List<String> values = q.getResultList();
+
+	}
+
+	@RequestMapping(value = "/inquery/list", produces = "application/json")
+	public @ResponseBody Page<VenPriceAdjustSearchItem> inquery_list_ajax(
+			@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "ccode");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String vendor = requestParams.getOrDefault("vendor", "");
+		String stateStr = requestParams.getOrDefault("state", "0");
+		String inventory = requestParams.getOrDefault("inventory", "");
+		String start_date = requestParams.getOrDefault("start_date", null);
+		String end_date = requestParams.getOrDefault("end_date", null);
+
+		Integer state = Integer.parseInt(stateStr);
+		Date startDate = null, endDate = null;
+		try {
+			if (start_date != null && !start_date.isEmpty())
+				startDate = dateFormatter.parse(start_date);
+			if (end_date != null && !end_date.isEmpty()) {
+				endDate = dateFormatter.parse(end_date);
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(endDate);
+				cal.add(Calendar.DATE, 1);
+				endDate = cal.getTime();
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		switch (order) {
+		case "vendorname":
+			order = "c.name";
+			break;
+		case "vendorcode":
+			order = "c.code";
+			break;
+		case "verifiername":
+			order = "f.realname";
+			break;
+		case "makername":
+			order = "e.realname";
+			break;
+		}
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		Page<VenPriceAdjustSearchItem> result = venPriceAdjustMainRepository.findBySearchTerm(vendor, inventory,
+				request);
+
+		return result;
 	}
 
 	@PostMapping("/inquery/update")

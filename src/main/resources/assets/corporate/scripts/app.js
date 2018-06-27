@@ -74,20 +74,32 @@ var App = function() {
       return inquery_state_data;
     },
     getInqueryStateDataWithAll: function() {
-      return [{id:0, text:"---"}, ...inquery_state_data];
+      return [{id:0, text:"　"}, ...inquery_state_data];
+    },
+    getInqueryStateOfId: function(id) {
+      var title = "";
+      $.each(inquery_state_data, function(key, item){
+        if (item.id == id){
+          title = item.text;
+          return;
+        }
+      })
+      
+      return title;
     },
     getInqueryTypeData: function() {
       return inquery_type;
     },
     getInqueryTypeDataWithAll: function() {
-      return [{id:0, text:"---"}, ...inquery_type];
+      return [{id:0, text:"　"}, ...inquery_type];
     },
     getInqueryProvideTypeData: function() {
       return inquery_provide_type;
     },
     getInqueryProvideDataWithAll: function() {
-      return [{id:0, text:"---"}, ...inquery_provide_type];
+      return [{id:0, text:"　"}, ...inquery_provide_type];
     },    
+    
     blockUI : function(options) {
       options = $.extend(true, {}, options);
       if (options.message == undefined)

@@ -51,81 +51,107 @@
 
 <script th:inline="javascript">
 	
-	$(document).ready(function() {
-	   $("#state").select2({ data: App.getInqueryStateDataWithAll(),minimumResultsForSearch: -1 });
-	  
-	   $('#start_date').datepicker();
-	   $('#end_date').datepicker();
+	
+  $(document).ready(function() {
+    $("#state").select2({
+      data : App.getInqueryStateDataWithAll(),
+      minimumResultsForSearch : -1
+    });
 
-		var table = $('#example').DataTable({
-			ajax : {
-				url : /*[[@{/api/venpriceadjust/batch_get}]]*/'',
-				data : function(data) {
-					var filter = {
-						rows_per_page : data.length,
-						page_index : data.start / data.length + 1
-					}
-					return filter;
-				},
-				dataSrc : function(json) {
-					if (json.errcode != 0) {
-						alert(json.errmsg);
-						json.recordsTotal = 0
-						json.recordsFiltered = 0;
-						json.venpriceadjustlist = [];
-					} else {
-						json.recordsTotal = json.row_count;
-						json.recordsFiltered = json.row_count;
-					}
-					return json.venpriceadjustlist;
-				},
-			},
+    $('#start_date').datepicker();
+    $('#end_date').datepicker();
 
-			columns : [ {
-				data : 'ccode',
-				title : '单据号',
-				render: function (data, display, record) {
-      	  var edit_url = /*[[@{/buyer/inquery/}]]*/'';
-      	  edit_url +=  data + '/edit';
-      	  return '<a href="' + edit_url + '">' + data  + '</a>';
+    var table = $('#example').DataTable({
+      ordering : true,
+      ajax : {
+        url : /*[[@{/buyer/inquery/list}]]*/'',
+        data : function(data) {
+          var filter = {
+            order : data.columns[data.order[0].column].data,
+            dir : data.order[0].dir,
+            rows_per_page : data.length,
+            page_index : data.start / data.length + 1,
+            vendor : $('#vendor').val(),
+            state: $('#state').val(),
+            inventory : $('#inventory').val(),
+            start_date : $('#start_date').val(),
+            end_date : $('#end_date').val()
+          }
+          return filter;
         },
-				defaultContent : ''
-			}, {
-				data : 'ddate',
-				title : '调价日期',
-				render: $.fn.date_renderer,
-				defaultContent : ''
-			}, {
-				data : 'cdepname',
-				title : '调价部门',
-				defaultContent : ''
-			}, {
-				data : 'cpersonname',
-				title : '调价业务员',
-				defaultContent : ''
-			}, {
-				data : 'cmainmemo',
-				title : '表头备注',
-				defaultContent : ''
-			}, {
-				data : 'cmaker',
-				title : '制单人',
-				defaultContent : ''
-			}, {
-				data : 'cverifier',
-				title : '审批人',
-				defaultContent : ''
-			}, {
-				data : 'dverifydate',
-				title : '审批日期',
-				render: $.fn.date_renderer,
-				defaultContent : ''
-					
-			} ],
-		});
+        dataSrc : function(json) {
+          json.recordsTotal = json.totalElements;
+          json.recordsFiltered = json.totalElements;
+          return json.content;
+        },
+      },
 
-		$("#btn_search").click(function() {
-			table.draw();
-		});
-	});
+      columns : [ {
+        data : 'ccode',
+        title : '单据号',
+        render : function(data, display, record) {
+          var edit_url = /*[[@{/buyer/inquery/}]]*/'';
+          edit_url += data + '/edit';
+          return '<a href="' + edit_url + '">' + data + '</a>';
+        },
+      }, {
+        data : 'vendorname',
+        title : '供应商名称',
+      }, {
+        data : 'vendorcode',
+        title : '供应商编码',
+      }, {
+        data : 'dstartdate',
+        title : '生效日期',
+        render : $.fn.date_renderer
+      }, {
+        data : 'denddate',
+        title : '有效日期',
+        render : $.fn.date_renderer
+      }, {
+        data : 'iverifystate',
+        title : '状态',
+        render : App.getInqueryStateOfId
+      }, {
+        data : 'makername',
+        title : '制单人',
+      }, {
+        data : 'dmakedate',
+        title : '制单日期',
+        render : $.fn.date_renderer
+      }, {
+        /*			  
+         data : 'itaxrate',
+         title : '税率',
+         }, {
+         data : 'isupplytype',
+         title : '供应类型',
+         }, {
+         data : 'type',
+         title : '报价形式',
+         }, {
+         */
+        data : 'verifiername',
+        title : '审核人',
+      }, {
+        data : 'dverifydate',
+        title : '审核日期',
+        render : $.fn.date_renderer
+
+      } ],
+    });
+
+    $("#btn_search").click(function() {
+      table.draw();
+    });
+    
+    $('#state').change(function() {
+      table.draw();
+    });
+    
+    $('#vendor, #inventory, #start_date, #end_date').keyup(function(e) {
+      if (e.keyCode == 13)
+        table.draw();
+    });
+  });
 </script>

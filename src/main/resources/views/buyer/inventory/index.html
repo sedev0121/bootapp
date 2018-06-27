@@ -33,143 +33,143 @@
 
 
 <script th:inline="javascript">
-	$.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-		var product_code = $('#product_code').val();
-		var product_name = $('#product_name').val();
+	
+  $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+    var product_code = $('#product_code').val();
+    var product_name = $('#product_name').val();
 
-		if (data[9] == product_code || product_code == '') {
-			if (data[10] == product_name || product_name == '') {
-				return true;
-			}
-		}
-		return false;
-	});
+    if (data[9] == product_code || product_code == '') {
+      if (data[10] == product_name || product_name == '') {
+        return true;
+      }
+    }
+    return false;
+  });
 
-	///*[[@{/api/vendor/batch_get}]]*/ ''
-	$(document).ready(function() {
-		var table = $('#example').DataTable({
-			ordering: true,
-			ajax : {
-				url : /*[[@{/api/inventory/batch_get}]]*/'',
-				data : function(data) {
-					var filter = {
-							rows_per_page : data.length,
-	                        page_index : data.start / data.length + 1,
-	                        order: data.columns[data.order[0].column].data,
-	                        dir:data.order[0].dir,
-	                        search: $('#product_name').val()
-					}
-					return filter;
-				},
-				dataSrc : function(json) {
-                  json.recordsTotal = json.totalElements;
-                  json.recordsFiltered = json.totalElements;
-                  return json.content;
-				},
-			},
+  $(document).ready(function() {
+    var table = $('#example').DataTable({
+      ordering : true,
+      ajax : {
+        url : /*[[@{/api/inventory/batch_get}]]*/'',
+        data : function(data) {
+          var filter = {
+            rows_per_page : data.length,
+            page_index : data.start / data.length + 1,
+            order : data.columns[data.order[0].column].data,
+            dir : data.order[0].dir,
+            search : $('#product_name').val()
+          }
+          return filter;
+        },
+        dataSrc : function(json) {
+          json.recordsTotal = json.totalElements;
+          json.recordsFiltered = json.totalElements;
+          return json.content;
+        },
+      },
 
-			columns : [ {
-				data : 'code',
-				title : '存货编码',
-				render: function (data, display, record) {
-		          var edit_url = /*[[@{/buyer/inventory/}]]*/'';
-		          edit_url +=  record.code + '/edit';
-		          return '<a href="' + edit_url + '">' + data  + '</a>';
-		        },
-				defaultContent : ''
-			}, {
-				data : 'name',
-				title : '存货名称',
-				defaultContent : ''
-			}, {
-				data : 'invaddcode',
-				title : '存货代码',
-				defaultContent : ''
-			}, {
-				data : 'specs',
-				title : '规格型号',
-				defaultContent : ''
-			}, {
-                data : 'ref_sale_price',
-                title : '参考售价',
-                defaultContent : ''
-            }, {
-                data : 'bottom_sale_price',
-                title : '最低售价',
-                defaultContent : ''
-			}, {
-				data : 'main_measure',
-				title : '主计量单位',
-				defaultContent : ''
-            }, {
-                data : 'unitgroup_code',
-                title : '计量单位组编码',
-                defaultContent : ''
-            }, {
-                data : 'saunit_code',
-                title : '销售默认单位编码',
-                defaultContent : ''
-            }, {
-                data : 'puunit_code',
-                title : '采购默认单位编码',
-                defaultContent : ''
-            }, {
-                data : 'stunit_code',
-                title : '库存默认单位编码',
-                defaultContent : ''
-			}, {
-				data : 'tax_rate',
-				title : '销项税率',
-				defaultContent : ''
-			}, {
-				data : 'iimptaxrate',
-				title : '进项税率',
-				defaultContent : ''
-			}, {
-				data : 'iSupplyType',
-				title : '供应类型',
-				defaultContent : ''
-			}, {
-				data : 'puunit_name',
-				title : '采购默认单位名称',
-				defaultContent : ''
-			}, {
-				data : 'saunit_name',
-				title : '销售默认单位名称',
-				defaultContent : ''
-			}, {
-				data : 'stunit_name',
-				title : '库存默认单位名称',
-				defaultContent : ''
-			}, {
-				data : 'defwarehousename',
-				title : '默认仓库名称',
-				defaultContent : ''
-			}, {
-				data : 'start_date',
-				title : '启用日期',
-				type : 'date',
-				defaultContent : ''
-			}, {
-				data : 'end_date',
-				type : 'date',
-				title : '停用日期',
-				defaultContent : ''
-			}, {
-				data : 'modify_date',
-				title : '变更日期',
-				render: $.fn.date_renderer,
-				defaultContent : ''				
-			} ],
-		});
-		
+      columns : [ {
+        data : 'code',
+        title : '存货编码',
+        render : function(data, display, record) {
+          var edit_url = /*[[@{/buyer/inventory/}]]*/'';
+          edit_url += record.code + '/edit';
+          return '<a href="' + edit_url + '">' + data + '</a>';
+        },
+        defaultContent : ''
+      }, {
+        data : 'name',
+        title : '存货名称',
+        defaultContent : ''
+      }, {
+        data : 'invaddcode',
+        title : '存货代码',
+        defaultContent : ''
+      }, {
+        data : 'specs',
+        title : '规格型号',
+        defaultContent : ''
+      }, {
+        data : 'ref_sale_price',
+        title : '参考售价',
+        defaultContent : ''
+      }, {
+        data : 'bottom_sale_price',
+        title : '最低售价',
+        defaultContent : ''
+      }, {
+        data : 'main_measure',
+        title : '主计量单位',
+        defaultContent : ''
+      }, {
+        data : 'unitgroup_code',
+        title : '计量单位组编码',
+        defaultContent : ''
+      }, {
+        data : 'saunit_code',
+        title : '销售默认单位编码',
+        defaultContent : ''
+      }, {
+        data : 'puunit_code',
+        title : '采购默认单位编码',
+        defaultContent : ''
+      }, {
+        data : 'stunit_code',
+        title : '库存默认单位编码',
+        defaultContent : ''
+      }, {
+        data : 'tax_rate',
+        title : '销项税率',
+        defaultContent : ''
+      }, {
+        data : 'iimptaxrate',
+        title : '进项税率',
+        defaultContent : ''
+      }, {
+        data : 'iSupplyType',
+        title : '供应类型',
+        defaultContent : ''
+      }, {
+        data : 'puunit_name',
+        title : '采购默认单位名称',
+        defaultContent : ''
+      }, {
+        data : 'saunit_name',
+        title : '销售默认单位名称',
+        defaultContent : ''
+      }, {
+        data : 'stunit_name',
+        title : '库存默认单位名称',
+        defaultContent : ''
+      }, {
+        data : 'defwarehousename',
+        title : '默认仓库名称',
+        defaultContent : ''
+      }, {
+        data : 'start_date',
+        title : '启用日期',
+        type : 'date',
+        defaultContent : ''
+      }, {
+        data : 'end_date',
+        type : 'date',
+        title : '停用日期',
+        defaultContent : ''
+      }, {
+        data : 'modify_date',
+        title : '变更日期',
+        render : $.fn.date_renderer,
+        defaultContent : ''
+      } ],
+    });
+
     $("#btn_search").click(function() {
-    	table.draw();
+      table.draw();
     });
-    
-    $('#product_name').keyup(function(e){
-        if(e.keyCode == 13)
-        	table.draw();
+
+    $('#product_name').keyup(function(e) {
+      if (e.keyCode == 13)
+        table.draw();
     });
-	});
+  });
 </script>

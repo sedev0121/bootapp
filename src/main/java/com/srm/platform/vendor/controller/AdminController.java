@@ -96,7 +96,7 @@ public class AdminController {
 	// 用户管理->列表
 	@GetMapping("/account_ajax")
 	public @ResponseBody Page<Account> account_list_ajax(@RequestParam Map<String, String> requestParams) {
-		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
 		String dir = requestParams.getOrDefault("dir", "asc");
