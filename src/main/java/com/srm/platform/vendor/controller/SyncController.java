@@ -155,9 +155,14 @@ public class SyncController {
 						vendor.setContact(temp.get("contact"));
 						vendor.setEmail(temp.get("email"));
 						String endDate = temp.get("end_date");
-						if (endDate != null)
-							vendor.setEndDate(Instant.ofEpochMilli(Long.parseLong(temp.get("end_date"))));
-
+						if (endDate != null && !endDate.isEmpty()) {
+							try {
+								vendor.setEndDate(formatter.parse(endDate));
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
 						vendor.setFax(temp.get("fax"));
 						vendor.setIndustry(temp.get("industry"));
 						vendor.setMemo(temp.get("memo"));

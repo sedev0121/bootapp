@@ -118,6 +118,8 @@
       }, {
         data : 'dmakedate',
         title : '制单日期',
+        "defaultOrder": true,
+        "sortOrder": 'desc',
         render : $.fn.date_renderer
       }, {
         /*			  
@@ -139,6 +141,7 @@
         render : $.fn.date_renderer
 
       } ],
+      order: [  [ 7, "desc" ] ]
 
       
     });

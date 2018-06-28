@@ -107,13 +107,11 @@ public class ApiClient {
 
 		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
 		String page_index = requestParams.getOrDefault("page_index", "1");
-		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
 		String name = requestParams.getOrDefault("name", "");
 
 		logger.info("start getBatchVendor api");
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getVendor().getBatch_get(), token_id, rows_per_page, page_index,
-				ds_sequence, name);
+		String url = String.format(appProperties.getVendor().getBatch_get(), token_id, rows_per_page, page_index, name);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -126,13 +124,12 @@ public class ApiClient {
 
 		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
 		String page_index = requestParams.getOrDefault("page_index", "1");
-		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
 		String name = requestParams.getOrDefault("name", "");
 
 		logger.info("start getBatchVendor api");
 		RestClient client = new RestClient();
 		String url = String.format(appProperties.getMeasurementUnit().getBatch_get(), token_id, rows_per_page,
-				page_index, ds_sequence, name);
+				page_index, name);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -145,13 +142,12 @@ public class ApiClient {
 
 		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
 		String page_index = requestParams.getOrDefault("page_index", "1");
-		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
 		String name = requestParams.getOrDefault("name", "");
 
 		logger.info("start getBatchVendor api");
 		RestClient client = new RestClient();
 		String url = String.format(appProperties.getInventoryClass().getBatch_get(), token_id, rows_per_page,
-				page_index, ds_sequence, name);
+				page_index, name);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -164,13 +160,12 @@ public class ApiClient {
 
 		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
 		String page_index = requestParams.getOrDefault("page_index", "1");
-		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
 		String personname = requestParams.getOrDefault("personname", "");
 
 		logger.info("start getBatchVenPriceAdjust api");
 		RestClient client = new RestClient();
 		String url = String.format(appProperties.getVenPriceAdjust().getBatch_get(), token_id, rows_per_page,
-				page_index, ds_sequence, personname);
+				page_index, personname);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -184,11 +179,9 @@ public class ApiClient {
 		logger.info("start getBatchInventory api");
 		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
 		String page_index = requestParams.getOrDefault("page_index", "1");
-		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
 
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getInventory().getBatch_get(), token_id, rows_per_page, page_index,
-				ds_sequence);
+		String url = String.format(appProperties.getInventory().getBatch_get(), token_id, rows_per_page, page_index);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -201,11 +194,9 @@ public class ApiClient {
 		logger.info("start getBatchPurchaseIn api");
 		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
 		String page_index = requestParams.getOrDefault("page_index", "1");
-		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
 
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getPurchaseIn().getBatch_get(), token_id, rows_per_page, page_index,
-				ds_sequence);
+		String url = String.format(appProperties.getPurchaseIn().getBatch_get(), token_id, rows_per_page, page_index);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -218,11 +209,9 @@ public class ApiClient {
 		logger.info("start getBatchPurInvoice api");
 		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
 		String page_index = requestParams.getOrDefault("page_index", "1");
-		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
 
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getPurInvoice().getBatch_get(), token_id, rows_per_page, page_index,
-				ds_sequence);
+		String url = String.format(appProperties.getPurInvoice().getBatch_get(), token_id, rows_per_page, page_index);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));
@@ -235,11 +224,10 @@ public class ApiClient {
 		logger.info("start getBatchPurchaseOrder api");
 		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
 		String page_index = requestParams.getOrDefault("page_index", "1");
-		String ds_sequence = requestParams.getOrDefault("ds_sequence", "1");
 
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getPurchaseOrder().getBatch_get(), token_id, rows_per_page, page_index,
-				ds_sequence);
+		String url = String.format(appProperties.getPurchaseOrder().getBatch_get(), token_id, rows_per_page,
+				page_index);
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));

@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.model;
 
 import java.time.Instant;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -153,11 +154,11 @@ public class Vendor {
 	}
 
 	@JsonProperty("end_date")
-	public Instant getEndDate() {
+	public Date getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Instant endDate) {
+	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 
@@ -184,7 +185,7 @@ public class Vendor {
 	private String receiveSite;
 
 	@Column(name = "end_date")
-	private Instant endDate;
+	private Date endDate;
 	private Instant timestamp;
 	private String memo;
 
