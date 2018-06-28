@@ -22,6 +22,16 @@
       <li><a th:href="@{/buyer/inquery}" class="active">询价管理</a></li>
       <li class="active">询价单</li>
     </ul>       
+    <div class="search-content">
+        <div class="text-right">
+          <a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a>
+          <a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-save"></i> 提交</a>
+          <a class="btn btn-primary" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
+          <a class="btn btn-primary" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
+          <a class="btn btn-primary" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
+          <a class="btn btn-default" th:href="@{/buyer/inquery}"><i class="fa fa-arrow-left"></i> 返回</a>
+        </div>
+    </div>
     <div class="panel panel-default">
         <div class="panel-body"> 
         <form id="form" th:action="@{/buyer/inquery/update}" method="post">      
@@ -114,16 +124,7 @@
             </div>
         </form>
     </div>
-    <div class="panel-footer"> 
-      <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-        <a class="btn btn-primary" th:if="${main.iverifystate==1}" id="save"><i class="fa fa-save"></i> 保存</a>
-        <a class="btn btn-primary" th:if="${main.iverifystate==1}" id="submit"><i class="fa fa-save"></i> 提交</a>
-        <a class="btn btn-primary" th:if="${main.iverifystate==3 || main.iverifystate==4}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
-        <a class="btn btn-primary" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
-        <a class="btn btn-primary" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
-        <a class="btn btn-default" th:href="@{/buyer/inquery}"><i class="fa fa-arrow-left"></i> 返回</a>
-      </div>
-    </div> 
+
     <div id="customForm" class="hidden">
         <div class="row">
             <div class="col-lg-3 col-md-3">
@@ -139,7 +140,7 @@
               <input type="text" id="code" class="form-control" />
             </div>                
             <div class="col-lg-3 col-md-3">
-              <label for="state">数少数量:</label>
+              <label for="state">最小数量:</label>
               <input type="text" id="code" class="form-control" />
             </div>
             <div class="col-lg-3 col-md-3">
@@ -199,7 +200,7 @@
           label: "单位:",
           name: "inventory.puunit_name"            
         },{
-          label: "数少数量:",
+          label: "最小数量:",
           name: "fminquantity"    
         },{
           label: "最大数量:",
@@ -221,7 +222,7 @@
           name: "denddate"            
         },{
           label: "是否有效:",
-          name: "ivalid"            
+          name: "ivalid",
         },{
           label: "备注:",
           name: "cbodymemo"            
@@ -290,7 +291,7 @@
           defaultContent : '个'
         }, {
           data : 'fminquantity',
-          title : '数少数量',
+          title : '最小数量',
         }, {
           data : 'fmaxquantity',
           title : '最大数量',
@@ -315,12 +316,8 @@
         }, {
           data : 'ivalid',
           title : '是否有效',
-          render: function(data) {
-            if (data == 1)
-              return '有效';
-            else
-              return '無效';
-          }
+          visible: state>2,
+          render: App.valid_render
         }, {
           data : 'cbodymemo',
           title : '备注',
@@ -382,7 +379,8 @@
     
     
     $("#save").click(function() {
-        $("#form").submit();            
+      $('#state').val(1);
+      $("#form").submit();            
     });
     
     $("#submit").click(function() {

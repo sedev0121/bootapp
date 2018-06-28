@@ -10,6 +10,13 @@
       <li><a th:href="@{/admin/permission_group}">权限组管理</a></li>
       <li class="active">权限组详细</li>
     </ul>
+    <div class="search-content">
+      <div class="text-right margin-right-20">
+          <a id="save" class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
+          <a id="del" class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
+          <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
+      </div>
+    </div>
     <form id="form" th:action="@{/admin/permission_group/update}" method="post">  
       <input type="hidden" id="id" name="id" th:value="${permission_group.id}">
       <div class="panel panel-default">
@@ -36,13 +43,7 @@
         
           </div>
         </div>
-        <div class="panel-footer">
-          <div class="text-right margin-right-20">
-              <a id="save" class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
-              <a id="del" class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
-              <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
-          </div>
-        </div>
+
       </div>
     </form>
   </div>

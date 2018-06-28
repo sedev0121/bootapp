@@ -9,7 +9,16 @@
         <li><a th:href="@{/buyer/purinvoice}">对账单管理</a></li>
         <li class="active">对账单明细</li>
       </ul>
-
+      <div class="search-content">
+        <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
+          <a class="btn btn-primary"><i class="fa fa-undo"></i> 退回</a>
+          <a class="btn btn-primary"><i class="fa fa-check-square"></i> 审核</a>
+          <a class="btn btn-primary"><i class="fa fa-arrow-up"></i> 发布</a>
+          <a class="btn btn-primary"><i class="fa   fa-check-circle"></i> 发票确认</a>
+          <a class="btn btn-primary"><i class="fa fa-print"></i> 打印</a>
+          <a class="btn btn-default" th:href="@{/buyer/purinvoice}"><i class="fa fa-arrow-left"></i> 返回</a>
+        </div>
+      </div>
       
 
       <div class="panel panel-default">
@@ -104,16 +113,7 @@
         </div>
       </div>
         </div>
-        <div class="panel-footer">
-          <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-            <a class="btn btn-primary"><i class="fa fa-undo"></i> 退回</a>
-            <a class="btn btn-primary"><i class="fa fa-check-square"></i> 审核</a>
-            <a class="btn btn-primary"><i class="fa fa-arrow-up"></i> 发布</a>
-            <a class="btn btn-primary"><i class="fa   fa-check-circle"></i> 发票确认</a>
-            <a class="btn btn-primary"><i class="fa fa-print"></i> 打印</a>
-            <a class="btn btn-default" th:href="@{/buyer/purinvoice}"><i class="fa fa-arrow-left"></i> 返回</a>
-          </div>
-        </div>
+
   </div>  
 </body>
 </html>

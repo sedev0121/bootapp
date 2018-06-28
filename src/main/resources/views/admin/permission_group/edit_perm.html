@@ -12,6 +12,12 @@
       <li><a th:href="@{/admin/permission_group}">权限组管理</a></li>
       <li class="active">权限设置</li>
     </ul>
+    <div class="search-content">
+      <div class="text-right margin-right-20">
+          <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
+          <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
+      </div>
+    </div>
     <form id="form" th:action="@{/admin/permission_group/update/function}" method="post">  
       <h1 th:text="${permission_group.name}"></h1>
       <input type="hidden" name="id" th:value="${permission_group.id}">
@@ -33,12 +39,7 @@
             </fieldset>
           </div>
         </div>
-        <div class="panel-footer">
-          <div class="text-right margin-right-20">
-              <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
-              <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
-          </div>
-        </div>
+
       </div>
     </form>
     <div class="modal fade" id="tree_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

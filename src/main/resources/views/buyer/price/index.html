@@ -93,79 +93,68 @@ $(document).ready(function() {
                 return '<a href="' + edit_url + '">' + data.name  + '</a>';
             },
             title : '存货名称',
-            defaultContent : ''
         }, {
   			data : 'description',
   			title : '描述',
-  			defaultContent : ''
   		}, {
   			data : 'fauxunit',
-  			title : '辅助单位',
-  			defaultContent : ''				
+  			title : '辅助单位',				
         }, {
             data : 'fprice',
-            title : '未税单价',
-            defaultContent : ''             
+            title : '未税单价',             
         }, {
             data : 'ftax',
-            title : '税率',
-            defaultContent : ''             
+            title : '税率',             
         }, {
             data : 'ftaxprice',
-            title : '含税单价',
-            defaultContent : ''             
+            title : '含税单价',             
         }, {
             data : 'faddqty',
-            title : '订货增量',
-            defaultContent : ''             
+            title : '订货增量',             
         }, {
             data : 'foldcheckdate',
             title : '原调价时间',
-            defaultContent : ''             
+            render : $.fn.date_renderer         
         }, {
             data : 'cinvdate',
             title : '单据日期',
-            defaultContent : ''             
+            render : $.fn.date_renderer           
         }, {
             data : 'fcheckdate',
             title : '调价时间',
-            defaultContent : ''             
+            render : $.fn.date_renderer        
         }, {
             data : 'foldavdate',
             title : '有效日期',
-            defaultContent : ''             
+            render : $.fn.date_renderer          
         }, {
             data : 'favdate',
             title : '报价有效期',
-            defaultContent : ''             
+            render : $.fn.date_renderer        
         }, {
             data : 'fcancelno',
-            title : '失效人',
-            defaultContent : ''             
+            title : '失效人',             
         }, {
             data : 'fcanceldate',
-            title : '失效日期',
-            defaultContent : ''             
+            title : '报价失效期',
+            render : $.fn.date_renderer,    
         }, {
             data : 'fisoutside',
             title : '是否失效',
-            defaultContent : ''             
+            render: App.valid_render    
         }, {
             data : 'funitid',
-            title : '单位',
-            defaultContent : ''             
+            title : '单位',             
         }, {
             data : 'createby',
-            title : '制单人',
-            defaultContent : ''             
+            title : '制单人',             
         }, {
             data : 'createdate',
-            title : '制单日期',
-            defaultContent : ''             
+            title : '制单日期',      
+            render: App.valid_render
         }, {
             data : 'fnote',
-            title : '备注',
-            defaultContent : ''             
+            title : '备注',             
   		} ],
   	});
   	

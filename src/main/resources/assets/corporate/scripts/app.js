@@ -108,7 +108,14 @@ var App = function() {
     getInqueryProvideDataWithAll: function() {
       return [{id:0, text:"　"}, ...inquery_provide_type];
     },    
-    
+    valid_render:function(data) {
+      if (data == 1)
+        return '【是】';
+      else if (data == 0)
+        return '【否】';
+      else
+        return "";
+    },
     blockUI : function(options) {
       options = $.extend(true, {}, options);
       if (options.message == undefined)
