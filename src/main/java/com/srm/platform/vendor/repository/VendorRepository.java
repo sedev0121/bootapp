@@ -15,8 +15,7 @@ public interface VendorRepository extends JpaRepository<Vendor, Long> {
 	@Query(value = "SELECT * FROM vendor WHERE code LIKE %?1% or name LIKE %?1% ", nativeQuery = true)
 	Page<Vendor> findBySearchTerm(String search, Pageable pageable);
 
-	@Query(value = "SELECT code, name FROM vendor WHERE "
-			+ "abbrname LIKE %?1% or name LIKE %?1%", countQuery = "SELECT count(*) FROM vendor WHERE abbrname LIKE %?1% or name LIKE %?1%", nativeQuery = true)
+	@Query(value = "SELECT code, name FROM vendor WHERE " + "abbrname LIKE %?1% or name LIKE %?1%", countQuery="SELECT count(*) FROM vendor WHERE abbrname LIKE %?1% or name LIKE %?1%",  nativeQuery = true)
 	Page<VendorSearchItem> findForSelect(String search, Pageable pageable);
 
 	Vendor findOneByCode(String code);

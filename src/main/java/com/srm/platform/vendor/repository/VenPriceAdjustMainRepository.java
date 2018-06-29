@@ -19,7 +19,7 @@ public interface VenPriceAdjustMainRepository extends JpaRepository<VenPriceAdju
 			+ "left join vendor c on a.cvencode=c.code left join inventory d on b.cinvcode=d.code "
 			+ "left join account e on a.maker_id=e.id left join account f on a.cverifier_id=f.id "
 			+ "where (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) "
-			+ "and (ifnull(d.name,'') like CONCAT('%',:inventory, '%') or ifnull(d.code,'') like CONCAT('%',:inventory, '%'))", nativeQuery = true)
+			+ "and (ifnull(d.name,'') like CONCAT('%',:inventory, '%') or ifnull(d.code,'') like CONCAT('%',:inventory, '%'))", countQuery = "select count(distinct a.ccode) from venpriceadjust_main a left join venpriceadjust_detail b on a.ccode = b.mainid left join vendor c on a.cvencode=c.code left join inventory d on b.cinvcode=d.code left join account e on a.maker_id=e.id left join account f on a.cverifier_id=f.id where (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) and (ifnull(d.name,'') like CONCAT('%',:inventory, '%') or ifnull(d.code,'') like CONCAT('%',:inventory, '%'))", nativeQuery = true)
 	Page<VenPriceAdjustSearchItem> findBySearchTerm(String vendor, String inventory, Pageable pageable);
 
 	@Query(value = "select distinct a.*, c.code vendorcode, c.name vendorname, e.realname makername, f.realname verifiername from venpriceadjust_main a left join venpriceadjust_detail b on a.ccode = b.mainid "
