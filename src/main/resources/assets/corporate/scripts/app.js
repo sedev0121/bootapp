@@ -85,6 +85,9 @@ var App = function() {
       })
       return [{id:0, text:"　"}, ...result];
     },
+    getInqueryStateClass: function( td, cellData, rowData, row, col ) {
+      $(td).addClass('inquery_state_' + cellData);
+    },
     getInqueryStateOfId: function(id) {
       var title = "";
       $.each(inquery_state_data, function(key, item){

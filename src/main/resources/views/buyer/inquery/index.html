@@ -85,7 +85,9 @@
           return json.content;
         },
       },
-
+      createdRow: function( row, data, dataIndex ) {
+          $(row).addClass('');
+      },
       columns : [ {
         data : 'ccode',
         title : '单据号',
@@ -111,6 +113,7 @@
       }, {
         data : 'iverifystate',
         title : '状态',
+        createdCell: App.getInqueryStateClass,
         render : App.getInqueryStateOfId
       }, {
         data : 'makername',
