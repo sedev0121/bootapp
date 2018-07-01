@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "venpriceadjust_detail")
 public class VenPriceAdjustDetail {
@@ -19,6 +21,7 @@ public class VenPriceAdjustDetail {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
+	@JsonIgnore
 	@ManyToOne(cascade = { CascadeType.ALL })
 	@JoinColumn(name = "mainid", referencedColumnName = "ccode")
 	VenPriceAdjustMain main;
@@ -31,7 +34,7 @@ public class VenPriceAdjustDetail {
 
 	Integer itaxrate;
 
-	Long itaxunitprice;
+	Integer itaxunitprice;
 
 	Float fminquantity;
 
@@ -89,11 +92,11 @@ public class VenPriceAdjustDetail {
 		this.itaxrate = itaxrate;
 	}
 
-	public Long getItaxunitprice() {
+	public Integer getItaxunitprice() {
 		return itaxunitprice;
 	}
 
-	public void setItaxunitprice(Long itaxunitprice) {
+	public void setItaxunitprice(Integer itaxunitprice) {
 		this.itaxunitprice = itaxunitprice;
 	}
 

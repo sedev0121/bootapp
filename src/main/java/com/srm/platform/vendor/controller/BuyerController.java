@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Price;
+import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
@@ -42,13 +43,13 @@ import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
+import com.srm.platform.vendor.utility.VenPriceSaveForm;
 
 @Controller
 @RequestMapping(path = "/buyer")
 @PreAuthorize("hasRole('ROLE_BUYER')")
 public class BuyerController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
 	@PersistenceContext
 	private EntityManager em;
@@ -121,9 +122,11 @@ public class BuyerController {
 		Integer state = Integer.parseInt(stateStr);
 		Date startDate = null, endDate = null;
 		try {
+			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 			if (start_date != null && !start_date.isEmpty())
 				startDate = dateFormatter.parse(start_date);
 			if (end_date != null && !end_date.isEmpty()) {
+				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 				endDate = dateFormatter.parse(end_date);
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(endDate);
@@ -160,56 +163,64 @@ public class BuyerController {
 	}
 
 	@PostMapping("/inquery/update")
-	public @ResponseBody VenPriceAdjustMain inquery_update_ajax(@RequestParam Map<String, String> requestParams,
-			Principal principal) {
-		String ccode = requestParams.get("ccode");
-		String vendor = requestParams.get("vendor");
-		String tax_rate = requestParams.get("tax_rate");
-		String state = requestParams.get("state");
-		String start_date = requestParams.get("start_date");
-		String end_date = requestParams.get("end_date");
-		String type = requestParams.get("type");
-		String provide_type = requestParams.get("provide_type");
-		String maker = requestParams.get("maker");
-		String make_date = requestParams.get("make_date");
-
+	public @ResponseBody VenPriceAdjustMain inquery_update_ajax(VenPriceSaveForm form, Principal principal) {
 		VenPriceAdjustMain venPriceAdjustMain = new VenPriceAdjustMain();
-		venPriceAdjustMain.setCcode(ccode);
+		venPriceAdjustMain.setCcode(form.getCcode());
 
 		Example<VenPriceAdjustMain> example = Example.of(venPriceAdjustMain);
 		Optional<VenPriceAdjustMain> result = venPriceAdjustMainRepository.findOne(example);
 		if (result.isPresent())
 			venPriceAdjustMain = result.get();
 
-		venPriceAdjustMain.setType(Integer.parseInt(type));
-		venPriceAdjustMain.setIsupplytype(Integer.parseInt(provide_type));
-		venPriceAdjustMain.setItaxrate(Integer.parseInt(tax_rate));
-		venPriceAdjustMain.setIverifystate(Integer.parseInt(state));
+		venPriceAdjustMain.setType(form.getType());
+		venPriceAdjustMain.setIsupplytype(form.getProvide_type());
+		venPriceAdjustMain.setItaxrate(form.getTax_rate());
+		venPriceAdjustMain.setIverifystate(form.getState());
 
-		try {
-			venPriceAdjustMain.setDstartdate(dateFormatter.parse(start_date));
-			venPriceAdjustMain.setDenddate(dateFormatter.parse(end_date));
-			venPriceAdjustMain.setDmakedate(dateFormatter.parse(make_date));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		venPriceAdjustMain.setDstartdate(form.getStart_date());
+		venPriceAdjustMain.setDenddate(form.getEnd_date());
+		venPriceAdjustMain.setDmakedate(form.getMake_date());
 
 		Account account = accountRepository.findOneByUsername(principal.getName());
-		if (Integer.parseInt(state) == 6) {
+		if (form.getState() == 6) {
 			venPriceAdjustMain.setVerifier(account);
 			venPriceAdjustMain.setDverifydate(new Date());
 		}
-		if (Integer.parseInt(state) == 7) {
+		if (form.getState() == 7) {
 			venPriceAdjustMain.setPublisher(account);
 			venPriceAdjustMain.setDpublishdate(new Date());
 		}
 
-		venPriceAdjustMain.setVendor(vendorRepository.findOneByCode(vendor));
-		venPriceAdjustMain.setMaker(accountRepository.findOneById(Long.parseLong(maker)));
+		venPriceAdjustMain.setVendor(vendorRepository.findOneByCode(form.getVendor()));
+		venPriceAdjustMain.setMaker(accountRepository.findOneById(form.getMaker()));
 
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 
+		for (Map<String, String> row : form.getTable()) {
+			VenPriceAdjustDetail detail = new VenPriceAdjustDetail();
+			detail.setMain(venPriceAdjustMain);
+			detail.setInventory(inventoryRepository.findByCode(row.get("cinvcode")));
+			detail.setCbodymemo(row.get("cbodymemo"));
+			detail.setIunitprice(Long.parseLong(row.get("iunitprice")));
+			detail.setFmaxquantity(Float.parseFloat(row.get("fmaxquantity")));
+			if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())
+				detail.setIvalid(Integer.parseInt(row.get("ivalid")));
+			try {
+				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+				detail.setDstartdate(dateFormatter.parse(row.get("dstartdate")));
+				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+				detail.setDenddate(dateFormatter.parse(row.get("denddate")));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			detail.setItaxrate(Integer.parseInt(row.get("itaxrate")));
+			detail.setItaxunitprice(Integer.parseInt(row.get("itaxunitprice")));
+			detail.setFminquantity(Float.parseFloat(row.get("fminquantity")));
+
+			venPriceAdjustDetailRepository.save(detail);
+		}
 		return venPriceAdjustMain;
 	}
 

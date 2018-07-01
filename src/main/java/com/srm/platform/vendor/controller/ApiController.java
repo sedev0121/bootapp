@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.model.Unit;
-import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
@@ -29,6 +28,7 @@ import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.utility.AccountSearchItem;
 import com.srm.platform.vendor.utility.UnitNode;
+import com.srm.platform.vendor.utility.VenPriceDetailItem;
 import com.srm.platform.vendor.utility.VendorSearchItem;
 
 @RestController
@@ -97,10 +97,9 @@ public class ApiController {
 	}
 
 	@RequestMapping(value = "/venpriceadjust/{mainId}/details", produces = "application/json")
-	public List<VenPriceAdjustDetail> inventory_list_of_venpriceadjust_ajax(@PathVariable("mainId") String mainId) {
-		// List<VenPriceAdjustDetail> list =
-		// venPriceAdjustDetailRepository.findByMainId(mainId);
-		List<VenPriceAdjustDetail> list = venPriceAdjustDetailRepository.findAll();
+	public List<VenPriceDetailItem> inventory_list_of_venpriceadjust_ajax(@PathVariable("mainId") String mainId) {
+		List<VenPriceDetailItem> list = venPriceAdjustDetailRepository.findDetailsByMainId(mainId);
+		// List<VenPriceAdjustDetail> list = venPriceAdjustDetailRepository.findAll();
 
 		return list;
 	}

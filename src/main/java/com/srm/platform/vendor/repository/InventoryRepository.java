@@ -13,4 +13,6 @@ import com.srm.platform.vendor.model.Inventory;
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 	@Query(value = "SELECT * FROM inventory WHERE code LIKE %?1% or name LIKE %?1% ", nativeQuery = true)
 	Page<Inventory> findBySearchTerm(String search, Pageable pageable);
+
+	Inventory findByCode(String code);
 }

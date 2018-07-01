@@ -276,19 +276,18 @@
         },
 
         columns : [ {
-          data : 'inventory.code',
+          data : 'cinvcode',
           title : '商品编码',
           defaultContent : ''
         }, {
-          data : 'inventory.name',
+          data : 'name',
           title : '商品名称'
         }, {
-          data : 'inventory.specs',
+          data : 'specs',
           title : '规格型号',
         }, {
-          data : 'inventory.puunit_name',
+          data : 'puunit_name',
           title : '单位',
-          defaultContent : '个'
         }, {
           data : 'fminquantity',
           title : '最小数量',
@@ -357,7 +356,9 @@
       },
 
       submitHandler: function (form) {
+        var data = table.rows().data().toArray();
           jQuery(form).ajaxSubmit({
+              data: {table:data},
               success: function(res, status, xhr, form) {
                   swal({
                       "title": "操作成功", 

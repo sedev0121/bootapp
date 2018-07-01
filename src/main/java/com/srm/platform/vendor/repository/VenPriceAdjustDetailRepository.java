@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
+import com.srm.platform.vendor.utility.VenPriceDetailItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
@@ -13,5 +14,8 @@ import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 public interface VenPriceAdjustDetailRepository extends JpaRepository<VenPriceAdjustDetail, Long> {
 	@Query(value = "SELECT * FROM venpriceadjust_detail WHERE mainid= :mainId", nativeQuery = true)
 	List<VenPriceAdjustDetail> findByMainId(String mainId);
+
+	@Query(value = "select b.name, b.specs, b.puunit_name, a.* from venpriceadjust_detail a left join inventory b on a.cinvcode=b.code where  a.mainid= :mainId", nativeQuery = true)
+	List<VenPriceDetailItem> findDetailsByMainId(String mainId);
 
 }
