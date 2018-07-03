@@ -8,7 +8,10 @@ div.DTE_Field select {
   padding: 6px 4px;
   width: 100%;
 }
-
+div.DTE_Field.DTE_Field_Type_date input.jqueryui {
+    width: 100%; 
+    margin-right: 0px;
+}
 </style>
 </head>   
 <body>
@@ -222,11 +225,17 @@ div.DTE_Field select {
         },{
           label: "生效日期:",
           type: "date",
+          opts: {
+            showOn: "focus"
+          },
           dateFormat: "yy-mm-dd",
           name: "dstartdate"                
         },{
           label: "有效日期:",
           type: "date",
+          opts: {
+            showOn: "focus"
+          },
           dateFormat: $.datepicker.ISO_8601,
           name: "denddate"                
         },{
@@ -271,7 +280,18 @@ div.DTE_Field select {
         alert("请选择供应商！");
         return false;
       }
-    }).on( 'open', function ( e, json, data ) {
+    }).on( 'open', function (e, mode, action) {
+      if (action == "edit") {
+        $('#select_inv_code').empty().append($("<option/>").val(this.field('cinvcode').val()).text(this.field('name').val()));
+      }
+      
+      if (action == "create") {
+        this.field('itaxrate').val($('#tax_rate').val());
+        this.field('dstartdate').val($('#start_date').val());
+        this.field('denddate').val($('#end_date').val());
+        $('#select_inv_code').empty();
+      }
+      
       var select_options = App.getSelect2Options(inventory_search_url);
       $.extend(true, select_options, {
         ajax: {
@@ -302,8 +322,23 @@ div.DTE_Field select {
       });
    
     }).on( 'preSubmit', function ( e, data, action ) {
-      alert( 'preSubmit' );
-      
+      if ( action !== 'remove' ) {
+          var iunitprice = this.field( 'iunitprice' );
+  
+          if ( ! iunitprice.val() ) {
+            iunitprice.error( '请输入原价格！' );
+          }
+          
+          var select_inv_code = this.field( 'select' );
+          if (! $('#select_inv_code').select2('val')) {
+            select_inv_code.error( '请选择商品！' );
+          }
+           
+          // If any error was reported, cancel the submission so it can be corrected
+          if ( this.inError() ) {
+              return false;
+          }
+      }      
     } );
     
     var table_options = {
@@ -322,6 +357,8 @@ div.DTE_Field select {
             var index = 1;
             $.each(json, function(key, item){
               item.id = index++;
+              item.dstartdate = $.fn.date_renderer(item.dstartdate);
+              item.denddate = $.fn.date_renderer(item.denddate);
             });
             return json;
           },
@@ -357,12 +394,9 @@ div.DTE_Field select {
         }, {
           data : 'dstartdate',
           title : '生效日期',
-          render : $.fn.date_renderer,
-          defaultContent : ''
         }, {
           data : 'denddate',
-          title : '有效日期',
-          render : $.fn.date_renderer,
+          title : '有效日期'
         }, {
           data : 'ivalid',
           title : '是否有效',

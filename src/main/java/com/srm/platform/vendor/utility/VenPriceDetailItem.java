@@ -1,7 +1,5 @@
 package com.srm.platform.vendor.utility;
 
-import java.util.Date;
-
 public interface VenPriceDetailItem {
 
 	String getCinvcode();
@@ -22,9 +20,9 @@ public interface VenPriceDetailItem {
 
 	Integer getItaxunitprice();
 
-	Date getDstartdate();
+	String getDstartdate();
 
-	Date getDenddate();
+	String getDenddate();
 
 	Integer getIvalid();
 
