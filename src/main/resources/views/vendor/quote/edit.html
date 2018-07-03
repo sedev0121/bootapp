@@ -136,31 +136,73 @@
     $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 }).select2("val", supply_type.toString());
     $("#vendor").select2();
    
-    
+    editor = new $.fn.dataTable.Editor( {
+      table: "#example",  
+      idSrc: "id",
+      fields: [ {
+          label: "原价格:",
+          id: "iunitprice",
+          attr: {
+            type: "number"
+          },
+          name: "iunitprice"            
+        },{
+          label: "税率:",
+          name: "itaxrate"                
+        },{
+          label: "最新含税报价:",
+          name: "itaxunitprice"                
+        },{
+          label: "备注:",
+          name: "cbodymemo"                
+        }],
+    }).on( 'preSubmit', function ( e, data, action ) {
+        var iunitprice = this.field( 'iunitprice' );
+
+        if ( ! iunitprice.val() ) {
+          iunitprice.error( '请输入原价格！' );
+        }
+        var new_pirce = (parseInt(this.field( 'itaxrate' ).val()) + 100) * this.field( 'iunitprice' ).val()/100
+        $.each(data.data, function(key, item){
+          item.itaxunitprice = new_pirce;  
+        })
+          
+        // If any error was reported, cancel the submission so it can be corrected
+        if ( this.inError() ) {
+            return false;
+        }
+    } );
+          
     var table = $('#example').DataTable({
       serverSide:false,
       processing:false,
       ajax : {
         url : detail_url,
         dataSrc : function(json) {
+          $.each(json, function(key, item){
+            item.dstartdate = $.fn.date_renderer(item.dstartdate);
+            item.denddate = $.fn.date_renderer(item.denddate);
+          });
           return json;
         },
       },
 
       columns : [ {
-        data : 'inventory.code',
+        data : 'cinvcode',
         title : '商品编码',
-        defaultContent : ''
       }, {
-        data : 'inventory.name',
+        data : 'name',
         title : '商品名称'
       }, {
-        data : 'inventory.specs',
+        data : 'specs',
         title : '规格型号',
       }, {
-        data : 'inventory.puunit_name',
+        data : 'puunit_name',
         title : '单位',
-        defaultContent : '个'
+      }, {
+        data : 'iunitprice',
+        className: 'edit-cell',
+        title : '原价格',
       }, {
         data : 'fminquantity',
         title : '最小数量',
@@ -168,39 +210,35 @@
         data : 'fmaxquantity',
         title : '最大数量',
       }, {
-        data : 'iunitprice',
-        title : '原价格',
-      }, {
         data : 'itaxrate',
         title : '税率',
       }, {
         data : 'itaxunitprice',
+        className: 'edit-cell',
         title : '最新含税报价',
       }, {
         data : 'dstartdate',
         title : '生效日期',
-        render : $.fn.date_renderer,
-        defaultContent : ''
       }, {
         data : 'denddate',
-        title : '有效日期',
-        render : $.fn.date_renderer,
+        title : '有效日期'
       }, {
         data : 'ivalid',
         title : '是否有效',
-        render: function(data) {
-          if (data == 1)
-            return '【是】';
-          else
-            return '【否】';
-        }
+        visible: state>2,
+        render: App.valid_render
       }, {
         data : 'cbodymemo',
+        className: 'edit-cell',
         title : '备注',
 
       } ],
     });
 
+    $('#example').on( 'click', 'tbody td.edit-cell', function (e) {
+      editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+    });
+    
     $("#form" ).validate({
       // define validation rules
       rules: {
@@ -229,6 +267,7 @@
 
       submitHandler: function (form) {
           jQuery(form).ajaxSubmit({
+              data: {table: table.rows().data().toArray()},
               success: function(res, status, xhr, form) {
                   swal({
                       "title": "操作成功", 

@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
+import com.srm.platform.vendor.utility.VenPriceSaveForm;
 
 @Controller
 @RequestMapping(path = "/vendor")
@@ -38,6 +42,9 @@ public class VendorController {
 
 	@Autowired
 	private VenPriceAdjustMainRepository venPriceAdjustMainRepository;
+
+	@Autowired
+	private VenPriceAdjustDetailRepository venPriceAdjustDetailRepository;
 
 	@Autowired
 	private AccountRepository accountRepository;
@@ -77,21 +84,32 @@ public class VendorController {
 	}
 
 	@PostMapping("/quote/update")
-	public @ResponseBody VenPriceAdjustMain inquery_update_ajax(Principal principal,
-			@RequestParam Map<String, String> requestParams) {
-		String ccode = requestParams.get("ccode");
-		String state = requestParams.get("state");
+	public @ResponseBody VenPriceAdjustMain inquery_update_ajax(VenPriceSaveForm form, Principal principal) {
+		String ccode = form.getCcode();
+		Integer state = form.getState();
 
 		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(ccode);
-		venPriceAdjustMain.setIverifystate(Integer.parseInt(state));
+		venPriceAdjustMain.setIverifystate(state);
 
-		if (Integer.parseInt(state) == 3 || Integer.parseInt(state) == 4) {
+		if (state == 3 || state == 4) {
 			Account account = accountRepository.findOneByUsername(principal.getName());
 			venPriceAdjustMain.setReviewer(account);
 			venPriceAdjustMain.setDreviewdate(new Date());
 		}
 
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
+
+		for (Map<String, String> row : form.getTable()) {
+			Optional<VenPriceAdjustDetail> result = venPriceAdjustDetailRepository
+					.findById(Long.parseLong(row.get("id")));
+			if (result.isPresent()) {
+				VenPriceAdjustDetail detail = result.get();
+				detail.setIunitprice(Long.parseLong(row.get("iunitprice")));
+				detail.setCbodymemo(row.get("cbodymemo"));
+				venPriceAdjustDetailRepository.save(detail);
+			}
+
+		}
 		return venPriceAdjustMain;
 	}
 

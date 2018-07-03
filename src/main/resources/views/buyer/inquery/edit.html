@@ -368,9 +368,7 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
         ajax : {
           url : detail_url,
           dataSrc : function(json) {
-            var index = 1;
             $.each(json, function(key, item){
-              item.id = index++;
               item.dstartdate = $.fn.date_renderer(item.dstartdate);
               item.denddate = $.fn.date_renderer(item.denddate);
             });

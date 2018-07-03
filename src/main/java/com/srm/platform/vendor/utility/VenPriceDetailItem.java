@@ -2,6 +2,8 @@ package com.srm.platform.vendor.utility;
 
 public interface VenPriceDetailItem {
 
+	String getId();
+
 	String getCinvcode();
 
 	String getName();
