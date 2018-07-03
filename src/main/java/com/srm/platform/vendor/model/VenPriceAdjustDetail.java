@@ -30,11 +30,11 @@ public class VenPriceAdjustDetail {
 	@JoinColumn(name = "cinvcode", referencedColumnName = "code")
 	Inventory inventory;
 
-	Long iunitprice;
+	Float iunitprice;
 
 	Integer itaxrate;
 
-	Integer itaxunitprice;
+	Float itaxunitprice;
 
 	Float fminquantity;
 
@@ -76,11 +76,11 @@ public class VenPriceAdjustDetail {
 		this.inventory = inventory;
 	}
 
-	public Long getIunitprice() {
+	public Float getIunitprice() {
 		return iunitprice;
 	}
 
-	public void setIunitprice(Long iunitprice) {
+	public void setIunitprice(Float iunitprice) {
 		this.iunitprice = iunitprice;
 	}
 
@@ -92,11 +92,11 @@ public class VenPriceAdjustDetail {
 		this.itaxrate = itaxrate;
 	}
 
-	public Integer getItaxunitprice() {
+	public Float getItaxunitprice() {
 		return itaxunitprice;
 	}
 
-	public void setItaxunitprice(Integer itaxunitprice) {
+	public void setItaxunitprice(Float itaxunitprice) {
 		this.itaxunitprice = itaxunitprice;
 	}
 

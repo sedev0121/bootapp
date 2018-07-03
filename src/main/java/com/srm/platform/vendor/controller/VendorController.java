@@ -30,6 +30,7 @@ import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
 
@@ -91,7 +92,7 @@ public class VendorController {
 		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(ccode);
 		venPriceAdjustMain.setIverifystate(state);
 
-		if (state == 3 || state == 4) {
+		if (state == Constants.STATE_CONFIRM || state == Constants.STATE_CANCEL) {
 			Account account = accountRepository.findOneByUsername(principal.getName());
 			venPriceAdjustMain.setReviewer(account);
 			venPriceAdjustMain.setDreviewdate(new Date());
@@ -104,7 +105,8 @@ public class VendorController {
 					.findById(Long.parseLong(row.get("id")));
 			if (result.isPresent()) {
 				VenPriceAdjustDetail detail = result.get();
-				detail.setIunitprice(Long.parseLong(row.get("iunitprice")));
+				detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
+				detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
 				detail.setCbodymemo(row.get("cbodymemo"));
 				venPriceAdjustDetailRepository.save(detail);
 			}

@@ -16,11 +16,11 @@ public interface VenPriceDetailItem {
 
 	Float getFmaxquantity();
 
-	Integer getIunitprice();
+	Float getIunitprice();
 
 	Integer getItaxrate();
 
-	Integer getItaxunitprice();
+	Float getItaxunitprice();
 
 	String getDstartdate();
 

@@ -42,6 +42,7 @@ import com.srm.platform.vendor.repository.PriceRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
 
@@ -182,11 +183,11 @@ public class BuyerController {
 		venPriceAdjustMain.setDmakedate(form.getMake_date());
 
 		Account account = accountRepository.findOneByUsername(principal.getName());
-		if (form.getState() == 6) {
+		if (form.getState() == Constants.STATE_VERIFY) {
 			venPriceAdjustMain.setVerifier(account);
 			venPriceAdjustMain.setDverifydate(new Date());
 		}
-		if (form.getState() == 7) {
+		if (form.getState() == Constants.STATE_PUBLISH) {
 			venPriceAdjustMain.setPublisher(account);
 			venPriceAdjustMain.setDpublishdate(new Date());
 		}
@@ -196,47 +197,50 @@ public class BuyerController {
 
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 
-		venPriceAdjustDetailRepository
-				.deleteInBatch(venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode()));
+		if (form.getState() <= Constants.STATE_SUBMIT && form.getTable() != null) {
+			venPriceAdjustDetailRepository
+					.deleteInBatch(venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode()));
 
-		for (Map<String, String> row : form.getTable()) {
-			VenPriceAdjustDetail detail = new VenPriceAdjustDetail();
-			detail.setMain(venPriceAdjustMain);
-			detail.setInventory(inventoryRepository.findByCode(row.get("cinvcode")));
-			detail.setCbodymemo(row.get("cbodymemo"));
-			detail.setIunitprice(Long.parseLong(row.get("iunitprice")));
-			String max = row.get("fmaxquantity");
-			String min = row.get("fminquantity");
-			if (max != null && !max.isEmpty())
-				detail.setFmaxquantity(Float.parseFloat(max));
+			for (Map<String, String> row : form.getTable()) {
+				VenPriceAdjustDetail detail = new VenPriceAdjustDetail();
+				detail.setMain(venPriceAdjustMain);
+				detail.setInventory(inventoryRepository.findByCode(row.get("cinvcode")));
+				detail.setCbodymemo(row.get("cbodymemo"));
+				detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
+				String max = row.get("fmaxquantity");
+				String min = row.get("fminquantity");
+				if (max != null && !max.isEmpty())
+					detail.setFmaxquantity(Float.parseFloat(max));
 
-			if (min != null && !min.isEmpty())
-				detail.setFminquantity(Float.parseFloat(min));
+				if (min != null && !min.isEmpty())
+					detail.setFminquantity(Float.parseFloat(min));
 
-			if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())
-				detail.setIvalid(Integer.parseInt(row.get("ivalid")));
-			try {
-				String startDateStr = row.get("dstartdate");
-				String endDateStr = row.get("denddate");
-				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				if (startDateStr != null && !startDateStr.isEmpty()) {
-					detail.setDstartdate(dateFormatter.parse(startDateStr));
+				if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())
+					detail.setIvalid(Integer.parseInt(row.get("ivalid")));
+				try {
+					String startDateStr = row.get("dstartdate");
+					String endDateStr = row.get("denddate");
+					SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+					if (startDateStr != null && !startDateStr.isEmpty()) {
+						detail.setDstartdate(dateFormatter.parse(startDateStr));
+					}
+
+					if (endDateStr != null && !endDateStr.isEmpty()) {
+						dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+						detail.setDenddate(dateFormatter.parse(endDateStr));
+					}
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 
-				if (endDateStr != null && !endDateStr.isEmpty()) {
-					dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-					detail.setDenddate(dateFormatter.parse(endDateStr));
-				}
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				detail.setItaxrate(Integer.parseInt(row.get("itaxrate")));
+				detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
+
+				venPriceAdjustDetailRepository.save(detail);
 			}
-
-			detail.setItaxrate(Integer.parseInt(row.get("itaxrate")));
-			detail.setItaxunitprice(Integer.parseInt(row.get("itaxunitprice")));
-
-			venPriceAdjustDetailRepository.save(detail);
 		}
+
 		return venPriceAdjustMain;
 	}
 

@@ -214,7 +214,6 @@
         title : '税率',
       }, {
         data : 'itaxunitprice',
-        className: 'edit-cell',
         title : '最新含税报价',
       }, {
         data : 'dstartdate',
@@ -235,36 +234,13 @@
       } ],
     });
 
-    $('#example').on( 'click', 'tbody td.edit-cell', function (e) {
-      editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
-    });
+    if (state == 2) {
+      $('#example').on( 'click', 'tbody td.edit-cell', function (e) {
+        editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+      });
+    }
     
     $("#form" ).validate({
-      // define validation rules
-      rules: {
-          vendor: {
-              required: true
-          }, 
-          tax_rate: {
-              required: true
-          },
-          start_date: {
-              required: true
-          },    
-          end_date: {
-              required: true
-          },    
-      },
-      
-      //display error alert on form submit  
-      invalidHandler: function(event, validator) {
-          swal({
-              "title": "输入有误", 
-              "text": "请输入正确的值", 
-              "type": "error"
-          });
-      },
-
       submitHandler: function (form) {
           jQuery(form).ajaxSubmit({
               data: {table: table.rows().data().toArray()},
@@ -288,15 +264,6 @@
     }); 
     
     
-    $("#save").click(function() {
-        $("#form").submit();            
-    });
-    
-    $("#submit").click(function() {
-      $('#state').val(2);
-      $("#form").submit();            
-    });
-
     $("#confirm").click(function() {
       if ($('#type').val() == 1)
         $('#state').val(5);
@@ -310,20 +277,6 @@
       $("#form").submit();            
     });
     
-    $("#pass").click(function() {
-      $('#state').val(5);
-      $("#form").submit();            
-    }); 
-    
-    $("#verify").click(function() {
-      $('#state').val(6);
-      $("#form").submit();            
-    });   
-    
-    $("#publish").click(function() {
-      $('#state').val(7);
-      $("#form").submit();            
-    });       
   });
 </script>
 
