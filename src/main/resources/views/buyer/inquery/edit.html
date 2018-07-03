@@ -157,6 +157,8 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
     if (state > 1) {
       $('input').attr("readonly", true);
       $('select').attr("readonly", true);
+      $("#start_date").datepicker( "option", "disabled", true );
+      $("#end_date").datepicker( "option", "disabled", true );
     }
 
     editor = new $.fn.dataTable.Editor( {
@@ -200,12 +202,14 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
           attr: {
             type: "number"
           },
+          id: "fminquantity",
           name: "fminquantity"                
         },{
           label: "最大数量:",
           attr: {
             type: "number"
           },
+          id: "fmaxquantity",
           name: "fmaxquantity"                
         },{
           label: "税率:",
@@ -320,6 +324,17 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
         }
         
       });
+      
+      if (state > 1) {
+        $(".DTE_Form_Content input").attr("readonly", true);
+        $('.DTE_Form_Content select').attr("readonly", true);
+        $(".DTE_Form_Content .hasDatepicker").datepicker( "option", "disabled", true );
+      }
+      
+      if (state != 5) {
+        this.field('ivalid').hide();
+      }
+      
    
     }).on( 'preSubmit', function ( e, data, action ) {
       if ( action !== 'remove' ) {
@@ -342,7 +357,6 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
     } );
     
     var table_options = {
-        dom: "Bfrtip",
         serverSide:false,
         processing:false,
         select: true,
@@ -400,7 +414,7 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
         }, {
           data : 'ivalid',
           title : '是否有效',
-          //visible: state>2,
+          visible: state>2,
           render: App.valid_render
         }, {
           data : 'cbodymemo',

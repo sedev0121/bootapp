@@ -205,7 +205,14 @@ public class BuyerController {
 			detail.setInventory(inventoryRepository.findByCode(row.get("cinvcode")));
 			detail.setCbodymemo(row.get("cbodymemo"));
 			detail.setIunitprice(Long.parseLong(row.get("iunitprice")));
-			detail.setFmaxquantity(Float.parseFloat(row.get("fmaxquantity")));
+			String max = row.get("fmaxquantity");
+			String min = row.get("fminquantity");
+			if (max != null && !max.isEmpty())
+				detail.setFmaxquantity(Float.parseFloat(max));
+
+			if (min != null && !min.isEmpty())
+				detail.setFminquantity(Float.parseFloat(min));
+
 			if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())
 				detail.setIvalid(Integer.parseInt(row.get("ivalid")));
 			try {
@@ -227,7 +234,6 @@ public class BuyerController {
 
 			detail.setItaxrate(Integer.parseInt(row.get("itaxrate")));
 			detail.setItaxunitprice(Integer.parseInt(row.get("itaxunitprice")));
-			detail.setFminquantity(Float.parseFloat(row.get("fminquantity")));
 
 			venPriceAdjustDetailRepository.save(detail);
 		}

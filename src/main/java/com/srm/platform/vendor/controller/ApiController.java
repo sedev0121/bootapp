@@ -100,7 +100,6 @@ public class ApiController {
 	@RequestMapping(value = "/venpriceadjust/{mainId}/details", produces = "application/json")
 	public List<VenPriceDetailItem> inventory_list_of_venpriceadjust_ajax(@PathVariable("mainId") String mainId) {
 		List<VenPriceDetailItem> list = venPriceAdjustDetailRepository.findDetailsByMainId(mainId);
-		// List<VenPriceAdjustDetail> list = venPriceAdjustDetailRepository.findAll();
 
 		return list;
 	}
