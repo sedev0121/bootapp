@@ -244,6 +244,11 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
           name: "denddate"                
         },{
           label: "是否有效:",
+          type: "checkbox",
+          separator: "|",
+          options:   [
+              { label: '', value: 1 }
+          ],
           name: "ivalid"                
         },{
           label: "备注:",
@@ -324,7 +329,7 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
         }
         
       });
-      
+/*      
       if (state > 1) {
         $(".DTE_Form_Content input").attr("readonly", true);
         $('.DTE_Form_Content select').attr("readonly", true);
@@ -334,21 +339,29 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
       if (state != 5) {
         this.field('ivalid').hide();
       }
-      
+      */    
    
     }).on( 'preSubmit', function ( e, data, action ) {
       if ( action !== 'remove' ) {
           var iunitprice = this.field( 'iunitprice' );
   
           if ( ! iunitprice.val() ) {
-            iunitprice.error( '请输入原价格！' );
+            iunitprice.error( '不能为空！' );
           }
           
           var select_inv_code = this.field( 'select' );
           if (! $('#select_inv_code').select2('val')) {
             select_inv_code.error( '请选择商品！' );
           }
-           
+          
+          if ($("#type").select2('val') == 2) {
+            if ( ! this.field( 'fminquantity' ).val() ) {
+              this.field( 'fminquantity' ).error( '不能为空！' );
+            }
+            if ( ! this.field( 'fmaxquantity' ).val() ) {
+              this.field( 'fmaxquantity' ).error( '不能为空！' );
+            }
+          }
           // If any error was reported, cancel the submission so it can be corrected
           if ( this.inError() ) {
               return false;
@@ -412,13 +425,23 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
         }, {
           data : 'ivalid',
           title : '是否有效',
+          className: 'ivalid dt-center',
           visible: state>2,
-          render: App.valid_render
+          render: function ( data, type, row ) {
+              if ( type === 'display' ) {
+                  return '<input type="checkbox" value="1" class="editor-valid" readonly disabled>';
+              }
+              return data;
+          },
         }, {
           data : 'cbodymemo',
           title : '备注',
 
         } ],
+        rowCallback: function ( row, data ) {
+            // Set the checked state of the checkbox in the table
+            $('input.editor-valid', row).prop( 'checked', data.ivalid == 1 );
+        }
       };
     
     if (state == 1)
@@ -426,6 +449,14 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
 
     var table = $('#example').DataTable(table_options);
 
+    if (state == 3) {
+      $('#example').on( 'change', 'input.editor-valid', function () {
+          editor.edit( $(this).closest('tr'), false )
+              .set( 'ivalid', $(this).prop( 'checked' ) ? 1 : 0 )
+              .submit();
+      });
+    }
+    
     $("#form" ).validate({
       // define validation rules
       rules: {

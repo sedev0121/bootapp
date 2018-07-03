@@ -36,3 +36,7 @@ select[readonly].select2-hidden-accessible + .select2-container .select2-selecti
     color:black;
 }
 
+.dt-center {
+    text-align:center;
+}
+
