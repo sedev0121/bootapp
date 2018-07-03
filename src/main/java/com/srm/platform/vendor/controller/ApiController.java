@@ -27,6 +27,7 @@ import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.utility.AccountSearchItem;
+import com.srm.platform.vendor.utility.InventorySearchItem;
 import com.srm.platform.vendor.utility.UnitNode;
 import com.srm.platform.vendor.utility.VenPriceDetailItem;
 import com.srm.platform.vendor.utility.VendorSearchItem;
@@ -130,6 +131,15 @@ public class ApiController {
 		Page<Inventory> result = inventoryRepository.findBySearchTerm(search, request);
 
 		return result;
+	}
+
+	@RequestMapping(value = "/inventory/select", produces = "application/json")
+	public Page<InventorySearchItem> inventory_list_for_select_ajax(@RequestParam(value = "inv") String invName,
+			@RequestParam(value = "vendor") String vendorCode) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
+		Page<InventorySearchItem> list = inventoryRepository.findSelectListBySearchTerm(vendorCode, invName, request);
+
+		return list;
 	}
 
 	// 外购入库单

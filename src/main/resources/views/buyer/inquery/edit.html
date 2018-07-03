@@ -4,11 +4,10 @@
 <head>
 <style>
 .DTED_Lightbox_Close {visibility: hidden;}
-#customForm {
-    display: flex;
-    flex-flow: row wrap;
+div.DTE_Field select {
+  padding: 6px 4px;
+  width: 100%;
 }
-
 
 </style>
 </head>   
@@ -124,35 +123,8 @@
             </div>
         </form>
     </div>
-
-    <div id="customForm" class="hidden">
-        <div class="row">
-            <div class="col-lg-3 col-md-3">
-              <label for="code">商品名称: </label>
-              <input type="text" id="code" class="form-control" />
-            </div>
-            <div class="col-lg-3 col-md-3">
-              <label for="vendor">规格型号:</label>
-              <input type="text" id="code" class="form-control" />
-            </div>
-            <div class="col-lg-3 col-md-3">
-              <label for="tax_rate">单位:</label>
-              <input type="text" id="code" class="form-control" />
-            </div>                
-            <div class="col-lg-3 col-md-3">
-              <label for="state">最小数量:</label>
-              <input type="text" id="code" class="form-control" />
-            </div>
-            <div class="col-lg-3 col-md-3">
-              <label for="end_date">生效日期:</label>
-              <input type="text" class="form-control datepicker">
-            </div>
-            <div class="col-lg-3 col-md-3">
-              <label for="end_date">有效日期:</label>
-              <input type="text" class="form-control datepicker">
-            </div>    
-        </div>
     </div>
+  </div>
   </div>
 </body>
 </html>
@@ -160,6 +132,7 @@
   var editor;
   /*[+
   var detail_url = [[@{/api/venpriceadjust/}]] + [[${main.ccode}]] + "/details";
+  var inventory_search_url = [[@{/api/inventory/select}]];
   var edit_url = [[@{/buyer/inquery/}]];
   +]*/ 
   var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
@@ -185,47 +158,83 @@
 
     editor = new $.fn.dataTable.Editor( {
       table: "#example",  
-      idSrc: "inventory.code",
+      idSrc: "id",
       //template: '#customForm',
       fields: [ {
-          label: "商品編碼:",
-          name: "inventory.code"
+          id: "select_inv_code",
+          label: "选择商品:",
+          type: "select",
+          name: "select"
+        },{
+          label: "商品编码:",
+          type:  "readonly",
+          id: "cinvcode",
+          name: "cinvcode"          
         },{
           label: "商品名称:",
-          name: "inventory.name"
+          type:  "readonly",
+          id: "name",
+          name: "name"
         },{
           label: "规格型号:",
-          name: "inventory.specs"  
+          type:  "readonly",
+          id: "specs",
+          name: "specs"  
         },{
           label: "单位:",
-          name: "inventory.puunit_name"            
-        },{
-          label: "最小数量:",
-          name: "fminquantity"    
-        },{
-          label: "最大数量:",
-          name: "fmaxquantity"  
+          type:  "readonly",
+          id: "puunit_name",
+          name: "puunit_name"            
         },{
           label: "原价格:",
+          id: "iunitprice",
+          attr: {
+            type: "number"
+          },
           name: "iunitprice"            
         },{
+          label: "最小数量:",
+          attr: {
+            type: "number"
+          },
+          name: "fminquantity"                
+        },{
+          label: "最大数量:",
+          attr: {
+            type: "number"
+          },
+          name: "fmaxquantity"                
+        },{
           label: "税率:",
-          name: "itaxrate"            
+          attr: {
+            type: "number"
+          },
+          id: "itaxrate",                
+          name: "itaxrate"                
         },{
           label: "最新含税报价:",
-          name: "itaxunitprice"            
+          type:  "readonly",
+          attr: {
+            type: "number"
+          },
+          id: "itaxunitprice",    
+          name: "itaxunitprice"                
         },{
           label: "生效日期:",
-          name: "dstartdate"            
+          type: "date",
+          dateFormat: "yy-mm-dd",
+          name: "dstartdate"                
         },{
           label: "有效日期:",
-          name: "denddate"            
+          type: "date",
+          dateFormat: $.datepicker.ISO_8601,
+          name: "denddate"                
         },{
           label: "是否有效:",
-          name: "ivalid",
+          name: "ivalid"                
         },{
           label: "备注:",
-          name: "cbodymemo"            
+          name: "cbodymemo"                
         }],
       i18n: {
           create: {
@@ -251,15 +260,54 @@
               system: "发生错误！"
           }
       }
-    }).submit(function () {
+    }).submit(function (e, json, data) {
           alert( 'Form successfully submitted!' );
       },
-      function () {
+      function (e, json, data) {
           alert( 'Form  encountered an error :-(' );
       }
-    );
+    ).on( 'preOpen', function ( e, json, data ) {
+      if ($("#vendor").val() == "") {
+        alert("请选择供应商！");
+        return false;
+      }
+    }).on( 'open', function ( e, json, data ) {
+      var select_options = App.getSelect2Options(inventory_search_url);
+      $.extend(true, select_options, {
+        ajax: {
+          data: function(params) {
+              return {
+                inv: params.term,
+                vendor: $("#vendor").val(),
+              };
+          },
+        }
+      });
+      var select_inv = $("#select_inv_code").select2(select_options);
+      select_inv.on("select2:select", function(e) {
+        var selected_data = e.params.data;
+        $('#cinvcode').val(selected_data.id);
+        $('#name').val(selected_data.title);
+        $('#specs').val(selected_data.specs);
+        $('#iunitprice').val(selected_data.price);
+        $('#dstartdate').val(selected_data.startDate);
+        $('#denddate').val(selected_data.endDate);        
+      });
+      
+      $('#itaxrate, #iunitprice').change(function() {
+        if ($('#itaxunitprice').val() != undefined && $('#itaxunitprice').val() != undefined) {
+          $('#itaxunitprice').val((parseInt($('#itaxrate').val()) + 100) * $('#iunitprice').val()/100);  
+        }
+        
+      });
+   
+    }).on( 'preSubmit', function ( e, data, action ) {
+      alert( 'preSubmit' );
+      
+    } );
     
     var table_options = {
+        dom: "Bfrtip",
         serverSide:false,
         processing:false,
         select: true,
@@ -271,6 +319,10 @@
         ajax : {
           url : detail_url,
           dataSrc : function(json) {
+            var index = 1;
+            $.each(json, function(key, item){
+              item.id = index++;
+            });
             return json;
           },
         },
@@ -278,7 +330,6 @@
         columns : [ {
           data : 'cinvcode',
           title : '商品编码',
-          defaultContent : ''
         }, {
           data : 'name',
           title : '商品名称'
@@ -289,14 +340,14 @@
           data : 'puunit_name',
           title : '单位',
         }, {
+          data : 'iunitprice',
+          title : '原价格',
+        }, {
           data : 'fminquantity',
           title : '最小数量',
         }, {
           data : 'fmaxquantity',
           title : '最大数量',
-        }, {
-          data : 'iunitprice',
-          title : '原价格',
         }, {
           data : 'itaxrate',
           title : '税率',
@@ -315,7 +366,7 @@
         }, {
           data : 'ivalid',
           title : '是否有效',
-          visible: state>2,
+          //visible: state>2,
           render: App.valid_render
         }, {
           data : 'cbodymemo',

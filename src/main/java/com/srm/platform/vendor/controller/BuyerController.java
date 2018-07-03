@@ -196,6 +196,9 @@ public class BuyerController {
 
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 
+		venPriceAdjustDetailRepository
+				.deleteInBatch(venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode()));
+
 		for (Map<String, String> row : form.getTable()) {
 			VenPriceAdjustDetail detail = new VenPriceAdjustDetail();
 			detail.setMain(venPriceAdjustMain);
@@ -206,10 +209,17 @@ public class BuyerController {
 			if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())
 				detail.setIvalid(Integer.parseInt(row.get("ivalid")));
 			try {
+				String startDateStr = row.get("dstartdate");
+				String endDateStr = row.get("denddate");
 				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				detail.setDstartdate(dateFormatter.parse(row.get("dstartdate")));
-				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				detail.setDenddate(dateFormatter.parse(row.get("denddate")));
+				if (startDateStr != null && !startDateStr.isEmpty()) {
+					detail.setDstartdate(dateFormatter.parse(startDateStr));
+				}
+
+				if (endDateStr != null && !endDateStr.isEmpty()) {
+					dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+					detail.setDenddate(dateFormatter.parse(endDateStr));
+				}
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
