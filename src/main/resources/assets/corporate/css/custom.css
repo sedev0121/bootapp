@@ -40,6 +40,10 @@ select[readonly].select2-hidden-accessible + .select2-container .select2-selecti
     text-align:center;
 }
 
+.dt-right {
+    text-align:right;
+}
+
 .DTED_Lightbox_Close {visibility: hidden;}
 div.DTE_Field select {
   padding: 6px 4px;

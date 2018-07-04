@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.srm.platform.vendor.model.Inventory;
+import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PriceRepository;
+import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
+import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
@@ -57,6 +60,12 @@ public class ApiController {
 	@Autowired
 	private InventoryRepository inventoryRepository;
 
+	@Autowired
+	private PurchaseOrderMainRepository purchaseOrderMainRepository;
+
+	@Autowired
+	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
+
 	// 供应商管理列表查询
 	@RequestMapping(value = "/vendor/batch_get", produces = "application/json")
 	public Page<Vendor> vendor_list_ajax(@RequestParam Map<String, String> requestParams) {
@@ -81,9 +90,11 @@ public class ApiController {
 		return list;
 	}
 
-	@RequestMapping(value = "/vendor/get/{id}", produces = "application/json")
-	public String vendor_get(@PathVariable("id") String id) {
-		return apiClient.getVendor(id);
+	@RequestMapping(value = "/purchaseorder/{code}/details", produces = "application/json")
+	public List<PurchaseOrderDetail> inventory_list_of_purchaseorder_ajax(@PathVariable("code") String code) {
+		List<PurchaseOrderDetail> list = purchaseOrderDetailRepository.findDetailsByCode(code);
+
+		return list;
 	}
 
 	// 价格管理

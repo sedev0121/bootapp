@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 public class RestClient {
@@ -15,6 +16,9 @@ public class RestClient {
 
 	public RestClient() {
 		this.rest = new RestTemplate();
+		SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) this.rest.getRequestFactory();
+		rf.setReadTimeout(36000 * 1000);
+		rf.setConnectTimeout(36000 * 1000);
 		this.headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		headers.add("Accept", "*/*");

@@ -13,4 +13,9 @@ public class Constants {
 	public static int CREATE_TYPE_BUYER = 0;
 	public static int CREATE_TYPE_VENDOR = 1;
 
+	public static int PURCHASE_ORDER_STATE_START = 0;
+	public static int PURCHASE_ORDER_STATE_DEPLOY = 1;
+	public static int PURCHASE_ORDER_STATE_REVIEW = 2;
+	public static int PURCHASE_ORDER_STATE_CANCEL = 3;
+
 }

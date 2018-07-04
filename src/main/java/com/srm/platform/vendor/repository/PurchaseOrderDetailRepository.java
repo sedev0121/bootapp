@@ -1,6 +1,9 @@
 package com.srm.platform.vendor.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 
@@ -9,4 +12,8 @@ import com.srm.platform.vendor.model.PurchaseOrderDetail;
 
 public interface PurchaseOrderDetailRepository extends JpaRepository<PurchaseOrderDetail, Long> {
 
+	PurchaseOrderDetail findOneById(Long id);
+
+	@Query(value = "select * from purchase_order_detail where code= :code order by rowno", nativeQuery = true)
+	List<PurchaseOrderDetail> findDetailsByCode(String code);
 }

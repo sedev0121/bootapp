@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Price;
+import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
@@ -46,6 +47,7 @@ import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
 
@@ -491,8 +493,9 @@ public class BuyerController {
 	}
 
 	// 订单管理->明细
-	@GetMapping("/purchaseorder/{id}/edit")
-	public String purchaseorder_edit() {
+	@GetMapping({ "/purchaseorder/{code}/edit" })
+	public String purchaseorder_edit(@PathVariable("code") String code, Model model) {
+		model.addAttribute("main", this.purchaseOrderMainRepository.findOneByCode(code));
 		return "buyer/purchaseorder/edit";
 	}
 
@@ -548,6 +551,29 @@ public class BuyerController {
 		Page<PurchaseOrderMain> result = purchaseOrderMainRepository.findBySearchTerm(code, vendor, request);
 
 		return result;
+	}
+
+	@PostMapping("/purchaseorder/update")
+	public @ResponseBody PurchaseOrderMain purchaseorder_update_ajax(PurchaseOrderSaveForm form, Principal principal) {
+
+		PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(form.getCode());
+		main.setSrmstate(form.getState());
+		purchaseOrderMainRepository.save(main);
+
+		if (form.getTable() != null) {
+			for (Map<String, String> item : form.getTable()) {
+				PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneById(Long.parseLong(item.get("id")));
+				if (item.get("prepaymoney") != null && !item.get("prepaymoney").isEmpty())
+					detail.setPrepaymoney(Float.parseFloat(item.get("prepaymoney")));
+				else
+					detail.setPrepaymoney(null);
+
+				detail.setArrivenote(item.get("arrivenote"));
+				purchaseOrderDetailRepository.save(detail);
+			}
+		}
+
+		return main;
 	}
 
 	// 出货看板

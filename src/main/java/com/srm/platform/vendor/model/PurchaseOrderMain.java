@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -31,6 +32,7 @@ public class PurchaseOrderMain {
 
 	private String remark;
 	private String state;
+
 	private Float money;
 	private Float sum;
 
@@ -46,7 +48,14 @@ public class PurchaseOrderMain {
 	private String locker;
 	private Date lockdate;
 
-	private String reviewer;
+	@ManyToOne(cascade = { CascadeType.ALL })
+	@JoinColumn(name = "deployer", referencedColumnName = "id")
+	private Account deployer;
+	private Date deploydate;
+
+	@ManyToOne(cascade = { CascadeType.ALL })
+	@JoinColumn(name = "reviewer", referencedColumnName = "id")
+	private Account reviewer;
 	private Date reviewdate;
 
 	public PurchaseOrderMain() {
@@ -59,6 +68,30 @@ public class PurchaseOrderMain {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Account getDeployer() {
+		return deployer;
+	}
+
+	public void setDeployer(Account deployer) {
+		this.deployer = deployer;
+	}
+
+	public Date getDeploydate() {
+		return deploydate;
+	}
+
+	public void setDeploydate(Date deploydate) {
+		this.deploydate = deploydate;
+	}
+
+	public Account getReviewer() {
+		return reviewer;
+	}
+
+	public void setReviewer(Account reviewer) {
+		this.reviewer = reviewer;
 	}
 
 	public Vendor getVendor() {
@@ -195,14 +228,6 @@ public class PurchaseOrderMain {
 
 	public void setLockdate(Date lockdate) {
 		this.lockdate = lockdate;
-	}
-
-	public String getReviewer() {
-		return reviewer;
-	}
-
-	public void setReviewer(String reviewer) {
-		this.reviewer = reviewer;
 	}
 
 	public Date getReviewdate() {

@@ -36,6 +36,7 @@ import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.u8api.AppProperties;
+import com.srm.platform.vendor.utility.Constants;
 
 @RestController
 @RequestMapping(path = "/sync")
@@ -212,7 +213,7 @@ public class SyncController {
 
 		Map<String, Object> map = new HashMap<>();
 
-		inventoryRepository.deleteAll();
+		inventoryRepository.deleteAllInBatch();
 
 		try {
 			do {
@@ -479,8 +480,8 @@ public class SyncController {
 		Map<String, Object> map = new HashMap<>();
 
 		if (isAll) {
-			this.purchaseOrderDetailRepository.deleteAll();
-			this.purchaseOrderMainRepository.deleteAll();
+			this.purchaseOrderDetailRepository.deleteAllInBatch();
+			this.purchaseOrderMainRepository.deleteAllInBatch();
 		}
 
 		try {
@@ -522,7 +523,10 @@ public class SyncController {
 							}
 						}
 
-						if (makeDate == null || (!isAll && makeDate.before(new Date()))) {
+						Vendor vendor = vendorRepository.findOneByCode(temp.get("vendorcode"));
+
+						if (makeDate == null || (!isAll && makeDate.before(new Date())) || temp.get("state") == "新建"
+								|| vendor == null) {
 							continue;
 						}
 
@@ -530,6 +534,7 @@ public class SyncController {
 						Optional<PurchaseOrderMain> result = purchaseOrderMainRepository.findOne(example);
 						if (result.isPresent())
 							main = result.get();
+						main.setSrmstate(Constants.PURCHASE_ORDER_STATE_START);
 						main.setVendor(vendorRepository.findOneByCode(temp.get("vendorcode")));
 						main.setMakedate(makeDate);
 						main.setState(temp.get("state"));
@@ -596,8 +601,8 @@ public class SyncController {
 					detail.setInventory(inventoryRepository.findByCode(entryMap.get("inventorycode")));
 					if (entryMap.get("quantity") != null && !entryMap.get("quantity").isEmpty())
 						detail.setQuantity(Float.parseFloat(entryMap.get("quantity")));
-					if (entryMap.get("pirce") != null && !entryMap.get("pirce").isEmpty())
-						detail.setPrice(Float.parseFloat(entryMap.get("pirce")));
+					if (entryMap.get("price") != null && !entryMap.get("price").isEmpty())
+						detail.setPrice(Float.parseFloat(entryMap.get("price")));
 					if (entryMap.get("tax") != null && !entryMap.get("tax").isEmpty())
 						detail.setTaxprice(Float.parseFloat(entryMap.get("tax")));
 					if (entryMap.get("sum") != null && !entryMap.get("sum").isEmpty())
