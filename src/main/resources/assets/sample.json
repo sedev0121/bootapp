@@ -1,30 +1,52 @@
+    {
+    "code": "18020006",
+    "date": "2018-02-01",
+    "operation_type_code": "普通采购",
+    "state": "审核",
+    "purchase_type_code": "01",
+    "purchase_type_name": "生产物料采购",
+    "vendorcode": "120056",
+    "vendorname": "嘉兴市欧托贸易有限公司",
+    "vendorabbname": "嘉兴市欧托贸易有限公司",
+    "deptcode": "S102",
+    "deptname": "采购部",
+    "personcode": "06008",
+    "personname": "王娜",
+    "remark": "为了确保收到订单，请务必先回传订单，再安排生产或送货，谢谢！！！",
+    "maker": "王娜",
+    "verifier": "王娜",
+    "money": "400512.8200",
+    "sum": "468600.0000"
+},
 {
-	"data": [
-		{
-			"DT_RowId": "row_1",
-			"first_name": "Tiger",
-			"last_name": "Nixon",
-			"position": "System Architect",
-			"email": "t.nixon@datatables.net",
-			"office": "Edinburgh",
-			"extn": "5421",
-			"age": "61",
-			"salary": "320800",
-			"start_date": "2011-04-25"
-		},
-		{
-			"DT_RowId": "row_2",
-			"first_name": "Garrett",
-			"last_name": "Winters",
-			"position": "Accountant",
-			"email": "g.winters@datatables.net",
-			"office": "Tokyo",
-			"extn": "8422",
-			"age": "63",
-			"salary": "170750",
-			"start_date": "2011-07-25"
-		}
-	],
-	"options": [],
-	"files": []
+	"errmsg": "",
+	"errcode": "0",
+	"purchaseorder": {
+		"code": "18030058",
+		"date": "2018-03-21",
+		"operation_type_code": "普通采购",
+		"state": "锁定",
+		"vendorcode": "120001",
+		"vendorname": "杭州江南电机股份有限公司",
+		"vendorabbname": "杭州江南电机股份有限公司",
+		"maker": "陆敏菊",
+		"entry": [
+			{
+				"inventorycode": "0100001",
+				"inventoryname": "4#换气电机",
+				"inventorystd": "YHS-8-4",
+				"unitname": "只",
+				"quantity": "100.0000000000",
+				"arrivedate": "2018-04-05",
+				"price": "24.1795000000",
+				"taxprice": "28.290000",
+				"money": "2417.9500",
+				"tax": "411.0500",
+				"sum": "2829.0000",
+				"define22": "正常订单",
+				"define36": "2018-04-02 00:00:00.0",
+				"rowno": "1"
+			}
+		]
+	}
 }

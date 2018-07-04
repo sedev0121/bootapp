@@ -32,7 +32,7 @@ public class VenPriceAdjustMain {
 	Integer type;
 	Integer createtype;
 
-	Integer itaxrate;
+	Float itaxrate;
 
 	Integer iverifystate;
 
@@ -68,7 +68,7 @@ public class VenPriceAdjustMain {
 		this.ccode = UniqueIdGenerator.generateId();
 		this.isupplytype = 1;
 		this.type = 1;
-		this.itaxrate = 17;
+		this.itaxrate = (float) 17.0;
 		this.iverifystate = 1;
 		this.dmakedate = new Date();
 		this.dstartdate = new Date();
@@ -129,11 +129,11 @@ public class VenPriceAdjustMain {
 		this.type = type;
 	}
 
-	public Integer getItaxrate() {
+	public Float getItaxrate() {
 		return itaxrate;
 	}
 
-	public void setItaxrate(Integer itaxrate) {
+	public void setItaxrate(Float itaxrate) {
 		this.itaxrate = itaxrate;
 	}
 

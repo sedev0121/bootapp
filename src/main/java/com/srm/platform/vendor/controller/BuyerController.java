@@ -33,12 +33,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Price;
+import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PriceRepository;
+import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
+import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
@@ -60,6 +63,12 @@ public class BuyerController {
 
 	@Autowired
 	private InventoryRepository inventoryRepository;
+
+	@Autowired
+	private PurchaseOrderMainRepository purchaseOrderMainRepository;
+
+	@Autowired
+	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
 
 	@Autowired
 	private PriceRepository priceRepository;
@@ -237,7 +246,7 @@ public class BuyerController {
 					e.printStackTrace();
 				}
 
-				detail.setItaxrate(Integer.parseInt(row.get("itaxrate")));
+				detail.setItaxrate(Float.parseFloat(row.get("itaxrate")));
 				detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
 
 				venPriceAdjustDetailRepository.save(detail);
@@ -485,6 +494,60 @@ public class BuyerController {
 	@GetMapping("/purchaseorder/{id}/edit")
 	public String purchaseorder_edit() {
 		return "buyer/purchaseorder/edit";
+	}
+
+	@RequestMapping(value = "/purchaseorder/list", produces = "application/json")
+	public @ResponseBody Page<PurchaseOrderMain> purchaseorder_list_ajax(
+			@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "ccode");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String vendor = requestParams.getOrDefault("vendor", "");
+		String state = requestParams.getOrDefault("state", "0");
+		String code = requestParams.getOrDefault("code", "");
+		String start_date = requestParams.getOrDefault("start_date", null);
+		String end_date = requestParams.getOrDefault("end_date", null);
+
+		Date startDate = null, endDate = null;
+		try {
+			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+			if (start_date != null && !start_date.isEmpty())
+				startDate = dateFormatter.parse(start_date);
+			if (end_date != null && !end_date.isEmpty()) {
+				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+				endDate = dateFormatter.parse(end_date);
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(endDate);
+				cal.add(Calendar.DATE, 1);
+				endDate = cal.getTime();
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		switch (order) {
+		case "vendorname":
+			order = "c.name";
+			break;
+		case "vendorcode":
+			order = "c.code";
+			break;
+		case "verifiername":
+			order = "f.realname";
+			break;
+		case "makername":
+			order = "e.realname";
+			break;
+		}
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		Page<PurchaseOrderMain> result = purchaseOrderMainRepository.findBySearchTerm(code, vendor, request);
+
+		return result;
 	}
 
 	// 出货看板

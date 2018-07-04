@@ -25,10 +25,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.InventoryClass;
 import com.srm.platform.vendor.model.MeasurementUnit;
+import com.srm.platform.vendor.model.PurchaseOrderDetail;
+import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.MeasurementUnitRepository;
+import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
+import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.u8api.AppProperties;
@@ -37,7 +41,6 @@ import com.srm.platform.vendor.u8api.AppProperties;
 @RequestMapping(path = "/sync")
 public class SyncController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
 	@Autowired
 	private ApiClient apiClient;
@@ -47,6 +50,12 @@ public class SyncController {
 
 	@Autowired
 	private VendorRepository vendorRepository;
+
+	@Autowired
+	private PurchaseOrderMainRepository purchaseOrderMainRepository;
+
+	@Autowired
+	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
 
 	@Autowired
 	private InventoryRepository inventoryRepository;
@@ -72,7 +81,7 @@ public class SyncController {
 		return vendor(false);
 	}
 
-	@RequestMapping(value = "/vendor/all")
+	@RequestMapping({ "/vendor/all", "/vendor" })
 	public boolean vendorUpdateAll() {
 		return vendor(true);
 	}
@@ -157,6 +166,7 @@ public class SyncController {
 						String endDate = temp.get("end_date");
 						if (endDate != null && !endDate.isEmpty()) {
 							try {
+								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 								vendor.setEndDate(formatter.parse(endDate));
 							} catch (ParseException e) {
 								// TODO Auto-generated catch block
@@ -237,6 +247,7 @@ public class SyncController {
 						tempValue = temp.get("end_date");
 						if (tempValue != null)
 							try {
+								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 								inventory.setEndDate(formatter.parse(tempValue));
 							} catch (ParseException e2) {
 								// TODO Auto-generated catch block
@@ -252,6 +263,7 @@ public class SyncController {
 						tempValue = temp.get("ModifyDate");
 						if (tempValue != null)
 							try {
+								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 								inventory.setModifyDate(formatter.parse(tempValue));
 							} catch (ParseException e1) {
 								// TODO Auto-generated catch block
@@ -278,6 +290,7 @@ public class SyncController {
 						tempValue = temp.get("start_date");
 						if (tempValue != null && !tempValue.isEmpty())
 							try {
+								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 								inventory.setStartDate(formatter.parse(tempValue));
 							} catch (ParseException e) {
 								// TODO Auto-generated catch block
@@ -438,6 +451,184 @@ public class SyncController {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 
+			logger.info(e.getMessage());
+			return false;
+		}
+
+		return true;
+	}
+
+	@RequestMapping(value = "/purchaseorder/part")
+	public boolean purchaseorderUpatePart() {
+		return purchaseOrder(false);
+	}
+
+	@RequestMapping({ "/purchaseorder/all", "/purchaseorder" })
+	public boolean purchaseorderUpdateAll() {
+		return purchaseOrder(true);
+	}
+
+	private boolean purchaseOrder(boolean isAll) {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		Map<String, String> requestParams;
+		int i = 0, total_page = 1;
+		List<LinkedHashMap<String, String>> list;
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (isAll) {
+			this.purchaseOrderDetailRepository.deleteAll();
+			this.purchaseOrderMainRepository.deleteAll();
+		}
+
+		try {
+			do {
+
+				map = new HashMap<>();
+
+				requestParams = new HashMap<>();
+
+				requestParams.put("rows_per_page", "10");
+				requestParams.put("page_index", Integer.toString(++i));
+
+				String response = apiClient.getBatchPurchaseOrder(requestParams);
+				logger.info(response);
+				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
+				});
+
+				logger.info((String) map.get("errcode"));
+				int errorCode = Integer.parseInt((String) map.get("errcode"));
+
+				if (errorCode == appProperties.getError_code_success()) {
+					total_page = Integer.parseInt((String) map.get("page_count"));
+					list = (List<LinkedHashMap<String, String>>) map.get("purchaseorderlist");
+					for (LinkedHashMap<String, String> temp : list) {
+						logger.info(temp.get("code") + " " + temp.get("name"));
+
+						PurchaseOrderMain main = new PurchaseOrderMain();
+						main.setCode(temp.get("code"));
+
+						String makeDateStr = temp.get("date");
+						Date makeDate = null;
+						if (makeDateStr != null && !makeDateStr.isEmpty()) {
+							try {
+								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+								makeDate = formatter.parse(makeDateStr);
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+
+						if (makeDate == null || (!isAll && makeDate.before(new Date()))) {
+							continue;
+						}
+
+						Example<PurchaseOrderMain> example = Example.of(main);
+						Optional<PurchaseOrderMain> result = purchaseOrderMainRepository.findOne(example);
+						if (result.isPresent())
+							main = result.get();
+						main.setVendor(vendorRepository.findOneByCode(temp.get("vendorcode")));
+						main.setMakedate(makeDate);
+						main.setState(temp.get("state"));
+						if (temp.get("money") != null && !temp.get("money").isEmpty())
+							main.setMoney(Float.parseFloat(temp.get("money")));
+						if (temp.get("sum") != null && !temp.get("sum").isEmpty())
+							main.setSum(Float.parseFloat(temp.get("sum")));
+						main.setPurchaseTypeName(temp.get("purchase_type_name"));
+						main.setRemark(temp.get("remark"));
+						main.setMaker(temp.get("maker"));
+						main.setVerifier(temp.get("verifier"));
+						main.setCloser(temp.get("closer"));
+						main.setDeptcode(temp.get("deptcode"));
+						main.setDeptname(temp.get("deptname"));
+						main.setPersoncode(temp.get("personcode"));
+						main.setPersonname(temp.get("personname"));
+
+						purchaseOrderMainRepository.save(main);
+
+						purchaseOrderDetail(main);
+					}
+				} else {
+					return false;
+				}
+
+			} while (i < total_page);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.info(e.getMessage());
+			return false;
+		}
+
+		return true;
+	}
+
+	private boolean purchaseOrderDetail(PurchaseOrderMain main) {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		List<LinkedHashMap<String, String>> entryList;
+
+		Map<String, Object> map = new HashMap<>();
+
+		try {
+
+			map = new HashMap<>();
+
+			String response = apiClient.getPurchaseOrder(main.getCode());
+			logger.info(response);
+			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
+			});
+
+			logger.info((String) map.get("errcode"));
+			int errorCode = Integer.parseInt((String) map.get("errcode"));
+
+			if (errorCode == appProperties.getError_code_success()) {
+				LinkedHashMap<String, Object> order = (LinkedHashMap<String, Object>) map.get("purchaseorder");
+				entryList = (List<LinkedHashMap<String, String>>) order.get("entry");
+
+				for (LinkedHashMap<String, String> entryMap : entryList) {
+					PurchaseOrderDetail detail = new PurchaseOrderDetail();
+					detail.setMain(purchaseOrderMainRepository.findOneByCode(main.getCode()));
+					detail.setInventory(inventoryRepository.findByCode(entryMap.get("inventorycode")));
+					if (entryMap.get("quantity") != null && !entryMap.get("quantity").isEmpty())
+						detail.setQuantity(Float.parseFloat(entryMap.get("quantity")));
+					if (entryMap.get("pirce") != null && !entryMap.get("pirce").isEmpty())
+						detail.setPrice(Float.parseFloat(entryMap.get("pirce")));
+					if (entryMap.get("tax") != null && !entryMap.get("tax").isEmpty())
+						detail.setTaxprice(Float.parseFloat(entryMap.get("tax")));
+					if (entryMap.get("sum") != null && !entryMap.get("sum").isEmpty())
+						detail.setSum(Float.parseFloat(entryMap.get("sum")));
+					if (entryMap.get("money") != null && !entryMap.get("money").isEmpty())
+						detail.setMoney(Float.parseFloat(entryMap.get("money")));
+					if (entryMap.get("tax") != null && !entryMap.get("tax").isEmpty())
+						detail.setTax(Float.parseFloat(entryMap.get("tax")));
+					if (entryMap.get("rowno") != null && !entryMap.get("rowno").isEmpty())
+						detail.setRowno(Integer.parseInt(entryMap.get("rowno")));
+
+					String arriveDateStr = entryMap.get("arrivedate");
+					if (arriveDateStr != null && !arriveDateStr.isEmpty()) {
+						try {
+							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+							detail.setArrivedate(formatter.parse(arriveDateStr));
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+
+					purchaseOrderDetailRepository.save(detail);
+				}
+
+			} else {
+				return false;
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			logger.info(e.getMessage());
 			return false;
 		}

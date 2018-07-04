@@ -10,7 +10,7 @@ public class VenPriceSaveForm {
 
 	private String ccode;
 	private String vendor;
-	private Integer tax_rate;
+	private Float tax_rate;
 	private Integer state;
 	private Date start_date;
 	private Date end_date;
@@ -37,11 +37,11 @@ public class VenPriceSaveForm {
 		this.vendor = vendor;
 	}
 
-	public Integer getTax_rate() {
+	public Float getTax_rate() {
 		return tax_rate;
 	}
 
-	public void setTax_rate(Integer tax_rate) {
+	public void setTax_rate(Float tax_rate) {
 		this.tax_rate = tax_rate;
 	}
 

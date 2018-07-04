@@ -32,7 +32,7 @@ public class VenPriceAdjustDetail {
 
 	Float iunitprice;
 
-	Integer itaxrate;
+	Float itaxrate;
 
 	Float itaxunitprice;
 
@@ -84,11 +84,11 @@ public class VenPriceAdjustDetail {
 		this.iunitprice = iunitprice;
 	}
 
-	public Integer getItaxrate() {
+	public Float getItaxrate() {
 		return itaxrate;
 	}
 
-	public void setItaxrate(Integer itaxrate) {
+	public void setItaxrate(Float itaxrate) {
 		this.itaxrate = itaxrate;
 	}
 

@@ -216,7 +216,7 @@ public class VendorController {
 					e.printStackTrace();
 				}
 
-				detail.setItaxrate(Integer.parseInt(row.get("itaxrate")));
+				detail.setItaxrate(Float.parseFloat(row.get("itaxrate")));
 				detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
 
 				venPriceAdjustDetailRepository.save(detail);
