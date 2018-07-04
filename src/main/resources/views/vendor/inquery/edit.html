@@ -8,22 +8,19 @@
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
       <li>价格管理</li>
-      <li><a th:href="@{/buyer/inquery}" class="active">询价管理</a></li>
+      <li><a th:href="@{/vendor/inquery}" class="active">询价管理</a></li>
       <li class="active">询价单</li>
-    </ul>       
+    </ul>    
     <div class="search-content">
         <div class="text-right">
-          <a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a>
-          <a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-save"></i> 提交</a>
-          <a class="btn btn-primary" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
-          <a class="btn btn-primary" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
-          <a class="btn btn-primary" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
-          <a class="btn btn-default" th:href="@{/buyer/inquery}"><i class="fa fa-arrow-left"></i> 返回</a>
+          <a class="btn btn-primary" th:if="${main.iverifystate==1}" id="save"><i class="fa fa-save"></i> 保存</a>
+          <a class="btn btn-primary" th:if="${main.iverifystate==1}" id="submit"><i class="fa fa-save"></i> 提交</a>
+          <a class="btn btn-default" th:href="@{/vendor/inquery}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-body"> 
-        <form id="form" th:action="@{/buyer/inquery/update}" method="post">
+        <form id="form" th:action="@{/vendor/inquery/update}" method="post">
             <div class="row">
                 <div class="col-lg-3 col-md-3">
                   <label for="code">单号: </label>
@@ -115,7 +112,6 @@
     </div>
     </div>
   </div>
-  </div>
 </body>
 </html>
 <script th:inline="javascript">
@@ -123,7 +119,7 @@
   /*[+
   var detail_url = [[@{/api/venpriceadjust/}]] + [[${main.ccode}]] + "/details";
   var inventory_search_url = [[@{/api/inventory/select}]];
-  var edit_url = [[@{/buyer/inquery/}]];
+  var edit_url = [[@{/vendor/inquery/}]];
   +]*/ 
   var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
   var state = /*[[${main.iverifystate}]]*/'';
@@ -141,6 +137,7 @@
     $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 }).select2("val", supply_type.toString());
     $("#vendor").select2(App.getSelect2Options(vendor_search_url));
    
+    $('#vendor').attr("readonly", true);
     if (state > 1) {
       $('input').attr("readonly", true);
       $('select').attr("readonly", true);
@@ -500,34 +497,10 @@
     });
     
     $("#submit").click(function() {
-      $('#state').val(2);
-      $("#form").submit();            
-    });
-
-    $("#confirm").click(function() {
       $('#state').val(3);
       $("#form").submit();            
     });
-    
-    $("#cancel").click(function() {
-      $('#state').val(4);
-      $("#form").submit();            
-    });
-    
-    $("#pass").click(function() {
-      $('#state').val(5);
-      $("#form").submit();            
-    }); 
-    
-    $("#verify").click(function() {
-      $('#state').val(6);
-      $("#form").submit();            
-    });   
-    
-    $("#publish").click(function() {
-      $('#state').val(7);
-      $("#form").submit();            
-    });       
+     
   });
 </script>
 

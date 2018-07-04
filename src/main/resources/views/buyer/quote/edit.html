@@ -10,198 +10,499 @@
         <li><a th:href="@{/buyer/quote}" class="active">报价管理</a></li>
         <li class="active">报价单</li>
       </ul>
-      <div class="search-content">
-        <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-          <a class="btn btn-primary"><i class="fa fa-pencil"></i> 确认  </a>
-          <a class="btn btn-primary"><i class="fa fa-ban"></i> 拒绝</a>
-          <a class="btn btn-primary"><i class="fa fa-check-square"></i> 审核</a>
-          <a class="btn btn-primary"><i class="fa fa-undo"></i> 退回</a>
-          <a class="btn btn-primary"><i class="fa fa-cloud-upload"></i> 归档</a>
+    <div class="search-content">
+        <div class="text-right">
+          <a class="btn btn-primary" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
+          <a class="btn btn-primary" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
+          <a class="btn btn-primary" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
           <a class="btn btn-default" th:href="@{/buyer/quote}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
-      </div>      
-      <div class="panel panel-default">
+    </div>
+    <div class="panel panel-default">
         <div class="panel-body"> 
-          <div class="row">
-              <div class="col-lg-3 col-md-3">
-                <label for="single_number">单号: </label>
-                <input type="text" name="single_number" id="single_number" value="" class="form-control" readonly />
-              </div>
-              <div class="col-lg-3 col-md-3">
-                <label for="document_date">单据日期: </label>
-                <input type="text" id="document_date" class="form-control datepicker">
-              </div>
-              <div class="col-lg-3 col-md-3">
-                <label for="supplier_name">制单人:</label>
-                <select name="supplier" id="supplier" class="form-control">
-                  <option value=""></option>
-                  <option value="AAA">AAA</option>
-                  <option value="BBB">BBB</option>
-                  <option value="CCC">CCC</option>
-                  <option value="DDD">DDD</option>
-                </select>
-              </div>
-              <div class="col-lg-3 col-md-3">
-                <label for="confirm">确认:</label>
-                <select name="confirm" id="confirm" class="form-control">
-                  <option value=""></option>
-                  <option value="AAA">AAA</option>
-                  <option value="BBB">BBB</option>
-                  <option value="CCC">CCC</option>
-                  <option value="DDD">DDD</option>
-                </select>                      
-              </div>
-              <div class="col-lg-3 col-md-3">
-                <label for="supplier">供应商:</label>
-                <select name="supplier" id="supplier" class="form-control">
-                  <option value=""></option>
-                  <option value="嘉兴市华年电机有限公司">嘉兴市华年电机有限公司</option>
-                  <option value="嘉兴市华年电机有限公司1">嘉兴市华年电机有限公司1</option>
-                  <option value="嘉兴市华年电机有限公司2">嘉兴市华年电机有限公司2</option>
-                  <option value="嘉兴市华年电机有限公司3">嘉兴市华年电机有限公司3</option>
-                </select>
-              </div>
-              <div class="col-lg-3 col-md-3">
-                <label for="effective_date">生效日期:</label>
-                <input type="text" id="effective_date" class="form-control datepicker">
-              </div>
-              <div class="col-lg-3 col-md-3">
-                <label for="reviewer">审核人:</label>
-                <select name="reviewer" id="reviewer" class="form-control">
-                  <option value=""></option>
-                  <option value="AAA">AAA</option>
-                  <option value="BBB">BBB</option>
-                  <option value="CCC">CCC</option>
-                  <option value="DDD">DDD</option>
-                </select>
-              </div>
-              <div class="col-lg-3 col-md-3">
-                <label for="status">状态:</label>
-                <select name="status" id="status" class="form-control">
-                  <option value=""></option>
-                  <option value="新建">新建</option>
-                  <option value="审核">审核</option>
-                  <option value="拒绝">拒绝</option>
-                  <option value="发布">发布</option>
-                </select>
-              </div>
-              <div class="col-lg-3 col-md-3">
-                <label for="tax_rate">税率:</label>
-                <input type="number" id="tax_rate" name="tax_rate" class="form-control">
-              </div>
-              <div class="col-lg-3 col-md-3">
-                <label for="effective_date1">有效日期:</label>
-                <input type="text" id="effective_date1" class="form-control datepicker">
-              </div>
-              <div class="col-lg-3 col-md-3">
-                <label for="reviewer">复核人:</label>                      
-                <select name="reviewer" id="reviewer" class="form-control">
-                  <option value=""></option>
-                  <option value="AAA">AAA</option>
-                  <option value="BBB">BBB</option>
-                  <option value="CCC">CCC</option>
-                  <option value="DDD">DDD</option>
-                </select>
-              </div>
-          </div>
-          <div class="row">
-            <div class="col-lg-12">
-                <table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
-                    <tbody><tr><td>　</td></tr></tbody>
-                </table>
+        <form id="form" th:action="@{/buyer/quote/update}" method="post">
+            <div class="row">
+                <div class="col-lg-3 col-md-3">
+                  <label for="code">单号: </label>
+                  <input type="text" id="ccode" name="ccode" th:value="${main.ccode}" class="form-control" readonly />
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="vendor">供应商:</label>
+                  <select id="vendor" name="vendor" class="form-control">
+                    <option th:if="${main.vendor != null}" th:value="${main.vendor.code}" th:text="${main.vendor.name}" selected="selected">NEC（日电）有限公司</option>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="tax_rate">税率:</label>
+                  <input type="number" id="tax_rate" th:value="${main.itaxrate}" name="tax_rate" class="form-control">
+                </div>
+                
+                <div class="col-lg-3 col-md-3">
+                  <label for="state">状态:</label>
+                  <select name="state" id="state" class="form-control" readonly>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="end_date">生效日期:</label>
+                  <input type="text" name="start_date" id="start_date" th:value="${#dates.format(main.dstartdate, 'yyyy-MM-dd')}" class="form-control datepicker">
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="end_date">有效日期:</label>
+                  <input type="text" name="end_date" id="end_date" th:value="${#dates.format(main.denddate, 'yyyy-MM-dd')}" class="form-control datepicker">
+                </div>        
+                <div class="col-lg-3 col-md-3">
+                  <label for="type">报价形式:</label>
+                  <select name="type" id="type" class="form-control">
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="provide_type">供应类型:</label>
+                  <select name="provide_type" id="provide_type" class="form-control">
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="maker_id">制单人:</label>
+                  <select name="maker" id="maker" class="form-control select2" readonly>
+                    <option th:value="${main.maker.id}" th:text="${main.maker.realname}" selected="selected"></option>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label for="make_date">单据日期: </label>
+                  <input type="text" name="make_date" id="make_date" th:value="${#dates.format(main.dmakedate, 'yyyy-MM-dd')}" class="form-control" readonly>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label>确认人:</label>
+                  <select class="form-control select2" readonly>
+                    <option th:value="${main.reviewer?.id}" th:text="${main.reviewer?.realname}" selected="selected"></option>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label>确认日期: </label>
+                  <input type="text" th:value="${#dates.format(main.dreviewdate, 'yyyy-MM-dd')}" class="form-control" readonly>
+                </div>
+        
+                <div class="col-lg-3 col-md-3">
+                  <label>审核人:</label>                      
+                  <select class="form-control select2" readonly>
+                    <option th:value="${main.verifier?.id}" th:text="${main.verifier?.realname}" selected="selected"></option>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label>审核日期:</label>
+                  <input type="text" th:value="${#dates.format(main.dverifydate, 'yyyy-MM-dd')}" class="form-control" readonly>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label>归档人:</label>
+                  <select class="form-control select2" readonly>
+                    <option th:value="${main.publisher?.id}" th:text="${main.publisher?.realname}" selected="selected"></option>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <label>归档日期:</label>
+                  <input type="text" th:value="${#dates.format(main.dpublishdate, 'yyyy-MM-dd')}" class="form-control" readonly>
+                </div>
             </div>
-          </div>
-        </div>
-
-  </div>  
-</body>
+            <div class="row margin-top-10">
+              <div class="col-lg-12">
+                  <table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
+                  </table>
+              </div>
+            </div>
+        </form>
+    </div>
+    </div>
+  </body>
 </html>
 
-
 <script th:inline="javascript">
+  var editor;
+  /*[+
+  var detail_url = [[@{/api/venpriceadjust/}]] + [[${main.ccode}]] + "/details";
+  var inventory_search_url = [[@{/api/inventory/select}]];
+  var edit_url = [[@{/buyer/quote/}]];
+  +]*/ 
+  var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
+  var state = /*[[${main.iverifystate}]]*/'';
+  var type = /*[[${main.type}]]*/'';
+  var supply_type = /*[[${main.isupplytype}]]*/'';
+  
+  $(document).ready(function() {
 
-	$(document).ready(function() {
-		var table = $('#example').DataTable({
-			ajax : {
-				url : /*[[@{/api/venpriceadjust/batch_get}]]*/'',
-				data : function(data) {
-					var filter = {
-						rows_per_page : data.length,
-						page_index : data.start / data.length + 1
-					}
-					return filter;
-				},
-				dataSrc : function(json) {
-					if (json.errcode != 0) {
-						alert(json.errmsg);
-						json.recordsTotal = 0
-						json.recordsFiltered = 0;
-						json.venpriceadjustlist = [];
-					} else {
-						json.recordsTotal = json.row_count;
-						json.recordsFiltered = json.row_count;
-					}
-					return json.venpriceadjustlist;
-				},
-			},
-
-			columns : [ {
-		        data : 'ccode',
-		        title : '商品编码',
-		        defaultContent : ''
-		      }, {
-		        data : null,
-		        title : '商品名称',
-		        defaultContent : '商品名称'
-		      }, {
-		        data : null,
-		        title : '规格型号',
-		        defaultContent : '规格型号'
-		      }, {
-		        data : null,
-		        title : '单位',
-		        defaultContent : '个'
-		      }, {
-		        data : null,
-		        title : '原价格',
-		        defaultContent : '100'
-		      }, {
-		        data : null,
-		        title : '最新未税报价',
-		        defaultContent : '110'
-		      }, {
-		        data : null,
-		        title : '最新含税报价',
-		        defaultContent : '120'
-		      }, {
-		          data : null,
-		          title : '税率',
-		          defaultContent : '17'
-		      }, {
-		        data : 'dverifydate',
-		        title : '生效日期',
-		        render: $.fn.date_renderer,
-		        defaultContent : ''
-		      }, {
-		          data : 'dverifydate',
-		          title : '有效日期',
-		          render: $.fn.date_renderer,
-		          defaultContent : ''
-		      }, {
-		          data : null,
-		          title : '备注',
-		          defaultContent : '备注'
-		          
-		      } ],
-		});
-
-		$("#btn_search").click(function() {
-			table.draw();
-		});
+    $('#start_date').datepicker();
+    $('#end_date').datepicker();
     
-    $('#product_name').keyup(function(e){
-        if(e.keyCode == 13)
-        	table.draw();
-    });
-	});
+    $(".select2").select2();
+    $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
+    $("#type").select2({ data: App.getInqueryTypeData(),minimumResultsForSearch: -1 }).select2("val", type.toString());
+    $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 }).select2("val", supply_type.toString());
+    $("#vendor").select2(App.getSelect2Options(vendor_search_url));
+   
+    if (state > 1) {
+      $('input').attr("readonly", true);
+      $('select').attr("readonly", true);
+      $("#start_date").datepicker( "option", "disabled", true );
+      $("#end_date").datepicker( "option", "disabled", true );
+    }
+
+    editor = new $.fn.dataTable.Editor( {
+      table: "#example",  
+      idSrc: "id",
+      //template: '#customForm',
+      fields: [ {
+          id: "select_inv_code",
+          label: "选择商品:",
+          type: "select",
+          name: "select"
+        },{
+          label: "商品编码:",
+          type:  "readonly",
+          id: "cinvcode",
+          name: "cinvcode"          
+        },{
+          label: "商品名称:",
+          type:  "readonly",
+          id: "name",
+          name: "name"
+        },{
+          label: "规格型号:",
+          type:  "readonly",
+          id: "specs",
+          name: "specs"  
+        },{
+          label: "单位:",
+          type:  "readonly",
+          id: "puunit_name",
+          name: "puunit_name"            
+        },{
+          label: "原价格:",
+          id: "iunitprice",
+          attr: {
+            type: "number"
+          },
+          name: "iunitprice"            
+        },{
+          label: "最小数量:",
+          attr: {
+            type: "number"
+          },
+          id: "fminquantity",
+          name: "fminquantity"                
+        },{
+          label: "最大数量:",
+          attr: {
+            type: "number"
+          },
+          id: "fmaxquantity",
+          name: "fmaxquantity"                
+        },{
+          label: "税率:",
+          attr: {
+            type: "number"
+          },
+          id: "itaxrate",                
+          name: "itaxrate"                
+        },{
+          label: "最新含税报价:",
+          type:  "readonly",
+          attr: {
+            type: "number"
+          },
+          id: "itaxunitprice",    
+          name: "itaxunitprice"                
+        },{
+          label: "生效日期:",
+          type: "date",
+          opts: {
+            showOn: "focus"
+          },
+          dateFormat: "yy-mm-dd",
+          name: "dstartdate"                
+        },{
+          label: "有效日期:",
+          type: "date",
+          opts: {
+            showOn: "focus"
+          },
+          dateFormat: $.datepicker.ISO_8601,
+          name: "denddate"                
+        },{
+          label: "是否有效:",
+          type: "checkbox",
+          separator: "|",
+          options:   [
+              { label: '', value: 1 }
+          ],
+          name: "ivalid"                
+        },{
+          label: "备注:",
+          name: "cbodymemo"                
+        }],
+      i18n: {
+          create: {
+              button: "添加商品",
+              title:  "添加",
+              submit: "保存"
+          },
+          edit: {
+              button: "修改商品",
+              title:  "修改",
+              submit: "保存"
+          },
+          remove: {
+              button: "删除商品",
+              title:  "删除",
+              submit: "是",
+              confirm: {
+                  _: "确定要删除%d行商品吗?",
+                  1: "确定要删除吗?"
+              }
+          },
+          error: {
+              system: "发生错误！"
+          }
+      }
+    }).submit(function (e, json, data) {
+          alert( 'Form successfully submitted!' );
+      },
+      function (e, json, data) {
+          alert( 'Form  encountered an error :-(' );
+      }
+    ).on( 'preOpen', function ( e, json, data ) {
+      if ($("#vendor").val() == "") {
+        alert("请选择供应商！");
+        return false;
+      }
+    }).on( 'open', function (e, mode, action) {
+      if (action == "edit") {
+        $('#select_inv_code').empty().append($("<option/>").val(this.field('cinvcode').val()).text(this.field('name').val()));
+      }
+      
+      if (action == "create") {
+        this.field('itaxrate').val($('#tax_rate').val());
+        this.field('dstartdate').val($('#start_date').val());
+        this.field('denddate').val($('#end_date').val());
+        $('#select_inv_code').empty();
+      }
+      
+      var select_options = App.getSelect2Options(inventory_search_url);
+      $.extend(true, select_options, {
+        ajax: {
+          data: function(params) {
+              return {
+                inv: params.term,
+                vendor: $("#vendor").val(),
+              };
+          },
+        }
+      });
+      var select_inv = $("#select_inv_code").select2(select_options);
+      select_inv.on("select2:select", function(e) {
+        var selected_data = e.params.data;
+        $('#cinvcode').val(selected_data.id);
+        $('#name').val(selected_data.title);
+        $('#specs').val(selected_data.specs);
+        $('#iunitprice').val(selected_data.price);
+        $('#dstartdate').val(selected_data.startDate);
+        $('#denddate').val(selected_data.endDate);        
+      });
+      
+      $('#itaxrate, #iunitprice').change(function() {
+        if ($('#itaxunitprice').val() != undefined && $('#itaxunitprice').val() != undefined) {
+          $('#itaxunitprice').val((parseInt($('#itaxrate').val()) + 100) * $('#iunitprice').val()/100);  
+        }
+        
+      });
+/*      
+      if (state > 1) {
+        $(".DTE_Form_Content input").attr("readonly", true);
+        $('.DTE_Form_Content select').attr("readonly", true);
+        $(".DTE_Form_Content .hasDatepicker").datepicker( "option", "disabled", true );
+      }
+      
+      if (state != 5) {
+        this.field('ivalid').hide();
+      }
+      */    
+   
+    }).on( 'preSubmit', function ( e, data, action ) {
+      if ( action !== 'remove' ) {
+          var iunitprice = this.field( 'iunitprice' );
+  
+          if ( ! iunitprice.val() ) {
+            iunitprice.error( '不能为空！' );
+          }
+          
+          var select_inv_code = this.field( 'select' );
+          if (! $('#select_inv_code').select2('val')) {
+            select_inv_code.error( '请选择商品！' );
+          }
+          
+          if ($("#type").select2('val') == 2) {
+            if ( ! this.field( 'fminquantity' ).val() ) {
+              this.field( 'fminquantity' ).error( '不能为空！' );
+            }
+            if ( ! this.field( 'fmaxquantity' ).val() ) {
+              this.field( 'fmaxquantity' ).error( '不能为空！' );
+            }
+          }
+          // If any error was reported, cancel the submission so it can be corrected
+          if ( this.inError() ) {
+              return false;
+          }
+      }      
+    } );
+    
+    var table_options = {
+        serverSide:false,
+        processing:false,
+        select: true,
+        buttons: [
+            { extend: "create", editor: editor },
+            { extend: "edit",   editor: editor },
+            { extend: "remove", editor: editor }
+        ],
+        ajax : {
+          url : detail_url,
+          dataSrc : function(json) {
+            $.each(json, function(key, item){
+              item.dstartdate = $.fn.date_renderer(item.dstartdate);
+              item.denddate = $.fn.date_renderer(item.denddate);
+            });
+            return json;
+          },
+        },
+
+        columns : [ {
+          data : 'cinvcode',
+          title : '商品编码',
+        }, {
+          data : 'name',
+          title : '商品名称'
+        }, {
+          data : 'specs',
+          title : '规格型号',
+        }, {
+          data : 'puunit_name',
+          title : '单位',
+        }, {
+          data : 'iunitprice',
+          title : '原价格',
+        }, {
+          data : 'fminquantity',
+          title : '最小数量',
+        }, {
+          data : 'fmaxquantity',
+          title : '最大数量',
+        }, {
+          data : 'itaxrate',
+          title : '税率',
+        }, {
+          data : 'itaxunitprice',
+          title : '最新含税报价',
+        }, {
+          data : 'dstartdate',
+          title : '生效日期',
+        }, {
+          data : 'denddate',
+          title : '有效日期'
+        }, {
+          data : 'ivalid',
+          title : '是否有效',
+          className: 'ivalid dt-center',
+          visible: state>2,
+          render: function ( data, type, row ) {
+              if ( type === 'display' ) {
+                  return '<input type="checkbox" value="1" class="editor-valid" readonly disabled>';
+              }
+              return data;
+          },
+        }, {
+          data : 'cbodymemo',
+          title : '备注',
+
+        } ],
+        rowCallback: function ( row, data ) {
+            // Set the checked state of the checkbox in the table
+            $('input.editor-valid', row).prop( 'checked', data.ivalid == 1 );
+        }
+      };
+    
+    if (state == 1)
+      table_options.dom = "Bfrtip";
+
+    var table = $('#example').DataTable(table_options);
+
+    if (state == 3) {
+      $('#example').on( 'change', 'input.editor-valid', function () {
+          editor.edit( $(this).closest('tr'), false )
+              .set( 'ivalid', $(this).prop( 'checked' ) ? 1 : 0 )
+              .submit();
+      });
+    }
+    
+    $("#form" ).validate({
+      // define validation rules
+      rules: {
+          vendor: {
+              required: true
+          }, 
+          tax_rate: {
+              required: true
+          },
+          start_date: {
+              required: true
+          },    
+          end_date: {
+              required: true
+          },    
+      },
+      
+      //display error alert on form submit  
+      invalidHandler: function(event, validator) {
+          swal({
+              "title": "输入有误", 
+              "text": "请输入正确的值", 
+              "type": "error"
+          });
+      },
+
+      submitHandler: function (form) {
+        var data = table.rows().data().toArray();
+          jQuery(form).ajaxSubmit({
+              data: {table:data},
+              success: function(res, status, xhr, form) {
+                  swal({
+                      "title": "操作成功", 
+                      "type": "success"
+                  }).then((result) => {
+                       window.location.href = edit_url + res.ccode + "/edit";
+                  });
+              },
+              error: function (res, status, xhr, form) {
+                  swal({
+                      "title": "操作失败", 
+                      "text": "请输入正确的值", 
+                      "type": "error"
+                  });
+              }
+          });
+      }
+    }); 
+    
+    
+    $("#pass").click(function() {
+      $('#state').val(5);
+      $("#form").submit();            
+    }); 
+    
+    $("#verify").click(function() {
+      $('#state').val(6);
+      $("#form").submit();            
+    });   
+    
+    $("#publish").click(function() {
+      $('#state').val(7);
+      $("#form").submit();            
+    });       
+  });
 </script>

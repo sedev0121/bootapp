@@ -23,11 +23,11 @@ public class Price {
 	@ManyToOne(cascade = { CascadeType.ALL })
 	@JoinColumn(name = "fsupplyno", referencedColumnName = "code")
 
-	private Vendor fsupplyno;
+	private Vendor vendor;
 
 	@ManyToOne(cascade = { CascadeType.ALL })
 	@JoinColumn(name = "cinvcode", referencedColumnName = "code")
-	private Inventory cinvcode;
+	private Inventory inventory;
 
 	private String description;
 	private String fauxunit;
@@ -59,21 +59,21 @@ public class Price {
 		this.id = id;
 	}
 
-	public Vendor getFsupplyno() {
-		return fsupplyno;
+	public Vendor getVendor() {
+		return vendor;
 	}
 
-	public void setFsupplyno(Vendor fsupplyno) {
-		this.fsupplyno = fsupplyno;
+	public void setVendor(Vendor vendor) {
+		this.vendor = vendor;
 	}
 
 	@JsonProperty("cinvcode")
-	public Inventory getcInvCode() {
-		return cinvcode;
+	public Inventory getInventory() {
+		return inventory;
 	}
 
-	public void setcInvCode(Inventory cInvCode) {
-		this.cinvcode = cInvCode;
+	public void setInventory(Inventory inventory) {
+		this.inventory = inventory;
 	}
 
 	public String getDescription() {

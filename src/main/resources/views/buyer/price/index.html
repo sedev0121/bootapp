@@ -57,7 +57,7 @@ $(document).ready(function() {
     table = $('#example').DataTable({
     	ordering: true,
   		ajax : {
-  			url : /*[[@{/api/price/batch_get}]]*/'',
+  			url : /*[[@{/buyer/price/list}]]*/'',
   			data : function(data) {
   				var filter = {
   						rows_per_page : data.length,
@@ -79,19 +79,11 @@ $(document).ready(function() {
   		},
   
   		columns : [ {
-            data : 'fsupplyno',
-            render: function (data, display, record) {
-            	return data.name;
-            },
+            data : 'vendor.name',
             title : '供应商名称',
             defaultContent : ''
         }, {
-            data : 'cinvcode',
-            render: function (data, display, record) {
-            	var edit_url = /*[[@{/buyer/price/}]]*/'';
-                edit_url +=  record.id + '/edit';
-                return '<a href="' + edit_url + '">' + data.name  + '</a>';
-            },
+            data : 'cinvcode.name',
             title : '存货名称',
         }, {
   			data : 'description',
@@ -151,7 +143,7 @@ $(document).ready(function() {
         }, {
             data : 'createdate',
             title : '制单日期',      
-            render: App.valid_render
+            render: $.fn.date_renderer, 
         }, {
             data : 'fnote',
             title : '备注',             

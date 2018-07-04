@@ -157,8 +157,8 @@ public class BuyerController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		Page<VenPriceAdjustSearchItem> result = venPriceAdjustMainRepository.findBySearchTerm(vendor, inventory,
-				request);
+		Page<VenPriceAdjustSearchItem> result = venPriceAdjustMainRepository
+				.findBySearchTerm(Constants.CREATE_TYPE_BUYER, vendor, inventory, request);
 
 		return result;
 	}
@@ -244,7 +244,35 @@ public class BuyerController {
 			}
 		}
 
+		if (form.getState() == Constants.STATE_PUBLISH) {
+			updatePriceTable(venPriceAdjustMain);
+		}
+
 		return venPriceAdjustMain;
+	}
+
+	private void updatePriceTable(VenPriceAdjustMain venPriceAdjustMain) {
+
+		List<VenPriceAdjustDetail> list = venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode());
+		for (VenPriceAdjustDetail item : list) {
+			Price price = new Price();
+			price.setVendor(venPriceAdjustMain.getVendor());
+			price.setInventory(item.getInventory());
+			price.setCreateby(venPriceAdjustMain.getMaker().getId());
+			price.setCreatedate(venPriceAdjustMain.getDmakedate());
+			price.setFavdate(venPriceAdjustMain.getDstartdate());
+			price.setFcanceldate(venPriceAdjustMain.getDenddate());
+			price.setFnote(item.getCbodymemo());
+			price.setFprice(item.getIunitprice());
+			price.setFtax((float) item.getItaxrate());
+			price.setFtaxprice(item.getItaxunitprice());
+			price.setFisoutside(false);
+			price.setFcheckdate(new Date());
+			price.setDescription(item.getInventory().getSpecs());
+			price.setFauxunit(item.getInventory().getPuunitName());
+			priceRepository.save(price);
+		}
+
 	}
 
 	// 价格管理->报价管理
@@ -254,9 +282,111 @@ public class BuyerController {
 	}
 
 	// 价格管理->报价管理->修改
-	@GetMapping("/quote/{id}/edit")
-	public String quote_edit() {
+	@GetMapping("/quote/{ccode}/edit")
+	public String quote_edit(@PathVariable("ccode") String ccode, Model model) {
+		model.addAttribute("main", this.venPriceAdjustMainRepository.findOneByCcode(ccode));
 		return "buyer/quote/edit";
+	}
+
+	@RequestMapping(value = "/quote/list", produces = "application/json")
+	public @ResponseBody Page<VenPriceAdjustSearchItem> quote_list_ajax(Principal principal,
+			@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "ccode");
+		String dir = requestParams.getOrDefault("dir", "asc");
+
+		String stateStr = requestParams.getOrDefault("state", "0");
+		String inventory = requestParams.getOrDefault("inventory", "");
+		String vendor = requestParams.getOrDefault("vendor", "");
+		String start_date = requestParams.getOrDefault("start_date", null);
+		String end_date = requestParams.getOrDefault("end_date", null);
+
+		Integer state = Integer.parseInt(stateStr);
+		Date startDate = null, endDate = null;
+		try {
+			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+			if (start_date != null && !start_date.isEmpty())
+				startDate = dateFormatter.parse(start_date);
+			if (end_date != null && !end_date.isEmpty()) {
+				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+				endDate = dateFormatter.parse(end_date);
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(endDate);
+				cal.add(Calendar.DATE, 1);
+				endDate = cal.getTime();
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		switch (order) {
+		case "vendorname":
+			order = "c.name";
+			break;
+		case "vendorcode":
+			order = "c.code";
+			break;
+		case "verifiername":
+			order = "f.realname";
+			break;
+		case "makername":
+			order = "e.realname";
+			break;
+		}
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		Page<VenPriceAdjustSearchItem> result = venPriceAdjustMainRepository
+				.findBySearchTermForBuyer(Constants.CREATE_TYPE_VENDOR, vendor, inventory, request);
+
+		return result;
+	}
+
+	@PostMapping("/quote/update")
+	public @ResponseBody VenPriceAdjustMain quote_update_ajax(VenPriceSaveForm form, Principal principal) {
+		String ccode = form.getCcode();
+		Integer state = form.getState();
+
+		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(ccode);
+		venPriceAdjustMain.setIverifystate(state);
+
+		Account account = accountRepository.findOneByUsername(principal.getName());
+		if (state == Constants.STATE_VERIFY) {
+			venPriceAdjustMain.setVerifier(account);
+			venPriceAdjustMain.setDverifydate(new Date());
+		}
+		if (state == Constants.STATE_PUBLISH) {
+			venPriceAdjustMain.setPublisher(account);
+			venPriceAdjustMain.setDpublishdate(new Date());
+		}
+
+		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
+
+		if (state == Constants.STATE_PASS) {
+			if (form.getTable() != null) {
+				for (Map<String, String> row : form.getTable()) {
+					Optional<VenPriceAdjustDetail> result = venPriceAdjustDetailRepository
+							.findById(Long.parseLong(row.get("id")));
+					if (result.isPresent()) {
+						VenPriceAdjustDetail detail = result.get();
+						detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
+						detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
+						detail.setCbodymemo(row.get("cbodymemo"));
+						venPriceAdjustDetailRepository.save(detail);
+					}
+
+				}
+			}
+		}
+
+		if (form.getState() == Constants.STATE_PUBLISH) {
+			updatePriceTable(venPriceAdjustMain);
+		}
+
+		return venPriceAdjustMain;
 	}
 
 	// 商品管理->商品档案表
@@ -290,6 +420,36 @@ public class BuyerController {
 
 		model.addAttribute("data", result.isPresent() ? result.get() : new Price());
 		return "buyer/price/edit";
+	}
+
+	// 供应商管理列表查询
+	@RequestMapping(value = "/price/list", produces = "application/json")
+	public @ResponseBody Page<Price> price_list_ajax(@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "name");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String search_vendor = requestParams.getOrDefault("vendor", "");
+		String search_inventory = requestParams.getOrDefault("inventory", "");
+		String startDate = requestParams.getOrDefault("start", "");
+		String endDate = requestParams.getOrDefault("end", "");
+
+		if (order.equals("vendor.name")) {
+			order = "b.name";
+		}
+
+		if (order.equals("inventory.name")) {
+			order = "c.name";
+		}
+
+		logger.info(startDate + " ~ " + endDate);
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+		Page<Price> result = priceRepository.findBySearchTerm(search_vendor, search_inventory, startDate, endDate,
+				request);
+
+		return result;
 	}
 
 	// 供应商管理

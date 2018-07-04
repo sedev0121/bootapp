@@ -33,10 +33,21 @@ select[readonly].select2-hidden-accessible + .select2-container .select2-selecti
     color:#C49F47;
 }
 .inquery_state_7 {
-    color:black;
+    color:grey;
 }
 
 .dt-center {
     text-align:center;
+}
+
+.DTED_Lightbox_Close {visibility: hidden;}
+div.DTE_Field select {
+  padding: 6px 4px;
+  width: 100%;
+}
+
+div.DTE_Field.DTE_Field_Type_date input.jqueryui {
+    width: 100%; 
+    margin-right: 0px;
 }
 
