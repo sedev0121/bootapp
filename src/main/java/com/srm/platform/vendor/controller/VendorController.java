@@ -92,7 +92,7 @@ public class VendorController {
 		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(ccode);
 		venPriceAdjustMain.setIverifystate(state);
 
-		if (state == Constants.STATE_CONFIRM || state == Constants.STATE_CANCEL) {
+		if (state == Constants.STATE_CONFIRM || state == Constants.STATE_CANCEL || state == Constants.STATE_PASS) {
 			Account account = accountRepository.findOneByUsername(principal.getName());
 			venPriceAdjustMain.setReviewer(account);
 			venPriceAdjustMain.setDreviewdate(new Date());
@@ -100,18 +100,21 @@ public class VendorController {
 
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 
-		for (Map<String, String> row : form.getTable()) {
-			Optional<VenPriceAdjustDetail> result = venPriceAdjustDetailRepository
-					.findById(Long.parseLong(row.get("id")));
-			if (result.isPresent()) {
-				VenPriceAdjustDetail detail = result.get();
-				detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
-				detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
-				detail.setCbodymemo(row.get("cbodymemo"));
-				venPriceAdjustDetailRepository.save(detail);
-			}
+		if (form.getTable() != null) {
+			for (Map<String, String> row : form.getTable()) {
+				Optional<VenPriceAdjustDetail> result = venPriceAdjustDetailRepository
+						.findById(Long.parseLong(row.get("id")));
+				if (result.isPresent()) {
+					VenPriceAdjustDetail detail = result.get();
+					detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
+					detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
+					detail.setCbodymemo(row.get("cbodymemo"));
+					venPriceAdjustDetailRepository.save(detail);
+				}
 
+			}
 		}
+
 		return venPriceAdjustMain;
 	}
 

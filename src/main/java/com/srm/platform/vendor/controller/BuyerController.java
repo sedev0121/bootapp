@@ -166,6 +166,7 @@ public class BuyerController {
 	@PostMapping("/inquery/update")
 	public @ResponseBody VenPriceAdjustMain inquery_update_ajax(VenPriceSaveForm form, Principal principal) {
 		VenPriceAdjustMain venPriceAdjustMain = new VenPriceAdjustMain();
+		venPriceAdjustMain.setCreatetype(Constants.CREATE_TYPE_BUYER);
 		venPriceAdjustMain.setCcode(form.getCcode());
 
 		Example<VenPriceAdjustMain> example = Example.of(venPriceAdjustMain);
@@ -173,14 +174,19 @@ public class BuyerController {
 		if (result.isPresent())
 			venPriceAdjustMain = result.get();
 
-		venPriceAdjustMain.setType(form.getType());
-		venPriceAdjustMain.setIsupplytype(form.getProvide_type());
-		venPriceAdjustMain.setItaxrate(form.getTax_rate());
-		venPriceAdjustMain.setIverifystate(form.getState());
+		if (form.getState() <= Constants.STATE_SUBMIT) {
+			venPriceAdjustMain.setType(form.getType());
+			venPriceAdjustMain.setIsupplytype(form.getProvide_type());
+			venPriceAdjustMain.setItaxrate(form.getTax_rate());
 
-		venPriceAdjustMain.setDstartdate(form.getStart_date());
-		venPriceAdjustMain.setDenddate(form.getEnd_date());
-		venPriceAdjustMain.setDmakedate(form.getMake_date());
+			venPriceAdjustMain.setDstartdate(form.getStart_date());
+			venPriceAdjustMain.setDenddate(form.getEnd_date());
+			venPriceAdjustMain.setDmakedate(form.getMake_date());
+			venPriceAdjustMain.setVendor(vendorRepository.findOneByCode(form.getVendor()));
+			venPriceAdjustMain.setMaker(accountRepository.findOneById(form.getMaker()));
+		}
+
+		venPriceAdjustMain.setIverifystate(form.getState());
 
 		Account account = accountRepository.findOneByUsername(principal.getName());
 		if (form.getState() == Constants.STATE_VERIFY) {
@@ -191,9 +197,6 @@ public class BuyerController {
 			venPriceAdjustMain.setPublisher(account);
 			venPriceAdjustMain.setDpublishdate(new Date());
 		}
-
-		venPriceAdjustMain.setVendor(vendorRepository.findOneByCode(form.getVendor()));
-		venPriceAdjustMain.setMaker(accountRepository.findOneById(form.getMaker()));
 
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 

@@ -10,4 +10,7 @@ public class Constants {
 	public static int STATE_VERIFY = 6;
 	public static int STATE_PUBLISH = 7;
 
+	public static int CREATE_TYPE_BUYER = 0;
+	public static int CREATE_TYPE_VENDOR = 1;
+
 }

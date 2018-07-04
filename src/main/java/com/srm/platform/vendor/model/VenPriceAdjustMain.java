@@ -30,6 +30,7 @@ public class VenPriceAdjustMain {
 	Integer isupplytype;
 
 	Integer type;
+	Integer createtype;
 
 	Integer itaxrate;
 
@@ -94,6 +95,14 @@ public class VenPriceAdjustMain {
 
 	public void setCcode(String ccode) {
 		this.ccode = ccode;
+	}
+
+	public Integer getCreatetype() {
+		return createtype;
+	}
+
+	public void setCreatetype(Integer createtype) {
+		this.createtype = createtype;
 	}
 
 	public Vendor getVendor() {
