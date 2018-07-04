@@ -13,8 +13,6 @@
       <div class=""search-content"">
         <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
           <a class="btn btn-primary" id="deploy" th:if="${main.srmstate==0}"><i class="fa fa-undo"></i> 发布</a>
-          <a class="btn btn-primary" id="confirm" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a>
-          <a class="btn btn-primary" id="cancel" th:if="${main.srmstate==1}"><i class="fa fa-print"></i> 退回</a>
           <a class="btn btn-default" th:href="@{/buyer/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
       </div> 
@@ -41,25 +39,39 @@
                 <label>订单总金额: </label>
                 <input type="text" class="form-control" th:value="${main.money}" readonly/>
               </div>
+              <div class="col-lg-4 col-md-4">
+                <label>供应商: </label>
+                <input type="text" class="form-control" th:value="${main.vendor.name}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>创建人: </label>
+                <input type="text" class="form-control" th:value="${main.maker}" readonly/>
+              </div>
               <div class="col-lg-2 col-md-2">
                 <label>创建日期: </label>
                 <input type="text" class="form-control" th:value="${#dates.format(main.makedate, 'yyyy-MM-dd')}" readonly/>
               </div>
               <div class="col-lg-2 col-md-2">
+                <label>发布人: </label>
+                <input type="text" class="form-control" th:value="${main.deployer?.realname}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
                 <label>发布日期: </label>
-                <input type="text" class="form-control" th:value="${#dates.format(main.makedate, 'yyyy-MM-dd')}" readonly/>
+                <input type="text" class="form-control" th:value="${#dates.format(main.deploydate, 'yyyy-MM-dd')}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>确认人: </label>
+                <input type="text" class="form-control" th:value="${main.reviewer?.realname}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>确认日期: </label>
+                <input type="text" class="form-control" th:value="${#dates.format(main.reviewdate, 'yyyy-MM-dd')}" readonly/>
               </div>
               <div class="col-lg-4 col-md-4">
-                <label>供应商: </label>
-                <input type="text" class="form-control" th:value="${main.vendor.name}" readonly/>
-              </div>
-              <div class="col-lg-8 col-md-8">
                 <label>供应商地址: </label>
                 <input type="text" class="form-control" th:value="${main.vendor.address}" readonly/>
               </div>
-    
-    
-              <div class="col-lg-12 col-md-12">
+              <div class="col-lg-8 col-md-8">
                 <label>订单摘要: </label>
                 <input type="text" class="form-control" th:value="${main.remark}" readonly/>
               </div>
@@ -114,7 +126,7 @@ $(document).ready(function() {
       basic_array = $('#basic_info').DataTable().rows().data().toArray();
         var prepay_array= [];
         $.each(basic_array, function(key, item){
-          if (item.prepaymoney != '')
+          if (item.prepaymoney != undefined)
             prepay_array.push(item);
         });
       

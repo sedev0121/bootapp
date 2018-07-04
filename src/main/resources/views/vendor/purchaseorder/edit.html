@@ -10,80 +10,73 @@
         <li class="active">采购订单明细</li>
       </ul>
 
-      <div class="search-content">
+      <div class=""search-content"">
         <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-          <a class="btn btn-primary"><i class="fa fa-undo"></i> 接受</a>
-          <a class="btn btn-primary"><i class="fa fa-arrow-up"></i> 协调</a>
-          <a class="btn btn-primary"><i class="fa fa-print"></i> 导出</a>
-          <a class="btn btn-primary" th:href="@{/vendor/purchaseorder/ship/import}"><i class="fa fa-print"></i> 导入送货单</a>
+          <a class="btn btn-primary" id="confirm" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a>
+          <a class="btn btn-primary" id="cancel" th:if="${main.srmstate==1}"><i class="fa fa-undo"></i> 拒绝</a>
           <a class="btn btn-default" th:href="@{/vendor/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
-      </div>       
+      </div> 
+            
       <div class="panel panel-default">
-
+        <form id="form" th:action="@{/vendor/purchaseorder/update}" method="post">
+        </form>
         <div class="panel-body"> 
-        
           <div class="row">
               <div class="col-lg-2 col-md-2">
                 <label>订单号: </label>
-                <input type="text" class="form-control" value="4502691503" readonly/>
-              </div>
-              <div class="col-lg-2 col-md-2">
-                <label>币别: </label>
-                <input type="text" class="form-control" value="CNY" readonly/>
+                <input type="text" id="code" class="form-control" th:value="${main.code}"  readonly/>
               </div>
               <div class="col-lg-2 col-md-2">
                 <label>订单类型: </label>
-                <input type="text" class="form-control" value="标准采购订单" readonly/>
+                <input type="text" class="form-control" th:value="${main.purchaseTypeName}"  readonly/>
               </div>
               <div class="col-lg-2 col-md-2">
-                <label>版本: </label>
-                <input type="text" class="form-control" value="2" readonly/>
+                <label for="state">状态:</label>
+                <select name="state" id="state" class="form-control" readonly>
+                </select>
               </div>
               <div class="col-lg-2 col-md-2">
-                <label>数据来源: </label>
-                <input type="text" class="form-control" value="ERP" readonly/>
-              </div>
-    
-              <div class="col-lg-4 col-md-4">
-                <label>客户: </label>
-                <input type="text" class="form-control" value="浙江美尔凯特集成吊顶有限公司" readonly/>
+                <label>订单总金额: </label>
+                <input type="text" class="form-control" th:value="${main.money}" readonly/>
               </div>
               <div class="col-lg-4 col-md-4">
                 <label>供应商: </label>
-                <input type="text" class="form-control" value="嘉兴市华年电机有限公司" readonly/>
+                <input type="text" class="form-control" th:value="${main.vendor.name}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>创建人: </label>
+                <input type="text" class="form-control" th:value="${main.maker}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>创建日期: </label>
+                <input type="text" class="form-control" th:value="${#dates.format(main.makedate, 'yyyy-MM-dd')}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>发布人: </label>
+                <input type="text" class="form-control" th:value="${main.deployer?.realname}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>发布日期: </label>
+                <input type="text" class="form-control" th:value="${#dates.format(main.deploydate, 'yyyy-MM-dd')}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>确认人: </label>
+                <input type="text" class="form-control" th:value="${main.reviewer?.realname}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>确认日期: </label>
+                <input type="text" class="form-control" th:value="${#dates.format(main.reviewdate, 'yyyy-MM-dd')}" readonly/>
               </div>
               <div class="col-lg-4 col-md-4">
                 <label>供应商地址: </label>
-                <input type="text" class="form-control" value="XXXXXXXXXXXXXXX" readonly/>
+                <input type="text" class="form-control" th:value="${main.vendor.address}" readonly/>
               </div>
-    
-              <div class="col-lg-4 col-md-4">
-                <label>订单总金额: </label>
-                <input type="text" class="form-control" value="XXXXX.XX" readonly/>
-              </div>
-              <div class="col-lg-4 col-md-4">
-                <label>创建日期: </label>
-                <input type="text" class="form-control" value="xxxx-xx-xx xx:xx:xx" readonly/>
-              </div>
-              <div class="col-lg-4 col-md-4">
-                <label>发布日期: </label>
-                <input type="text" class="form-control" value="xxxx-xx-xx xx:xx:xx" readonly/>
-              </div>
-    
-              <div class="col-lg-12 col-md-12">
+              <div class="col-lg-8 col-md-8">
                 <label>订单摘要: </label>
-                <input type="text" class="form-control" value="" readonly/>
+                <input type="text" class="form-control" th:value="${main.remark}" readonly/>
               </div>
               
-              <div class="col-lg-4 col-md-4">
-                <label>付款条件: </label>
-                <input type="text" class="form-control" value="XXXXX.XX" readonly/>
-              </div>
-              <div class="col-lg-4 col-md-4">
-                <label>预付金额: </label>
-                <input type="text" class="form-control" value="23000" readonly/>
-              </div>
           </div>
           <div class="row margin-top-10">
             <div class="col-lg-12">
@@ -95,7 +88,7 @@
                   </ul>
                   <div class="tab-content">
                     <div id="tab-1" class="tab-pane row-fluid fade in active">
-                      <table id="basic_info" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">                
+                      <table id="basic_info" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
                       </table>
                     </div>
                     <div id="tab-2" class="tab-pane row-fluid fade in">
@@ -115,229 +108,226 @@
 </html>
 
 <script th:inline="javascript">
-    $(document).ready(function() {
-        var basic_table, prepay_table;
-        
-        function load_prepay_table() {
-            if (prepay_table != undefined)
-                return;
-                
-            prepay_table = $('#prepay_info').DataTable({
-                ajax : {
-                    url : /*[[@{/api/inventory/batch_get}]]*/'',
-                    data : function(data) {
-                        var filter = {
-                            rows_per_page : data.length,
-                            page_index : data.start / data.length + 1
-                        }
-                        return filter;
-                    },
-                    dataSrc : function(json) {
-                        if (json.errcode != 0) {
-                            alert(json.errmsg);
-                            json.recordsTotal = 0
-                            json.recordsFiltered = 0;
-                            json.inventory = [];
-                        } else {
-                            json.recordsTotal = json.row_count;
-                            json.recordsFiltered = json.row_count;
-                        }
-                        return json.inventory;
-                    },
-                },
+/*[+
+var detail_url = [[@{/api/purchaseorder/}]] + [[${main.code}]] + "/details";
+var submit_url = [[@{/vendor/purchaseorder/update}]];
+var state = [[${main.srmstate}]];
++]*/
 
-                columns : [ {
-                    data : 'code',
-                    title : '存货编码',
-                    defaultContent : ''
-                }, {
-                    data : 'name',
-                    title : '存货名称',
-                    defaultContent : ''
-                }, {
-                    data : 'invaddcode',
-                    title : '存货代码',
-                    defaultContent : ''
-                }, {
-                    data : 'specs',
-                    title : '规格型号',
-                    defaultContent : ''
-                }, {
-                    data : 'sort_code',
-                    title : '所属分类码',
-                    defaultContent : ''
-                }, {
-                    data : 'main_measure',
-                    title : '主计量单位',
-                    defaultContent : ''
-                }, {
-                    data : 'ref_sale_price',
-                    title : '参考售价',
-                    defaultContent : ''
-                }, {
-                    data : 'tax_rate',
-                    title : '销项税率',
-                    defaultContent : ''
-                }, {
-                    data : 'iimptaxrate',
-                    title : '进项税率',
-                    defaultContent : ''
-                }, {
-                    data : 'iSupplyType',
-                    title : '供应类型',
-                    defaultContent : ''
-                }, {
-                    data : 'puunit_name',
-                    title : '采购默认单位名称',
-                    defaultContent : ''
-                }, {
-                    data : 'saunit_name',
-                    title : '销售默认单位名称',
-                    defaultContent : ''
-                }, {
-                    data : 'stunit_name',
-                    title : '库存默认单位名称',
-                    defaultContent : ''
-                }, {
-                    data : 'bottom_sale_price',
-                    title : '最低售价',
-                    defaultContent : ''
-                }, {
-                    data : 'defwarehousename',
-                    title : '默认仓库名称',
-                    defaultContent : ''
-                }, {
-                    data : 'start_date',
-                    title : '启用日期',
-                    render: $.fn.date_renderer,
-                    defaultContent : ''
-                }, {
-                    data : 'end_date',
-                    title : '停用日期',
-                    render: $.fn.date_renderer,
-                    defaultContent : ''
-                }, {
-                    data : 'ModifyDate',
-                    title : '变更日期',
-                    render: $.fn.date_renderer,
-                    defaultContent : ''             
-                } ],
-            });
+var editor;
+
+$(document).ready(function() {
+  
+  $("#state").select2({ data: App.getPurchaseOrderStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
+  
+    var basic_table, prepay_table;
+    
+    function load_prepay_table() {
+      
+      basic_array = $('#basic_info').DataTable().rows().data().toArray();
+        var prepay_array= [];
+        $.each(basic_array, function(key, item){
+          if (item.prepaymoney != undefined)
+            prepay_array.push(item);
+        });
+      
+        if (prepay_table != undefined) {
+          prepay_table.clear();
+          prepay_table.rows.add(prepay_array);
+          prepay_table.draw();
+          return;
         }
-        
-        $('#tabs').tabs({
-          activate: function (event, ui) {
-              load_prepay_table();   
-          }
-        });
-        
-        basic_table = $('#basic_info').DataTable({
-            ajax : {
-                url : /*[[@{/api/inventory/batch_get}]]*/'',
-                data : function(data) {
-                    var filter = {
-                        rows_per_page : data.length,
-                        page_index : data.start / data.length + 1
-                    }
-                    return filter;
-                },
-                dataSrc : function(json) {
-                    if (json.errcode != 0) {
-                        alert(json.errmsg);
-                        json.recordsTotal = 0
-                        json.recordsFiltered = 0;
-                        json.inventory = [];
-                    } else {
-                        json.recordsTotal = json.row_count;
-                        json.recordsFiltered = json.row_count;
-                    }
-                    return json.inventory;
-                },
+            
+        prepay_table = $('#prepay_info').DataTable({
+          serverSide:false,
+          processing:false,
+          ajax : null,
+          data:prepay_array,
+          columns : [ {
+              data : 'rowno',
+              title : '行号',
+          }, {
+              data : 'inventory.name',
+              title : '存货名称',
+          }, {
+              data : 'inventory.code',
+              title : '存货代码',
+          }, {
+              data : 'quantity',
+              title : '数量',
+          }, {
+              data : 'price',
+              title : '未税单价',
+          }, {
+              data : 'taxprice',
+              title : '含税单价',
+          }, {
+              data : 'money',
+              title : '未税金额',
+          }, {
+              data : 'sum',
+              title : '含税金额',
+          }, {
+            data : 'prepaymoney',
+            title : '预付金额',
+          }, {
+            data : null,
+            render: function(data, type, record) {
+              return record.sum - record.prepaymoney;
             },
+            title : '未付金额',
 
-            columns : [ {
-                data : 'code',
-                title : '存货编码',
-                defaultContent : ''
-            }, {
-                data : 'name',
-                title : '存货名称',
-                defaultContent : ''
-            }, {
-                data : 'invaddcode',
-                title : '存货代码',
-                defaultContent : ''
-            }, {
-                data : 'specs',
-                title : '规格型号',
-                defaultContent : ''
-            }, {
-                data : 'sort_code',
-                title : '所属分类码',
-                defaultContent : ''
-            }, {
-                data : 'main_measure',
-                title : '主计量单位',
-                defaultContent : ''
-            }, {
-                data : 'ref_sale_price',
-                title : '参考售价',
-                defaultContent : ''
-            }, {
-                data : 'tax_rate',
-                title : '销项税率',
-                defaultContent : ''
-            }, {
-                data : 'iimptaxrate',
-                title : '进项税率',
-                defaultContent : ''
-            }, {
-                data : 'iSupplyType',
-                title : '供应类型',
-                defaultContent : ''
-            }, {
-                data : 'puunit_name',
-                title : '采购默认单位名称',
-                defaultContent : ''
-            }, {
-                data : 'saunit_name',
-                title : '销售默认单位名称',
-                defaultContent : ''
-            }, {
-                data : 'stunit_name',
-                title : '库存默认单位名称',
-                defaultContent : ''
-            }, {
-                data : 'bottom_sale_price',
-                title : '最低售价',
-                defaultContent : ''
-            }, {
-                data : 'defwarehousename',
-                title : '默认仓库名称',
-                defaultContent : ''
-            }, {
-                data : 'start_date',
-                title : '启用日期',
-                render: $.fn.date_renderer,
-                defaultContent : ''
-            }, {
-                data : 'end_date',
-                title : '停用日期',
-                render: $.fn.date_renderer,
-                defaultContent : ''
-            }, {
-                data : 'ModifyDate',
-                title : '变更日期',
-                render: $.fn.date_renderer,
-                defaultContent : ''             
-            } ],
+          }, {
+              data : 'arrivedate',
+              title : '需求日期',
+              render: $.fn.date_renderer,
+          }, {
+              data : 'arrivenote',
+              title : '供货方备注',
+          }, {
+              data : 'confirmdate',
+              title : '承诺交货日期',
+              render: $.fn.date_renderer,
+          }, {
+              data : 'confirmnote',
+              title : '交货方备注',
+          } ],
+          columnDefs:[{
+            className:'dt-center', targets:[0, 1, 2] 
+          },{
+            className:'dt-right', targets:[3, 4, 5, 6, 7, 8, 9]
+          }],
         });
-        
-        
-                
-    $('#product_name').keyup(function(e){
-        if(e.keyCode == 13)
-            table.draw();
+    }
+    
+    $('#tabs').tabs({
+      activate: function (event, ui) {
+          load_prepay_table();   
+      }
     });
+    
+    editor = new $.fn.dataTable.Editor( {
+      table: "#basic_info",  
+      idSrc: "id",
+      fields: [ {        
+        label: "承诺交货日期:",
+        type: "date",
+        opts: {
+          showOn: "focus"
+        },
+        dateFormat: "yy-mm-dd",
+        name: "confirmdate" 
+      },{
+        label: "供货方备注:",
+        name: "confirmnote" 
+      }],
     });
+    
+    basic_table = $('#basic_info').DataTable({
+        serverSide:false,
+        processing:false,
+        ajax : {
+            url : detail_url,
+            dataSrc : function(json) {
+                return json;
+            },
+        },
+
+        columns : [ {
+            data : 'rowno',
+            title : '行号',
+        }, {
+            data : 'inventory.name',
+            title : '存货名称',
+        }, {
+            data : 'inventory.code',
+            title : '存货代码',
+        }, {
+            data : 'quantity',
+            title : '数量',
+        }, {
+            data : 'price',
+            title : '未税单价',
+        }, {
+            data : 'taxprice',
+            title : '含税单价',
+        }, {
+            data : 'money',
+            title : '未税金额',
+        }, {
+            data : 'sum',
+            title : '含税金额',
+        }, {
+          data : 'prepaymoney',
+          title : '预付金额',
+        }, {
+            data : 'arrivedate',
+            title : '需求日期',
+            render: $.fn.date_renderer,
+        }, {
+            data : 'arrivenote',
+            title : '供货方备注',
+        }, {
+            data : 'confirmdate',
+            className: 'editable-cell',
+            title : '承诺交货日期',
+            render: $.fn.date_renderer,
+        }, {
+            data : 'confirmnote',
+            className: 'editable-cell',
+            title : '交货方备注',
+        } ],
+        columnDefs:[{
+          className:'dt-center', targets:[0, 1, 2] 
+        },{
+          className:'dt-right', targets:[3, 4, 5, 6, 7, 8]
+        }],
+    });
+    
+    if (state == 1) {
+      $('#basic_info').on( 'click', 'tbody td.editable-cell', function (e) {
+        editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+      });
+    }
+    
+    function submit(state) {
+      var data = basic_table.rows().data().toArray();
+      var small_data = [];
+      $.each(data, function(key, item){
+        small_data.push({id:item.id, confirmdate:item.confirmdate, confirmnote:item.confirmnote});
+      });
+      
+      $('#form').ajaxSubmit({
+          data: {
+            code: $('#code').val(),
+            state: state,
+            table:small_data
+          },
+          success: function(res, status, xhr, form) {
+              swal({
+                  "title": "操作成功", 
+                  "type": "success"
+              }).then((result) => {
+                   window.location.reload(true);
+              });
+          },
+          error: function (res, status, xhr, form) {
+              swal({
+                  "title": "操作失败", 
+                  "text": "请输入正确的值", 
+                  "type": "error"
+              });
+          }
+      });
+    }
+    
+    $("#confirm").click(function() {
+      submit(2);
+    });
+
+    $("#cancel").click(function() {
+      submit(3);
+    });
+    
+});
 </script>

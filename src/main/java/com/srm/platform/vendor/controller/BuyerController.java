@@ -48,6 +48,7 @@ import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
+import com.srm.platform.vendor.utility.PurchaseOrderSearchItem;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
 
@@ -500,7 +501,7 @@ public class BuyerController {
 	}
 
 	@RequestMapping(value = "/purchaseorder/list", produces = "application/json")
-	public @ResponseBody Page<PurchaseOrderMain> purchaseorder_list_ajax(
+	public @ResponseBody Page<PurchaseOrderSearchItem> purchaseorder_list_ajax(
 			@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
@@ -532,23 +533,20 @@ public class BuyerController {
 
 		switch (order) {
 		case "vendorname":
-			order = "c.name";
+			order = "b.name";
 			break;
-		case "vendorcode":
-			order = "c.code";
+		case "deployername":
+			order = "c.realname";
 			break;
-		case "verifiername":
-			order = "f.realname";
-			break;
-		case "makername":
-			order = "e.realname";
+		case "reviewername":
+			order = "d.realname";
 			break;
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		Page<PurchaseOrderMain> result = purchaseOrderMainRepository.findBySearchTerm(code, vendor, request);
+		Page<PurchaseOrderSearchItem> result = purchaseOrderMainRepository.findBySearchTerm(code, vendor, request);
 
 		return result;
 	}
@@ -556,8 +554,11 @@ public class BuyerController {
 	@PostMapping("/purchaseorder/update")
 	public @ResponseBody PurchaseOrderMain purchaseorder_update_ajax(PurchaseOrderSaveForm form, Principal principal) {
 
+		Account account = accountRepository.findOneByUsername(principal.getName());
 		PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(form.getCode());
 		main.setSrmstate(form.getState());
+		main.setDeploydate(new Date());
+		main.setDeployer(account);
 		purchaseOrderMainRepository.save(main);
 
 		if (form.getTable() != null) {

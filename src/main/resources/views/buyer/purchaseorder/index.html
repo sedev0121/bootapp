@@ -51,7 +51,7 @@
     
   $(document).ready(function() {
     $("#state").select2({
-      data : App.getInqueryStateDataWithAll(),
+      data : App.getPurchaseOrderStateDataWithAll(),
       minimumResultsForSearch : -1
     });
 
@@ -94,8 +94,8 @@
           return '<a href="' + edit_url + '">' + data + '</a>';
         },
       }, {
-        data : 'vendor.name',
-        title : '供应商名称',
+        data : 'vendorname',
+        title : '供应商名称'
       }, {
         data : 'purchase_type_name',
         title : '订单类型'
@@ -106,28 +106,24 @@
         data : 'sum',
         title : '原币金额'
       }, {
-        data : 'makedate',
-        title : '创建日期',
-        render : $.fn.date_renderer
+        data : 'srmstate',
+        title : '状态',
+        createdCell: App.getInqueryStateClass,
+        render : App.getPurchaseOrderStateOfId
       }, {
-        data : 'lockdate',
+        data : 'deployername',
+        title : '发布人'
+      }, {
+        data : 'deploydate',
         title : '发布日期',
         render : $.fn.date_renderer
       }, {
-        data : 'state',
-        title : '状态',
+        data : 'reviewername',
+        title : '确认人'
       }, {
-        data : 'maker',
-        title : '制单人',
-      }, {
-        data : 'makedate',
-        title : '制单日期',
-        "defaultOrder": true,
-        "sortOrder": 'desc',
+        data : 'reviewdate',
+        title : '确认日期',
         render : $.fn.date_renderer
-      }, {
-        data : 'verifier',
-        title : '审核人',
       } ],
       order: [  [ 5, "desc" ] ]
 
