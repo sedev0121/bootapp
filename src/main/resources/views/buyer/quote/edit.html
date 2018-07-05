@@ -262,69 +262,6 @@
               system: "发生错误！"
           }
       }
-    }).submit(function (e, json, data) {
-          alert( 'Form successfully submitted!' );
-      },
-      function (e, json, data) {
-          alert( 'Form  encountered an error :-(' );
-      }
-    ).on( 'preOpen', function ( e, json, data ) {
-      if ($("#vendor").val() == "") {
-        alert("请选择供应商！");
-        return false;
-      }
-    }).on( 'open', function (e, mode, action) {
-      if (action == "edit") {
-        $('#select_inv_code').empty().append($("<option/>").val(this.field('cinvcode').val()).text(this.field('name').val()));
-      }
-      
-      if (action == "create") {
-        this.field('itaxrate').val($('#tax_rate').val());
-        this.field('dstartdate').val($('#start_date').val());
-        this.field('denddate').val($('#end_date').val());
-        $('#select_inv_code').empty();
-      }
-      
-      var select_options = App.getSelect2Options(inventory_search_url);
-      $.extend(true, select_options, {
-        ajax: {
-          data: function(params) {
-              return {
-                inv: params.term,
-                vendor: $("#vendor").val(),
-              };
-          },
-        }
-      });
-      var select_inv = $("#select_inv_code").select2(select_options);
-      select_inv.on("select2:select", function(e) {
-        var selected_data = e.params.data;
-        $('#cinvcode').val(selected_data.id);
-        $('#name').val(selected_data.title);
-        $('#specs').val(selected_data.specs);
-        $('#iunitprice').val(selected_data.price);
-        $('#dstartdate').val(selected_data.startDate);
-        $('#denddate').val(selected_data.endDate);        
-      });
-      
-      $('#itaxrate, #iunitprice').change(function() {
-        if ($('#itaxunitprice').val() != undefined && $('#itaxunitprice').val() != undefined) {
-          $('#itaxunitprice').val((parseInt($('#itaxrate').val()) + 100) * $('#iunitprice').val()/100);  
-        }
-        
-      });
-/*      
-      if (state > 1) {
-        $(".DTE_Form_Content input").attr("readonly", true);
-        $('.DTE_Form_Content select').attr("readonly", true);
-        $(".DTE_Form_Content .hasDatepicker").datepicker( "option", "disabled", true );
-      }
-      
-      if (state != 5) {
-        this.field('ivalid').hide();
-      }
-      */    
-   
     }).on( 'preSubmit', function ( e, data, action ) {
       if ( action !== 'remove' ) {
           var iunitprice = this.field( 'iunitprice' );

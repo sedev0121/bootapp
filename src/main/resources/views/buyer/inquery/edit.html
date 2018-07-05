@@ -266,15 +266,10 @@
               system: "发生错误！"
           }
       }
-    }).submit(function (e, json, data) {
-          alert( 'Form successfully submitted!' );
-      },
-      function (e, json, data) {
-          alert( 'Form  encountered an error :-(' );
-      }
-    ).on( 'preOpen', function ( e, json, data ) {
+    }).on( 'preOpen', function ( e, json, data ) {
       if ($("#vendor").val() == "") {
-        alert("请选择供应商！");
+        $('#vendor').focus();
+        App.showErrorDialog("请选择供应商！");
         return false;
       }
     }).on( 'open', function (e, mode, action) {

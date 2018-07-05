@@ -262,17 +262,6 @@
               system: "发生错误！"
           }
       }
-    }).submit(function (e, json, data) {
-          alert( 'Form successfully submitted!' );
-      },
-      function (e, json, data) {
-          alert( 'Form  encountered an error :-(' );
-      }
-    ).on( 'preOpen', function ( e, json, data ) {
-      if ($("#vendor").val() == "") {
-        alert("请选择供应商！");
-        return false;
-      }
     }).on( 'open', function (e, mode, action) {
       if (action == "edit") {
         $('#select_inv_code').empty().append($("<option/>").val(this.field('cinvcode').val()).text(this.field('name').val()));
