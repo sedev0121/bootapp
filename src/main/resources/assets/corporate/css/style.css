@@ -493,7 +493,7 @@ body.page-header-fixed {
 .header-navigation ul > li.open > a:hover,
 .header-navigation ul > li.open > a:focus {
 	color: #e02222;
-	background: #ececec;
+	background: #eeeeee;
 	text-decoration: none;
 }
 .header-navigation ul > li.active > a {
@@ -1436,7 +1436,7 @@ Pre-Footer and pre-footer elements
 	color: #b0b0b0;
 }
 .pre-footer .container {
-	padding-top: 45px;
+	padding-top: 15px;
 }
 .pre-footer a {
 	color: #57c8eb;
@@ -1481,7 +1481,7 @@ Pre-Footer and pre-footer elements
 	line-height: 1.7;
 }
 .pre-footer-col {
-	padding-bottom: 22px;
+	padding-bottom: 6px;
 }
 .pre-footer .top-line {
 	border-top: solid 1px #535353;

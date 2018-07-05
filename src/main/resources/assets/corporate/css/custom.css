@@ -16,6 +16,10 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting:after, tab
     bottom: 0.6em;
 }
 
+.main {
+    min-height:605px;
+}
+
 .btn {
     font-size: 12px;
 }
