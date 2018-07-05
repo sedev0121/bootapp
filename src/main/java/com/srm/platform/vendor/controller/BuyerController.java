@@ -198,10 +198,9 @@ public class BuyerController {
 			venPriceAdjustMain.setMaker(accountRepository.findOneById(form.getMaker()));
 		}
 
-		venPriceAdjustMain.setIverifystate(form.getState());
-
 		Account account = accountRepository.findOneByUsername(principal.getName());
-		if (form.getState() == Constants.STATE_VERIFY) {
+		if (form.getState() == Constants.STATE_VERIFY || (venPriceAdjustMain.getIverifystate() == Constants.STATE_PASS
+				&& form.getState() == Constants.STATE_CANCEL)) {
 			venPriceAdjustMain.setVerifier(account);
 			venPriceAdjustMain.setDverifydate(new Date());
 		}
@@ -210,6 +209,7 @@ public class BuyerController {
 			venPriceAdjustMain.setDpublishdate(new Date());
 		}
 
+		venPriceAdjustMain.setIverifystate(form.getState());
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 
 		if (form.getState() <= Constants.STATE_SUBMIT && form.getTable() != null) {
@@ -363,10 +363,10 @@ public class BuyerController {
 		Integer state = form.getState();
 
 		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(ccode);
-		venPriceAdjustMain.setIverifystate(state);
 
 		Account account = accountRepository.findOneByUsername(principal.getName());
-		if (state == Constants.STATE_VERIFY) {
+		if (state == Constants.STATE_VERIFY
+				|| (venPriceAdjustMain.getIverifystate() == Constants.STATE_PASS && state == Constants.STATE_CANCEL)) {
 			venPriceAdjustMain.setVerifier(account);
 			venPriceAdjustMain.setDverifydate(new Date());
 		}
@@ -375,6 +375,7 @@ public class BuyerController {
 			venPriceAdjustMain.setDpublishdate(new Date());
 		}
 
+		venPriceAdjustMain.setIverifystate(state);
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 
 		if (state == Constants.STATE_PASS) {

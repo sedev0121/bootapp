@@ -17,6 +17,7 @@
           <a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-save"></i> 提交</a>
           <a class="btn btn-primary" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
           <a class="btn btn-primary" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
+          <a class="btn btn-primary" th:if="${main.iverifystate==3 OR main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
           <a class="btn btn-primary" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
           <a class="btn btn-default" th:href="@{/buyer/inquery}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>

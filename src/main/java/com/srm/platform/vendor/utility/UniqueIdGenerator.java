@@ -10,7 +10,7 @@ public class UniqueIdGenerator {
 		id = dateFormat.format(new Date());
 
 		int rand = (int) (Math.random() * 1000);
-		id += String.format("%3d", rand);
+		id += String.format("%03d", rand);
 
 		return id;
 	}
