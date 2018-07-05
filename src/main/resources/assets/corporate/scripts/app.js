@@ -32,7 +32,7 @@ var App = function() {
       }, // let our custom formatter work
       minimumInputLength: 1,
       templateResult: function(item) {
-        return "<div>" + item.title + "</div>";
+        return "<div>" + (item.text || item.title) + "</div>";
       },
       templateSelection: function(item) {
         return item.title || item.text;

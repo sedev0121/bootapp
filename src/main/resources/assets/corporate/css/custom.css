@@ -4,7 +4,7 @@ body {
 }
 
 .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
-    padding: 6px;
+    /* padding: 6px; */    
 }
 
 table.dataTable.table thead th.sorting:after, table.dataTable.table thead th.sorting_asc:after, table.dataTable.table thead th.sorting_desc:after, table.dataTable.table thead td.sorting:after, table.dataTable.table thead td.sorting_asc:after, table.dataTable.table thead td.sorting_desc:after {
@@ -16,12 +16,21 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting:after, tab
     bottom: 0.6em;
 }
 
+.nav-tabs {
+    font-size: 12px;
+}
+
+span.error {
+    color:yellow;    
+}
+
 .main {
     min-height:605px;
 }
 
 .btn {
     font-size: 12px;
+    padding: 8px 12px;
 }
 
 .form-control {

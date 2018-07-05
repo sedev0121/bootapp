@@ -34,8 +34,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 			.antMatchers("/assets/**", "/**").permitAll().anyRequest().authenticated().and()
-			.formLogin().loginPage("/login").permitAll().defaultSuccessUrl("/").and()
-			.logout().permitAll().and()
+			.formLogin().loginPage("/login").failureUrl("/login?error=1").permitAll().defaultSuccessUrl("/").and()
+			.logout().permitAll().logoutSuccessUrl("/login?logout").and()
 			.rememberMe().rememberMeServices(rememberMeServices()).key("remember-me-key").and()
 			.exceptionHandling().accessDeniedPage("/forbidden");
 			
