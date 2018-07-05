@@ -1,3 +1,33 @@
+body {
+    font-family:'Microsoft YaHei','SimSun' !important;
+    font-size: 12px;
+}
+
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 6px;
+}
+
+table.dataTable.table thead th.sorting:after, table.dataTable.table thead th.sorting_asc:after, table.dataTable.table thead th.sorting_desc:after, table.dataTable.table thead td.sorting:after, table.dataTable.table thead td.sorting_asc:after, table.dataTable.table thead td.sorting_desc:after {
+    top: 7px;
+    right: 5px;
+}
+
+table.dataTable thead .sorting:before, table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:before, table.dataTable thead .sorting_asc:after, table.dataTable thead .sorting_desc:before, table.dataTable thead .sorting_desc:after, table.dataTable thead .sorting_asc_disabled:before, table.dataTable thead .sorting_asc_disabled:after, table.dataTable thead .sorting_desc_disabled:before, table.dataTable thead .sorting_desc_disabled:after {
+    bottom: 0.6em;
+}
+
+.btn {
+    font-size: 12px;
+}
+
+.form-control {
+    font-size: 12px;
+}
+
+.breadcrumb {
+    font-size: 12px;
+}
+
 select[readonly].select2-hidden-accessible + .select2-container {
   pointer-events: none;
   touch-action: none;
