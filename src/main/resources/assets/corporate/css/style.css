@@ -3142,6 +3142,9 @@ Styler Panel
 	width: 100%;
 	table-layout: fixed;
 	border-spacing: 3px;
+	background-color: #eeeeee;
+	padding: 5px;
+	border-radius:4px;
 }
 
 .search-row {
