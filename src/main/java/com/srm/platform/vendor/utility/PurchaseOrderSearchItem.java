@@ -8,6 +8,8 @@ public interface PurchaseOrderSearchItem {
 
 	String getCode();
 
+	String getState();
+
 	String getVendorname();
 
 	String getDeployername();
