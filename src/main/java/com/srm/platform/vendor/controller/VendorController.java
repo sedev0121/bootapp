@@ -38,6 +38,7 @@ import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.PurchaseOrderSearchItem;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
@@ -445,6 +446,38 @@ public class VendorController {
 	@GetMapping("/purchaseorder/ship")
 	public String purchaseorder_ship() {
 		return "vendor/purchaseorder/ship";
+	}
+
+	@RequestMapping(value = "/purchaseorder/ship/list", produces = "application/json")
+	public @ResponseBody Page<PurchaseOrderDetailSearchItem> purchaseorder_ship_list_ajax(Principal principal,
+			@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "ccode");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String inventory = requestParams.getOrDefault("inventory", "");
+		String code = requestParams.getOrDefault("code", "");
+
+		switch (order) {
+		case "inventoryname":
+			order = "c.name";
+			break;
+		case "specs":
+			order = "c.specs";
+			break;
+		case "unitname":
+			order = "c.puunit_name";
+			break;
+		}
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		Account account = accountRepository.findOneByUsername(principal.getName());
+		Page<PurchaseOrderDetailSearchItem> result = purchaseOrderDetailRepository
+				.findDetailsForShip(account.getVendor().getCode(), code, inventory, request);
+
+		return result;
 	}
 
 	// 订单管理->订单发货->导入送货单
