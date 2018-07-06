@@ -459,11 +459,7 @@
       
       //display error alert on form submit  
       invalidHandler: function(event, validator) {
-          swal({
-              "title": "输入有误", 
-              "text": "请输入正确的值", 
-              "type": "error"
-          });
+        App.showErrorDialog("操作失败", "请输入正确的值");
       },
 
       submitHandler: function (form) {
@@ -471,19 +467,12 @@
           jQuery(form).ajaxSubmit({
               data: {table:data},
               success: function(res, status, xhr, form) {
-                  swal({
-                      "title": "操作成功", 
-                      "type": "success"
-                  }).then((result) => {
-                       window.location.href = edit_url + res.ccode + "/edit";
-                  });
+                App.showSuccessDialog("操作成功", function(){
+                  window.location.href = edit_url + res.ccode + "/edit";
+                });
               },
               error: function (res, status, xhr, form) {
-                  swal({
-                      "title": "操作失败", 
-                      "text": "请输入正确的值", 
-                      "type": "error"
-                  });
+                App.showErrorDialog("操作失败", "请输入正确的值");
               }
           });
       }

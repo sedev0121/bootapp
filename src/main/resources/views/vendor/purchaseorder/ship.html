@@ -40,19 +40,26 @@
             </table>
         </div>
       </div>
+      <form id="export_form" th:action="@{/vendor/purchaseorder/ship/export}" method="post">
+        <input type="hidden" id="export_data" name="export_data"/>
+      </form>
   </div>  
 </body>
 </html>
 
 
 <script th:inline="javascript">
-	
+/*[+
+var editable = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/purchaseorder/ship')?true:false}]];
++]*/ 
+
 	$(document).ready(function() {
         $('#arrive_date').datepicker();
         $('#confirm_date').datepicker();
     
 		var table = $('#example').DataTable({
 		    ordering : true,
+		    select: editable,
 			ajax : {
 				url : /*[[@{/vendor/purchaseorder/ship/list}]]*/'',
 				data : function(data) {
@@ -77,10 +84,17 @@
 			
 			columns : [ {
               data : 'code',
-              title : '订单编号',
+              title : '订单编码',
+            }, {
+              data : 'rowno',
+              className: 'dt-center',
+              title : '订单行号',
             }, {
               data : 'inventoryname',
               title : '商品名称',
+            }, {
+              data : 'inventorycode',
+              title : '商品编码',              
             }, {
               data : 'specs',
               title : '商品描述',
@@ -90,6 +104,9 @@
             }, {
               data : 'quantity',
               title : '数量',
+            }, {
+              data : 'shipped_quantity',
+              title : '已发货数量',              
 			}, {
               data : 'arrivedate',
               title : '需求日期',
@@ -111,9 +128,36 @@
     	table.draw();
     });
     
+    $("#export").click(function() {
+      
+      var order = table.order();
+      var selected_data = table.rows('.selected').data().toArray();
+      
+      if (selected_data.length == 0) {
+        App.showErrorDialog("请选择至少一行数据！");
+        return;
+      }
+      
+      var export_list = [];
+      $.each(selected_data, function(key, item){
+        export_list.push([item.code, item.rowno, item.inventorycode]);        
+      });
+      
+      var post_data = {
+          order: "code",
+          dir: "asc",
+          inventory : $('#inventory').val(),
+          code : $('#code').val(),
+          list:export_list,          
+      };
+      
+      $('#export_data').val(JSON.stringify(post_data));
+      $('#export_form').submit();
+    });
+    
     $('#code, #inventory, #arrive_date, #confirm_date').keyup(function(e) {
       if (e.keyCode == 13)
         table.draw();
     });
-	});
+});
 </script>

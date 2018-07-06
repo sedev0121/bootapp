@@ -182,12 +182,13 @@ var App = function() {
       }
     },
     
-    showSuccessDialog: function(title, text) {
+    showSuccessDialog: function(title, callback) {
       swal({
         "title": title,
-        "text": text,
         "type": "success"
-      })
+      }).then((result) => {
+        callback();
+      });
     },
     showErrorDialog: function(title, text) {
       swal({

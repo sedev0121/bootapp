@@ -66,30 +66,18 @@ jQuery(document).ready(function() {
         
         //display error alert on form submit  
         invalidHandler: function(event, validator) {
-            swal({
-                "title": "输入有误", 
-                "text": "请输入正确的值", 
-                "type": "error"
-            });
+          App.showErrorDialog("操作失败", "请输入正确的值");
         },
   
         submitHandler: function (form) {
         	jQuery(form).ajaxSubmit({
         		success: function(res, status, xhr, form) {
-        			swal({
-                        "title": "操作成功", 
-                        "type": "success"
-                    }).then((result) => {
-                    	if (is_add)
-                    	    window.location.href = edit_url + res.id + "/edit";
-            		});
+        		  App.showSuccessDialog("同步成功", function() {
+        		    window.location.href = edit_url + res.id + "/edit";
+        		  });
         	    },
         	    error: function (res, status, xhr, form) {
-        	    	swal({
-                        "title": "操作失败", 
-                        "text": "请输入正确的值", 
-                        "type": "error"
-                    });
+        	      App.showErrorDialog("操作失败", "请输入正确的值");
         	    }
             });
         }
@@ -100,25 +88,14 @@ jQuery(document).ready(function() {
 	});
 	
 	$("#del").click(function(){
-        swal({
-          title: '确定要删除吗?',
-          type: 'warning',
-          showCancelButton: true,
-          confirmButtonText: '是',
-          cancelButtonText: '否'
-        }).then((result) => {
-          if (result.value) {
-        	  var del_url = edit_url + $("#id").val() + "/delete";  
-              $.get(del_url, function(data, status){
-              	swal({
-                      "title": "操作成功", 
-                      "type": "success"
-                  }).then((result) => {
-                      window.location.href = edit_url;
-                  });
-              });
-          }
-        })
+	  App.showConfirmDialog('确定要删除吗?', function(){
+        var del_url = edit_url + $("#id").val() + "/delete";  
+        $.get(del_url, function(data, status){
+          App.showSuccessDialog("操作成功", function() {
+            window.location.href = edit_url;
+          });
+        });
+      });
 	});
 	
 	

@@ -304,19 +304,12 @@ $(document).ready(function() {
             table:small_data
           },
           success: function(res, status, xhr, form) {
-              swal({
-                  "title": "操作成功", 
-                  "type": "success"
-              }).then((result) => {
-                   window.location.reload(true);
-              });
+            App.showSuccessDialog("操作成功", function(){
+              window.location.reload(true);
+            });
           },
           error: function (res, status, xhr, form) {
-              swal({
-                  "title": "操作失败", 
-                  "text": "请输入正确的值", 
-                  "type": "error"
-              });
+            App.showErrorDialog("操作失败", "请输入正确的值");
           }
       });
     }

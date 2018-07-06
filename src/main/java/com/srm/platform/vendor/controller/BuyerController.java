@@ -113,10 +113,12 @@ public class BuyerController {
 		return "buyer/inquery/edit";
 	}
 
+	@GetMapping({ "/test" })
 	public void test(@RequestParam Map<String, String> requestParams) {
-		Query q = em.createNativeQuery("select id from users where username = :username");
-		q.setParameter("username", "lt");
+		Query q = em.createNativeQuery("select realname from account where username='lisisi'");
+		// q.setParameter("username", "lisisi");
 		List<String> values = q.getResultList();
+		logger.info(values.toString());
 
 	}
 
@@ -615,7 +617,7 @@ public class BuyerController {
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
-				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
 		Page<PurchaseOrderDetailSearchItem> result = purchaseOrderDetailRepository.findDetailsForBuyerShip(vendor, code,
 				inventory, request);

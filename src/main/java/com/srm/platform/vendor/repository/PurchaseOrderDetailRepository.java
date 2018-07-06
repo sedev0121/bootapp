@@ -24,7 +24,11 @@ public interface PurchaseOrderDetailRepository extends JpaRepository<PurchaseOrd
 	Page<PurchaseOrderDetailSearchItem> findDetailsForShip(String vendor, String code, String inventory,
 			Pageable pageable);
 
-	@Query(value = "select a.*, d.code vendorcode, d.name vendorname, c.name inventoryname, c.specs, c.puunit_name unitname from purchase_order_detail a left join purchase_order_main b on a.code = b.code left join inventory c on a.inventorycode=c.code left join vendor d on b.vencode=d.code where (d.code like %?1% or d.name like %?1%) and  b.srmstate=2 and a.code like %?2% and (c.name like %?3% or c.code like %?3%)", nativeQuery = true)
+	@Query(value = "select a.*, d.code vendorcode, d.name vendorname, c.name inventoryname, c.specs, c.puunit_name unitname from purchase_order_detail a left join purchase_order_main b on a.code = b.code left join inventory c on a.inventorycode=c.code left join vendor d on b.vencode=d.code where b.vencode=?1 and b.srmstate=2 and a.code like %?2% and (c.name like %?3% or c.code like %?3%)", nativeQuery = true)
+	Page<PurchaseOrderDetailSearchItem> findDetailsForExport(String vendor, String code, String inventory,
+			Pageable pageable);
+
+	@Query(value = "select a.*, d.code vendorcode, d.name vendorname, c.name inventoryname, c.specs, c.puunit_name unitname from purchase_order_detail a left join purchase_order_main b on a.code = b.code left join inventory c on a.inventorycode=c.code left join vendor d on b.vencode=d.code where (d.code like %?1% or d.name like %?1%) and  b.srmstate=2 and a.code like %?2% and (c.name like %?3% or c.code like %?3%)", countQuery = "select count(*) from purchase_order_detail a left join purchase_order_main b on a.code = b.code left join inventory c on a.inventorycode=c.code left join vendor d on b.vencode=d.code where (d.code like %?1% or d.name like %?1%) and  b.srmstate=2 and a.code like %?2% and (c.name like %?3% or c.code like %?3%)", nativeQuery = true)
 	Page<PurchaseOrderDetailSearchItem> findDetailsForBuyerShip(String vendor, String code, String inventory,
 			Pageable pageable);
 }

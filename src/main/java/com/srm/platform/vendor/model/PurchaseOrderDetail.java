@@ -3,6 +3,7 @@ package com.srm.platform.vendor.model;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -32,6 +33,9 @@ public class PurchaseOrderDetail {
 
 	private Integer rowno;
 	private Float quantity;
+
+	@Column(name = "shipped_quantity")
+	private Float shippedQuantity;
 	private Float price;
 	private Float taxprice;
 	private Float tax;
@@ -89,6 +93,14 @@ public class PurchaseOrderDetail {
 
 	public void setQuantity(Float quantity) {
 		this.quantity = quantity;
+	}
+
+	public Float getShippedQuantity() {
+		return shippedQuantity;
+	}
+
+	public void setShippedQuantity(Float shippedQuantity) {
+		this.shippedQuantity = shippedQuantity;
 	}
 
 	public Float getPrice() {

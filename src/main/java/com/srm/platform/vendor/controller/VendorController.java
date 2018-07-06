@@ -3,10 +3,16 @@ package com.srm.platform.vendor.controller;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +30,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
@@ -38,17 +47,22 @@ import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.ExportShipForm;
 import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.PurchaseOrderSearchItem;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
+import com.srm.platform.vendor.view.ExcelShipReportView;
 
 @Controller
 @RequestMapping(path = "/vendor")
 @PreAuthorize("hasRole('ROLE_VENDOR')")
 public class VendorController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@PersistenceContext
+	private EntityManager em;
 
 	@Autowired
 	private VenPriceAdjustMainRepository venPriceAdjustMainRepository;
@@ -471,7 +485,7 @@ public class VendorController {
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
-				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
 		Account account = accountRepository.findOneByUsername(principal.getName());
 		Page<PurchaseOrderDetailSearchItem> result = purchaseOrderDetailRepository
@@ -480,7 +494,60 @@ public class VendorController {
 		return result;
 	}
 
-	// 订单管理->订单发货->导入送货单
+	@PostMapping("/purchaseorder/ship/export")
+	public ModelAndView purchaseorder_ship_export(@RequestParam(value = "export_data") String exportData,
+			Principal principal) {
+
+		logger.info(exportData);
+		List<PurchaseOrderDetail> exportList = new ArrayList<>();
+		Account account = accountRepository.findOneByUsername(principal.getName());
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			ExportShipForm shipForm = objectMapper.readValue(exportData, new TypeReference<ExportShipForm>() {
+			});
+
+			String query = "select a.* from purchase_order_detail a left join purchase_order_main b on a.code = b.code ";
+
+			String subWhere = "";
+			for (List<String> row : shipForm.getList()) {
+				if (subWhere.length() != 0) {
+					subWhere += " or ";
+				}
+				subWhere += "(a.code='" + row.get(0) + "' and a.rowno=" + row.get(1) + " and a.inventorycode='"
+						+ row.get(2) + "') ";
+
+			}
+			String where = "where b.srmstate=2 and " + subWhere;
+			query += where;
+
+			String order = "code";
+			switch (shipForm.getOrder()) {
+			case "inventoryname":
+				order = "c.name";
+				break;
+			case "specs":
+				order = "c.specs";
+				break;
+			case "unitname":
+				order = "c.puunit_name";
+				break;
+			}
+
+			query += "order by " + order + " " + shipForm.getDir();
+			Query q = em.createNativeQuery(query, PurchaseOrderDetail.class);
+
+			exportList = q.getResultList();
+
+			logger.info(shipForm.getList().toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error(e.getMessage());
+		}
+
+		return new ModelAndView(new ExcelShipReportView(), "exportList", exportList);
+	}
+
 	@GetMapping("/purchaseorder/ship/import")
 	public String purchaseorder_ship_import() {
 		return "vendor/purchaseorder/ship_import";
