@@ -47,8 +47,10 @@
 </html>
 
 <script th:inline="javascript">
-    
-    
+/*[+
+var edit_url = [[@{/buyer/purchaseorder/}]];
++]*/ 
+
   $(document).ready(function() {
     $("#state").select2({
       data : App.getPurchaseOrderStateDataWithAll(),
@@ -89,9 +91,8 @@
         data : 'code',
         title : '订单号',
         render : function(data, display, record) {
-          var edit_url = /*[[@{/buyer/purchaseorder/}]]*/'';
-          edit_url += data + '/edit';
-          return '<a href="' + edit_url + '">' + data + '</a>';
+          url = edit_url + data + '/edit';
+          return '<a href="' + url + '">' + data + '</a>';
         },
       }, {
         data : 'vendorname',
@@ -106,9 +107,11 @@
         data : 'sum',
         title : '原币金额'
       }, {
+/*        
         data : 'state',
         title : 'U8状态'
       }, {
+*/  
         data : 'srmstate',
         title : '状态',
         createdCell: App.getInqueryStateClass,

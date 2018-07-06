@@ -10,6 +10,12 @@ public interface PurchaseOrderDetailSearchItem {
 
 	String getInventoryname();
 
+	String getInventorycode();
+
+	String getVendorname();
+
+	String getVendorcode();
+
 	String getSpecs();
 
 	String getUnitname();

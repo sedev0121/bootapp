@@ -106,6 +106,14 @@ select[readonly].select2-hidden-accessible + .select2-container .select2-selecti
     color:grey;
 }
 
+#export {
+    background-color: #2AB4C0;
+    color: white;
+}
+#import {
+    background-color: #3598DC;
+    color: white;
+}
 .dt-center {
     text-align:center;
 }

@@ -437,13 +437,13 @@ public class VendorController {
 	}
 
 	// 订单管理->订单确认
-	@GetMapping({ "/purchaseorder", "/purchaseorder/confirm" })
+	@GetMapping({ "/purchaseorder" })
 	public String purchaseorder_confirm() {
 		return "vendor/purchaseorder/index";
 	}
 
 	// 订单管理->订单发货
-	@GetMapping("/purchaseorder/ship")
+	@GetMapping({ "/purchaseorder/ship", "/ship" })
 	public String purchaseorder_ship() {
 		return "vendor/purchaseorder/ship";
 	}
@@ -484,12 +484,6 @@ public class VendorController {
 	@GetMapping("/purchaseorder/ship/import")
 	public String purchaseorder_ship_import() {
 		return "vendor/purchaseorder/ship_import";
-	}
-
-	// 出货看板
-	@GetMapping("/shipment")
-	public String shipment() {
-		return "vendor/shipment/index";
 	}
 
 	// 对账单管理

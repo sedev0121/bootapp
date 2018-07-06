@@ -6,14 +6,16 @@
         <li>
           <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
-        <li th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/purchaseorder')}">订单管理</li>
-        <li class="active" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/purchaseorder/ship')}">订单发货</li>
-        <li class="active" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/ship')}">出货看板</li>
+        <li class="active">出货看板</li>
       </ul>
       <div class="search-content">
           <div class="search-cell width-10">
             <label for="code">订单号码：</label>
             <input type="text" id="code" class="form-control">
+          </div>
+          <div class="search-cell width-10">
+            <label for="vendor">供应商编码/名称：</label>
+            <input type="text" id="vendor" class="form-control">
           </div>
           <div class="search-cell width-10">
             <label for="inventory">商品编码/名称：</label>
@@ -29,8 +31,6 @@
           </div>
           <div style="vertical-align: bottom" class="search-cell width-15">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-            <button th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/purchaseorder/ship')}" class="btn btn-default" id="export"><i class="fa fa-level-down"></i> 导出</button>
-            <button th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/purchaseorder/ship')}" class="btn btn-default" id="import"><i class="fa fa-level-up"></i> 导入</button>
           </div>
       </div>
       <div class="row">
@@ -54,7 +54,7 @@
 		var table = $('#example').DataTable({
 		    ordering : true,
 			ajax : {
-				url : /*[[@{/vendor/purchaseorder/ship/list}]]*/'',
+				url : /*[[@{/buyer/ship/list}]]*/'',
 				data : function(data) {
                   var filter = {
                     order : data.columns[data.order[0].column].data,
@@ -63,6 +63,7 @@
                     page_index : data.start / data.length + 1,
                     inventory : $('#inventory').val(),
                     code : $('#code').val(),
+                    vendor: $('#vendor').val(),
                     confirm_date : $('#confirm_date').val(),
                     arrive_date : $('#arrive_date').val()
                   }
@@ -79,8 +80,17 @@
               data : 'code',
               title : '订单编号',
             }, {
+              data : 'vendorname',
+              title : '供应商名称',
+            }, {
+              data : 'vendorcode',
+              title : '供应商编码',
+            }, {
               data : 'inventoryname',
               title : '商品名称',
+            }, {
+              data : 'inventorycode',
+              title : '商品编码',
             }, {
               data : 'specs',
               title : '商品描述',
@@ -111,7 +121,7 @@
     	table.draw();
     });
     
-    $('#code, #inventory, #arrive_date, #confirm_date').keyup(function(e) {
+    $('#code, #vendor, #inventory, #arrive_date, #confirm_date').keyup(function(e) {
       if (e.keyCode == 13)
         table.draw();
     });

@@ -152,12 +152,6 @@ public class ApiController {
 		return apiClient.getPurchaseOrder(id);
 	}
 
-	// 出货看板
-	@RequestMapping(value = "/shipment/batch_get", produces = "application/json")
-	public String shipment(@RequestParam Map<String, String> requestParams) {
-		return apiClient.getBatchVendor(requestParams);
-	}
-
 	// 用户名单
 	@RequestMapping(value = "/account/{search}", produces = "application/json")
 	public Page<AccountSearchItem> account_search(@PathVariable("search") String search) {
