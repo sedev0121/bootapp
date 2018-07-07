@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.io.File;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -51,6 +54,7 @@ import com.srm.platform.vendor.utility.ExportShipForm;
 import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.PurchaseOrderSearchItem;
+import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
 import com.srm.platform.vendor.view.ExcelShipReportView;
@@ -548,9 +552,11 @@ public class VendorController {
 		return new ModelAndView(new ExcelShipReportView(), "exportList", exportList);
 	}
 
-	@GetMapping("/purchaseorder/ship/import")
-	public String purchaseorder_ship_import() {
-		return "vendor/purchaseorder/ship_import";
+	@RequestMapping("/purchaseorder/ship/import")
+	public void purchaseorder_ship_import(MultipartFile excelFile, HttpServletRequest request) {
+		File file = UploadFileHelper.simpleUpload(excelFile, request, true, "src");
+		logger.info(file.getAbsolutePath());
+		// return "redirect:/vendor/purchaseorder/ship";
 	}
 
 	// 对账单管理

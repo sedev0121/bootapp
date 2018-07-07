@@ -42,7 +42,29 @@
       </div>
       <form id="export_form" th:action="@{/vendor/purchaseorder/ship/export}" method="post">
         <input type="hidden" id="export_data" name="export_data"/>
-      </form>
+      </form>     
+      <div class="modal fade" id="import_dialog" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">
+                                                      选择导入Excel文档
+                      </h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                      <form id="import_form" th:action="@{/vendor/purchaseorder/ship/import}" method="post" enctype="multipart/form-data">
+                        <input type="file" id="import_file" name="excel_file"/>
+                      </form>  
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                      <button type="button" class="btn btn-primary" id="start_import">导入</button>
+                  </div>
+              </div>
+          </div>
+      </div> 
   </div>  
 </body>
 </html>
@@ -50,6 +72,7 @@
 
 <script th:inline="javascript">
 /*[+
+var importUrl = [[@{/vendor/purchaseorder/ship/import}]];  
 var editable = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/purchaseorder/ship')?true:false}]];
 +]*/ 
 
@@ -126,6 +149,15 @@ var editable = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/p
 		
     $("#btn_search").click(function() {
     	table.draw();
+    });
+    
+    $("#import").click(function() {
+      $('#import_dialog').modal('show');
+    });
+    
+    $('#start_import').click(function(){
+      $('#import_form').submit();
+      $('#import_dialog').modal('hide');//modal_1 is the id 1
     });
     
     $("#export").click(function() {
