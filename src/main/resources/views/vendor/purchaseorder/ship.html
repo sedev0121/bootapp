@@ -55,7 +55,7 @@
                   </div>
                   <div class="modal-body">
                       <form id="import_form" th:action="@{/vendor/purchaseorder/ship/import}" method="post" enctype="multipart/form-data">
-                        <input type="file" id="import_file" name="excel_file"/>
+                        <input type="file" id="import_file" name="import_file"/>
                       </form>  
                   </div>
                   <div class="modal-footer">
@@ -72,6 +72,7 @@
 
 <script th:inline="javascript">
 /*[+
+var import_result = [[${#vars['message']}]];  
 var importUrl = [[@{/vendor/purchaseorder/ship/import}]];  
 var editable = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/purchaseorder/ship')?true:false}]];
 +]*/ 
@@ -80,6 +81,10 @@ var editable = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/p
         $('#arrive_date').datepicker();
         $('#confirm_date').datepicker();
     
+        if (import_result != undefined){
+          App.showSuccessDialog(import_result);
+        }
+        
 		var table = $('#example').DataTable({
 		    ordering : true,
 		    select: editable,

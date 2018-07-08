@@ -13,7 +13,7 @@ public interface PurchaseOrderDetailSearchItem {
 	Float getQuantity();
 
 	@JsonProperty("shipped_quantity")
-	Float getShippedQuantity();
+	Float getShipped_quantity();
 
 	String getInventoryname();
 

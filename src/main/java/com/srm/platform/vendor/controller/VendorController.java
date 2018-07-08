@@ -1,12 +1,15 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.File;
+import java.io.InputStream;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +19,12 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +43,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
+import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
@@ -553,10 +565,83 @@ public class VendorController {
 	}
 
 	@RequestMapping("/purchaseorder/ship/import")
-	public void purchaseorder_ship_import(MultipartFile excelFile, HttpServletRequest request) {
-		File file = UploadFileHelper.simpleUpload(excelFile, request, true, "src");
+	public String purchaseorder_ship_import(@RequestParam("import_file") MultipartFile excelFile,
+			HttpServletRequest request, RedirectAttributes redirectAttributes, Principal principal) {
+		File file = UploadFileHelper.simpleUpload(excelFile, request, true, "uploads");
 		logger.info(file.getAbsolutePath());
-		// return "redirect:/vendor/purchaseorder/ship";
+		List<ArrayList<String>> importList = new ArrayList<>();
+
+		int importCount = 0;
+
+		try {
+
+			InputStream excelFileStream = excelFile.getInputStream();
+			Workbook workbook = new HSSFWorkbook(excelFileStream);
+			Sheet datatypeSheet = workbook.getSheetAt(0);
+			Iterator<Row> iterator = datatypeSheet.iterator();
+
+			int index = 0;
+			while (iterator.hasNext()) {
+				Row currentRow = iterator.next();
+				index++;
+				if (index == 1)
+					continue;
+
+				ArrayList<String> row = new ArrayList<>();
+				List<Integer> valueList = Arrays.asList(1, 2, 4, 8);
+				for (int column : valueList) {
+
+					Cell currentCell = currentRow.getCell(column);
+					if (currentCell == null) {
+						row.add(null);
+					} else if (currentCell.getCellTypeEnum() == CellType.STRING) {
+						row.add(currentCell.getStringCellValue());
+					} else if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
+						row.add(String.valueOf(currentCell.getNumericCellValue()));
+					}
+				}
+				importList.add(row);
+			}
+			workbook.close();
+
+			file.delete();
+
+			Account account = accountRepository.findOneByUsername(principal.getName());
+			Vendor vendor = account.getVendor();
+
+			if (vendor != null) {
+
+				for (ArrayList<String> row : importList) {
+					PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(row.get(0));
+					if (main.getVendor().getCode().equals(vendor.getCode())) {
+						PurchaseOrderDetail detail = new PurchaseOrderDetail();
+						detail.setMain(main);
+						detail.setRowno((int) Double.parseDouble(row.get(1)));
+						Inventory inventory = inventoryRepository.findByCode(row.get(2));
+						detail.setInventory(inventory);
+
+						Example<PurchaseOrderDetail> example = Example.of(detail);
+						Optional<PurchaseOrderDetail> result = purchaseOrderDetailRepository.findOne(example);
+						if (result.isPresent()) {
+							detail = result.get();
+							if (row.get(3) != null) {
+								detail.setShippedQuantity(Float.parseFloat(row.get(3)));
+								purchaseOrderDetailRepository.save(detail);
+								importCount++;
+							}
+						}
+					}
+				}
+			}
+
+		} catch (
+
+		Exception e) {
+			e.printStackTrace();
+		}
+
+		redirectAttributes.addFlashAttribute("message", "成功导入" + importCount + "行数据！");
+		return "redirect:/vendor/purchaseorder/ship";
 	}
 
 	// 对账单管理
