@@ -189,7 +189,9 @@ public class BuyerController {
 		if (result.isPresent())
 			venPriceAdjustMain = result.get();
 
-		if (form.getState() <= Constants.STATE_SUBMIT) {
+		if ((venPriceAdjustMain.getIverifystate() == null
+				|| venPriceAdjustMain.getIverifystate() == Constants.STATE_NEW)
+				&& form.getState() <= Constants.STATE_SUBMIT) {
 			venPriceAdjustMain.setType(form.getType());
 			venPriceAdjustMain.setIsupplytype(form.getProvide_type());
 			venPriceAdjustMain.setItaxrate(form.getTax_rate());
@@ -202,7 +204,9 @@ public class BuyerController {
 		}
 
 		Account account = accountRepository.findOneByUsername(principal.getName());
-		if (form.getState() == Constants.STATE_VERIFY || (venPriceAdjustMain.getIverifystate() == Constants.STATE_PASS
+
+		if (form.getState() == Constants.STATE_VERIFY || (venPriceAdjustMain.getIverifystate() != null
+				&& venPriceAdjustMain.getIverifystate() == Constants.STATE_PASS
 				&& form.getState() == Constants.STATE_CANCEL)) {
 			venPriceAdjustMain.setVerifier(account);
 			venPriceAdjustMain.setDverifydate(new Date());

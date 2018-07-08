@@ -175,13 +175,6 @@
           id: "puunit_name",
           name: "puunit_name"            
         },{
-          label: "原价格:",
-          id: "iunitprice",
-          attr: {
-            type: "number"
-          },
-          name: "iunitprice"            
-        },{
           label: "最小数量:",
           attr: {
             type: "number"
@@ -195,6 +188,13 @@
           },
           id: "fmaxquantity",
           name: "fmaxquantity"                
+        },{
+          label: "最新未税报价:",
+          id: "iunitprice",
+          attr: {
+            type: "number"
+          },
+          name: "iunitprice"            
         },{
           label: "税率:",
           attr: {
@@ -292,15 +292,23 @@
         $('#name').val(selected_data.title);
         $('#specs').val(selected_data.specs);
         $('#iunitprice').val(selected_data.price);
+        $('#iunitprice').trigger('change');     
         $('#dstartdate').val(selected_data.startDate);
         $('#denddate').val(selected_data.endDate);        
       });
       
       $('#itaxrate, #iunitprice').change(function() {
-        if ($('#itaxunitprice').val() != undefined && $('#itaxunitprice').val() != undefined) {
-          $('#itaxunitprice').val((parseInt($('#itaxrate').val()) + 100) * $('#iunitprice').val()/100);  
-        }
-        
+        if ($('#itaxrate').val() != undefined && $('#iunitprice').val() != undefined) {
+          value = (Number.parseFloat($('#itaxrate').val()) + 100) * $('#iunitprice').val()/100;
+          $('#itaxunitprice').val(Number.parseFloat(value).toFixed(2));  
+        }        
+      });
+
+      $('#itaxunitprice').change(function() {
+        if ($('#itaxrate').val() != undefined && $('#itaxunitprice').val() != undefined) {
+          value = $('#itaxunitprice').val()*100/(Number.parseFloat($('#itaxrate').val()) + 100);          
+          $('#iunitprice').val(Number.parseFloat(value).toFixed(2));  
+        }        
       });
 /*      
       if (state > 1) {
@@ -375,14 +383,14 @@
           data : 'puunit_name',
           title : '单位',
         }, {
-          data : 'iunitprice',
-          title : '原价格',
-        }, {
           data : 'fminquantity',
           title : '最小数量',
         }, {
           data : 'fmaxquantity',
           title : '最大数量',
+        }, {
+          data : 'iunitprice',
+          title : '最新未税报价',
         }, {
           data : 'itaxrate',
           title : '税率',

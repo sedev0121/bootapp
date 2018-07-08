@@ -140,7 +140,7 @@
       table: "#example",  
       idSrc: "id",
       fields: [ {
-          label: "原价格:",
+          label: "最新未税价格:",
           id: "iunitprice",
           attr: {
             type: "number"
@@ -160,7 +160,7 @@
         var iunitprice = this.field( 'iunitprice' );
 
         if ( ! iunitprice.val() ) {
-          iunitprice.error( '请输入原价格！' );
+          iunitprice.error( '不能为空！' );
         }
         var new_pirce = (parseInt(this.field( 'itaxrate' ).val()) + 100) * this.field( 'iunitprice' ).val()/100
         $.each(data.data, function(key, item){
@@ -200,15 +200,15 @@
         data : 'puunit_name',
         title : '单位',
       }, {
-        data : 'iunitprice',
-        className: 'edit-cell',
-        title : '原价格',
-      }, {
         data : 'fminquantity',
         title : '最小数量',
       }, {
         data : 'fmaxquantity',
         title : '最大数量',
+      }, {
+        data : 'iunitprice',
+        className: 'edit-cell',
+        title : '最新未税价格',
       }, {
         data : 'itaxrate',
         title : '税率',

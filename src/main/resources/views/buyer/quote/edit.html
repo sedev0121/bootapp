@@ -175,13 +175,6 @@
           id: "puunit_name",
           name: "puunit_name"            
         },{
-          label: "原价格:",
-          id: "iunitprice",
-          attr: {
-            type: "number"
-          },
-          name: "iunitprice"            
-        },{
           label: "最小数量:",
           attr: {
             type: "number"
@@ -195,6 +188,13 @@
           },
           id: "fmaxquantity",
           name: "fmaxquantity"                
+        },{
+          label: "最新未税价格:",
+          id: "iunitprice",
+          attr: {
+            type: "number"
+          },
+          name: "iunitprice"            
         },{
           label: "税率:",
           attr: {
@@ -323,14 +323,14 @@
           data : 'puunit_name',
           title : '单位',
         }, {
-          data : 'iunitprice',
-          title : '原价格',
-        }, {
           data : 'fminquantity',
           title : '最小数量',
         }, {
           data : 'fmaxquantity',
           title : '最大数量',
+        }, {
+          data : 'iunitprice',
+          title : '最新未税价格',
         }, {
           data : 'itaxrate',
           title : '税率',

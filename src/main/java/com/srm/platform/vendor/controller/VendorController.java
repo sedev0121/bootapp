@@ -196,7 +196,8 @@ public class VendorController {
 		if (result.isPresent())
 			venPriceAdjustMain = result.get();
 
-		if (form.getState() <= Constants.STATE_SUBMIT) {
+		if ((venPriceAdjustMain.getIverifystate() == Constants.STATE_NEW
+				|| venPriceAdjustMain.getIverifystate() == null) && form.getState() <= Constants.STATE_SUBMIT) {
 			venPriceAdjustMain.setType(form.getType());
 			venPriceAdjustMain.setIsupplytype(form.getProvide_type());
 			venPriceAdjustMain.setItaxrate(form.getTax_rate());
