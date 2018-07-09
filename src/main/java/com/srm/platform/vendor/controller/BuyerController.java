@@ -41,12 +41,15 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PriceRepository;
+import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
+import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.PurchaseInSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.PurchaseOrderSearchItem;
@@ -73,6 +76,12 @@ public class BuyerController {
 
 	@Autowired
 	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
+
+	@Autowired
+	private PurchaseInMainRepository purchaseInMainRepository;
+
+	@Autowired
+	private PurchaseInDetailRepository purchaseInDetailRepository;
 
 	@Autowired
 	private PriceRepository priceRepository;
@@ -651,6 +660,64 @@ public class BuyerController {
 	@GetMapping("/purchasein")
 	public String purchasein() {
 		return "buyer/purchasein/index";
+	}
+
+	// 订单管理->明细
+	@GetMapping({ "/purchasein/{code}/edit" })
+	public String purchasein_edit(@PathVariable("code") String code, Model model) {
+		model.addAttribute("main", this.purchaseInMainRepository.findOneByCode(code));
+		return "buyer/purchasein/edit";
+	}
+
+	@RequestMapping(value = "/purchasein/list", produces = "application/json")
+	public @ResponseBody Page<PurchaseInSearchItem> purchasein_list_ajax(
+			@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "ccode");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String vendor = requestParams.getOrDefault("vendor", "");
+		String state = requestParams.getOrDefault("state", "0");
+		String code = requestParams.getOrDefault("code", "");
+		String start_date = requestParams.getOrDefault("start_date", null);
+		String end_date = requestParams.getOrDefault("end_date", null);
+
+		Date startDate = null, endDate = null;
+		try {
+			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+			if (start_date != null && !start_date.isEmpty())
+				startDate = dateFormatter.parse(start_date);
+			if (end_date != null && !end_date.isEmpty()) {
+				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+				endDate = dateFormatter.parse(end_date);
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(endDate);
+				cal.add(Calendar.DATE, 1);
+				endDate = cal.getTime();
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		switch (order) {
+		case "vendorname":
+			order = "b.name";
+			break;
+		case "deployername":
+			order = "c.realname";
+			break;
+		case "reviewername":
+			order = "d.realname";
+			break;
+		}
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		Page<PurchaseInSearchItem> result = purchaseInMainRepository.findBySearchTerm(code, vendor, request);
+
+		return result;
 	}
 
 }

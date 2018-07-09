@@ -10,6 +10,21 @@ var App = function() {
   var inquery_type = [{id:1, text:'常规报价'}, {id:2, text:'区间报价'}];
   var inquery_provide_type = [{id:1, text:'采购'}, {id:2, text:'委外'}];
   var purchase_order_state_data = [{id:0, text:'审核'}, {id:1, text:'发布'}, {id:2, text:'确认'}, {id:3, text:'拒绝'}];
+  var purchase_in_state_data = [{id:0, text:'未对账'}, {id:1, text:'已对账'}];
+  var purchase_in_bredvouch_data = [{id:0, text:'蓝字'}, {id:1, text:'红字'}];
+  
+  var getLabelOfId = function(store, id) {
+    var title = "";
+    $.each(store, function(key, item){
+      if (item.id == id){
+        title = item.text;
+        return;
+      }
+    })
+    
+    return title;
+  };
+  
   var select2_default_options = {
       language: "zh-CN",
       ajax: {
@@ -81,6 +96,12 @@ var App = function() {
     getPurchaseOrderStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...purchase_order_state_data];
     },
+    getPurchaseInStateDataWithAll: function() {
+      return [{id:-1, text:"　"}, ...purchase_in_state_data];
+    },
+    getPurchaseInStateData: function() {
+      return purchase_in_state_data;
+    },
     getInqueryStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...inquery_state_data];
     },
@@ -97,27 +118,18 @@ var App = function() {
       $(td).addClass('inquery_state_' + cellData);
     },
     getInqueryStateOfId: function(id) {
-      var title = "";
-      $.each(inquery_state_data, function(key, item){
-        if (item.id == id){
-          title = item.text;
-          return;
-        }
-      })
-      
-      return title;
+      return getLabelOfId(inquery_state_data, id);
     },
     getPurchaseOrderStateOfId: function(id) {
-      var title = "";
-      $.each(purchase_order_state_data, function(key, item){
-        if (item.id == id){
-          title = item.text;
-          return;
-        }
-      })
-      
-      return title;
+      return getLabelOfId(purchase_order_state_data, id);
     },
+    getPurchaseInStateOfId: function(id) {
+      return getLabelOfId(purchase_in_state_data, id);
+    },
+    getPurchaseInBredvouchOfId: function(id) {
+      return getLabelOfId(purchase_in_bredvouch_data, id);
+    },
+
     getInqueryTypeData: function() {
       return inquery_type;
     },
