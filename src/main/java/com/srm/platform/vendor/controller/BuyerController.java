@@ -728,4 +728,170 @@ public class BuyerController {
 		return list;
 	}
 
+	@GetMapping("/statement")
+	public String statement() {
+		return "buyer/statement/index";
+	}
+
+	@GetMapping({ "/statement/add" })
+	public String statement_add(Model model) {
+		VenPriceAdjustMain main = new VenPriceAdjustMain(accountRepository);
+		model.addAttribute("main", main);
+		return "buyer/statement/edit";
+	}
+
+	@GetMapping({ "/statement/{ccode}/edit" })
+	public String statement_edit(@PathVariable("ccode") String ccode, Model model) {
+		model.addAttribute("main", this.venPriceAdjustMainRepository.findOneByCcode(ccode));
+		return "buyer/statement/edit";
+	}
+
+	@RequestMapping(value = "/statement/list", produces = "application/json")
+	public @ResponseBody Page<VenPriceAdjustSearchItem> statement_list_ajax(
+			@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "ccode");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String vendor = requestParams.getOrDefault("vendor", "");
+		String stateStr = requestParams.getOrDefault("state", "0");
+		String inventory = requestParams.getOrDefault("inventory", "");
+		String start_date = requestParams.getOrDefault("start_date", null);
+		String end_date = requestParams.getOrDefault("end_date", null);
+
+		Integer state = Integer.parseInt(stateStr);
+		Date startDate = null, endDate = null;
+		try {
+			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+			if (start_date != null && !start_date.isEmpty())
+				startDate = dateFormatter.parse(start_date);
+			if (end_date != null && !end_date.isEmpty()) {
+				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+				endDate = dateFormatter.parse(end_date);
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(endDate);
+				cal.add(Calendar.DATE, 1);
+				endDate = cal.getTime();
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		switch (order) {
+		case "vendorname":
+			order = "c.name";
+			break;
+		case "vendorcode":
+			order = "c.code";
+			break;
+		case "verifiername":
+			order = "f.realname";
+			break;
+		case "makername":
+			order = "e.realname";
+			break;
+		}
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		Page<VenPriceAdjustSearchItem> result = venPriceAdjustMainRepository
+				.findBySearchTerm(Constants.CREATE_TYPE_BUYER, vendor, inventory, request);
+
+		return result;
+	}
+
+	@PostMapping("/statement/update")
+	public @ResponseBody VenPriceAdjustMain statement_update_ajax(VenPriceSaveForm form, Principal principal) {
+		VenPriceAdjustMain venPriceAdjustMain = new VenPriceAdjustMain();
+		venPriceAdjustMain.setCreatetype(Constants.CREATE_TYPE_BUYER);
+		venPriceAdjustMain.setCcode(form.getCcode());
+
+		Example<VenPriceAdjustMain> example = Example.of(venPriceAdjustMain);
+		Optional<VenPriceAdjustMain> result = venPriceAdjustMainRepository.findOne(example);
+		if (result.isPresent())
+			venPriceAdjustMain = result.get();
+
+		if ((venPriceAdjustMain.getIverifystate() == null
+				|| venPriceAdjustMain.getIverifystate() == Constants.STATE_NEW)
+				&& form.getState() <= Constants.STATE_SUBMIT) {
+			venPriceAdjustMain.setType(form.getType());
+			venPriceAdjustMain.setIsupplytype(form.getProvide_type());
+			venPriceAdjustMain.setItaxrate(form.getTax_rate());
+
+			venPriceAdjustMain.setDstartdate(form.getStart_date());
+			venPriceAdjustMain.setDenddate(form.getEnd_date());
+			venPriceAdjustMain.setDmakedate(form.getMake_date());
+			venPriceAdjustMain.setVendor(vendorRepository.findOneByCode(form.getVendor()));
+			venPriceAdjustMain.setMaker(accountRepository.findOneById(form.getMaker()));
+		}
+
+		Account account = accountRepository.findOneByUsername(principal.getName());
+
+		if (form.getState() == Constants.STATE_VERIFY || (venPriceAdjustMain.getIverifystate() != null
+				&& venPriceAdjustMain.getIverifystate() == Constants.STATE_PASS
+				&& form.getState() == Constants.STATE_CANCEL)) {
+			venPriceAdjustMain.setVerifier(account);
+			venPriceAdjustMain.setDverifydate(new Date());
+		}
+		if (form.getState() == Constants.STATE_PUBLISH) {
+			venPriceAdjustMain.setPublisher(account);
+			venPriceAdjustMain.setDpublishdate(new Date());
+		}
+
+		venPriceAdjustMain.setIverifystate(form.getState());
+		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
+
+		if (form.getState() <= Constants.STATE_SUBMIT && form.getTable() != null) {
+			venPriceAdjustDetailRepository
+					.deleteInBatch(venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode()));
+
+			for (Map<String, String> row : form.getTable()) {
+				VenPriceAdjustDetail detail = new VenPriceAdjustDetail();
+				detail.setMain(venPriceAdjustMain);
+				detail.setInventory(inventoryRepository.findByCode(row.get("cinvcode")));
+				detail.setCbodymemo(row.get("cbodymemo"));
+				detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
+				String max = row.get("fmaxquantity");
+				String min = row.get("fminquantity");
+				if (max != null && !max.isEmpty())
+					detail.setFmaxquantity(Float.parseFloat(max));
+
+				if (min != null && !min.isEmpty())
+					detail.setFminquantity(Float.parseFloat(min));
+
+				if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())
+					detail.setIvalid(Integer.parseInt(row.get("ivalid")));
+				try {
+					String startDateStr = row.get("dstartdate");
+					String endDateStr = row.get("denddate");
+					SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+					if (startDateStr != null && !startDateStr.isEmpty()) {
+						detail.setDstartdate(dateFormatter.parse(startDateStr));
+					}
+
+					if (endDateStr != null && !endDateStr.isEmpty()) {
+						dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+						detail.setDenddate(dateFormatter.parse(endDateStr));
+					}
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				detail.setItaxrate(Float.parseFloat(row.get("itaxrate")));
+				detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
+
+				venPriceAdjustDetailRepository.save(detail);
+			}
+		}
+
+		if (form.getState() == Constants.STATE_PUBLISH) {
+			updatePriceTable(venPriceAdjustMain);
+		}
+
+		return venPriceAdjustMain;
+	}
+
 }

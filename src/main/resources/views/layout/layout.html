@@ -85,7 +85,7 @@
               <a th:href="@{/buyer/purchasein}">出入库单据</a>
             </li>
             <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purinvoice')} ? active : ''" >
-              <a th:href="@{/buyer/purinvoice}">对账单管理</a>
+              <a th:href="@{/buyer/statement}">对账单管理</a>
             </li>
             <li class="dropdown" th:classappend="${#strings.contains(#httpServletRequest.requestURI,'inventory')} or ${#strings.contains(#httpServletRequest.requestURI,'price')}? active : ''" >   
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
