@@ -102,6 +102,9 @@ var App = function() {
     getPurchaseInStateData: function() {
       return purchase_in_state_data;
     },
+    getPurchaseInBredvouchData: function() {
+      return purchase_in_bredvouch_data;
+    },
     getInqueryStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...inquery_state_data];
     },

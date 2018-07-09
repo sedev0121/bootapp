@@ -49,6 +49,7 @@ import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.PurchaseInDetailItem;
 import com.srm.platform.vendor.utility.PurchaseInSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
@@ -718,6 +719,13 @@ public class BuyerController {
 		Page<PurchaseInSearchItem> result = purchaseInMainRepository.findBySearchTerm(code, vendor, request);
 
 		return result;
+	}
+
+	@RequestMapping(value = "/purchasein/{code}/details", produces = "application/json")
+	public @ResponseBody List<PurchaseInDetailItem> purchasein_detail_list_ajax(@PathVariable("code") String code) {
+		List<PurchaseInDetailItem> list = purchaseInDetailRepository.findDetailsByCode(code);
+
+		return list;
 	}
 
 }
