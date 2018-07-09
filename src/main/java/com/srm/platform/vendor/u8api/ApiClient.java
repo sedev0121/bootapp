@@ -246,6 +246,18 @@ public class ApiClient {
 		return response;
 	}
 
+	public String getPurchaseIn(String code) {
+
+		checkToken();
+		logger.info("start getPurchaseIn api");
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getPurchaseIn().getGet(), token_id, code);
+		logger.info(String.format("url=>%s", url));
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+		return response;
+	}
+
 	private void disableCertificateValidation() {
 		// Create a trust manager that does not validate certificate chains
 		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {

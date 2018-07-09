@@ -25,12 +25,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.InventoryClass;
 import com.srm.platform.vendor.model.MeasurementUnit;
+import com.srm.platform.vendor.model.PurchaseInDetail;
+import com.srm.platform.vendor.model.PurchaseInMain;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.MeasurementUnitRepository;
+import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
+import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
@@ -57,6 +61,12 @@ public class SyncController {
 
 	@Autowired
 	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
+
+	@Autowired
+	private PurchaseInMainRepository purchaseInMainRepository;
+
+	@Autowired
+	private PurchaseInDetailRepository purchaseInDetailRepository;
 
 	@Autowired
 	private InventoryRepository inventoryRepository;
@@ -640,4 +650,182 @@ public class SyncController {
 
 		return true;
 	}
+
+	@RequestMapping(value = "/purchasein/part")
+	public boolean purchaseinUpatePart() {
+		return purchaseIn(false);
+	}
+
+	@RequestMapping({ "/purchasein/all", "/purchasein" })
+	public boolean purchaseinUpdateAll() {
+		return purchaseIn(true);
+	}
+
+	private boolean purchaseIn(boolean isAll) {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		Map<String, String> requestParams;
+		int i = 0, total_page = 1;
+		List<LinkedHashMap<String, String>> list;
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (isAll) {
+			this.purchaseInDetailRepository.deleteAllInBatch();
+			this.purchaseInMainRepository.deleteAllInBatch();
+		}
+
+		try {
+			do {
+
+				map = new HashMap<>();
+
+				requestParams = new HashMap<>();
+
+				requestParams.put("rows_per_page", "10");
+				requestParams.put("page_index", Integer.toString(++i));
+
+				String response = apiClient.getBatchPurchaseIn(requestParams);
+				logger.info(response);
+				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
+				});
+
+				logger.info((String) map.get("errcode"));
+				int errorCode = Integer.parseInt((String) map.get("errcode"));
+
+				if (errorCode == appProperties.getError_code_success()) {
+					total_page = Integer.parseInt((String) map.get("page_count"));
+					list = (List<LinkedHashMap<String, String>>) map.get("purchaseinlist");
+					for (LinkedHashMap<String, String> temp : list) {
+						logger.info(temp.get("code") + " " + temp.get("name"));
+
+						PurchaseInMain main = new PurchaseInMain();
+						main.setId(Long.parseLong(temp.get("id")));
+						main.setCode(temp.get("code"));
+
+						String makeDateStr = temp.get("date");
+						String auditDateStr = temp.get("date");
+						Date makeDate = null, auditDate = null;
+						if (makeDateStr != null && !makeDateStr.isEmpty()) {
+							try {
+								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+								makeDate = formatter.parse(makeDateStr);
+								formatter = new SimpleDateFormat("yyyy-MM-dd");
+								auditDate = formatter.parse(auditDateStr);
+
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+
+						if (!isAll && makeDate.before(new Date())) {
+							continue;
+						}
+
+						Example<PurchaseInMain> example = Example.of(main);
+						Optional<PurchaseInMain> result = purchaseInMainRepository.findOne(example);
+						if (result.isPresent())
+							main = result.get();
+
+						main.setWarehousecode(temp.get("warehousecode"));
+						main.setWarehousename(temp.get("warehousename"));
+						main.setReceivecode(temp.get("receivecode"));
+						main.setReceivename(temp.get("receivename"));
+						main.setDepartmentcode(temp.get("departmentcode"));
+						main.setDepartmentname(temp.get("departmentname"));
+						main.setPurchasetypecode(temp.get("purchasetypecode"));
+						main.setPurchasetypename(temp.get("purchasetypename"));
+						main.setMemory(temp.get("memory"));
+						main.setHandler(temp.get("handler"));
+						main.setBredvouch(Integer.parseInt(temp.get("bredvouch")));
+						main.setMaker(temp.get("maker"));
+						main.setDate(makeDate);
+						main.setAuditdate(auditDate);
+
+						Vendor vendor = vendorRepository.findOneByCode(temp.get("vendorcode"));
+						main.setVendor(vendor);
+
+						purchaseInMainRepository.save(main);
+
+						purchaseInDetail(main);
+					}
+				} else {
+					return false;
+				}
+
+			} while (i < total_page);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.info(e.getMessage());
+			return false;
+		}
+
+		return true;
+	}
+
+	private boolean purchaseInDetail(PurchaseInMain main) {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		List<LinkedHashMap<String, String>> entryList;
+
+		Map<String, Object> map = new HashMap<>();
+
+		try {
+
+			map = new HashMap<>();
+
+			String response = apiClient.getPurchaseIn(main.getCode());
+			logger.info(response);
+			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
+			});
+
+			logger.info((String) map.get("errcode"));
+			int errorCode = Integer.parseInt((String) map.get("errcode"));
+
+			if (errorCode == appProperties.getError_code_success()) {
+				LinkedHashMap<String, Object> order = (LinkedHashMap<String, Object>) map.get("purchasein");
+				entryList = (List<LinkedHashMap<String, String>>) order.get("entry");
+
+				for (LinkedHashMap<String, String> entryMap : entryList) {
+					PurchaseInDetail detail = new PurchaseInDetail();
+					detail.setMain(purchaseInMainRepository.findOneById(main.getId()));
+					detail.setInventory(inventoryRepository.findByCode(entryMap.get("inventorycode")));
+
+					if (entryMap.get("quantity") != null && !entryMap.get("quantity").isEmpty())
+						detail.setQuantity(Float.parseFloat(entryMap.get("quantity")));
+					if (entryMap.get("price") != null && !entryMap.get("price").isEmpty())
+						detail.setPrice(Float.parseFloat(entryMap.get("price")));
+					if (entryMap.get("cost") != null && !entryMap.get("cost").isEmpty())
+						detail.setCost(Float.parseFloat(entryMap.get("cost")));
+					if (entryMap.get("irate") != null && !entryMap.get("irate").isEmpty())
+						detail.setIrate(Float.parseFloat(entryMap.get("irate")));
+					if (entryMap.get("rowno") != null && !entryMap.get("rowno").isEmpty())
+						detail.setRowno(Integer.parseInt(entryMap.get("rowno")));
+					if (entryMap.get("number") != null && !entryMap.get("number").isEmpty())
+						detail.setNumber(Integer.parseInt(entryMap.get("number")));
+					detail.setState(0);
+					detail.setAssitantunitname(entryMap.get("assitantunitname"));
+					detail.setCmassunitname(entryMap.get("cmassunitname"));
+					detail.setConfirmed_quantity(0F);
+
+					purchaseInDetailRepository.save(detail);
+				}
+
+			} else {
+				return false;
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.info(e.getMessage());
+			return false;
+		}
+
+		return true;
+	}
+
 }

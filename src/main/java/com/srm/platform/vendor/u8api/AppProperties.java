@@ -189,6 +189,7 @@ public class AppProperties {
 
 	public static class PropertyPurchaseIn {
 		private String batch_get;
+		private String get;
 
 		public String getBatch_get() {
 			return batch_get;
@@ -197,6 +198,15 @@ public class AppProperties {
 		public void setBatch_get(String batch_get) {
 			this.batch_get = batch_get;
 		}
+
+		public String getGet() {
+			return get;
+		}
+
+		public void setGet(String get) {
+			this.get = get;
+		}
+
 	}
 
 	public static class PropertyInventory {
