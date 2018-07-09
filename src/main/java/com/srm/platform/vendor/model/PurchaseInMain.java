@@ -31,6 +31,7 @@ public class PurchaseInMain {
 
 	private Date auditdate;
 	private String handler;
+	private Integer state;
 
 	@OneToOne(cascade = { CascadeType.ALL })
 	@JoinColumn(name = "vendorcode", referencedColumnName = "code")
@@ -44,6 +45,14 @@ public class PurchaseInMain {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 	public String getCode() {

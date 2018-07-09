@@ -36,7 +36,7 @@ public class PurchaseInDetail {
 	private String cmassunitname;
 	private String assitantunitname;
 	private Float irate;
-	private Integer number;
+	private Float number;
 	private Float confirmed_quantity;
 	private Integer state;
 
@@ -120,11 +120,11 @@ public class PurchaseInDetail {
 		this.irate = irate;
 	}
 
-	public Integer getNumber() {
+	public Float getNumber() {
 		return number;
 	}
 
-	public void setNumber(Integer number) {
+	public void setNumber(Float number) {
 		this.number = number;
 	}
 

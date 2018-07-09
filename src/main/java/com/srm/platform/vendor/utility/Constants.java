@@ -18,4 +18,7 @@ public class Constants {
 	public static int PURCHASE_ORDER_STATE_REVIEW = 2;
 	public static int PURCHASE_ORDER_STATE_CANCEL = 3;
 
+	public static int PURCHASE_IN_FINISH_STATE_NO = 0;
+	public static int PURCHASE_IN_FINISH_STATE_YES = 1;
+
 }

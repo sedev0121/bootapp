@@ -743,7 +743,7 @@ public class SyncController {
 						main.setMaker(temp.get("maker"));
 						main.setDate(makeDate);
 						main.setAuditdate(auditDate);
-
+						main.setState(Constants.PURCHASE_IN_FINISH_STATE_NO);
 						Vendor vendor = vendorRepository.findOneByCode(temp.get("vendorcode"));
 						main.setVendor(vendor);
 
@@ -806,8 +806,8 @@ public class SyncController {
 					if (entryMap.get("rowno") != null && !entryMap.get("rowno").isEmpty())
 						detail.setRowno(Integer.parseInt(entryMap.get("rowno")));
 					if (entryMap.get("number") != null && !entryMap.get("number").isEmpty())
-						detail.setNumber(Integer.parseInt(entryMap.get("number")));
-					detail.setState(0);
+						detail.setNumber(Float.parseFloat(entryMap.get("number")));
+					detail.setState(Constants.PURCHASE_IN_FINISH_STATE_NO);
 					detail.setAssitantunitname(entryMap.get("assitantunitname"));
 					detail.setCmassunitname(entryMap.get("cmassunitname"));
 					detail.setConfirmed_quantity(0F);
@@ -819,7 +819,7 @@ public class SyncController {
 				return false;
 			}
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.info(e.getMessage());
 			return false;
