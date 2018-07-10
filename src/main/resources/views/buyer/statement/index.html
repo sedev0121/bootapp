@@ -11,20 +11,20 @@
     </ul>
     <div class="search-content">
         <div class="search-cell width-10">
-          <label for="start_date">生效时间: </label>
+          <label for="start_date">对账日期: </label>
           <input type="text" id="start_date" value="" class="form-control" />
         </div>
         <div class="search-cell width-10">
-          <label for="end_date">有效时间: </label>
+          <label for="end_date">　</label>
           <input type="text" id="end_date" value="" class="form-control" />
+        </div>
+        <div class="search-cell width-10">
+          <label for="code">单据号:</label>
+          <input type="text" id="code" class="form-control">
         </div>
         <div class="search-cell width-10">
           <label for="supplier_code">供应商编码/名称：</label>
           <input type="text" id="vendor" class="form-control">
-        </div>
-        <div class="search-cell width-10">
-          <label for="product_code">商品编码/名称:</label>
-          <input type="text" id="inventory" class="form-control">
         </div>
         <div class="search-cell width-10">
           <label for="date_range">状态:</label>
@@ -72,7 +72,7 @@
             page_index : data.start / data.length + 1,
             vendor : $('#vendor').val(),
             state: $('#state').val(),
-            inventory : $('#inventory').val(),
+            code : $('#code').val(),
             start_date : $('#start_date').val(),
             end_date : $('#end_date').val()
           }
@@ -88,7 +88,7 @@
           $(row).addClass('');
       },
       columns : [ {
-        data : 'ccode',
+        data : 'code',
         title : '单据号',
         render : function(data, display, record) {
           var edit_url = /*[[@{/buyer/statement/}]]*/'';
@@ -96,54 +96,33 @@
           return '<a href="' + edit_url + '">' + data + '</a>';
         },
       }, {
-        data : 'vendorname',
+        data : 'vendor_name',
         title : '供应商名称',
       }, {
-        data : 'vendorcode',
+        data : 'vendor_code',
         title : '供应商编码',
       }, {
-        data : 'dstartdate',
-        title : '生效日期',
-        render : $.fn.date_renderer
-      }, {
-        data : 'denddate',
-        title : '有效日期',
-        render : $.fn.date_renderer
-      }, {
-        data : 'iverifystate',
-        title : '状态',
-        createdCell: App.getInqueryStateClass,
-        render : App.getInqueryStateOfId
-      }, {
-        data : 'makername',
+        data : 'maker',
         title : '制单人',
       }, {
-        data : 'dmakedate',
+        data : 'makedate',
         title : '制单日期',
-        "defaultOrder": true,
-        "sortOrder": 'desc',
         render : $.fn.date_renderer
       }, {
-        /*			  
-         data : 'itaxrate',
-         title : '税率',
-         }, {
-         data : 'isupplytype',
-         title : '供应类型',
-         }, {
-         data : 'type',
-         title : '报价形式',
-         }, {
-         */
-        data : 'verifiername',
+        data : 'state',
+        title : '状态',
+        createdCell: App.getInqueryStateClass,
+        render : App.getStatementStateOfId
+      }, {        
+        data : 'verifier',
         title : '审核人',
       }, {
-        data : 'dverifydate',
+        data : 'verifydate',
         title : '审核日期',
         render : $.fn.date_renderer
 
       } ],
-      order: [  [ 7, "desc" ] ]
+      order: [  [ 3, "desc" ] ]
 
       
     });
@@ -156,7 +135,7 @@
       table.draw();
     });
     
-    $('#vendor, #inventory, #start_date, #end_date').keyup(function(e) {
+    $('#vendor, #code, #start_date, #end_date').keyup(function(e) {
       if (e.keyCode == 13)
         table.draw();
     });

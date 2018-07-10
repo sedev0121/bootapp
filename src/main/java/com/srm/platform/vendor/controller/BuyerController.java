@@ -45,6 +45,8 @@ import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
+import com.srm.platform.vendor.repository.StatementDetailRepository;
+import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
@@ -54,6 +56,9 @@ import com.srm.platform.vendor.utility.PurchaseInSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.PurchaseOrderSearchItem;
+import com.srm.platform.vendor.utility.SearchItem;
+import com.srm.platform.vendor.utility.StatementDetailItem;
+import com.srm.platform.vendor.utility.StatementSearchItem;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
 
@@ -95,6 +100,12 @@ public class BuyerController {
 
 	@Autowired
 	private VenPriceAdjustDetailRepository venPriceAdjustDetailRepository;
+
+	@Autowired
+	private StatementMainRepository statementMainRepository;
+
+	@Autowired
+	private StatementDetailRepository statementDetailRepository;
 
 	// Home
 	@GetMapping({ "", "/" })
@@ -663,6 +674,13 @@ public class BuyerController {
 		return "buyer/purchasein/index";
 	}
 
+	@RequestMapping(value = "/purchasein/select", produces = "application/json")
+	public @ResponseBody Page<SearchItem> purchasein_search(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "code");
+
+		return purchaseInMainRepository.findForSelect(search, request);
+	}
+
 	// 订单管理->明细
 	@GetMapping({ "/purchasein/{code}/edit" })
 	public String purchasein_edit(@PathVariable("code") String code, Model model) {
@@ -740,14 +758,14 @@ public class BuyerController {
 		return "buyer/statement/edit";
 	}
 
-	@GetMapping({ "/statement/{ccode}/edit" })
-	public String statement_edit(@PathVariable("ccode") String ccode, Model model) {
-		model.addAttribute("main", this.venPriceAdjustMainRepository.findOneByCcode(ccode));
+	@GetMapping({ "/statement/{code}/edit" })
+	public String statement_edit(@PathVariable("code") String code, Model model) {
+		model.addAttribute("main", this.statementMainRepository.findOneByCode(code));
 		return "buyer/statement/edit";
 	}
 
 	@RequestMapping(value = "/statement/list", produces = "application/json")
-	public @ResponseBody Page<VenPriceAdjustSearchItem> statement_list_ajax(
+	public @ResponseBody Page<StatementSearchItem> statement_list_ajax(
 			@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
@@ -755,7 +773,7 @@ public class BuyerController {
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String vendor = requestParams.getOrDefault("vendor", "");
 		String stateStr = requestParams.getOrDefault("state", "0");
-		String inventory = requestParams.getOrDefault("inventory", "");
+		String code = requestParams.getOrDefault("code", "");
 		String start_date = requestParams.getOrDefault("start_date", null);
 		String end_date = requestParams.getOrDefault("end_date", null);
 
@@ -779,27 +797,33 @@ public class BuyerController {
 		}
 
 		switch (order) {
-		case "vendorname":
-			order = "c.name";
+		case "vendor_name":
+			order = "b.name";
 			break;
-		case "vendorcode":
-			order = "c.code";
+		case "vendor_code":
+			order = "b.code";
 			break;
-		case "verifiername":
-			order = "f.realname";
+		case "verifier":
+			order = "d.realname";
 			break;
-		case "makername":
-			order = "e.realname";
+		case "maker":
+			order = "c.realname";
 			break;
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		Page<VenPriceAdjustSearchItem> result = venPriceAdjustMainRepository
-				.findBySearchTerm(Constants.CREATE_TYPE_BUYER, vendor, inventory, request);
+		Page<StatementSearchItem> result = statementMainRepository.findBySearchTerm(code, vendor, request);
 
 		return result;
+	}
+
+	@RequestMapping(value = "/statement/{code}/details", produces = "application/json")
+	public @ResponseBody List<StatementDetailItem> statement_detail_list_ajax(@PathVariable("code") String code) {
+		List<StatementDetailItem> list = statementDetailRepository.findDetailsByCode(code);
+
+		return list;
 	}
 
 	@PostMapping("/statement/update")

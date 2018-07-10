@@ -140,3 +140,11 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
 .ui-datepicker .ui-datepicker-prev span, .ui-datepicker .ui-datepicker-next span {
     width:16px;
 }
+
+.tab-content {
+    background: none;
+    border: 1px solid transparent;
+    border-color: #ddd;
+    border-top: 0px solid transparent;    
+
+}

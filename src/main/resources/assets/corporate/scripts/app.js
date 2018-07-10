@@ -12,7 +12,8 @@ var App = function() {
   var purchase_order_state_data = [{id:0, text:'审核'}, {id:1, text:'发布'}, {id:2, text:'确认'}, {id:3, text:'拒绝'}];
   var purchase_in_state_data = [{id:0, text:'未对账'}, {id:1, text:'已对账'}];
   var purchase_in_bredvouch_data = [{id:0, text:'蓝字'}, {id:1, text:'红字'}];
-  
+  var statement_state_data = [{id:1, text:"新建"}, {id:2, text:"发布"}, {id:3, text:"确认"}, {id:4, text:"退回"}];
+    
   var getLabelOfId = function(store, id) {
     var title = "";
     $.each(store, function(key, item){
@@ -122,6 +123,9 @@ var App = function() {
     },
     getInqueryStateOfId: function(id) {
       return getLabelOfId(inquery_state_data, id);
+    },
+    getStatementStateOfId: function(id) {
+      return getLabelOfId(statement_state_data, id);
     },
     getPurchaseOrderStateOfId: function(id) {
       return getLabelOfId(purchase_order_state_data, id);

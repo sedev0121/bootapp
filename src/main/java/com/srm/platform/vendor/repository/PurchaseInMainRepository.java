@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.PurchaseInMain;
 import com.srm.platform.vendor.utility.PurchaseInSearchItem;
+import com.srm.platform.vendor.utility.SearchItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
@@ -19,5 +20,8 @@ public interface PurchaseInMainRepository extends JpaRepository<PurchaseInMain, 
 
 	@Query(value = "SELECT a.*, b.name vendorname FROM purchase_in_main a left join vendor b on a.vendorcode=b.code WHERE a.code like %?1% and (b.code LIKE %?2% or b.name LIKE %?2% )", countQuery = "SELECT count(*) FROM purchase_in_main a left join vendor b on a.vendorcode=b.code WHERE a.code like %?1% and (b.code LIKE %?2% or b.name LIKE %?2% )", nativeQuery = true)
 	Page<PurchaseInSearchItem> findBySearchTerm(String code, String vendor, Pageable pageable);
+
+	@Query(value = "SELECT code, code name FROM purchase_in_main WHERE code LIKE %?1% and state=0", countQuery = "SELECT count(*) FROM purchase_in_main WHERE code LIKE %?1% and state=0", nativeQuery = true)
+	Page<SearchItem> findForSelect(String search, Pageable pageable);
 
 }

@@ -2,7 +2,7 @@ package com.srm.platform.vendor.utility;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public interface VendorSearchItem {
+public interface SearchItem {
 
 	@JsonProperty("id")
 	String getCode();

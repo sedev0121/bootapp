@@ -46,16 +46,17 @@ public class ApiClient {
 
 	private String checkToken() {
 
-		Integer tokenExpireTime = (Integer) httpSession.getAttribute("token_expire_time");
+		Long tokenExpireTime = (Long) httpSession.getAttribute("token_expire_time");
 		token_id = (String) httpSession.getAttribute("token_id");
 
-		logger.info(tokenExpireTime + ">" + token_id);
+		logger.info("session expire=" + tokenExpireTime + " token_id=" + token_id);
 		if (tokenExpireTime == null || token_id == null || System.currentTimeMillis() >= tokenExpireTime) {
 			Token token = getToken();
 
+			logger.info("new token=" + token.getId() + " expire=" + token.getExpiresIn());
 			if (token != null) {
 				token_id = token.getId();
-				httpSession.setAttribute("token_expire_time", token.getExpiresIn());
+				httpSession.setAttribute("token_expire_time", System.currentTimeMillis() + token.getExpiresIn() * 1000);
 				httpSession.setAttribute("token_id", token_id);
 			}
 
@@ -65,7 +66,7 @@ public class ApiClient {
 	}
 
 	private Token getToken() {
-		logger.info("start getToken api");
+		logger.info("=====================start getToken api");
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		String url = appProperties.getSystem().getToken();
