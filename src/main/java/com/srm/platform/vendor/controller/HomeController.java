@@ -40,10 +40,15 @@ public class HomeController {
 	public String forbidden() {
 		return "denied";
 	}
-	
+
 	@RequestMapping(value = "login")
 	public String login() {
-        return "login";
-    }
+		return "login";
+	}
+
+	@RequestMapping(value = "test")
+	public String test() {
+		return "test";
+	}
 
 }
