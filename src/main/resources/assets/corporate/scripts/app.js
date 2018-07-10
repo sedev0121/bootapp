@@ -265,9 +265,10 @@ $(document).ready(function() {
 		searching : false,
 		ordering: false,
 		scrollX : true,
+		buttons: [],
 		lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
 		pagingType : "input",
-		dom : 'tr<"bottom"<"pull-left"p><"pull-left"l><"pull-right"i>><"clear">',
+		dom : '<"top"B>tr<"bottom"<"pull-left"p><"pull-left"l><"pull-right"i>><"clear">',
 		language : {
 			"infoEmpty": "",
 			"emptyTable": "未检索到匹配数据",

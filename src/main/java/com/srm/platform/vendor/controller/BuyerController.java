@@ -777,7 +777,7 @@ public class BuyerController {
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
-				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
 		Page<PurchaseInDetailItem> result = purchaseInDetailRepository.findForSelect(vendor, code, inventory, request);
 
