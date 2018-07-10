@@ -56,7 +56,6 @@ import com.srm.platform.vendor.utility.PurchaseInSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.PurchaseOrderSearchItem;
-import com.srm.platform.vendor.utility.SearchItem;
 import com.srm.platform.vendor.utility.StatementDetailItem;
 import com.srm.platform.vendor.utility.StatementSearchItem;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
@@ -674,13 +673,6 @@ public class BuyerController {
 		return "buyer/purchasein/index";
 	}
 
-	@RequestMapping(value = "/purchasein/select", produces = "application/json")
-	public @ResponseBody Page<SearchItem> purchasein_search(@RequestParam(value = "q") String search) {
-		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "code");
-
-		return purchaseInMainRepository.findForSelect(search, request);
-	}
-
 	// 订单管理->明细
 	@GetMapping({ "/purchasein/{code}/edit" })
 	public String purchasein_edit(@PathVariable("code") String code, Model model) {
@@ -744,6 +736,52 @@ public class BuyerController {
 		List<PurchaseInDetailItem> list = purchaseInDetailRepository.findDetailsByCode(code);
 
 		return list;
+	}
+
+	@RequestMapping(value = "/purchasein/select", produces = "application/json")
+	public @ResponseBody Page<PurchaseInDetailItem> purchasein_select_ajax(
+			@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "code");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String vendor = requestParams.getOrDefault("vendor", "");
+		String code = requestParams.getOrDefault("code", "");
+		String dateStr = requestParams.getOrDefault("date", null);
+		String inventory = requestParams.getOrDefault("inventory", "");
+
+		Date date;
+		try {
+			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+			if (dateStr != null && !dateStr.isEmpty())
+				date = dateFormatter.parse(dateStr);
+
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		switch (order) {
+		case "date":
+			order = "b.date";
+			break;
+		case "vendorname":
+			order = "b.name";
+			break;
+		case "deployername":
+			order = "c.realname";
+			break;
+		case "reviewername":
+			order = "d.realname";
+			break;
+		}
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		Page<PurchaseInDetailItem> result = purchaseInDetailRepository.findForSelect(vendor, code, inventory, request);
+
+		return result;
 	}
 
 	@GetMapping("/statement")

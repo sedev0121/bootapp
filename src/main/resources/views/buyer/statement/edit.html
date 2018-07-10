@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}">
+<head>
+
+<style>
+#import_dialog {}
+.modal-body {
+  overflow-x: auto;
+}
+</style>
+
+</head>
 <body>
   <div class="container" layout:fragment="content">
     <ul class="breadcrumb">
@@ -88,23 +98,42 @@
             </div>
         </form>
         <div class="modal fade" id="import_dialog" role="dialog" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog" role="document" style="width:1000px;">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">
-                                                        选择出入库单据
+                                                        选择要对账的商品
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         </button>
                     </div>
                     <div class="modal-body form-horizontal">
 
-                          <div class="form-group form-md-line-input">
-                            <label class="col-md-2 control-label" for="select_code">出入库单号:</label>
-                            <div class="col-md-10">
-                                <select id="select_code" style="width:100%"></select>
-                            </div>
-                          </div>  
+                      <div class="search-content">
+                          <div class="search-cell width-10">
+                            <label for="date">入库日期: </label>
+                            <input type="text" id="date" value="" class="form-control" />
+                          </div>
+                          <div class="search-cell width-10">
+                            <label for="code">出入库单号：</label>
+                            <input type="text" id="code" class="form-control">
+                          </div>
+                          <div class="search-cell width-10">
+                            <label for="inventory">商品编码/名称：</label>
+                            <input type="text" id="inventory" class="form-control">
+                          </div>
+                          <div style="vertical-align: bottom" class="search-cell width-15">
+                            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+                          </div>
+                      </div>
+                
+                      <div class="row">
+                        <div class="col-lg-12 table-responsive">
+                            <table id="import_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
+                                <tbody><tr><td>　</td></tr></tbody>
+                            </table>
+                        </div>
+                      </div>  
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
@@ -123,16 +152,16 @@
 var editor;
 /*[+
 var detail_url = [[@{/buyer/statement/}]] + [[${main.code}]] + "/details";
-var inventory_search_url = [[@{/api/inventory/select}]];
-var purchasein_search_url = [[@{/buyer/purchasein/select}]];
+
 var edit_url = [[@{/buyer/statement/}]];
+var import_url = [[@{/buyer/purchasein/select}]];
 +]*/ 
 var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
 var state = /*[[${main.state}]]*/'';
   
 $(document).ready(function() {
 
-  var basic_table, prepay_table, outside_table;
+  var basic_table, prepay_table, outside_table, import_table;
   
   
     
@@ -154,6 +183,98 @@ $(document).ready(function() {
       
   }
   
+  $('.modal').on('shown.bs.modal', function () {
+    load_import_table();
+  });
+  
+  function load_import_table() {
+    
+    $('#code').val('');
+    $('#date').val('');
+    $('#inventory').val('');
+    
+    
+    if (import_table == undefined) {
+
+      import_table = $('#import_table').DataTable({
+        ordering : true,
+        select: true,
+        ajax : {
+          url : import_url,
+          data : function(data) {
+            var filter = {
+              order : data.columns[data.order[0].column].data,
+              dir : data.order[0].dir,
+              rows_per_page : data.length,
+              page_index : data.start / data.length + 1,
+              vendor : $('#vendor').val(),
+              inventory: $('#inventory').val(),
+              code : $('#code').val(),
+              date : $('#date').val()
+            }
+            return filter;
+          },
+          dataSrc : function(json) {
+            json.recordsTotal = json.totalElements;
+            json.recordsFiltered = json.totalElements;
+            return json.content;
+          },
+        },
+        columns : [ {
+          data : 'date',
+          render : $.fn.date_renderer,
+          title : '入库日期'
+        }, {
+          data : 'code',
+          title : '出入库单号'
+        }, {
+          data : 'rowno',
+          title : '行号',
+        }, {
+          data : 'inventoryname',
+          title : '商品名称'
+        }, {
+          data : 'inventorycode',
+          title : '商品编码'
+        }, {
+          data : 'specs',
+          title : '规格型号',
+        }, {
+          data : 'cmassunitname',
+          title : '主计量单位',
+        }, {
+          data : 'price',
+          title : '入库单单价',
+        }, {
+          data : 'quantity',
+          title : '入库数量',
+        }, {
+          data : 'confirmed_quantity',
+          title : '已对账数量',
+        }, {
+          data : 'cost',
+          title : '金额',
+        }, {
+          data : 'number',
+          title : '件数',
+        }, {
+          data : 'state',
+          title : '状态',
+          createdCell: App.getInqueryStateClass,
+          render : App.getPurchaseInStateOfId        
+
+        } ],
+        order: [  [ 0, "desc" ] ]
+
+        
+      });
+    }
+        
+    $('#btn_search').trigger('click');
+
+  }
+  
+  
   $('#tabs').tabs({
     activate: function (event, ui) {
         if (ui.newPanel.selector == '#tab-3')
@@ -163,13 +284,11 @@ $(document).ready(function() {
     }
   });
   
-  $('#start_date').datepicker();
-  $('#end_date').datepicker();
+  $('#date').datepicker();
     
   $(".select2").select2();
   $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
   $("#vendor").select2(App.getSelect2Options(vendor_search_url));
-  $("#select_code").select2(App.getSelect2Options(purchasein_search_url));
   
   if (state > 1) {
     $('input').attr("readonly", true);
@@ -192,6 +311,8 @@ $(document).ready(function() {
     }
   });
     
+  
+  
   var table_options = {
       serverSide:false,
       processing:false,
@@ -200,8 +321,15 @@ $(document).ready(function() {
           { 
             text: "取出入库单", 
             action: function( e, dt, node, config) {
-              $('#select_code').empty();
+              
+              if ($("#vendor").val() == "") {
+                $('#vendor').focus();
+                App.showErrorDialog("请选择供应商！");
+                return false;
+              }
+              
               $('#import_dialog').modal('show');
+              
             } 
           },
           { extend: "remove", editor: editor },
@@ -344,6 +472,14 @@ $(document).ready(function() {
     }
   }); 
   
+  $("#btn_search").click(function() {
+    import_table.draw();
+  });
+  
+  $('#vendor, #code, #inventory, #date').keyup(function(e) {
+    if (e.keyCode == 13)
+      import_table.draw();
+  });
   
   $("#save").click(function() {
     $('#state').val(1);

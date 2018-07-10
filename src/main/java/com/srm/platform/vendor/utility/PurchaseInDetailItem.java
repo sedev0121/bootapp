@@ -2,6 +2,10 @@ package com.srm.platform.vendor.utility;
 
 public interface PurchaseInDetailItem {
 
+	String getCode();
+
+	String getDate();
+
 	Integer getRowno();
 
 	String getInventoryname();
