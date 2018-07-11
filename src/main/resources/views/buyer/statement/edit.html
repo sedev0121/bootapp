@@ -25,12 +25,12 @@
             <div class="row">
                 <div class="col-lg-3 col-md-3">
                   <label for="code">单号: </label>
-                  <input type="text" id="ccode" name="ccode" th:value="${main.code}" class="form-control" readonly />
+                  <input type="text" id="code" name="code" th:value="${main.code}" class="form-control" readonly />
                 </div>
                 <div class="col-lg-3 col-md-3">
                   <label for="vendor">供应商:</label>
                   <select id="vendor" name="vendor" class="form-control">
-                    <option th:if="${main.vendor != null}" th:value="${main.vendor.code}" th:text="${main.vendor.name}" selected="selected">NEC（日电）有限公司</option>
+                    <option th:if="${main.vendor != null}" th:value="${main.vendor?.code}" th:text="${main.vendor?.name}" selected="selected">NEC（日电）有限公司</option>
                   </select>
                 </div>
                 <div class="col-lg-3 col-md-3">
@@ -41,7 +41,7 @@
                 <div class="col-lg-3 col-md-3">
                   <label for="maker">制单人:</label>
                   <select name="maker" id="maker" class="form-control select2" readonly>
-                    <option th:value="${main.maker.id}" th:text="${main.maker.realname}" selected="selected"></option>
+                    <option th:value="${main.maker?.id}" th:text="${main.maker?.realname}" selected="selected"></option>
                   </select>
                 </div>
                 <div class="col-lg-3 col-md-3">
@@ -101,16 +101,16 @@
 
                       <div class="search-content">
                           <div class="search-cell width-10">
-                            <label for="date">入库日期: </label>
-                            <input type="text" id="date" value="" class="form-control" />
+                            <label for="search_date">入库日期: </label>
+                            <input type="text" id="search_date" value="" class="form-control" />
                           </div>
                           <div class="search-cell width-10">
-                            <label for="code">出入库单号：</label>
-                            <input type="text" id="code" class="form-control">
+                            <label for="search_code">出入库单号：</label>
+                            <input type="text" id="search_code" class="form-control">
                           </div>
                           <div class="search-cell width-10">
-                            <label for="inventory">商品编码/名称：</label>
-                            <input type="text" id="inventory" class="form-control">
+                            <label for="search_inventory">商品编码/名称：</label>
+                            <input type="text" id="search_inventory" class="form-control">
                           </div>
                           <div style="vertical-align: bottom" class="search-cell width-15">
                             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
@@ -174,9 +174,9 @@ $(document).ready(function() {
   
   function load_import_table() {
     
-    $('#code').val('');
-    $('#date').val('');
-    $('#inventory').val('');
+    $('#search_code').val('');
+    $('#search_date').val('');
+    $('#search_inventory').val('');
     
     
     if (import_table == undefined) {
@@ -193,9 +193,9 @@ $(document).ready(function() {
               rows_per_page : data.length,
               page_index : data.start / data.length + 1,
               vendor : $('#vendor').val(),
-              inventory: $('#inventory').val(),
-              code : $('#code').val(),
-              date : $('#date').val()
+              inventory: $('#search_inventory').val(),
+              code : $('#search_code').val(),
+              date : $('#search_date').val()
             }
             return filter;
           },
@@ -334,7 +334,7 @@ $(document).ready(function() {
             text: "取出入库单", 
             action: function( e, dt, node, config) {
               
-              if ($("#vendor").val() == "") {
+              if ($("#vendor").val() == undefined) {
                 $('#vendor').focus();
                 App.showErrorDialog("请选择供应商！");
                 return false;

@@ -35,6 +35,7 @@ import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
+import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
@@ -791,7 +792,7 @@ public class BuyerController {
 
 	@GetMapping({ "/statement/add" })
 	public String statement_add(Model model) {
-		VenPriceAdjustMain main = new VenPriceAdjustMain(accountRepository);
+		StatementMain main = new StatementMain(accountRepository);
 		model.addAttribute("main", main);
 		return "buyer/statement/edit";
 	}

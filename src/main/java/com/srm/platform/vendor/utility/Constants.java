@@ -21,4 +21,10 @@ public class Constants {
 	public static int PURCHASE_IN_FINISH_STATE_NO = 0;
 	public static int PURCHASE_IN_FINISH_STATE_YES = 1;
 
+	public static int STATEMENT_STATE_NEW = 1;
+	public static int STATEMENT_STATE_SUBMIT = 2;
+	public static int STATEMENT_STATE_CONFIRM = 3;
+	public static int STATEMENT_STATE_CANCEL = 4;
+	public static int STATEMENT_STATE_INVOICE = 5;
+
 }

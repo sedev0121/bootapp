@@ -10,6 +10,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.UniqueIdGenerator;
+
 @Entity
 @Table(name = "statement_main")
 public class StatementMain {
@@ -37,6 +43,14 @@ public class StatementMain {
 	@OneToOne(cascade = { CascadeType.ALL })
 	@JoinColumn(name = "vendor_code", referencedColumnName = "code")
 	Vendor vendor;
+
+	public StatementMain(AccountRepository accountRepository) {
+		this.code = UniqueIdGenerator.generateId();
+		this.makedate = new Date();
+		this.state = Constants.STATEMENT_STATE_NEW;
+		this.maker = accountRepository
+				.findOneByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+	}
 
 	public String getCode() {
 		return code;
