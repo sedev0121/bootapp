@@ -249,7 +249,8 @@ var App = function() {
         "title": title,
         "type": "success"
       }).then((result) => {
-        callback();
+        if (callback != undefined)
+          callback();
       });
     },
     showErrorDialog: function(title, text) {

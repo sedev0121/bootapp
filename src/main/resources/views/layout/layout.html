@@ -145,9 +145,9 @@
         <form id="logout_form" th:action="@{/logout}" method="post"></form>
         <div class="header-navigation menu-right" sec:authorize="isAuthenticated()">
           <ul>
-            <li><a href="#">账号管理 </a></li>
-            <li><a href="#" onclick="$('#logout_form').submit()">退出</a></li>
-            <li><img th:src="@{/assets/corporate/img/user.jpg}" class="user_avatar"></li>
+            <li><a th:href="@{/profile}" th:text="${session.realname}">账号管理 </a></li>
+            <li><a th:href="@{/logout}">退出</a></li>
+            <li><img th:src="@{/assets/corporate/img/user.png}" class="user_avatar"></li>
           </ul>
         </div>
         <input type="hidden" id="timepicker"/>

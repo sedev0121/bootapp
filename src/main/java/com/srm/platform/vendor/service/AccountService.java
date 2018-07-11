@@ -3,6 +3,8 @@ package com.srm.platform.vendor.service;
 import java.time.Instant;
 import java.util.Collections;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -56,6 +58,9 @@ public class AccountService implements UserDetailsService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private HttpSession httpSession;
 
 	// @PostConstruct
 	protected void initialize() {
@@ -315,6 +320,7 @@ public class AccountService implements UserDetailsService {
 	}
 
 	private User createUser(Account account) {
+		httpSession.setAttribute("realname", account.getRealname());
 		return new User(account.getUsername(), account.getPassword(), Collections.singleton(createAuthority(account)));
 	}
 

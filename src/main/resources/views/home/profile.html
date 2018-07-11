@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
+<head>
+</head>  
+<body>
+  <div class="container" layout:fragment="content">
+    <ul class="breadcrumb">
+      <li>
+        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+      </li>
+      <li class="active">我的账号</li>
+    </ul>
+    <div class="btn-group-bar">
+      <div class="text-right">
+        <a class="btn btn-primary" id="change_pwd"><i class="fa fa-key"></i> 修改密码</a>
+        <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
+      </div>
+    </div>
+    <form id="form" th:action="@{/profile/update}" method="post">  
+    <div class="panel panel-default">
+      <div class="panel-body"> 
+        <div class="row">
+          <div class="content-form-page">
+            <fieldset>
+              <legend>基本信息</legend>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="realname">真实姓名: </label>
+                <input type="text" name="realname" class="form-control" th:value="${account.realname}" readonly>
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="unit_name">所属部门: </label>
+                <input type="hidden" id="unit" name="unit" th:value="${account.unit==null?'':account.unit.id}">
+                <input type="text" id="unit_name" name="unit_name" class="form-control select-unit" th:value="${account.unit==null?'':account.unit.name}" readonly>
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="duty">职位: </label>
+                <input type="text" id="duty" name="duty" th:value="${account.duty}" class="form-control" readonly>
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="entry_date">入职日期: </label>
+                <input type="text" class="form-control datepicker" name="entry_date" id="entry_date" th:value="${#dates.format(account.entryTime, 'yyyy-MM-dd')}" readonly>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>账号信息</legend>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="username">用户名: </label>
+                <input type="text" id="username" name="username" class="form-control" th:value="${account.username}" readonly>
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="role">角色: </label>
+                <select name="role" id="role" class="form-control" readonly>
+                  <option value="ROLE_BUYER" th:selected="(${account.role}=='ROLE_BUYER')">采购员</option>
+                  <option value="ROLE_VENDOR" th:selected="(${account.role}=='ROLE_VENDOR')">供应商</option>
+                  <option value="ROLE_ADMIN"  th:selected="(${account.role}=='ROLE_ADMIN')">管理员</option>
+                </select>
+              </div>
+              <div class="col-lg-6 col-md-6 form-group">
+                  <label for="vendor">供应商:</label>
+                  <select id="vendor" name="vendor" class="form-control" readonly>
+                    <option th:if="${account.vendor != null}" th:value="${account.vendor.code}" th:text="${account.vendor.name}" selected="selected"></option>
+                  </select>
+                </div>
+            </fieldset>
+            <fieldset>
+              <legend>联系信息</legend>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="skype">Skype: </label>
+                <input type="text" name="skype" class="form-control" th:value="${account.skype}">
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="qq">QQ: </label>
+                <input type="text" name="qq" class="form-control" th:value="${account.qq}">
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="yahoo">雅虎通: </label>
+                <input type="text" name="yahoo" class="form-control" th:value="${account.yahoo}">
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="gtalk">GTalk: </label>
+                <input type="text" name="gtalk" class="form-control" th:value="${account.gtalk}">
+              </div>
+              <div class="col-lg-4 col-md-4 form-group">
+                <label for="wangwang">旺旺: </label>
+                <input type="text" name="wangwang" class="form-control" th:value="${account.wangwang}">
+              </div>                                                
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="mobile">手机:</label>
+                <input type="text" name="mobile" class="form-control" th:value="${account.mobile}">
+              </div>
+              
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="tel">电话:</label>
+                <input type="text" name="tel" class="form-control" th:value="${account.tel}">
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="email">邮箱:</label>
+                <input type="text" name="email" class="form-control" th:value="${account.email}">
+              </div>
+              <div class="col-lg-6 col-md-6 form-group">
+                <label for="address">通讯地址:</label>
+                <input type="text" name="address" class="form-control datepicker" th:value="${account.address}">
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+
+    </form>
+    <div class="modal fade" id="pwd_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                                                    修改密码
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="pwdform" th:action="@{/profile/changepwd}" method="post">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4">
+                          <label for="old_pwd">旧密码: </label>
+                          <input type="password" id="old_pwd" name="old_pwd" class="form-control" />
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                          <label for="new_pwd">新密码: </label>
+                          <input type="password" id="new_pwd" name="new_pwd" class="form-control" />
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                          <label for="confirm_pwd">确认密码: </label>
+                          <input type="password" id="confirm_pwd" name="confirm_pwd" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="save_password">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>
+
+
+<script th:inline="javascript">
+var edit_url = /*[[@{/admin/account/}]]*/'';
+var tree_url = /*[[@{/api/unit/tree}]]*/'';
+var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
+
+jQuery(document).ready(function() {   
+
+    $('#role').select2({minimumResultsForSearch: -1});
+    $("#vendor").select2(App.getSelect2Options(vendor_search_url));
+    
+    $('#role').change(function() {
+      if ($('#role').val() == 'ROLE_VENDOR') {
+        $('#vendor').removeClass('hidden');
+        $('#vendor').prop('disabled', false);
+      }else{
+        $('#vendor').addClass('hidden');
+        $('#vendor').prop('disabled', true);
+      }
+    });
+    
+    $('#role').trigger('change');
+    
+    $("#form" ).validate({
+      rules: {
+          realname: {
+              required: true
+          }, 
+          duty: {
+              required: true
+          },
+          username: {
+              required: true
+          },    
+          password: {
+              required: true
+          },    
+          unit_name: {
+              required: true
+          },
+          role: {
+              required: true
+          },    
+      },
+      
+      //display error alert on form submit  
+      invalidHandler: function(event, validator) {
+        App.showErrorDialog("输入有误", "请输入正确的值");
+      },
+
+      submitHandler: function (form) {
+          jQuery(form).ajaxSubmit({
+              success: function(res, status, xhr, form) {
+                App.showSuccessDialog("操作成功", function(){
+                    window.location.reload(true);
+                });
+              },
+              error: function (res, status, xhr, form) {
+                App.showErrorDialog("操作失败", "请输入正确的值");
+              }
+          });
+      }
+    }); 
+    
+    $("#pwdform" ).validate({
+      rules: {
+          old_pwd: {
+              required: true
+          }, 
+          new_pwd: {
+              required: true
+          },
+          confirm_pwd: {
+              required: true,
+              equalTo: '#new_pwd'
+          },    
+      },
+      
+      //display error alert on form submit  
+      invalidHandler: function(event, validator) {
+        App.showErrorDialog("输入有误", "请输入正确的值");
+      },
+
+      submitHandler: function (form) {
+        jQuery(form).ajaxSubmit({
+          success: function(res, status, xhr, form) {
+            if (res == 1) {
+              $('#pwd_dialog').modal('hide'); 
+              App.showSuccessDialog("操作成功");
+            }else{
+              App.showErrorDialog(res);
+            }
+              
+          },
+          error: function (res, status, xhr, form) {
+            App.showErrorDialog("操作失败", "请输入正确的值");
+          }
+        });
+      }
+    }); 
+    
+    $("#save").click(function() {
+      $("#form").submit();            
+    });
+    
+    $("#change_pwd").click(function() {
+      $('#pwd_dialog').modal('show');          
+    });
+    
+    $("#save_password").click(function() {
+      $("#pwdform").submit();            
+    });
+
+});
+
+
+</script>
+
