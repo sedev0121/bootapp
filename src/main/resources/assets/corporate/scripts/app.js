@@ -134,6 +134,12 @@ var App = function() {
     getPurchaseOrderStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...purchase_order_state_data];
     },
+    getStatementStateData: function() {
+      return statement_state_data;
+    },
+    getStatementStateDataWithAll: function() {
+      return [{id:0, text:"　"}, ...statement_state_data];
+    },
     getPurchaseInStateDataWithAll: function() {
       return [{id:-1, text:"　"}, ...purchase_in_state_data];
     },

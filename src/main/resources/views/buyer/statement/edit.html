@@ -12,16 +12,18 @@
     </ul>       
     <div class="btn-group-bar">
         <div class="text-right">
-          <a class="btn btn-primary" th:if="${main.state==1  || main.state==4}" id="save"><i class="fa fa-save"></i> 保存</a>
-          <a class="btn btn-primary" th:if="${main.state==1  || main.state==4}" id="submit"><i class="fa fa-share"></i> 发布</a>
-          <a class="btn btn-primary" th:if="${main.state==2}" id="verify"><i class="fa fa-check-square"></i> 确认</a>
-          <a class="btn btn-primary" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
-          <a class="btn btn-default" th:href="@{/buyer/statement}"><i class="fa fa-arrow-left"></i> 返回</a>
+          <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/buyer') and (main.state==1  or main.state==4)}" id="save"><i class="fa fa-save"></i> 保存</a>
+          <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/buyer') and (main.state==1  or main.state==4)}" id="submit"><i class="fa fa-share"></i> 发布</a>
+          <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor') and main.state==2}" id="verify"><i class="fa fa-check-square"></i> 确认</a>
+          <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor') and main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+          <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor') and main.state==3}" id="invoice"><i class="fa fa-check-square"></i> 填发票号</a>
+          <a class="btn btn-default" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/buyer')}" th:href="@{/buyer/statement}"><i class="fa fa-arrow-left"></i> 返回</a>
+          <a class="btn btn-default" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')}" th:href="@{/vendor/statement}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-body"> 
-        <form id="form" th:action="@{/buyer/statement/update}" method="post">
+        <form id="form" th:action="@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/statement/update'}" method="post">
             <div class="row">
                 <div class="col-lg-3 col-md-3">
                   <label for="code">单号: </label>
@@ -33,35 +35,43 @@
                     <option th:if="${main.vendor != null}" th:value="${main.vendor?.code}" th:text="${main.vendor?.name}" selected="selected">NEC（日电）有限公司</option>
                   </select>
                 </div>
-                <div class="col-lg-2 col-md-2">
+                <div class="col-lg-3 col-md-3">
+                  <label for="address">供应商地址: </label>
+                  <input type="text" id="address" th:value="${main.vendor?.address}" class="form-control" readonly>
+                </div>
+                <div class="col-lg-3 col-md-3">
                   <label for="state">状态:</label>
                   <select name="state" id="state" class="form-control" readonly>
                   </select>
                 </div>
-                <div class="col-lg-2 col-md-2">
+                <div class="col-lg-3 col-md-3">
                   <label for="maker">制单人:</label>
                   <select name="maker" id="maker" class="form-control select2" readonly>
                     <option th:value="${main.maker?.id}" th:text="${main.maker?.realname}" selected="selected"></option>
                   </select>
                 </div>
-                <div class="col-lg-2 col-md-2">
+                <div class="col-lg-3 col-md-3">
                   <label for="makedate">单据日期: </label>
                   <input type="text" name="makedate" id="makedate" th:value="${#dates.format(main.makedate, 'yyyy-MM-dd')}" class="form-control" readonly>
                 </div>
-                <div class="col-lg-8 col-md-8">
-                  <label for="remark">备注: </label>
-                  <input type="text" id="remark" name="remark" th:value="${main.remark}" class="form-control" />
-                </div>                
-                <div class="col-lg-2 col-md-2">
+                <div class="col-lg-3 col-md-3">
                   <label>审核人:</label>
                   <select class="form-control select2" readonly>
                     <option th:value="${main.verifier?.id}" th:text="${main.verifier?.realname}" selected="selected"></option>
                   </select>
                 </div>
-                <div class="col-lg-2 col-md-2">
+                <div class="col-lg-3 col-md-3">
                   <label>审核日期: </label>
                   <input type="text" th:value="${#dates.format(main.verifydate, 'yyyy-MM-dd')}" class="form-control" readonly>
                 </div>
+                <div class="col-lg-6 col-md-6">
+                  <label for="remark">订单摘要: </label>
+                  <input type="text" id="remark" name="remark" th:value="${main.remark}" class="form-control" />
+                </div>                
+                <div class="col-lg-6 col-md-6">
+                  <label for="invoice_code">发票号: </label>
+                  <input type="text" id="invoice_code" name="invoice_code" th:value="${main.invoiceCode}" class="form-control" />
+                </div>                
 
             </div>
             <div class="row margin-top-10">
@@ -145,13 +155,15 @@
 <script th:inline="javascript">
 var editor;
 /*[+
-var detail_url = [[@{/buyer/statement/}]] + [[${main.code}]] + "/details";
 
-var edit_url = [[@{/buyer/statement/}]];
+var is_vendor = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?true:false}]];  
+var detail_url = [[@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/statement/'}]] + [[${main.code}]] + "/details";
+var edit_url = [[@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/statement/'}]];
 var import_url = [[@{/buyer/purchasein/select}]];
+var vendor_search_url = [[@{/api/vendor/select}]];
+var state = [[${main.state}]];
+
 +]*/ 
-var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
-var state = /*[[${main.state}]]*/'';
   
 $(document).ready(function() {
 
@@ -277,7 +289,7 @@ $(document).ready(function() {
   $('#date').datepicker();
     
   $(".select2").select2();
-  $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
+  $("#state").select2({ data: App.getStatementStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
   $("#vendor").select2(App.getSelect2Options(vendor_search_url));
   
   if (state > 1) {
@@ -285,6 +297,10 @@ $(document).ready(function() {
     $('select').attr("readonly", true);
   }
 
+  if (state == 3 && is_vendor) {
+    $('#invoice_code').removeAttr("readonly");
+  }
+  
   editor = new $.fn.dataTable.Editor( {
     table: "#basic_info",  
     idSrc: "purchase_in_detail_id",
@@ -393,7 +409,12 @@ $(document).ready(function() {
         data : 'purchase_in_code',
         title : '入库单编码',
       }, {
+        data : 'purchase_in_date',
+        render : $.fn.date_renderer,
+        title : '入库日期',        
+      }, {
         data : 'rowno',
+        visible:false,
         title : '入库单行号'
       }, {
         data : 'inventoryname',
@@ -403,6 +424,7 @@ $(document).ready(function() {
         title : '商品编码',
       }, {
         data : 'specs',
+        visible:false,
         title : '规格型号',
       }, {
         data : 'cmassunitname',
@@ -413,10 +435,6 @@ $(document).ready(function() {
       }, {
         data : 'quantity',
         title : '入库数量',
-      }, {
-        data : 'purchase_in_date',
-        render : $.fn.date_renderer,
-        title : '入库日期',        
 /*        
       }, {
         data : 'assitantunitname',
@@ -457,16 +475,24 @@ $(document).ready(function() {
         "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ],
         "orderable": false
       } ],
-      order: [  [ 0, "asc" ], [1, "asc"] ],
+      order: [  [ 0, "asc" ], [2, "asc"] ],
     };
+  
+  if (state>1) {
+    table_options.select = false;
+    table_options.buttons = [];
+  }
   
   basic_table = $('#basic_info').DataTable(table_options);
 
-  App.addKeyDownEditor(editor, 11, 15);
+  if (state == 1) {
+    basic_table.on( 'click', 'tbody td.edit-cell', function (e) {
+      editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+    } );
+    App.addKeyDownEditor(editor, 11, 15);
+  }
+
   
-  basic_table.on( 'click', 'tbody td.edit-cell', function (e) {
-    editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
-  } );
   
   $("#form" ).validate({
     // define validation rules
@@ -474,17 +500,25 @@ $(document).ready(function() {
         vendor: {
             required: true
         }, 
+        invoice_code: {
+          required: state==3
+        }, 
     },
     
     //display error alert on form submit  
     invalidHandler: function(event, validator) {
       App.showErrorDialog("操作失败", "请输入正确的值");
+      validator.focusInvalid();
     },
 
     submitHandler: function (form) {
       var data = basic_table.rows().data().toArray();
+      var post_data = {};
+      if (!is_vendor)
+        post_data.table = data;
+      
       jQuery(form).ajaxSubmit({
-          data: {table:data},
+          data: post_data,
           success: function(res, status, xhr, form) {
             App.showSuccessDialog("操作成功", function(){
               window.location.href = edit_url + res.code + "/edit";
@@ -561,6 +595,11 @@ $(document).ready(function() {
     $('#state').val(4);
     $("#form").submit();            
   });
+  
+  $("#invoice").click(function() {
+    $("#form").submit();            
+  });   
+  
   
 });
 </script>

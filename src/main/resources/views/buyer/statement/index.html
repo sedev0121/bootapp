@@ -22,7 +22,7 @@
           <label for="code">单据号:</label>
           <input type="text" id="code" class="form-control">
         </div>
-        <div class="search-cell width-10">
+        <div class="search-cell width-10" th:classappend ="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/')?'hidden':''}" >
           <label for="supplier_code">供应商编码/名称：</label>
           <input type="text" id="vendor" class="form-control">
         </div>
@@ -33,7 +33,7 @@
         </div>
         <div style="vertical-align: bottom" class="search-cell width-15">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-          <a class="btn btn-primary" th:href="@{/buyer/statement/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+          <a class="btn btn-primary" th:unless="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/')}" th:href="@{/buyer/statement/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
     </div>
     <div class="row">
@@ -48,95 +48,104 @@
 
 
 <script th:inline="javascript">
-	
-	
-  $(document).ready(function() {
-    $("#state").select2({
-      data : App.getInqueryStateDataWithAll(),
-      minimumResultsForSearch : -1
-    });
+/*[+
+var is_vendor = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?true:false}]];  
+var list_url = [[@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/statement/list'}]];
+var edit_url = [[@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/statement/'}]];
++]*/
 
-    $('#start_date').datepicker();
-    $('#end_date').datepicker();
-
-    var table = $('#example').DataTable({
-      ordering : true,
-      ajax : {
-        url : /*[[@{/buyer/statement/list}]]*/'',
-        data : function(data) {
-          var filter = {
-            order : data.columns[data.order[0].column].data,
-            dir : data.order[0].dir,
-            rows_per_page : data.length,
-            page_index : data.start / data.length + 1,
-            vendor : $('#vendor').val(),
-            state: $('#state').val(),
-            code : $('#code').val(),
-            start_date : $('#start_date').val(),
-            end_date : $('#end_date').val()
-          }
-          return filter;
-        },
-        dataSrc : function(json) {
-          json.recordsTotal = json.totalElements;
-          json.recordsFiltered = json.totalElements;
-          return json.content;
-        },
-      },
-      createdRow: function( row, data, dataIndex ) {
-          $(row).addClass('');
-      },
-      columns : [ {
-        data : 'code',
-        title : '单据号',
-        render : function(data, display, record) {
-          var edit_url = /*[[@{/buyer/statement/}]]*/'';
-          edit_url += data + '/edit';
-          return '<a href="' + edit_url + '">' + data + '</a>';
-        },
-      }, {
-        data : 'vendor_name',
-        title : '供应商名称',
-      }, {
-        data : 'vendor_code',
-        title : '供应商编码',
-      }, {
-        data : 'maker',
-        title : '制单人',
-      }, {
-        data : 'makedate',
-        title : '制单日期',
-        render : $.fn.date_renderer
-      }, {
-        data : 'state',
-        title : '状态',
-        createdCell: App.getInqueryStateClass,
-        render : App.getStatementStateOfId
-      }, {        
-        data : 'verifier',
-        title : '审核人',
-      }, {
-        data : 'verifydate',
-        title : '审核日期',
-        render : $.fn.date_renderer
-
-      } ],
-      order: [  [ 3, "desc" ] ]
-
-      
-    });
-
-    $("#btn_search").click(function() {
-      table.draw();
-    });
-    
-    $('#state').change(function() {
-      table.draw();
-    });
-    
-    $('#vendor, #code, #start_date, #end_date').keyup(function(e) {
-      if (e.keyCode == 13)
-        table.draw();
-    });
+$(document).ready(function() {
+  $("#state").select2({
+    data : App.getStatementStateDataWithAll(),
+    minimumResultsForSearch : -1
   });
+
+  $('#start_date').datepicker();
+  $('#end_date').datepicker();
+
+  var table = $('#example').DataTable({
+    ordering : true,
+    ajax : {
+      url : list_url,
+      data : function(data) {
+        var filter = {
+          order : data.columns[data.order[0].column].data,
+          dir : data.order[0].dir,
+          rows_per_page : data.length,
+          page_index : data.start / data.length + 1,
+          vendor : $('#vendor').val(),
+          state: $('#state').val(),
+          code : $('#code').val(),
+          start_date : $('#start_date').val(),
+          end_date : $('#end_date').val()
+        }
+        return filter;
+      },
+      dataSrc : function(json) {
+        json.recordsTotal = json.totalElements;
+        json.recordsFiltered = json.totalElements;
+        return json.content;
+      },
+    },
+    createdRow: function( row, data, dataIndex ) {
+        $(row).addClass('');
+    },
+    columns : [ {
+      data : 'code',
+      title : '单据号',
+      render : function(data, display, record) {
+        url =edit_url + data + '/edit';
+        return '<a href="' + url + '">' + data + '</a>';
+      },
+    }, {
+      data : 'vendor_name',
+      //visible: !is_vendor,
+      title : '供应商名称',
+    }, {
+      data : 'vendor_code',
+      //visible: !is_vendor,
+      title : '供应商编码',
+    }, {
+      data : 'state',
+      title : '状态',
+      createdCell: App.getInqueryStateClass,
+      render : App.getStatementStateOfId
+    }, {
+      data : 'invoice_code',
+      title : '发票号',
+    }, {
+      data : 'maker',
+      title : '制单人',
+    }, {
+      data : 'makedate',
+      title : '制单日期',
+      render : $.fn.date_renderer
+    }, {        
+      data : 'verifier',
+      title : '审核人',
+    }, {
+      data : 'verifydate',
+      title : '审核日期',
+      render : $.fn.date_renderer
+
+    } ],
+    order: [  [ 3, "desc" ] ]
+
+    
+  });
+
+  $("#btn_search").click(function() {
+    table.draw();
+  });
+  
+  $('#state').change(function() {
+    table.draw();
+  });
+  
+  $('#vendor, #code, #start_date, #end_date').keyup(function(e) {
+    if (e.keyCode == 13)
+      table.draw();
+  });
+});	
+  
 </script>

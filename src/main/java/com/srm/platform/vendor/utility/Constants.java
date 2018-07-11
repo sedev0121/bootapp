@@ -25,6 +25,5 @@ public class Constants {
 	public static int STATEMENT_STATE_SUBMIT = 2;
 	public static int STATEMENT_STATE_CONFIRM = 3;
 	public static int STATEMENT_STATE_CANCEL = 4;
-	public static int STATEMENT_STATE_INVOICE = 5;
 
 }

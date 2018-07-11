@@ -84,7 +84,7 @@
             <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purchasein')} ? active : ''" >
               <a th:href="@{/buyer/purchasein}">出入库单据</a>
             </li>
-            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purinvoice')} ? active : ''" >
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'statement')} ? active : ''" >
               <a th:href="@{/buyer/statement}">对账单管理</a>
             </li>
             <li class="dropdown" th:classappend="${#strings.contains(#httpServletRequest.requestURI,'inventory')} or ${#strings.contains(#httpServletRequest.requestURI,'price')}? active : ''" >   
@@ -123,8 +123,8 @@
             <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'/vendor/ship')} ? active : ''" >
               <a th:href="@{/vendor/ship}">出货看板</a>
             </li>
-            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'purinvoice')} ? active : ''" >
-              <a th:href="@{/vendor/purinvoice}">对账单管理</a>
+            <li th:classappend="${#strings.contains(#httpServletRequest.requestURI,'statement')} ? active : ''" >
+              <a th:href="@{/vendor/statement}">对账单管理</a>
             </li>
           </ul>
         </div>

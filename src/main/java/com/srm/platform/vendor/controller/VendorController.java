@@ -51,6 +51,7 @@ import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
+import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
@@ -58,6 +59,8 @@ import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
+import com.srm.platform.vendor.repository.StatementDetailRepository;
+import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
@@ -66,6 +69,9 @@ import com.srm.platform.vendor.utility.ExportShipForm;
 import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.PurchaseOrderSearchItem;
+import com.srm.platform.vendor.utility.StatementDetailItem;
+import com.srm.platform.vendor.utility.StatementSaveForm;
+import com.srm.platform.vendor.utility.StatementSearchItem;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
@@ -100,6 +106,12 @@ public class VendorController {
 
 	@Autowired
 	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
+
+	@Autowired
+	private StatementMainRepository statementMainRepository;
+
+	@Autowired
+	private StatementDetailRepository statementDetailRepository;
 
 	// Home
 	@GetMapping({ "", "/" })
@@ -656,6 +668,106 @@ public class VendorController {
 	@GetMapping("/purinvoice/{id}/edit")
 	public String purinvoice_edit() {
 		return "vendor/purinvoice/edit";
+	}
+
+	@GetMapping("/statement")
+	public String statement() {
+		return "buyer/statement/index";
+	}
+
+	@GetMapping({ "/statement/{code}/edit" })
+	public String statement_edit(@PathVariable("code") String code, Model model) {
+		model.addAttribute("main", this.statementMainRepository.findOneByCode(code));
+		return "buyer/statement/edit";
+	}
+
+	@RequestMapping(value = "/statement/list", produces = "application/json")
+	public @ResponseBody Page<StatementSearchItem> statement_list_ajax(@RequestParam Map<String, String> requestParams,
+			Principal principal) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "ccode");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String stateStr = requestParams.getOrDefault("state", "0");
+		String code = requestParams.getOrDefault("code", "");
+		String start_date = requestParams.getOrDefault("start_date", null);
+		String end_date = requestParams.getOrDefault("end_date", null);
+
+		Integer state = Integer.parseInt(stateStr);
+		Date startDate = null, endDate = null;
+		try {
+			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+			if (start_date != null && !start_date.isEmpty())
+				startDate = dateFormatter.parse(start_date);
+			if (end_date != null && !end_date.isEmpty()) {
+				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+				endDate = dateFormatter.parse(end_date);
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(endDate);
+				cal.add(Calendar.DATE, 1);
+				endDate = cal.getTime();
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		switch (order) {
+		case "vendor_name":
+			order = "b.name";
+			break;
+		case "vendor_code":
+			order = "b.code";
+			break;
+		case "verifier":
+			order = "d.realname";
+			break;
+		case "maker":
+			order = "c.realname";
+			break;
+		}
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		Account account = accountRepository.findOneByUsername(principal.getName());
+
+		Page<StatementSearchItem> result = statementMainRepository.findBySearchTermForVendor(code,
+				account.getVendor().getCode(), request);
+
+		return result;
+	}
+
+	@RequestMapping(value = "/statement/{code}/details", produces = "application/json")
+	public @ResponseBody List<StatementDetailItem> statement_detail_list_ajax(@PathVariable("code") String code) {
+		List<StatementDetailItem> list = statementDetailRepository.findDetailsByCode(code);
+
+		return list;
+	}
+
+	@PostMapping("/statement/update")
+	public @ResponseBody StatementMain statement_update_ajax(StatementSaveForm form, Principal principal) {
+		StatementMain main = new StatementMain();
+		main.setCode(form.getCode());
+
+		Example<StatementMain> example = Example.of(main);
+		Optional<StatementMain> result = statementMainRepository.findOne(example);
+		if (result.isPresent()) {
+			main = result.get();
+
+			if (form.getInvoice_code() != null && !form.getInvoice_code().isEmpty()) {
+				main.setInvoiceCode(form.getInvoice_code());
+			} else {
+				Account account = accountRepository.findOneByUsername(principal.getName());
+				main.setVerifier(account);
+				main.setVerifydate(new Date());
+				main.setState(form.getState());
+			}
+
+			main = statementMainRepository.save(main);
+		}
+
+		return main;
 	}
 
 }
