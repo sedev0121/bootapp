@@ -70,7 +70,7 @@
                 </div>                
                 <div class="col-lg-6 col-md-6">
                   <label for="invoice_code">发票号: </label>
-                  <input type="text" id="invoice_code" name="invoice_code" th:value="${main.invoiceCode}" class="form-control" />
+                  <input type="text" id="invoice_code" name="invoice_code" th:value="${main.invoiceCode}" class="form-control" readonly/>
                 </div>                
 
             </div>
@@ -251,7 +251,7 @@ $(document).ready(function() {
           data : 'quantity',
           title : '入库数量',
         }, {
-          data : 'confirmed_quantity',
+          data : 'closed_quantity',
           title : '已对账数量',
         }, {
           data : 'cost',
@@ -259,14 +259,15 @@ $(document).ready(function() {
         }, {
           data : 'number',
           title : '件数',
+/*
         }, {
           data : 'state',
           title : '状态',
           createdCell: App.getInqueryStateClass,
           render : App.getPurchaseInStateOfId        
-
+*/
         } ],
-        order: [  [ 0, "asc" ] ]
+        order: [  [ 1, "asc" ] ]
 
         
       });
@@ -421,6 +422,10 @@ $(document).ready(function() {
         },
       },
       columns : [ {
+        data : 'purchase_in_detail_id',
+        title : 'id',
+        visible: false,
+      }, {
         data : 'purchase_in_code',
         render: function(data, type, row) {
           if (row.purchase_in_detail_id == 0){
@@ -450,10 +455,10 @@ $(document).ready(function() {
         title : '规格型号',
       }, {
         data : 'cmassunitname',
-        title : '主计量单位',
+        title : '单位',
       }, {
         data : 'price',
-        title : '入库单单价',
+        title : '单价',
       }, {
         data : 'quantity',
         title : '入库数量',
@@ -497,7 +502,7 @@ $(document).ready(function() {
         "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ],
         "orderable": false
       } ],
-      order: [  [ 0, "asc" ], [2, "asc"] ],
+      order: [  [ 0, "asc" ], [3, "asc"] ],
     };
   
   if (state>1) {

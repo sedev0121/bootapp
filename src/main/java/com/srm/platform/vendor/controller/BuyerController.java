@@ -765,6 +765,9 @@ public class BuyerController {
 		}
 
 		switch (order) {
+		case "purchase_in_detail_id":
+			order = "id";
+			break;
 		case "date":
 			order = "b.date";
 			break;

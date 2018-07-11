@@ -147,7 +147,7 @@
         data : 'quantity',
         title : '入库数量',
       }, {
-        data : 'confirmed_quantity',
+        data : 'closed_quantity',
         title : '已对账数量',
 /*        
       }, {
@@ -166,8 +166,14 @@
       }, {
         data : 'state',
         title : '状态',
-        createdCell: App.getInqueryStateClass,
-        render : App.getPurchaseInStateOfId        
+        render : function(data, type, row){
+          if (row.closed_quantity<row.quantity) {
+            return "未对账";
+          }else{
+            return "已对账";
+          }
+            
+        }        
 
       } ],
     };

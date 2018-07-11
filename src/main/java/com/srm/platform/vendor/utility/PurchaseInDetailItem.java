@@ -32,8 +32,8 @@ public interface PurchaseInDetailItem {
 
 	String getNumber();
 
-	String getConfirmed_quantity();
-
 	String getState();
+
+	String getClosed_quantity();
 
 }
