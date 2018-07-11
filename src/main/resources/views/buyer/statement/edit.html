@@ -369,16 +369,31 @@ $(document).ready(function() {
           { 
             text: "增加扣款项", 
             action: function( e, dt, node, config) {
+              if ($("#vendor").val() == undefined) {
+                $('#vendor').focus();
+                App.showErrorDialog("请选择供应商！");
+                return false;
+              }
+              
+              var exist_data = basic_table.rows().data().toArray();
+              for(i=0; i<exist_data.length; i++) {
+                exist_row = exist_data[i];
+                if (exist_row.purchase_in_detail_id == 0) {
+                  App.showErrorDialog("已存在扣款项！");
+                  return;
+                }
+              }
+              
               var new_row = {
                   assitantunitname:null,
-                  closed_money:4,
-                  closed_price:3,
-                  closed_quantity:2,
-                  closed_tax_money:6,
-                  closed_tax_price:5,
+                  closed_money:'',
+                  closed_price:'',
+                  closed_quantity:'',
+                  closed_tax_money:'',
+                  closed_tax_price:'',
                   cmassunitname:null,
                   cost:null,
-                  id:0,
+                  purchase_in_detail_id:0,
                   inventorycode:null,
                   inventoryname:null,
                   irate:null,
@@ -407,6 +422,13 @@ $(document).ready(function() {
       },
       columns : [ {
         data : 'purchase_in_code',
+        render: function(data, type, row) {
+          if (row.purchase_in_detail_id == 0){
+            return "扣款项";
+          }else{
+            return data;
+          }
+        },
         title : '入库单编码',
       }, {
         data : 'purchase_in_date',
