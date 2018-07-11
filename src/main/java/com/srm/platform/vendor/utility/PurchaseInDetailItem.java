@@ -2,6 +2,8 @@ package com.srm.platform.vendor.utility;
 
 public interface PurchaseInDetailItem {
 
+	String getId();
+
 	String getCode();
 
 	String getDate();

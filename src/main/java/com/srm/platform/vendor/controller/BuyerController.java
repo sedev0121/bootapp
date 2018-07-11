@@ -35,6 +35,7 @@ import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
+import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
@@ -58,6 +59,7 @@ import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchItem;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.PurchaseOrderSearchItem;
 import com.srm.platform.vendor.utility.StatementDetailItem;
+import com.srm.platform.vendor.utility.StatementSaveForm;
 import com.srm.platform.vendor.utility.StatementSearchItem;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
@@ -866,95 +868,65 @@ public class BuyerController {
 	}
 
 	@PostMapping("/statement/update")
-	public @ResponseBody VenPriceAdjustMain statement_update_ajax(VenPriceSaveForm form, Principal principal) {
-		VenPriceAdjustMain venPriceAdjustMain = new VenPriceAdjustMain();
-		venPriceAdjustMain.setCreatetype(Constants.CREATE_TYPE_BUYER);
-		venPriceAdjustMain.setCcode(form.getCcode());
+	public @ResponseBody StatementMain statement_update_ajax(StatementSaveForm form, Principal principal) {
+		StatementMain main = new StatementMain();
+		main.setCode(form.getCode());
 
-		Example<VenPriceAdjustMain> example = Example.of(venPriceAdjustMain);
-		Optional<VenPriceAdjustMain> result = venPriceAdjustMainRepository.findOne(example);
+		Example<StatementMain> example = Example.of(main);
+		Optional<StatementMain> result = statementMainRepository.findOne(example);
 		if (result.isPresent())
-			venPriceAdjustMain = result.get();
+			main = result.get();
 
-		if ((venPriceAdjustMain.getIverifystate() == null
-				|| venPriceAdjustMain.getIverifystate() == Constants.STATE_NEW)
-				&& form.getState() <= Constants.STATE_SUBMIT) {
-			venPriceAdjustMain.setType(form.getType());
-			venPriceAdjustMain.setIsupplytype(form.getProvide_type());
-			venPriceAdjustMain.setItaxrate(form.getTax_rate());
+		if ((main.getState() == null || main.getState() == Constants.STATEMENT_STATE_NEW)
+				&& form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
 
-			venPriceAdjustMain.setDstartdate(form.getStart_date());
-			venPriceAdjustMain.setDenddate(form.getEnd_date());
-			venPriceAdjustMain.setDmakedate(form.getMake_date());
-			venPriceAdjustMain.setVendor(vendorRepository.findOneByCode(form.getVendor()));
-			venPriceAdjustMain.setMaker(accountRepository.findOneById(form.getMaker()));
+			main.setMakedate(new Date());
+			main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
+			main.setMaker(accountRepository.findOneById(form.getMaker()));
+		} else if (form.getState() >= Constants.STATEMENT_STATE_CONFIRM) {
+			Account account = accountRepository.findOneByUsername(principal.getName());
+			main.setVerifier(account);
+			main.setVerifydate(new Date());
 		}
 
-		Account account = accountRepository.findOneByUsername(principal.getName());
+		main.setRemark(form.getRemark());
+		main.setState(form.getState());
+		main = statementMainRepository.save(main);
 
-		if (form.getState() == Constants.STATE_VERIFY || (venPriceAdjustMain.getIverifystate() != null
-				&& venPriceAdjustMain.getIverifystate() == Constants.STATE_PASS
-				&& form.getState() == Constants.STATE_CANCEL)) {
-			venPriceAdjustMain.setVerifier(account);
-			venPriceAdjustMain.setDverifydate(new Date());
-		}
-		if (form.getState() == Constants.STATE_PUBLISH) {
-			venPriceAdjustMain.setPublisher(account);
-			venPriceAdjustMain.setDpublishdate(new Date());
-		}
-
-		venPriceAdjustMain.setIverifystate(form.getState());
-		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
-
-		if (form.getState() <= Constants.STATE_SUBMIT && form.getTable() != null) {
-			venPriceAdjustDetailRepository
-					.deleteInBatch(venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode()));
+		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT && form.getTable() != null) {
+			statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
 
 			for (Map<String, String> row : form.getTable()) {
-				VenPriceAdjustDetail detail = new VenPriceAdjustDetail();
-				detail.setMain(venPriceAdjustMain);
-				detail.setInventory(inventoryRepository.findByCode(row.get("cinvcode")));
-				detail.setCbodymemo(row.get("cbodymemo"));
-				detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
-				String max = row.get("fmaxquantity");
-				String min = row.get("fminquantity");
-				if (max != null && !max.isEmpty())
-					detail.setFmaxquantity(Float.parseFloat(max));
+				StatementDetail detail = new StatementDetail();
+				detail.setCode(main.getCode());
+				detail.setPurchaseInDetailId(Long.parseLong(row.get("purchase_in_detail_id")));
 
-				if (min != null && !min.isEmpty())
-					detail.setFminquantity(Float.parseFloat(min));
+				String closedQuantity = row.get("closed_quantity");
+				String closedPrice = row.get("closed_price");
+				String closedMoney = row.get("closed_money");
+				String closedTaxPrice = row.get("closed_tax_price");
+				String closedTaxMoney = row.get("closed_tax_money");
 
-				if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())
-					detail.setIvalid(Integer.parseInt(row.get("ivalid")));
-				try {
-					String startDateStr = row.get("dstartdate");
-					String endDateStr = row.get("denddate");
-					SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-					if (startDateStr != null && !startDateStr.isEmpty()) {
-						detail.setDstartdate(dateFormatter.parse(startDateStr));
-					}
+				if (closedQuantity != null && !closedQuantity.isEmpty())
+					detail.setClosedQuantity(Float.parseFloat(closedQuantity));
 
-					if (endDateStr != null && !endDateStr.isEmpty()) {
-						dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-						detail.setDenddate(dateFormatter.parse(endDateStr));
-					}
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				if (closedPrice != null && !closedPrice.isEmpty())
+					detail.setClosedPrice(Float.parseFloat(closedPrice));
 
-				detail.setItaxrate(Float.parseFloat(row.get("itaxrate")));
-				detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
+				if (closedMoney != null && !closedMoney.isEmpty())
+					detail.setClosedMoney(Float.parseFloat(closedMoney));
 
-				venPriceAdjustDetailRepository.save(detail);
+				if (closedTaxPrice != null && !closedTaxPrice.isEmpty())
+					detail.setClosedTaxPrice(Float.parseFloat(closedTaxPrice));
+
+				if (closedTaxMoney != null && !closedTaxMoney.isEmpty())
+					detail.setClosedTaxMoney(Float.parseFloat(closedTaxMoney));
+
+				statementDetailRepository.save(detail);
 			}
 		}
 
-		if (form.getState() == Constants.STATE_PUBLISH) {
-			updatePriceTable(venPriceAdjustMain);
-		}
-
-		return venPriceAdjustMain;
+		return main;
 	}
 
 }

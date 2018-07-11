@@ -26,6 +26,42 @@ var App = function() {
     return title;
   };
   
+  var addKeyDownEditor = function(editor, start_column, end_column) {
+    editor.on( 'open', function ( e, type ) {
+      if ( type === 'inline' ) {
+
+          // Listen for a tab key event when inline editing
+          $(document).on( 'keydown.editor', function ( e ) {
+              if ( e.keyCode === 9 ) {
+                  e.preventDefault();
+
+                  // Find the cell that is currently being edited
+                  var cell = $('div.DTE').parent();
+                   
+                  if ( e.shiftKey && cell.prev().length && cell.prev().index() !== (start_column-1) ) {
+                      // One cell to the left (skipping the first column)
+                      cell.prev().click();
+                  }
+                  else if ( e.shiftKey ) {
+                      // Up to the previous row
+                      cell.parent().prev().children().eq(end_column).click();
+                  }
+                  else if ( cell.next().length && cell.next().index()!== (end_column+1) ) {
+                      // One cell to the right
+                      cell.next().click();
+                  }
+                  else {
+                      // Down to the next row
+                      cell.parent().next().children().eq(start_column).click();
+                  }
+              }
+          } );
+      }
+    }).on( 'close', function () {
+      $(document).off( 'keydown.editor' );
+    });
+  };
+  
   var select2_default_options = {
       language: "zh-CN",
       ajax: {
@@ -91,6 +127,7 @@ var App = function() {
       return inquery_state_data;
     },
     
+    addKeyDownEditor: addKeyDownEditor,
     getPurchaseOrderStateData: function() {
       return purchase_order_state_data;
     },

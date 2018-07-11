@@ -3,6 +3,8 @@ package com.srm.platform.vendor.utility;
 public interface StatementDetailItem {
 
 	// statement_detail table info
+	Long getPurchase_in_detail_id();
+
 	Long getId();
 
 	String getState();

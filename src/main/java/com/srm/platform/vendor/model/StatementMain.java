@@ -44,6 +44,10 @@ public class StatementMain {
 	@JoinColumn(name = "vendor_code", referencedColumnName = "code")
 	Vendor vendor;
 
+	public StatementMain() {
+
+	}
+
 	public StatementMain(AccountRepository accountRepository) {
 		this.code = UniqueIdGenerator.generateId();
 		this.makedate = new Date();

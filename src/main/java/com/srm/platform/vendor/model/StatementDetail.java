@@ -1,13 +1,10 @@
 package com.srm.platform.vendor.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -34,9 +31,8 @@ public class StatementDetail {
 	@Column(name = "closed_tax_money")
 	private Float closedTaxMoney;
 
-	@OneToOne(cascade = { CascadeType.ALL })
-	@JoinColumn(name = "purchase_in_detail_id", referencedColumnName = "id")
-	PurchaseInDetail purcaseInDetail;
+	@Column(name = "purchase_in_detail_id")
+	Long purchaseInDetailId;
 
 	public Long getId() {
 		return id;
@@ -94,12 +90,12 @@ public class StatementDetail {
 		this.closedTaxMoney = closedTaxMoney;
 	}
 
-	public PurchaseInDetail getPurcaseInDetail() {
-		return purcaseInDetail;
+	public Long getPurchaseInDetailId() {
+		return purchaseInDetailId;
 	}
 
-	public void setPurcaseInDetail(PurchaseInDetail purcaseInDetail) {
-		this.purcaseInDetail = purcaseInDetail;
+	public void setPurchaseInDetailId(Long purchaseInDetailId) {
+		this.purchaseInDetailId = purchaseInDetailId;
 	}
 
 }
