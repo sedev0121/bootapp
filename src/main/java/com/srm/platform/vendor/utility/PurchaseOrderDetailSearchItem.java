@@ -35,4 +35,6 @@ public interface PurchaseOrderDetailSearchItem {
 
 	String getConfirmnote();
 
+	String getRemain_quantity();
+
 }

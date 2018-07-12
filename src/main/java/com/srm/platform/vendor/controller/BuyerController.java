@@ -626,6 +626,10 @@ public class BuyerController {
 		String code = requestParams.getOrDefault("code", "");
 
 		switch (order) {
+		case "remain_quantity":
+			order = "remain_quantity";
+			break;
+
 		case "vendorname":
 			order = "d.name";
 			break;

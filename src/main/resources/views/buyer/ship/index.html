@@ -105,6 +105,9 @@
             }, {
               data : 'shipped_quantity',
               title : '已发货数量',                
+            }, {
+              data : 'remain_quantity',
+              title : '未交数量',  
 			}, {
               data : 'arrivedate',
               title : '需求日期',
@@ -120,6 +123,10 @@
               data : 'confirmnote',
               title : '交货方备注',
 			} ],
+			columnDefs: [ {
+			  "targets": 10,
+			  "orderable": false
+		    }]
 		});
 		
     $("#btn_search").click(function() {
