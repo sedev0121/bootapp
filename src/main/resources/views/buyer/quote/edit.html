@@ -7,17 +7,19 @@
           <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
         <li>价格管理</li>
-        <li><a th:href="@{/buyer/quote}" class="active">报价管理</a></li>
+        <li><a th:href="@{|/${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'}/quote|}" class="active">报价管理</a></li>
         <li class="active">报价单</li>
       </ul>
     <div class="btn-group-bar">
         <div class="text-right">
-          <a class="btn btn-primary" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
-          <a class="btn btn-primary" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
-          <a class="btn btn-primary" th:if="${main.iverifystate==3 OR main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
-          <a class="btn btn-primary" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
-          <a class="btn btn-default" th:href="@{/buyer/quote}"><i class="fa fa-arrow-left"></i> 返回</a>
-        </div>
+          <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/buyer') and main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
+          <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/buyer') and main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
+          <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/buyer') and (main.iverifystate==3 OR main.iverifystate==5)}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+          <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/buyer') and main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
+          <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor') and main.iverifystate==2}" id="confirm"><i class="fa fa-arrow-up"></i> 确认</a>
+          <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor') and main.iverifystate==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+          <a class="btn btn-default" th:href="@{|/${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'}/quote|}"><i class="fa fa-arrow-left"></i> 返回</a>
+      </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-body"> 
@@ -150,58 +152,14 @@
       idSrc: "id",
       //template: '#customForm',
       fields: [ {
-          id: "select_inv_code",
-          label: "选择商品:",
-          type: "select",
-          name: "select"
-        },{
-          label: "商品编码:",
-          type:  "readonly",
-          id: "cinvcode",
-          name: "cinvcode"          
-        },{
-          label: "商品名称:",
-          type:  "readonly",
-          id: "name",
-          name: "name"
-        },{
-          label: "规格型号:",
-          type:  "readonly",
-          id: "specs",
-          name: "specs"  
-        },{
-          label: "单位:",
-          type:  "readonly",
-          id: "puunit_name",
-          name: "puunit_name"            
-        },{
-          label: "最小数量:",
-          attr: {
-            type: "number"
-          },
-          id: "fminquantity",
-          name: "fminquantity"                
-        },{
-          label: "最大数量:",
-          attr: {
-            type: "number"
-          },
-          id: "fmaxquantity",
-          name: "fmaxquantity"                
-        },{
           label: "最新未税价格:",
           id: "iunitprice",
           attr: {
             type: "number"
           },
-          name: "iunitprice"            
+          name: "iunitprice"    
         },{
-          label: "税率:",
-          attr: {
-            type: "number"
-          },
-          id: "itaxrate",                
-          name: "itaxrate"                
+          name: "itaxrate"             
         },{
           label: "最新含税报价:",
           type:  "readonly",
@@ -211,94 +169,23 @@
           id: "itaxunitprice",    
           name: "itaxunitprice"                
         },{
-          label: "生效日期:",
-          type: "date",
-          opts: {
-            showOn: "focus"
-          },
-          dateFormat: "yy-mm-dd",
-          name: "dstartdate"                
-        },{
-          label: "有效日期:",
-          type: "date",
-          opts: {
-            showOn: "focus"
-          },
-          dateFormat: $.datepicker.ISO_8601,
-          name: "denddate"                
-        },{
-          label: "是否有效:",
-          type: "checkbox",
-          separator: "|",
-          options:   [
-              { label: '', value: 1 }
-          ],
-          name: "ivalid"                
-        },{
           label: "备注:",
           name: "cbodymemo"                
         }],
-      i18n: {
-          create: {
-              button: "添加商品",
-              title:  "添加",
-              submit: "保存"
-          },
-          edit: {
-              button: "修改商品",
-              title:  "修改",
-              submit: "保存"
-          },
-          remove: {
-              button: "删除商品",
-              title:  "删除",
-              submit: "是",
-              confirm: {
-                  _: "确定要删除%d行商品吗?",
-                  1: "确定要删除吗?"
-              }
-          },
-          error: {
-              system: "发生错误！"
-          }
-      }
-    }).on( 'preSubmit', function ( e, data, action ) {
+    }).on( 'preSubmit', function (e, json, data, action) {
       if ( action !== 'remove' ) {
-          var iunitprice = this.field( 'iunitprice' );
-  
-          if ( ! iunitprice.val() ) {
-            iunitprice.error( '不能为空！' );
-          }
-          
-          var select_inv_code = this.field( 'select' );
-          if (! $('#select_inv_code').select2('val')) {
-            select_inv_code.error( '请选择商品！' );
-          }
-          
-          if ($("#type").select2('val') == 2) {
-            if ( ! this.field( 'fminquantity' ).val() ) {
-              this.field( 'fminquantity' ).error( '不能为空！' );
-            }
-            if ( ! this.field( 'fmaxquantity' ).val() ) {
-              this.field( 'fmaxquantity' ).error( '不能为空！' );
-            }
-          }
-          // If any error was reported, cancel the submission so it can be corrected
-          if ( this.inError() ) {
-              return false;
-          }
-      }      
-    } );
+        $.each(json.data, function(key, item){
+          if (item.itaxrate != undefined && item.iunitprice != undefined) {
+            value = (Number.parseFloat(item.itaxrate) + 100) * item.iunitprice/100;
+            item.itaxunitprice = Number.parseFloat(value).toFixed(2);  
+          }   
+        });
+      }
+    });
     
     var table_options = {
         serverSide:false,
         processing:false,
-        select: true,
-        buttons: [
-            { extend: "create", editor: editor },
-            { extend: "edit",   editor: editor },
-            { extend: "remove", editor: editor }
-        ],
         ajax : {
           url : detail_url,
           dataSrc : function(json) {
@@ -330,6 +217,7 @@
           title : '最大数量',
         }, {
           data : 'iunitprice',
+          className: 'edit-cell',
           title : '最新未税价格',
         }, {
           data : 'itaxrate',
@@ -356,6 +244,7 @@
           },
         }, {
           data : 'cbodymemo',
+          className: 'edit-cell',
           title : '备注',
 
         } ],
@@ -363,11 +252,17 @@
             // Set the checked state of the checkbox in the table
             $('input.editor-valid', row).prop( 'checked', data.ivalid == 1 );
         }
-      };
+      };    
 
 
     var table = $('#example').DataTable(table_options);
 
+    if (state == 2) {
+      $('#example').on( 'click', 'tbody td.edit-cell', function (e) {
+        editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+      });
+    }
+    
     if (state == 3) {
       $('#example').on( 'change', 'input.editor-valid', function () {
           editor.edit( $(this).closest('tr'), false )

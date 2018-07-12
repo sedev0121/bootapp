@@ -18,16 +18,16 @@
           <label for="end_date">有效时间: </label>
           <input type="text" id="end_date" value="" class="form-control" />
         </div>
-        <div class="search-cell width-10">
-          <label for="supplier_code">供应商编码/名称：</label>
+        <div class="search-cell width-10" th:classappend ="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/')?'hidden':''}">
+          <label for="vendor">供应商编码/名称：</label>
           <input type="text" id="vendor" class="form-control">
         </div>
         <div class="search-cell width-10">
-          <label for="product_code">商品编码/名称:</label>
+          <label for="inventory">商品编码/名称:</label>
           <input type="text" id="inventory" class="form-control">
         </div>
         <div class="search-cell width-10">
-          <label for="date_range">状态:</label>
+          <label for="state">状态:</label>
           <select name="status" id="state" class="form-control">
           </select>
         </div>
@@ -47,7 +47,11 @@
 
 
 <script th:inline="javascript">
-    
+/*[+
+var is_vendor = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?true:false}]];  
+var list_url = [[@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/quote/list'}]];
+var edit_url = [[@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/quote/'}]];
++]*/    
     
   $(document).ready(function() {
     $("#state").select2({
@@ -61,7 +65,7 @@
     var table = $('#example').DataTable({
       ordering : true,
       ajax : {
-        url : /*[[@{/buyer/quote/list}]]*/'',
+        url : list_url,
         data : function(data) {
           var filter = {
             order : data.columns[data.order[0].column].data,
@@ -87,9 +91,8 @@
         data : 'ccode',
         title : '单据号',
         render : function(data, display, record) {
-          var edit_url = /*[[@{/buyer/quote/}]]*/'';
-          edit_url += data + '/edit';
-          return '<a href="' + edit_url + '">' + data + '</a>';
+          var url = edit_url + data + '/edit';
+          return '<a href="' + url + '">' + data + '</a>';
         },
       }, {
         data : 'vendorname',

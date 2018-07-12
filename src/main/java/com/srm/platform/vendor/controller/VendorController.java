@@ -294,13 +294,13 @@ public class VendorController {
 	// 价格管理->报价管理
 	@GetMapping("/quote")
 	public String quote() {
-		return "vendor/quote/index";
+		return "buyer/quote/index";
 	}
 
 	@GetMapping("/quote/{ccode}/edit")
 	public String quote_edit(@PathVariable("ccode") String ccode, Model model) {
 		model.addAttribute("main", this.venPriceAdjustMainRepository.findOneByCcode(ccode));
-		return "vendor/quote/edit";
+		return "buyer/quote/edit";
 	}
 
 	@PostMapping("/quote/update")
