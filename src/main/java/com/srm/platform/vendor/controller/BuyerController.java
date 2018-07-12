@@ -136,6 +136,14 @@ public class BuyerController {
 		return "buyer/inquery/edit";
 	}
 
+	@GetMapping("/inquery/{ccode}/delete")
+	public @ResponseBody Boolean inquery_delete(@PathVariable("ccode") String ccode) {
+		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
+		if (main != null)
+			venPriceAdjustMainRepository.delete(main);
+		return true;
+	}
+
 	@GetMapping({ "/test" })
 	public void test(@RequestParam Map<String, String> requestParams) {
 		Query q = em.createNativeQuery("select realname from account where username='lisisi'");
