@@ -7,7 +7,7 @@
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li><a th:href="@{/buyer/statement}" class="active">对账单管理</a></li>
+      <li><a th:href="@{|/${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'}/statement|}" class="active">对账单管理</a></li>
       <li class="active">对账单详细</li>
     </ul>       
     <div class="btn-group-bar">

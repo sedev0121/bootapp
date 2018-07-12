@@ -34,7 +34,7 @@
         </div>
         <div style="vertical-align: bottom" class="search-cell width-15">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-          <a class="btn btn-primary" th:href="@{/buyer/inquery/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+          <a class="btn btn-primary" th:href="@{|/${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'}/inquery/add|}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
     </div>
     <div class="row">
@@ -49,7 +49,11 @@
 
 
 <script th:inline="javascript">
-	
+/*[+
+var is_vendor = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?true:false}]];  
+var list_url = [[@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/inquery/list'}]];
+var edit_url = [[@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/inquery/'}]];
++]*/	
 	
   $(document).ready(function() {
     $("#state").select2({
@@ -63,7 +67,7 @@
     var table = $('#example').DataTable({
       ordering : true,
       ajax : {
-        url : /*[[@{/buyer/inquery/list}]]*/'',
+        url : list_url,
         data : function(data) {
           var filter = {
             order : data.columns[data.order[0].column].data,
@@ -91,9 +95,8 @@
         data : 'ccode',
         title : '单据号',
         render : function(data, display, record) {
-          var edit_url = /*[[@{/buyer/inquery/}]]*/'';
-          edit_url += data + '/edit';
-          return '<a href="' + edit_url + '">' + data + '</a>';
+          var url = edit_url + data + '/edit';
+          return '<a href="' + url + '">' + data + '</a>';
         },
       }, {
         data : 'vendorname',

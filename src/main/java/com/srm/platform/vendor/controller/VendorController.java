@@ -122,7 +122,7 @@ public class VendorController {
 	// 价格管理->询价管理
 	@GetMapping("/inquery")
 	public String inquery() {
-		return "vendor/inquery/index";
+		return "buyer/inquery/index";
 	}
 
 	@GetMapping("/inquery/add")
@@ -132,13 +132,13 @@ public class VendorController {
 		main.setVendor(account.getVendor());
 		model.addAttribute("main", main);
 
-		return "vendor/inquery/edit";
+		return "buyer/inquery/edit";
 	}
 
 	@GetMapping("/inquery/{ccode}/edit")
 	public String inquery_edit(@PathVariable("ccode") String ccode, Model model) {
 		model.addAttribute("main", this.venPriceAdjustMainRepository.findOneByCcode(ccode));
-		return "vendor/inquery/edit";
+		return "buyer/inquery/edit";
 	}
 
 	@GetMapping("/inquery/{ccode}/delete")
