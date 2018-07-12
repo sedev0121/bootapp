@@ -396,11 +396,11 @@ $(document).ready(function() {
                   cost:null,
                   purchase_in_detail_id:0,
                   inventorycode:null,
-                  inventoryname:null,
+                  inventoryname:"扣款",
                   irate:null,
                   number:null,
                   price:null,
-                  purchase_in_code:"扣款",
+                  purchase_in_code:null,
                   purchase_in_date:null,
                   quantity:null,
                   rowno:null,
@@ -427,13 +427,6 @@ $(document).ready(function() {
         visible: false,
       }, {
         data : 'purchase_in_code',
-        render: function(data, type, row) {
-          if (row.purchase_in_detail_id == 0){
-            return "扣款项";
-          }else{
-            return data;
-          }
-        },
         title : '入库单编码',
       }, {
         data : 'purchase_in_date',
@@ -446,6 +439,13 @@ $(document).ready(function() {
       }, {
         data : 'inventoryname',
         title : '商品名称',
+        render: function(data, type, row) {
+          if (row.purchase_in_detail_id == 0){
+            return "扣款";
+          }else{
+            return data;
+          }
+        },
       }, {
         data : 'inventorycode',
         title : '商品编码',
@@ -516,7 +516,7 @@ $(document).ready(function() {
     basic_table.on( 'click', 'tbody td.edit-cell', function (e) {
       editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
     } );
-    App.addKeyDownEditor(editor, 11, 15);
+    App.addKeyDownEditor(editor, 9, 13);
   }
 
   
