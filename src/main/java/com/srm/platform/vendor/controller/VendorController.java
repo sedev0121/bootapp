@@ -141,6 +141,14 @@ public class VendorController {
 		return "vendor/inquery/edit";
 	}
 
+	@GetMapping("/inquery/{ccode}/delete")
+	public @ResponseBody Boolean inquery_delete(@PathVariable("ccode") String ccode) {
+		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
+		if (main != null)
+			venPriceAdjustMainRepository.delete(main);
+		return true;
+	}
+
 	@RequestMapping(value = "/inquery/list", produces = "application/json")
 	public @ResponseBody Page<VenPriceAdjustSearchItem> inquery_list_ajax(
 			@RequestParam Map<String, String> requestParams) {
