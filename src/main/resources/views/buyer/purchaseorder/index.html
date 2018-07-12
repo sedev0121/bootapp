@@ -6,7 +6,8 @@
         <li>
           <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
-        <li class="active">订单管理</li>
+        <li th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/')}"><a th:href="@{/vendor/purchageorder}">订单管理</a></li>
+        <li class="active" th:text="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/')}?'订单确认':'订单管理'">订单管理</li>
       </ul>
 
       <div class="search-content">
@@ -14,7 +15,7 @@
             <label for="code">订单号码：</label>
             <input type="text" id="code" class="form-control">
           </div>
-          <div class="search-cell width-10">
+          <div class="search-cell width-10" th:classappend ="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/')?'hidden':''}">
             <label for="vendor">供应商编码/名称：</label>
             <input type="text" id="vendor" class="form-control">
           </div>
@@ -47,7 +48,9 @@
 
 <script th:inline="javascript">
 /*[+
-var edit_url = [[@{/buyer/purchaseorder/}]];
+var is_vendor = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?true:false}]];  
+var list_url = [[@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/purchaseorder/list'}]];
+var edit_url = [[@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/purchaseorder/'}]];
 +]*/ 
 
   $(document).ready(function() {
@@ -62,7 +65,7 @@ var edit_url = [[@{/buyer/purchaseorder/}]];
     var table = $('#example').DataTable({
       ordering : true,
       ajax : {
-        url : /*[[@{/buyer/purchaseorder/list}]]*/'',
+        url : list_url,
         data : function(data) {
           var filter = {
             order : data.columns[data.order[0].column].data,
@@ -95,6 +98,7 @@ var edit_url = [[@{/buyer/purchaseorder/}]];
         },
       }, {
         data : 'vendorname',
+        visible: !is_vendor,
         title : '供应商名称'
       }, {
         data : 'purchase_type_name',
@@ -130,7 +134,7 @@ var edit_url = [[@{/buyer/purchaseorder/}]];
         title : '确认日期',
         render : $.fn.date_renderer
       } ],
-      order: [  [ 5, "desc" ] ]
+      order: [  [ 7, "desc" ] ]
 
       
     });

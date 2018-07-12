@@ -6,19 +6,21 @@
         <li>
           <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
-        <li><a th:href="@{/buyer/purchaseorder}">订单管理</a></li>
-        <li class="active">订单明细</li>
+        <li><a th:href="@{|/${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'}/purchaseorder|}">订单管理</a></li>
+        <li class="active">订单详细</li>
       </ul>
 
       <div class="btn-group-bar">
         <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-          <a class="btn btn-primary" id="deploy" th:if="${main.srmstate==0 AND main.state =='审核'} "><i class="fa fa-undo"></i> 发布</a>
-          <a class="btn btn-default" th:href="@{/buyer/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回</a>
+          <a class="btn btn-primary" id="deploy" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/buyer') and (main.srmstate==0 or main.srmstate==3 ) AND main.state =='审核'} "><i class="fa fa-undo"></i> 发布</a>
+          <a class="btn btn-primary" id="confirm" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor') and main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a>
+          <a class="btn btn-primary" id="cancel" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor') and main.srmstate==1}"><i class="fa fa-undo"></i> 拒绝</a>
+          <a class="btn btn-default" th:href="@{|/${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'}/purchaseorder|}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
       </div> 
             
       <div class="panel panel-default">
-        <form id="form" th:action="@{/buyer/purchaseorder/update}" method="post">
+        <form id="form" th:action="@{|/${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'}/purchaseorder/update|}" method="post">
         </form>
         <div class="panel-body"> 
           <div class="row">
@@ -113,7 +115,7 @@
 <script th:inline="javascript">
 /*[+
 var detail_url = [[@{/api/purchaseorder/}]] + [[${main.code}]] + "/details";
-var submit_url = [[@{/buyer/purchaseorder/update}]];
+var submit_url = [[@{|${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'}/purchaseorder/update}]];
 var state = [[${main.srmstate}]];
 +]*/
 
@@ -179,7 +181,6 @@ $(document).ready(function() {
               return record.sum - record.prepaymoney;
             },
             title : '未付金额',
-
           }, {
               data : 'arrivedate',
               title : '需求日期',
@@ -221,7 +222,27 @@ $(document).ready(function() {
       },{
         label: "供货方备注:",
         name: "arrivenote" 
+      },{
+        label: "承诺交货日期:",
+        type: "date",
+        opts: {
+          showOn: "focus"
+        },
+        dateFormat: "yy-mm-dd",
+        name: "confirmdate" 
+      },{
+        label: "供货方备注:",
+        name: "confirmnote" 
       }],
+    }).on( 'postEdit', function (e, json, data, action) {
+      var table_data = basic_table.rows().data().toArray();
+      var prepay_sum = 0;
+      $.each(table_data, function(key, item){    
+        console.log(item);
+        prepay_sum += parseFloat(item.prepaymoney);
+        console.log(prepay_sum);
+      })
+      $("#prepay_total").val(prepay_sum);      
     });
     
     basic_table = $('#basic_info').DataTable({
@@ -264,23 +285,25 @@ $(document).ready(function() {
             data : 'sum',
             title : '含税金额',
         }, {
-          data : 'prepaymoney',
-          className: 'editable-cell dt-right',
-          title : '预付金额',
-        }, {
             data : 'arrivedate',
             title : '需求日期',
             render: $.fn.date_renderer,
         }, {
+          data : 'prepaymoney',
+            className: 'buyer-cell dt-right',
+            title : '预付金额',
+        }, {
             data : 'arrivenote',
-            className: 'editable-cell',
+            className: 'buyer-cell',
             title : '供货方备注',
         }, {
             data : 'confirmdate',
             title : '承诺交货日期',
+            className: 'vendor-cell',
             render: $.fn.date_renderer,
         }, {
             data : 'confirmnote',
+            className: 'vendor-cell',
             title : '交货方备注',
         } ],
         columnDefs:[{
@@ -290,17 +313,33 @@ $(document).ready(function() {
         }],
     });
     
-    if (state == 0) {
-      $('#basic_info').on( 'click', 'tbody td.editable-cell', function (e) {
+    if (state == 0 || state == 3) {
+      $('#basic_info').on( 'click', 'tbody td.buyer-cell', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       });
+      App.addKeyDownEditor(editor, 9, 10);
     }
+    
+    if (state == 1) {
+      $('#basic_info').on( 'click', 'tbody td.vendor-cell', function (e) {
+        editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+      });
+      App.addKeyDownEditor(editor, 11, 12);
+    }
+    
+    
     
     function submit(state) {
       var data = basic_table.rows().data().toArray();
       var small_data = [];
       $.each(data, function(key, item){
-        small_data.push({id:item.id, prepaymoney:item.prepaymoney, arrivenote:item.arrivenote});
+        small_data.push({
+          id:item.id, 
+          prepaymoney:item.prepaymoney, 
+          arrivenote:item.arrivenote,
+          confirmdate:item.confirmdate, 
+          confirmnote:item.confirmnote
+        });
       });
       
       $('#form').ajaxSubmit({
@@ -320,6 +359,7 @@ $(document).ready(function() {
       });
      
     }
+    
     $("#deploy").click(function() {
       submit(1);
     });

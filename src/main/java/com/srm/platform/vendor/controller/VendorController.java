@@ -399,7 +399,7 @@ public class VendorController {
 	@GetMapping({ "/purchaseorder/{code}/edit" })
 	public String purchaseorder_edit(@PathVariable("code") String code, Model model) {
 		model.addAttribute("main", this.purchaseOrderMainRepository.findOneByCode(code));
-		return "vendor/purchaseorder/edit";
+		return "buyer/purchaseorder/edit";
 	}
 
 	@RequestMapping(value = "/purchaseorder/list", produces = "application/json")
@@ -490,8 +490,8 @@ public class VendorController {
 
 	// 订单管理->订单确认
 	@GetMapping({ "/purchaseorder" })
-	public String purchaseorder_confirm() {
-		return "vendor/purchaseorder/index";
+	public String purchaseorder() {
+		return "buyer/purchaseorder/index";
 	}
 
 	// 订单管理->订单发货
