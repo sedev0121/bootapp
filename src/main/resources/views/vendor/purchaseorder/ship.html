@@ -15,6 +15,10 @@
             <label for="code">订单号码：</label>
             <input type="text" id="code" class="form-control">
           </div>
+          <div class="search-cell width-10" th:classappend ="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/')?'hidden':''}">
+            <label for="vendor">供应商编码/名称：</label>
+            <input type="text" id="vendor" class="form-control">
+          </div>          
           <div class="search-cell width-10">
             <label for="inventory">商品编码/名称：</label>
             <input type="text" id="inventory" class="form-control">
@@ -71,9 +75,13 @@
 
 <script th:inline="javascript">
 /*[+
+var is_vendor = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?true:false}]];    
 var import_result = [[${#vars['message']}]];  
 var importUrl = [[@{/vendor/purchaseorder/ship/import}]];  
 var editable = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/purchaseorder/ship')?true:false}]];
+
+var list_url = [[@{${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'/vendor/purchaseorder/ship/list':'/buyer/ship/list'}}]];
+
 +]*/ 
 
 	$(document).ready(function() {
@@ -88,7 +96,7 @@ var editable = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/p
 		    ordering : true,
 		    select: editable,
 			ajax : {
-				url : /*[[@{/vendor/purchaseorder/ship/list}]]*/'',
+				url : list_url,
 				data : function(data) {
                   var filter = {
                     order : data.columns[data.order[0].column].data,
@@ -116,6 +124,14 @@ var editable = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/p
               data : 'rowno',
               className: 'dt-center',
               title : '订单行号',
+            }, {
+              data : 'vendorname',
+              visible: !is_vendor,
+              title : '供应商名称',
+            }, {
+              data : 'vendorcode',
+              visible: !is_vendor,
+              title : '供应商编码',
             }, {
               data : 'inventoryname',
               title : '商品名称',
@@ -153,7 +169,7 @@ var editable = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/p
               title : '交货方备注',
 			} ],
             columnDefs: [ {
-              "targets": 8,
+              "targets": 10,
               "orderable": false
             }]
 		});

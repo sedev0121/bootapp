@@ -619,7 +619,7 @@ public class BuyerController {
 	// 订单管理->订单发货
 	@GetMapping({ "/ship" })
 	public String ship() {
-		return "buyer/ship/index";
+		return "vendor/purchaseorder/ship";
 	}
 
 	@RequestMapping(value = "/ship/list", produces = "application/json")
