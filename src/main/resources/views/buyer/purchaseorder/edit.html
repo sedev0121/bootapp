@@ -67,11 +67,15 @@
                 <label>确认日期: </label>
                 <input type="text" class="form-control" th:value="${#dates.format(main.reviewdate, 'yyyy-MM-dd')}" readonly/>
               </div>
+              <div class="col-lg-2 col-md-2">
+                <label>预付款总金额: </label>
+                <input type="text" class="form-control" id="prepay_total" readonly/>
+              </div>
               <div class="col-lg-4 col-md-4">
                 <label>供应商地址: </label>
                 <input type="text" class="form-control" th:value="${main.vendor.address}" readonly/>
               </div>
-              <div class="col-lg-8 col-md-8">
+              <div class="col-lg-6 col-md-6">
                 <label>订单摘要: </label>
                 <input type="text" class="form-control" th:value="${main.remark}" readonly/>
               </div>
@@ -226,7 +230,12 @@ $(document).ready(function() {
         ajax : {
             url : detail_url,
             dataSrc : function(json) {
-                return json;
+              var prepay_sum = 0;
+              $.each(json, function(key, item){
+                prepay_sum += item.prepaymoney;
+              })
+              $("#prepay_total").val(prepay_sum);
+              return json;
             },
         },
 
