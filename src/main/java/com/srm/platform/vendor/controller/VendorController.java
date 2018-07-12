@@ -639,7 +639,7 @@ public class VendorController {
 						if (result.isPresent()) {
 							detail = result.get();
 							if (row.get(3) != null) {
-								detail.setShippedQuantity(Float.parseFloat(row.get(3)));
+								detail.setShippedQuantity(detail.getShippedQuantity() + Float.parseFloat(row.get(3)));
 								purchaseOrderDetailRepository.save(detail);
 								importCount++;
 							}
