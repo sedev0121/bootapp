@@ -22,11 +22,11 @@ public class VenPriceAdjustDetail {
 	Long id;
 
 	@JsonIgnore
-	@ManyToOne(cascade = { CascadeType.ALL })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "mainid", referencedColumnName = "ccode")
 	VenPriceAdjustMain main;
 
-	@OneToOne(cascade = { CascadeType.ALL })
+	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "cinvcode", referencedColumnName = "code")
 	Inventory inventory;
 

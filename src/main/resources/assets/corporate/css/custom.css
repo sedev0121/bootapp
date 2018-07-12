@@ -115,6 +115,12 @@ select[readonly].select2-hidden-accessible + .select2-container .select2-selecti
     color:#1BA39C;
 }
 
+#delete {
+    color: #fff;
+    background-color: #F3565D;
+    border-color: #f13e46;
+}
+
 #cancel {
     background-color:red;
 }

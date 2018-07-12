@@ -20,12 +20,12 @@ public class Price {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
-	@ManyToOne(cascade = { CascadeType.ALL })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "fsupplyno", referencedColumnName = "code")
 
 	private Vendor vendor;
 
-	@ManyToOne(cascade = { CascadeType.ALL })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "cinvcode", referencedColumnName = "code")
 	private Inventory inventory;
 

@@ -25,7 +25,7 @@ public class PermissionGroup {
 	private String description;
 
 	@JsonIgnore
-	@ManyToMany(cascade = { CascadeType.ALL })
+	@ManyToMany(cascade = { CascadeType.REFRESH })
 	@JoinTable(name = "permission_group_function_action", joinColumns = {
 			@JoinColumn(name = "group_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "function_action_id", referencedColumnName = "id") })

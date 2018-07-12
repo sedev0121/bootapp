@@ -23,7 +23,7 @@ public class VenPriceAdjustMain {
 	@Id
 	String ccode;
 
-	@OneToOne(cascade = { CascadeType.ALL })
+	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "cvencode", referencedColumnName = "code")
 	Vendor vendor;
 
@@ -39,25 +39,25 @@ public class VenPriceAdjustMain {
 	Date dstartdate;
 	Date denddate;
 
-	@ManyToOne(cascade = { CascadeType.ALL })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "maker_id", referencedColumnName = "id")
 	Account maker;
 
 	Date dmakedate;
 
-	@ManyToOne(cascade = { CascadeType.ALL })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "cverifier_id", referencedColumnName = "id")
 	Account verifier;
 
 	Date dverifydate;
 
-	@ManyToOne(cascade = { CascadeType.ALL })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "creviewer_id", referencedColumnName = "id")
 	Account reviewer;
 
 	Date dreviewdate;
 
-	@ManyToOne(cascade = { CascadeType.ALL })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "cpublisher_id", referencedColumnName = "id")
 	Account publisher;
 

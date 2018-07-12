@@ -23,7 +23,7 @@ public class Function {
 
 	private String name;
 
-	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+	@ManyToMany(cascade = { CascadeType.REFRESH }, fetch = FetchType.EAGER)
 	@JoinTable(name = "function_action", joinColumns = {
 			@JoinColumn(name = "function_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "action_id", referencedColumnName = "id") })

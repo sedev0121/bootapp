@@ -18,7 +18,7 @@ public class PurchaseOrderMain {
 	@Id
 	private String code;
 
-	@OneToOne(cascade = { CascadeType.ALL })
+	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "vencode", referencedColumnName = "code")
 	Vendor vendor;
 
@@ -48,12 +48,12 @@ public class PurchaseOrderMain {
 	private String locker;
 	private Date lockdate;
 
-	@ManyToOne(cascade = { CascadeType.ALL })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "deployer", referencedColumnName = "id")
 	private Account deployer;
 	private Date deploydate;
 
-	@ManyToOne(cascade = { CascadeType.ALL })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "reviewer", referencedColumnName = "id")
 	private Account reviewer;
 	private Date reviewdate;

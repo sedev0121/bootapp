@@ -812,6 +812,14 @@ public class BuyerController {
 		return "buyer/statement/edit";
 	}
 
+	@GetMapping("/statement/{code}/delete")
+	public @ResponseBody Boolean statement_delete(@PathVariable("code") String code) {
+		StatementMain main = statementMainRepository.findOneByCode(code);
+		if (main != null)
+			statementMainRepository.delete(main);
+		return true;
+	}
+
 	@RequestMapping(value = "/statement/list", produces = "application/json")
 	public @ResponseBody Page<StatementSearchItem> statement_list_ajax(
 			@RequestParam Map<String, String> requestParams) {

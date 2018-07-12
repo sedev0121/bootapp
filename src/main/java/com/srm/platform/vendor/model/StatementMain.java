@@ -24,13 +24,13 @@ public class StatementMain {
 
 	private Date makedate;
 
-	@OneToOne(cascade = { CascadeType.ALL })
+	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "maker_id", referencedColumnName = "id")
 	Account maker;
 
 	private Date verifydate;
 
-	@OneToOne(cascade = { CascadeType.ALL })
+	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "verifier_id", referencedColumnName = "id")
 	Account verifier;
 
@@ -40,7 +40,7 @@ public class StatementMain {
 	private String remark;
 	private Integer state;
 
-	@OneToOne(cascade = { CascadeType.ALL })
+	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "vendor_code", referencedColumnName = "code")
 	Vendor vendor;
 

@@ -20,11 +20,11 @@ public class PurchaseInDetail {
 	private Long id;
 
 	@JsonIgnore
-	@ManyToOne(cascade = { CascadeType.ALL })
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "code", referencedColumnName = "code")
 	private PurchaseInMain main;
 
-	@OneToOne(cascade = { CascadeType.ALL })
+	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "inventorycode", referencedColumnName = "code")
 	private Inventory inventory;
 

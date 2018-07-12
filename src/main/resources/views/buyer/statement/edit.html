@@ -16,6 +16,7 @@
           <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/buyer') and (main.state==1  or main.state==4)}" id="submit"><i class="fa fa-share"></i> 发布</a>
           <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor') and main.state==2}" id="verify"><i class="fa fa-check-square"></i> 确认</a>
           <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor') and main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+          <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/buyer') and (main.state==1  or main.state==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
           <a class="btn btn-primary" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor') and main.state==3}" id="invoice"><i class="fa fa-check-square"></i> 填发票号</a>
           <a class="btn btn-default" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/buyer')}" th:href="@{/buyer/statement}"><i class="fa fa-arrow-left"></i> 返回</a>
           <a class="btn btn-default" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')}" th:href="@{/vendor/statement}"><i class="fa fa-arrow-left"></i> 返回</a>
@@ -160,6 +161,7 @@ var is_vendor = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor'
 var detail_url = [[@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/statement/'}]] + [[${main.code}]] + "/details";
 var edit_url = [[@{'/' + ${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')?'vendor':'buyer'} + '/statement/'}]];
 var import_url = [[@{/buyer/purchasein/select}]];
+var del_url = [[@{|/buyer/statement/${main.code}/delete|}]];
 var vendor_search_url = [[@{/api/vendor/select}]];
 var state = [[${main.state}]];
 
@@ -621,6 +623,16 @@ $(document).ready(function() {
   $("#cancel").click(function() {
     $('#state').val(4);
     $("#form").submit();            
+  });
+
+  $("#delete").click(function() {
+    App.showConfirmDialog('确定要删除吗?', function(){
+      $.get(del_url, function(data, status){
+        App.showSuccessDialog("操作成功", function() {
+          window.location.href = edit_url;
+        });
+      });
+    });          
   });
   
   $("#invoice").click(function() {

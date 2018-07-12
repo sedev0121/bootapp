@@ -33,7 +33,7 @@ public class PurchaseInMain {
 	private String handler;
 	private Integer state;
 
-	@OneToOne(cascade = { CascadeType.ALL })
+	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "vendorcode", referencedColumnName = "code")
 	Vendor vendor;
 
