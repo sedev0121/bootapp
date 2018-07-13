@@ -31,7 +31,7 @@ $(document).ready(function() {
     var table = $('#example').DataTable({
       ordering: true,
       ajax : {
-        url : /*[[@{/admin/permission_group_ajax}]]*/'',
+        url : /*[[@{/admin/permission_group/list}]]*/'',
         data : function(data) {
           var filter = {
             rows_per_page : data.length,

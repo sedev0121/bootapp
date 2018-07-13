@@ -41,7 +41,7 @@ import com.srm.platform.vendor.utility.AccountSearchItem;
 import com.srm.platform.vendor.utility.IGroupFunctionUnit;
 
 @Controller
-@RequestMapping(path = "/admin")
+@RequestMapping(path = "/admin/permission_group")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class PermissionController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -68,9 +68,8 @@ public class PermissionController {
 	private PermissionGroupUserRepository permissionGroupUserReopsitory;
 
 	// 权限组管理->列表
-	@GetMapping("/permission_group_ajax")
-	public @ResponseBody Page<PermissionGroup> permission_group_list_ajax(
-			@RequestParam Map<String, String> requestParams) {
+	@GetMapping("/list")
+	public @ResponseBody Page<PermissionGroup> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
@@ -86,14 +85,14 @@ public class PermissionController {
 	}
 
 	// 权限组管理
-	@GetMapping("/permission_group")
+	@GetMapping({ "/", "" })
 	public String permission_group(Model model) {
 		return "admin/permission_group/list";
 	}
 
 	// 权限组管理->修改
-	@GetMapping("/permission_group/{id}/edit")
-	public String permission_group_edit(@PathVariable("id") Long id, Model model) {
+	@GetMapping("/{id}/edit")
+	public String edit(@PathVariable("id") Long id, Model model) {
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
 		model.addAttribute("permission_group", temp);
 
@@ -109,8 +108,8 @@ public class PermissionController {
 	}
 
 	// 权限组管理->修改
-	@GetMapping("/permission_group/{id}/edit_perm")
-	public String permission_group_edit_perm(@PathVariable("id") Long id, Model model) {
+	@GetMapping("/{id}/edit_perm")
+	public String edit_perm(@PathVariable("id") Long id, Model model) {
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
 		List<Function> functionList = functionRepository.findAll();
 		List<FunctionAction> functionActionList = functionActionRepository.findAll();
@@ -155,15 +154,15 @@ public class PermissionController {
 	}
 
 	// 权限组管理->新建
-	@GetMapping("/permission_group/add")
-	public String permission_group_add(Model model) {
+	@GetMapping("/add")
+	public String add(Model model) {
 		model.addAttribute("permission_group", new PermissionGroup());
 		return "admin/permission_group/edit";
 	}
 
 	// 权限组管理->更新
-	@PostMapping("/permission_group/update")
-	public @ResponseBody PermissionGroup permission_group_update_ajax(@RequestParam Map<String, String> requestParams) {
+	@PostMapping("/update")
+	public @ResponseBody PermissionGroup update_ajax(@RequestParam Map<String, String> requestParams) {
 
 		String name = requestParams.get("name");
 		String description = requestParams.get("description");
@@ -204,8 +203,8 @@ public class PermissionController {
 	}
 
 	// 权限组管理->更新
-	@PostMapping("/permission_group/update/function")
-	public @ResponseBody PermissionGroup permission_group_update_function_ajax(@RequestParam(value = "id") Long groupId,
+	@PostMapping("/update/function")
+	public @ResponseBody PermissionGroup update_function_ajax(@RequestParam(value = "id") Long groupId,
 			@RequestParam(value = "functions[]", required = false) Long[] functions,
 			@RequestParam Map<String, String> units) {
 
@@ -245,8 +244,8 @@ public class PermissionController {
 	}
 
 	// 权限组管理->删除
-	@GetMapping("/permission_group/{id}/delete")
-	public @ResponseBody Boolean permission_group_delete_ajax(@PathVariable("id") Long id) {
+	@GetMapping("/{id}/delete")
+	public @ResponseBody Boolean delete_ajax(@PathVariable("id") Long id) {
 
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
 
