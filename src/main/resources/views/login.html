@@ -17,6 +17,7 @@
   <!-- Global styles START -->          
   <link href="assets/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet">
   <link href="assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link th:href="@{/assets/plugins/sweetalert/sweetalert2.min.css}" rel="stylesheet" type="text/css">
   <!-- Global styles END --> 
    
   <!-- Page level plugin styles START -->
@@ -42,7 +43,7 @@
       <div class="pull-right">
           <div class="login-content">
               <div class="login-form" id="login-page">
-                  <form action="#" method="post" th:action="@{/login}">
+                  <form id="login_form" action="#" method="post" th:action="@{/login}">
                       <div class="form-group">
                           <input type="text" name="username" class="form-control" placeholder="用户名" autofocus>
                       </div>
@@ -51,6 +52,9 @@
                       </div>
                       <div class="form-group" th:if="${param.error}">
                           <span class="error">用户名或密码错误！请输入有效的用户名和密码。</span>
+                      </div>
+                      <div class="form-group" th:if="${param.resetSuccess}">
+                          <span class="error">密码重置成功！请用新密码登陆。</span>
                       </div>
                       <div class="form-group">
                           <label>
@@ -67,17 +71,20 @@
                   </form>
               </div>
 
-              <div class="login-form" id="forget-page" style="display: none">
-                    <form>
+              <div class="login-form" id="forget-page" style="display:none">
+                    <div class="form-group text-center">
+                        <p>请输入账号邮箱，申请重置密码。</p>
+                    </div>
+                    <form id="mail_form" th:action="@{/resetpassword}" method="post">
                         <div class="form-group">
-                            <label>请输入邮箱</label>
                             <div class="input-icon input-icon-lg">
-                                <i class="fa fa-user"></i>
-                                <input type="email" class="form-control" placeholder="Email">
+                                <i class="fa fa-envelope"></i>
+                                <input type="email" name="email" id="email" class="form-control" placeholder="email@163.com">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <a href="change_password.html" class="btn btn-primary btn-flat form-control m-t-15">下一步</a>
+                        <div class="form-inline">
+                            <a id="btn_back" class="btn btn-success form-control">返回登陆</a>
+                            <a id="btn_apply" class="btn btn-primary form-control" style="float:right">提交申请</a>
                         </div>
                     </form>
                 </div>
@@ -99,23 +106,90 @@
     <!-- END CORE PLUGINS -->
 
     <!-- BEGIN PAGE LEVEL JAVASCRIPTS (REQUIRED ONLY FOR CURRENT PAGE) -->
-    <script src="assets/plugins/fancybox/source/jquery.fancybox.pack.js" type="text/javascript"></script><!-- pop up -->
-    <script src="assets/plugins/owl.carousel/owl.carousel.min.js" type="text/javascript"></script><!-- slider for products -->
-
+    <script th:src="@{/assets/plugins/sweetalert/sweetalert2.min.js}" type="text/javascript" ></script>
+    <script th:src="@{/assets/plugins/jquery.form.min.js}" type="text/javascript"></script>
+    <script th:src="@{/assets/plugins/jquery-validate/jquery.validate.js}" type="text/javascript" ></script>
     <script src="assets/pages/scripts/bs-carousel.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        jQuery(document).ready(function() {
-//            Layout.init();
-        });
-    </script>
+
     <!-- END PAGE LEVEL JAVASCRIPTS -->
 </body>
 <!-- END BODY -->
 </html>
 
 <script>
-    $("#btn_forget").click(function() {
-        $("#login-page").hide();
-        $("#forget-page").show();
-    });
+$(document).ready(function() {
+  jQuery.extend(jQuery.validator.messages, {
+    required: "不能为空",
+    email: "无效的邮箱格式",
+  });
+  
+  
+  $("#btn_forget").click(function() {
+    $("#login-page").hide();
+    $("#forget-page").show();
+  });
+  $("#btn_back").click(function() {
+    $("#login-page").show();
+    $("#forget-page").hide();
+  });
+  
+  $("#login_form" ).validate({
+    // define validation rules
+    rules: {
+      username: {
+        required: true
+      },    
+      password: {
+        required: true
+      },    
+    },
+    
+    submitHandler: function (form) {
+      form.submit();
+    }
+  }); 
+  
+  $("#mail_form" ).validate({
+    // define validation rules
+    rules: {
+      email: {
+        email: true,
+        required: true
+      },    
+    },
+    
+    submitHandler: function (form) {
+      jQuery(form).ajaxSubmit({
+        success: function(res, status, xhr, form) {
+          if (res == "1") {
+            swal({
+              "title": "操作成功",
+              "type": "success"
+            });
+            
+            $("#btn_back").trigger("click");
+            
+          }else{
+            swal({
+              "title": "无效邮箱",
+              "type": "error"
+            });
+            
+          }
+        },
+        error: function (res, status, xhr, form) {
+          swal({
+            "title": "操作失败",
+            "type": "error"
+          });
+        }
+      });
+    }
+  }); 
+  
+  $("#btn_apply").click(function() {
+    $('#mail_form').submit();
+  });
+});
+  
 </script>

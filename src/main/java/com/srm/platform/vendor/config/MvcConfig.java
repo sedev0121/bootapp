@@ -1,8 +1,12 @@
 package com.srm.platform.vendor.config;
 
+import java.util.Properties;
+
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.servlet.ViewResolver;
@@ -84,5 +88,23 @@ public class MvcConfig implements WebMvcConfigurer {
 		registrationBean.setFilter(filter);
 		registrationBean.setOrder(5); // I've played with the order
 		return registrationBean;
+	}
+
+	@Bean
+	public JavaMailSender getJavaMailSender() {
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost("smtp.gmail.com");
+		mailSender.setPort(587);
+
+		mailSender.setUsername("my.gmail@gmail.com");
+		mailSender.setPassword("password");
+
+		Properties props = mailSender.getJavaMailProperties();
+		props.put("mail.transport.protocol", "smtp");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+		props.put("mail.debug", "true");
+
+		return mailSender;
 	}
 }

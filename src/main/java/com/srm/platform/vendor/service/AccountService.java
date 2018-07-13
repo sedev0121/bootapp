@@ -1,7 +1,9 @@
 package com.srm.platform.vendor.service;
 
 import java.time.Instant;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
 import javax.servlet.http.HttpSession;
 
@@ -25,12 +27,14 @@ import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Action;
 import com.srm.platform.vendor.model.Function;
 import com.srm.platform.vendor.model.FunctionAction;
+import com.srm.platform.vendor.model.PasswordResetToken;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.ActionRepository;
 import com.srm.platform.vendor.repository.FunctionActionRepository;
 import com.srm.platform.vendor.repository.FunctionRepository;
+import com.srm.platform.vendor.repository.PasswordResetTokenRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 
@@ -40,6 +44,9 @@ public class AccountService implements UserDetailsService {
 
 	@Autowired
 	private AccountRepository accountRepository;
+
+	@Autowired
+	private PasswordResetTokenRepository passwordTokenRepository;
 
 	@Autowired
 	private PermissionGroupRepository permissionGroupRepository;
@@ -308,6 +315,34 @@ public class AccountService implements UserDetailsService {
 			throw new UsernameNotFoundException("user not found");
 		}
 		return createUser(account);
+	}
+
+	public Account loadUserByEmail(String email) throws UsernameNotFoundException {
+		Account account = accountRepository.findOneByEmail(email);
+		return account;
+	}
+
+	public void createPasswordResetTokenForUser(Account account, String token) {
+		PasswordResetToken myToken = new PasswordResetToken(account, token);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DATE, 3);
+		myToken.setExpireDate(cal.getTime());
+		passwordTokenRepository.save(myToken);
+	}
+
+	public String validatePasswordResetToken(long id, String token) {
+		PasswordResetToken passToken = passwordTokenRepository.findByToken(token);
+		if ((passToken == null) || (passToken.getAccount().getId() != id)) {
+			return "invalidToken";
+		}
+
+		Calendar cal = Calendar.getInstance();
+		if ((passToken.getExpireDate().getTime() - cal.getTime().getTime()) <= 0) {
+			return "expired";
+		}
+
+		return null;
 	}
 
 	public void signin(Account account) {

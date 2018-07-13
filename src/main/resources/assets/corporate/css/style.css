@@ -3231,3 +3231,11 @@ Styler Panel
 	width: inherit;
 	text-align: center;
 }
+.reset-pwd-form {
+    width: 300px;
+    background: #eeeeee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding:30px 30px 20px;
+
+}
