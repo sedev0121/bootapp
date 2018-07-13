@@ -124,7 +124,7 @@
             </li>
           </ul>
         </div>
-        <form id="logout_form" th:action="@{/logout}" method="post"></form>
+
         <div class="header-navigation menu-right" sec:authorize="isAuthenticated()">
           <ul>
             <li><a th:href="@{/profile}" th:text="${session.realname}">账号管理 </a></li>

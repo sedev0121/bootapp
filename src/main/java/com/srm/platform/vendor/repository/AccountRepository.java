@@ -16,6 +16,8 @@ import com.srm.platform.vendor.utility.AccountSearchItem;
 public interface AccountRepository extends JpaRepository<Account, Long> {
 	Account findOneByUsername(String username);
 
+	Account findOneByEmail(String email);
+
 	Account findOneById(Long id);
 
 	@Query(value = "SELECT * FROM account t WHERE " + "t.username LIKE '% \\?1%'", nativeQuery = true)
