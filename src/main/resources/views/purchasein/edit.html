@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+  <div class="container"  layout:fragment="content">  
+      <ul class="breadcrumb">
+        <li>
+          <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+        </li>
+        <li><a th:href="@{/purchasein}">出入库单据</a></li>
+        <li class="active">明细</li>
+      </ul>
+
+      <div class="btn-group-bar">
+        <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
+          <a class="btn btn-default" th:href="@{/purchasein}"><i class="fa fa-arrow-left"></i> 返回</a>
+        </div>
+      </div> 
+            
+      <div class="panel panel-default">
+        <div class="panel-body"> 
+          <div class="row">
+              <div class="col-lg-2 col-md-2">
+                <label>单据号: </label>
+                <input type="text" id="code" class="form-control" th:value="${main.code}"  readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>订单类型: </label>
+                <input type="text" class="form-control" th:value="${main.purchasetypename}"  readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>收发类型: </label>
+                <input type="text" class="form-control" th:value="${main.receivename}"  readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label for="bredvouch">红蓝标识:</label>
+                <select name="state" id="bredvouch" class="form-control" readonly>
+                </select>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>仓库名称: </label>
+                <input type="text" class="form-control" th:value="${main.warehousename}"  readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>仓库编码: </label>
+                <input type="text" class="form-control" th:value="${main.warehousecode}"  readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>部门: </label>
+                <input type="text" class="form-control" th:value="${main.departmentname}"  readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label for="state">状态:</label>
+                <select name="state" id="state" class="form-control" readonly>
+                </select>
+              </div>              
+              <div class="col-lg-2 col-md-2">
+                <label>制单人: </label>
+                <input type="text" class="form-control" th:value="${main.maker}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>入库日期: </label>
+                <input type="text" class="form-control" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>审核人: </label>
+                <input type="text" class="form-control" th:value="${main.handler}" readonly/>
+              </div>
+              <div class="col-lg-2 col-md-2">
+                <label>审核日期: </label>
+                <input type="text" class="form-control" th:value="${#dates.format(main.auditdate, 'yyyy-MM-dd')}" readonly/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>供应商: </label>
+                <input type="text" class="form-control" th:value="${main.vendor.name}" readonly/>
+              </div>
+              
+              <div class="col-lg-8 col-md-8">
+                <label>备注: </label>
+                <input type="text" class="form-control" th:value="${main.memory}" readonly/>
+              </div>
+              
+          </div>
+          <div class="row margin-top-10">
+            <div class="col-lg-12">
+                <table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
+                </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+  </div>  
+</body>
+</html>
+
+<script th:inline="javascript">
+  var editor;
+  /*[+
+  var detail_url = [[@{|/purchasein/${main.code}/details|}]];
+  var state = [[${main.state}]];
+  var bredvouch = [[${main.bredvouch}]];
+  +]*/ 
+  
+  $(document).ready(function() {
+
+    $(".select2").select2();
+    $("#state").select2({ data: App.getPurchaseInStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
+    $("#bredvouch").select2({ data: App.getPurchaseInBredvouchData(),minimumResultsForSearch: -1}).select2("val", bredvouch.toString());
+
+    $('input').attr("readonly", true);
+    $('select').attr("readonly", true);
+    
+    var table_options = {
+      serverSide:false,
+      processing:false,
+      ajax : {
+        url : detail_url,
+        dataSrc : function(json) {
+          $.each(json, function(key, item){
+            item.dstartdate = $.fn.date_renderer(item.dstartdate);
+            item.denddate = $.fn.date_renderer(item.denddate);
+          });
+          return json;
+        },
+      },
+
+      columns : [ {
+        data : 'rowno',
+        title : '行号',
+      }, {
+        data : 'inventoryname',
+        title : '商品名称'
+      }, {
+        data : 'inventorycode',
+        title : '商品编码'
+      }, {
+        data : 'specs',
+        title : '规格型号',
+      }, {
+        data : 'cmassunitname',
+        title : '主计量单位',
+      }, {
+        data : 'price',
+        title : '入库单单价',
+      }, {
+        data : 'quantity',
+        title : '入库数量',
+      }, {
+        data : 'closed_quantity',
+        title : '已对账数量',
+/*        
+      }, {
+        data : 'assitantunitname',
+        title : '辅计量单位'
+      }, {
+        data : 'irate',
+        title : '换算率',
+*/        
+      }, {
+        data : 'cost',
+        title : '金额',
+      }, {
+        data : 'number',
+        title : '件数',
+      }, {
+        data : 'state',
+        title : '状态',
+        render : function(data, type, row){
+          if (row.closed_quantity<row.quantity) {
+            return "未对账";
+          }else{
+            return "已对账";
+          }
+            
+        }        
+
+      } ],
+    };
+    
+    var table = $('#example').DataTable(table_options);    
+    
+       
+  });
+</script>

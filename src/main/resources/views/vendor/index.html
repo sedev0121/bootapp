@@ -2,59 +2,165 @@
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
 <body>
   <div class="container"  layout:fragment="content">  
-
-    <div class="main">
-      <div class="container">
-          <ul class="breadcrumb">
-            <li class="active"><i class="fa fa-dashboard"></i> 首页</li>
-          </ul>
-          <div class="row" id="dashboard">
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <label>公告通知</label>
-                  <div class="pull-right"><a href="#">更多></a></div>
-                </div>
-                <div class="panel-body">
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                    <label>预警信息</label>
-                    <div class="pull-right"><a href="#">更多></a></div>
-                </div>
-                <div class="panel-body">
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <label>系统消息</label>
-                  <div class="pull-right"><a href="#">更多></a></div>
-                </div>
-                <div class="panel-body">
-                    <p>2018-6-11 9:29:09 采购管理平台</p>
-                    <p>2018-6-11 9:29:09 采购管理平台</p>
-                    <p>2018-6-11 9:29:09 采购管理平台</p>
-                    <p>2018-6-11 9:29:09 采购管理平台</p>
-                </div>
-              </div>
-            </div>
+      <ul class="breadcrumb">
+          <li>
+            <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+          </li>
+          <li><a href="#">基础资料</a></li>
+          <li class="active">供应商档案表</li>
+      </ul>
+      <div class="search-content form-inline">
+          <div class="search-cell width-10">
+              <label for="product_name">供应商名称/编码:</label>
+              <input type="text" id="product_name" class="form-control">
+            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+            <button class="btn btn-success" id="btn_sync_vendor"><i class="fa fa-download"></i> 同步U8供应商</button>
           </div>
       </div>
-    </div>
-  </div>
+      <div class="row">
+        <div class="col-lg-12">
+            <table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
+            </table>
+        </div>
+      </div>
+  </div>  
 </body>
-<!-- END BODY -->
 </html>
+
+
+<script th:inline="javascript">
+    var sync_vendor_url = /*[[@{/sync/vendor/part}]]*/'';
+	$.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+		var product_code = $('#product_code').val();
+		var product_name = $('#product_name').val();
+
+		if (data[9] == product_code || product_code == '') {
+			if (data[10] == product_name || product_name == '') {
+				return true;
+			}
+		}
+		return false;
+	});
+
+	$(document).ready(function() {
+		var table = $('#example').DataTable({
+			ordering: true,
+			ajax : {
+				url : /*[[@{/vendor/list}]]*/'',
+				data : function(data) {
+					var filter = {
+						rows_per_page : data.length,
+			            page_index : data.start / data.length + 1,
+			            order: data.columns[data.order[0].column].data,
+			            dir:data.order[0].dir,
+			            search: $('#product_name').val()
+					}
+					return filter;
+				},
+				dataSrc : function(json) {
+		          json.recordsTotal = json.totalElements;
+		          json.recordsFiltered = json.totalElements;
+		          return json.content;
+		        },
+			},
+			
+			columns : [ {
+				data : 'code',
+				title : '供应商编码',
+				render: function (data, display, record) {
+              	  var edit_url = /*[[@{/vendor/}]]*/'';
+              	  edit_url +=  data + '/edit';
+              	  return '<a href="' + edit_url + '">' + data  + '</a>';
+                },
+				defaultContent : ''
+			}, {
+				data : 'name',
+				title : '供应商名称',
+				defaultContent : ''
+			}, {
+				data : 'abbrname',
+				title : '供应商简称',
+				defaultContent : ''
+			}, {
+				data : 'sort_code',
+				title : '所属分类码',
+				defaultContent : ''
+			}, {
+				data : 'industry',
+				title : '所属行业',
+				defaultContent : ''
+			}, {
+				data : 'address',
+				title : '地址',
+				defaultContent : ''
+			}, {
+				data : 'bank_open',
+				title : '开户银行',
+				defaultContent : ''
+			}, {
+				data : 'bank_acc_number',
+				title : '银行帐号',
+				defaultContent : ''
+			}, {
+				data : 'fax',
+				title : '传真 ',
+				defaultContent : ''
+			}, {
+                data : 'email',
+                title : 'Email地址',
+                defaultContent : ''
+            }, {
+                data : 'mobile',
+                title : '手机',
+                defaultContent : ''
+            }, {
+                data : 'receive_site',
+                title : '到货地址',
+                defaultContent : ''                
+            }, {
+                data : 'end_date',
+                title : '停用日期',
+                defaultContent : ''                
+            }, {
+                data : 'timestamp',
+                title : '变更日期',
+                defaultContent : ''    
+            }, {
+                data : 'memo',
+                title : '备注',
+                defaultContent : ''                   
+			} ],
+		});
+		
+    $("#btn_search").click(function() {
+    	table.draw();
+    });
+    
+    $("#btn_sync_vendor").click(function() {
+      App.showConfirmDialog('确定要同步吗?', function() {
+        $.ajax({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          }, 
+          url : sync_vendor_url,
+          success : function(data, res) {
+            if (data == true) {
+              App.showSuccessDialog("同步成功");
+            }else{
+              App.showErrorDialog("同步失败");
+            }
+          }
+        });
+      });
+      
+    });
+    
+    $('#product_name').keyup(function(e){
+        if(e.keyCode == 13)
+        	table.draw();
+    });
+	});
+</script>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}" >
+<head>
+</head>
+<body>
+  <div class="container"  layout:fragment="content">  
+      <ul class="breadcrumb">
+        <li>
+          <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+        </li>
+        <li><a href="#">基础资料</a></li>
+        <li><a th:href="@{/inventory}">商品档案表</a></li>
+        <li class="active">详细信息</li>
+      </ul>
+      <div class="btn-group-bar">
+        <div class="text-right">
+            <a class="btn btn-default" th:href="@{/inventory}"><i class="fa fa-arrow-left"></i> 返回</a>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="row">
+              <div class="col-lg-4 col-md-4">
+                <label>存货编码: </label>
+                <input type="text" class="form-control" readonly th:value="${data.code}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>存货代码: </label>
+                <input type="text" class="form-control" readonly  th:value="${data.invaddcode}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>存货名称: </label>
+                <input type="text" class="form-control" readonly th:value="${data.name}"/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>规格型号: </label>
+                <input type="text" class="form-control" readonly th:value="${data.specs}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>参考售价: </label>
+                <input type="text" class="form-control" readonly th:value="${data.refSalePrice}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>最低售价: </label>
+                <input type="text" class="form-control" readonly th:value="${data.bottomSalePrice}"/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>启用日期: </label>
+                <input type="text" class="form-control" readonly th:value="${data.startDate}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>变更日期: </label>
+                <input type="text" class="form-control" readonly th:value="${data.modifyDate}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>计量单位组类别: </label>
+                <input type="text" class="form-control" readonly th:value="${data.unitgroupType}"/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>计量单位组编码: </label>
+                <input type="text" class="form-control" readonly th:value="${data.unitgroupCode}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>销售默认单位编码: </label>
+                <input type="text" class="form-control" readonly th:value="${data.saunitCode}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>采购默认单位编码: </label>
+                <input type="text" class="form-control" readonly th:value="${data.puunitCode}"/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>库存默认单位编码: </label>
+                <input type="text" class="form-control" readonly th:value="${data.stunitCode}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>主计量单位: </label>
+                <input type="text" class="form-control" readonly th:value="${data.mainMeasure}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>采购默认单位名称: </label>
+                <input type="text" class="form-control" readonly th:value="${data.puunitName}"/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>采购默认单位换算率: </label>
+                <input type="text" class="form-control" readonly th:value="${data.puunitIchangrate}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>销售默认单位名称: </label>
+                <input type="text" class="form-control" readonly th:value="${data.saunitName}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>销售默认单位换算率: </label>
+                <input type="text" class="form-control" readonly th:value="${data.saunitIchangrate}"/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>库存默认单位名称: </label>
+                <input type="text" class="form-control" readonly th:value="${data.stunitName}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>库存默认单位换算率: </label>
+                <input type="text" class="form-control" readonly th:value="${data.stunitIchangrate}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>默认仓库: </label>
+                <input type="text" class="form-control" readonly th:value="${data.defwarehouse}"/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>默认仓库名称: </label>
+                <input type="text" class="form-control" readonly th:value="${data.defwarehousename}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>供应类型: </label>
+                <input type="text" class="form-control" readonly th:value="${data.iSupplyType}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>领料方式: </label>
+                <input type="text" class="form-control" readonly th:value="${data.drawtype}"/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>进项税率: </label>
+                <input type="text" class="form-control" readonly th:value="${data.iimptaxrate}"/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>销项税率: </label>
+                <input type="text" class="form-control" readonly th:value="${data.taxRate}"/>
+              </div>
+              
+          </div>
+        </div>
+  </div>  
+</body>
+</html>
+
+

@@ -26,7 +26,7 @@ public class HomeController {
 
 	@GetMapping({ "/", "" })
 	@PreAuthorize("hasRole('ROLE_BUYER') OR hasRole('ROLE_VENDOR') OR hasRole('ROLE_ADMIN')")
-	public String dashboard(Authentication authentication) {
+	public String index(Authentication authentication) {
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
 		String redirectUrl = "/buyer";
@@ -43,7 +43,7 @@ public class HomeController {
 
 		}
 
-		return "redirect:" + redirectUrl;
+		return "index";
 	}
 
 	@GetMapping("/forbidden")

@@ -3,6 +3,9 @@ package com.srm.platform.vendor.controller;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -17,38 +20,41 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.model.Inventory;
+import com.srm.platform.vendor.repository.InventoryRepository;
 
-// 供应商管理
+//商品档案表
 @Controller
-@RequestMapping(path = "/vendor")
+@RequestMapping(path = "/inventory")
 @PreAuthorize("hasRole('ROLE_BUYER')")
-public class VendorController {
+public class InventoryController {
+
+	@PersistenceContext
+	private EntityManager em;
 
 	@Autowired
-	private VendorRepository vendorRepository;
+	private InventoryRepository inventoryRepository;
 
 	// 查询列表
-	@GetMapping({ "", "/" })
+	@GetMapping({ "/", "" })
 	public String index() {
-		return "vendor/index";
+		return "inventory/index";
 	}
 
 	// 详细
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
-		Vendor vendor = new Vendor();
-		vendor.setCode(code);
-		Example<Vendor> example = Example.of(vendor);
-		Optional<Vendor> result = vendorRepository.findOne(example);
-		model.addAttribute("data", result.isPresent() ? result.get() : new Vendor());
-		return "vendor/edit";
+		Inventory data = new Inventory();
+		data.setCode(code);
+		Example<Inventory> example = Example.of(data);
+		Optional<Inventory> result = inventoryRepository.findOne(example);
+		model.addAttribute("data", result.isPresent() ? result.get() : new Inventory());
+		return "inventory/edit";
 	}
 
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody Page<Vendor> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<Inventory> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
@@ -58,8 +64,9 @@ public class VendorController {
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<Vendor> result = vendorRepository.findBySearchTerm(search, request);
+		Page<Inventory> result = inventoryRepository.findBySearchTerm(search, request);
 
 		return result;
 	}
+
 }
