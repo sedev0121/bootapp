@@ -84,7 +84,7 @@ public class UnitController {
 
 	// 组织架构管理->移动
 	@GetMapping("/{id}/move/{parent_id}")
-	public @ResponseBody Unit _move_ajax(@PathVariable("id") Long id, @PathVariable("parent_id") Long parent_id) {
+	public @ResponseBody Unit move_ajax(@PathVariable("id") Long id, @PathVariable("parent_id") Long parent_id) {
 		Unit unit = unitRepository.findOneById(id);
 		unit.setParentId(parent_id);
 		unit = unitRepository.save(unit);
