@@ -32,6 +32,7 @@ public class HomeController {
 		String redirectUrl = "/buyer";
 
 		for (GrantedAuthority a : authorities) {
+			logger.info(a.getAuthority());
 			if (a.getAuthority().equals("ROLE_VENDOR")) {
 				redirectUrl = "/vendor";
 				break;
