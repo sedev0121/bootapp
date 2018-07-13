@@ -45,7 +45,7 @@ $(document).ready(function() {
     var table = $('#example').DataTable({
       ordering: true,
       ajax : {
-        url : /*[[@{/admin/account_ajax}]]*/'',
+        url : /*[[@{/admin/account/list}]]*/'',
         data : function(data) {
           var filter = {
             rows_per_page : data.length,

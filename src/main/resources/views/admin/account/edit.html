@@ -55,10 +55,6 @@
                 <input type="text" name="username" class="form-control" th:value="${account.username}">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">密码: </label>
-                <input type="password" name="password" class="form-control">
-              </div>
-              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">角色: </label>
                 <select name="role" id="role" class="form-control">
                   <option value="ROLE_BUYER" th:selected="(${account.role}=='ROLE_BUYER')">采购员</option>
@@ -146,8 +142,8 @@
 
 <script th:inline="javascript">
 var edit_url = /*[[@{/admin/account/}]]*/'';
-var tree_url = /*[[@{/api/unit/tree}]]*/'';
-var vendor_search_url = /*[[@{/api/vendor/select}]]*/'';
+var tree_url = /*[[@{/admin/unit/tree}]]*/'';
+var vendor_search_url = /*[[@{/vendor/search}]]*/'';
 
 jQuery(document).ready(function() {   
     $('.datepicker').datepicker();
@@ -177,9 +173,6 @@ jQuery(document).ready(function() {
                 required: true
             },
             username: {
-                required: true
-            },    
-            password: {
                 required: true
             },    
             unit_name: {

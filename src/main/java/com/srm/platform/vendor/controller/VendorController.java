@@ -19,23 +19,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.utility.SearchItem;
 
 // 供应商管理
 @Controller
 @RequestMapping(path = "/vendor")
-@PreAuthorize("hasRole('ROLE_BUYER')")
+
 public class VendorController {
 
 	@Autowired
 	private VendorRepository vendorRepository;
 
 	// 查询列表
+	@PreAuthorize("hasRole('ROLE_BUYER')")
 	@GetMapping({ "", "/" })
 	public String index() {
 		return "vendor/index";
 	}
 
 	// 详细
+	@PreAuthorize("hasRole('ROLE_BUYER')")
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
 		Vendor vendor = new Vendor();
@@ -47,6 +50,7 @@ public class VendorController {
 	}
 
 	// 查询列表API
+	@PreAuthorize("hasRole('ROLE_BUYER')")
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<Vendor> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
@@ -61,5 +65,14 @@ public class VendorController {
 		Page<Vendor> result = vendorRepository.findBySearchTerm(search, request);
 
 		return result;
+	}
+
+	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR') or hasRole('ROLE_ADMIN')")
+	@ResponseBody
+	@RequestMapping(value = "/search", produces = "application/json")
+	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
+
+		return vendorRepository.findForSelect(search, request);
 	}
 }
