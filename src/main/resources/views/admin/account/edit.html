@@ -55,10 +55,6 @@
                 <input type="text" name="username" class="form-control" th:value="${account.username}">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">密码: </label>
-                <input type="password" name="password" class="form-control">
-              </div>
-              <div class="col-lg-2 col-md-2 form-group">
                 <label for="document_date">角色: </label>
                 <select name="role" id="role" class="form-control">
                   <option value="ROLE_BUYER" th:selected="(${account.role}=='ROLE_BUYER')">采购员</option>
@@ -177,9 +173,6 @@ jQuery(document).ready(function() {
                 required: true
             },
             username: {
-                required: true
-            },    
-            password: {
                 required: true
             },    
             unit_name: {

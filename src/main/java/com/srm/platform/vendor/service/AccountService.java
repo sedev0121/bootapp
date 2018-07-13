@@ -2,7 +2,6 @@ package com.srm.platform.vendor.service;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +40,7 @@ import com.srm.platform.vendor.repository.FunctionRepository;
 import com.srm.platform.vendor.repository.PasswordResetTokenRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
+import com.srm.platform.vendor.utility.PermissionItem;
 
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -366,11 +366,13 @@ public class AccountService implements UserDetailsService {
 	}
 
 	private List<GrantedAuthority> createAuthorities(Account account) {
+
+		List<PermissionItem> permissions = permissionGroupRepository.findPermissionForAccount(account.getId());
 		List<GrantedAuthority> authorities = new ArrayList<>();
 		authorities.add(new SimpleGrantedAuthority(account.getRole()));
-		List<String> sampleAuthorities = Arrays.asList("寻报价单-新建", "寻报价单-发布", "寻报价单-审核", "寻报价单-归档");
-		for (String authority : sampleAuthorities) {
-			authorities.add(new SimpleGrantedAuthority(authority));
+
+		for (PermissionItem item : permissions) {
+			authorities.add(new SimpleGrantedAuthority(item.getFunction() + "-" + item.getAction()));
 		}
 
 		return authorities;

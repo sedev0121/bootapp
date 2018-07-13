@@ -14,7 +14,6 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +40,6 @@ import com.srm.platform.vendor.utility.VenPriceSaveForm;
 
 @Controller
 @RequestMapping(path = "/inquery")
-@PreAuthorize("hasAuthority('寻报价单-新建')")
 public class InqueryController extends CommonController {
 
 	@Autowired
