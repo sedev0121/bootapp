@@ -72,7 +72,7 @@ jQuery(document).ready(function() {
         submitHandler: function (form) {
         	jQuery(form).ajaxSubmit({
         		success: function(res, status, xhr, form) {
-        		  App.showSuccessDialog("同步成功", function() {
+        		  App.showSuccessDialog("操作成功", function() {
         		    window.location.href = edit_url + res.id + "/edit";
         		  });
         	    },

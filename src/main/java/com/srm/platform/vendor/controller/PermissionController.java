@@ -2,7 +2,6 @@ package com.srm.platform.vendor.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,14 +24,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.util.StringUtils;
 
-import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Action;
 import com.srm.platform.vendor.model.Function;
 import com.srm.platform.vendor.model.FunctionAction;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.PermissionGroupFunctionUnit;
 import com.srm.platform.vendor.model.PermissionGroupUser;
-import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.FunctionActionRepository;
 import com.srm.platform.vendor.repository.FunctionRepository;
@@ -40,31 +37,27 @@ import com.srm.platform.vendor.repository.PermissionGroupFunctionActionRepositor
 import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
-import com.srm.platform.vendor.repository.UnitRepository;
-import com.srm.platform.vendor.repository.VendorRepository;
-import com.srm.platform.vendor.service.AccountService;
 import com.srm.platform.vendor.utility.AccountSearchItem;
 import com.srm.platform.vendor.utility.IGroupFunctionUnit;
 
 @Controller
 @RequestMapping(path = "/admin")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
-public class AdminController {
+public class PermissionController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private AccountRepository accountRepository;
 
 	@Autowired
-	private VendorRepository vendorRepository;
-
-	@Autowired
 	private PermissionGroupRepository permissionGroupRepository;
 
 	@Autowired
 	private FunctionRepository functionRepository;
+
 	@Autowired
 	private FunctionActionRepository functionActionRepository;
+
 	@Autowired
 	private PermissionGroupFunctionUnitRepository permissionGroupFunctionUnitRepository;
 
@@ -72,201 +65,7 @@ public class AdminController {
 	private PermissionGroupFunctionActionRepository permissionGroupFunctionActionRepository;
 
 	@Autowired
-	private UnitRepository unitRepository;
-
-	@Autowired
-	private AccountService accountService;
-
-	@Autowired
 	private PermissionGroupUserRepository permissionGroupUserReopsitory;
-
-	// Dashboard
-	@GetMapping({ "", "/" })
-	public String home() {
-		return "admin/index";
-	}
-
-	// 用户管理->列表
-	@GetMapping("/account")
-	public String account_list(Model model) {
-
-		PageRequest request = PageRequest.of(0, 2);
-		Page<Account> result = accountRepository.findAll(request);
-		result.getTotalElements();
-		logger.info(result.toString());
-		model.addAttribute("accounts", result.getContent());
-		return "admin/account/list";
-	}
-
-	// 用户管理->列表
-	@GetMapping("/account_ajax")
-	public @ResponseBody Page<Account> account_list_ajax(@RequestParam Map<String, String> requestParams) {
-		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
-		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
-		String order = requestParams.getOrDefault("order", "name");
-		String dir = requestParams.getOrDefault("dir", "asc");
-		String search = requestParams.getOrDefault("search", "");
-
-		if (order.equals("vendor"))
-			order = "v.name";
-
-		page_index--;
-		PageRequest request = PageRequest.of(page_index, rows_per_page,
-				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<Account> result = accountRepository.findBySearchTerm(search, request);
-
-		return result;
-	}
-
-	// 用户管理->修改
-	@GetMapping("/account/{id}/edit")
-	public String account_edit(@PathVariable("id") Long id, Model model) {
-		model.addAttribute("account", accountRepository.findOneById(id));
-		return "admin/account/edit";
-	}
-
-	// 用户管理->新建
-	@GetMapping("/account/add")
-	public String account_add(Model model) {
-		model.addAttribute("account", new Account());
-		return "admin/account/edit";
-	}
-
-	// 用户管理->删除
-	@GetMapping("/account/{id}/delete")
-	public @ResponseBody Boolean account_delete(@PathVariable("id") Long id, Model model) {
-		Account account = accountRepository.findOneById(id);
-		accountRepository.delete(account);
-		return true;
-	}
-
-	// 用户修改
-	@PostMapping("/account/update")
-	public @ResponseBody Account account_update_ajax(@RequestParam Map<String, String> requestParams) {
-		String id = requestParams.get("id");
-		String username = requestParams.get("username");
-		String realname = requestParams.get("realname");
-		String skype = requestParams.get("skype");
-		String qq = requestParams.get("qq");
-		String unit = requestParams.get("unit");
-		String yahoo = requestParams.get("yahoo");
-		String wangwang = requestParams.get("wangwang");
-		String mobile = requestParams.get("mobile");
-		String tel = requestParams.get("tel");
-		String address = requestParams.get("address");
-		String gtalk = requestParams.get("gtalk");
-		String email = requestParams.get("email");
-		String password = requestParams.get("password");
-		String role = requestParams.get("role");
-		String duty = requestParams.get("duty");
-		String vendorCode = requestParams.get("vendor");
-
-		Account account;
-		if (id != null && !id.isEmpty()) {
-			account = accountRepository.findOneById(Long.parseLong(id));
-		} else {
-			account = new Account();
-		}
-
-		account.setUsername(username);
-		account.setRealname(realname);
-		account.setSkype(skype);
-		account.setQq(qq);
-		account.setYahoo(yahoo);
-		account.setWangwang(wangwang);
-		account.setMobile(mobile);
-		account.setTel(tel);
-		account.setAddress(address);
-		account.setGtalk(gtalk);
-		account.setEmail(email);
-		account.setRole(role);
-		account.setDuty(duty);
-		account.setUnit(unitRepository.findOneById(Long.parseLong(unit)));
-
-		if (vendorCode != null && !vendorCode.isEmpty())
-			account.setVendor(vendorRepository.findOneByCode(vendorCode));
-		else
-			account.setVendor(null);
-
-		if (password != null) {
-			account.setPassword(password);
-			account = accountService.save(account);
-		} else {
-			account = accountRepository.save(account);
-		}
-
-		return account;
-	}
-
-	// 组织架构管理
-	@GetMapping("/unit")
-	public String unit() {
-		return "admin/unit/index";
-	}
-
-	// 组织架构管理->下级组织列表
-	@GetMapping("/unit/{parent_id}/children")
-	public @ResponseBody List<Map<String, Object>> unit_list_ajax(@PathVariable("parent_id") Long parent_id) {
-		List<Unit> children = unitRepository.findByParentId(parent_id);
-
-		Unit temp;
-		List<Unit> tempChildren;
-
-		Map<String, Object> row = new HashMap<>();
-		List<Map<String, Object>> response = new ArrayList<>();
-		for (int i = 0; i < children.size(); i++) {
-
-			temp = children.get(i);
-			tempChildren = unitRepository.findByParentId(temp.getId());
-			row = new HashMap<>();
-			row.put("id", temp.getId());
-			row.put("text", temp.getName());
-			row.put("children", tempChildren.size() > 0 ? true : false);
-			response.add(row);
-		}
-
-		return response;
-	}
-
-	// 组织架构管理->删除
-	@GetMapping("/unit/{id}/delete")
-	public @ResponseBody Boolean unit_delete_ajax(@PathVariable("id") Long id) {
-		Unit unit = unitRepository.findOneById(id);
-
-		String childrenUnitIds = unitRepository.findChildrenByGroupId(id);
-
-		unitRepository.delete(unit);
-		unitRepository.deleteByChildIds(childrenUnitIds.split(","));
-
-		return true;
-	}
-
-	// 组织架构管理->改名
-	@GetMapping("/unit/{id}/rename/{name}")
-	public @ResponseBody Unit unit_rename_ajax(@PathVariable("id") Long id, @PathVariable("name") String name) {
-		Unit unit = unitRepository.findOneById(id);
-		unit.setName(name);
-		unit = unitRepository.save(unit);
-		return unit;
-	}
-
-	// 组织架构管理->移动
-	@GetMapping("/unit/{id}/move/{parent_id}")
-	public @ResponseBody Unit unit_move_ajax(@PathVariable("id") Long id, @PathVariable("parent_id") Long parent_id) {
-		Unit unit = unitRepository.findOneById(id);
-		unit.setParentId(parent_id);
-		unit = unitRepository.save(unit);
-		return unit;
-	}
-
-	// 组织架构管理->新建
-	@GetMapping("/unit/add/{parent_id}/{name}")
-	public @ResponseBody Unit unit_add_ajax(@PathVariable("parent_id") Long parentId,
-			@PathVariable("name") String name) {
-		Unit unit = new Unit(name, parentId);
-		unitRepository.save(unit);
-		return unit;
-	}
 
 	// 权限组管理->列表
 	@GetMapping("/permission_group_ajax")
