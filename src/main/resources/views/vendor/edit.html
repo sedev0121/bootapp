@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}" >
+<head>
+</head>
+<body>
+  <div class="container"  layout:fragment="content">  
+      <ul class="breadcrumb">
+        <li>
+          <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+        </li>
+        <li><a href="#">基础资料</a></li>
+        <li><a th:href="@{/vendor}">供应商档案表</a></li>
+        <li class="active">详细信息</li>
+      </ul>
+
+      <div class="btn-group-bar">
+        <div class="text-right">
+          <a class="btn btn-default" th:href="@{/vendor}"><i class="fa fa-arrow-left"></i> 返回</a>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="row">
+              <div class="col-lg-4 col-md-4">
+                <label>供应商编码: </label>
+                <input type="text" class="form-control" readonly th:value="${data.code}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>供应商名称: </label>
+                <input type="text" class="form-control" readonly  th:value="${data.name}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>供应商简称: </label>
+                <input type="text" class="form-control" readonly th:value="${data.abbrname}"/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>所属地区: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>所属类别: </label>
+                <input type="text" class="form-control" readonly th:value="${data.sortCode}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>员工人数: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>供应商总公司: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>所属行业: </label>
+                <input type="text" class="form-control" readonly th:value="${data.industry}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>对应客户: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>币种: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>税号: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>注册资金: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>开户银行: </label>
+                <input type="text" class="form-control" readonly th:value="${data.bankOpen}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>银行账号: </label>
+                <input type="text" class="form-control" readonly th:value="${data.bankAccNumber}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>法人: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>税率: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>分管部门: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>专营业务员: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>电话: </label>
+                <input type="text" class="form-control" readonly th:value="${data.phone}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>传真: </label>
+                <input type="text" class="form-control" readonly th:value="${data.fax}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>手机: </label>
+                <input type="text" class="form-control" readonly th:value="${data.mobile}"/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>呼机: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>邮政编码: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>联系人: </label>
+                <input type="text" class="form-control" readonly th:value="${data.contact}"/>
+              </div>
+
+              <div class="col-lg-12 col-md-12">
+                <label>地址: </label>
+                <input type="text" class="form-control" readonly th:value="${data.address}"/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>Email地址: </label>
+                <input type="text" class="form-control" readonly th:value="${data.email}"/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>结算方式: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>到货方式: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+
+              <div class="col-lg-12 col-md-12">
+                <label>到货地址: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>到货仓库: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>建档人: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>建档日期: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+
+              <div class="col-lg-4 col-md-4">
+                <label>变更人: </label>
+                <input type="text" class="form-control" readonly/>
+              </div>
+              <div class="col-lg-4 col-md-4">
+                <label>变更日期: </label>
+                <input type="text" class="form-control" readonly th:value="${data.timestamp}"/>
+              </div>
+          </div>
+        </div>
+
+  </div>  
+</body>
+</html>
+
+

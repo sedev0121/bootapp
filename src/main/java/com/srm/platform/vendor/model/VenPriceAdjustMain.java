@@ -81,7 +81,7 @@ public class VenPriceAdjustMain {
 		this.reviewer = new Account();
 		this.verifier = new Account();
 		this.publisher = new Account();
-		this.vendor = new Vendor();
+		this.vendor = this.maker.getVendor();
 
 	}
 

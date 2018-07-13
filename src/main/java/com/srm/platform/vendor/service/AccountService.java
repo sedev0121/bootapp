@@ -1,10 +1,14 @@
 package com.srm.platform.vendor.service;
 
 import java.time.Instant;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -37,6 +41,8 @@ import com.srm.platform.vendor.repository.UnitRepository;
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AccountService implements UserDetailsService {
+
+	public final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private AccountRepository accountRepository;
@@ -315,17 +321,24 @@ public class AccountService implements UserDetailsService {
 	}
 
 	private Authentication authenticate(Account account) {
-		return new UsernamePasswordAuthenticationToken(createUser(account), null,
-				Collections.singleton(createAuthority(account)));
+		return new UsernamePasswordAuthenticationToken(createUser(account), null, createAuthorities(account));
 	}
 
 	private User createUser(Account account) {
+		httpSession.setAttribute("account", account);
 		httpSession.setAttribute("realname", account.getRealname());
-		return new User(account.getUsername(), account.getPassword(), Collections.singleton(createAuthority(account)));
+		return new User(account.getUsername(), account.getPassword(), createAuthorities(account));
 	}
 
-	private GrantedAuthority createAuthority(Account account) {
-		return new SimpleGrantedAuthority(account.getRole());
+	private List<GrantedAuthority> createAuthorities(Account account) {
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority(account.getRole()));
+		List<String> sampleAuthorities = Arrays.asList("寻报价单-新建", "寻报价单-发布", "寻报价单-审核", "寻报价单-归档");
+		for (String authority : sampleAuthorities) {
+			authorities.add(new SimpleGrantedAuthority(authority));
+		}
+
+		return authorities;
 	}
 
 }
