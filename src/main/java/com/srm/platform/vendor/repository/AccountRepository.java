@@ -35,7 +35,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	Page<Account> findBySearchTerm(String search, Pageable pageable);
 
 	@Query(value = "SELECT id, username, realname FROM account t WHERE "
-			+ "t.username LIKE %?1% or t.realname LIKE %?1%", nativeQuery = true)
+			+ "t.role='ROLE_BUYER' and t.username LIKE %?1% or t.realname LIKE %?1%", nativeQuery = true)
 	Page<AccountSearchItem> findForAutoComplete(String search, Pageable pageable);
 
 	@Query(value = "SELECT id, username, realname FROM account t WHERE " + "t.username in ?1", nativeQuery = true)
