@@ -20,7 +20,7 @@ public interface PermissionGroupRepository extends JpaRepository<PermissionGroup
 
 	PermissionGroup findOneByName(String name);
 
-	@Query(value = "select distinct b.id, b.realname, b.username from permission_group_user a left join account b on a.account_id = b.id where a.group_id=:group_id", nativeQuery = true)
+	@Query(value = "select distinct b.id, b.realname, b.username from permission_group_user a left join account b on a.account_id = b.id where b.role='ROLE_BUYER' and a.group_id=:group_id", nativeQuery = true)
 	List<AccountSearchItem> findAccountsInGroupById(@Param("group_id") Long id);
 
 	@Query(value = "SELECT * FROM permission_group t WHERE "

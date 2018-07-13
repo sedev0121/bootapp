@@ -23,9 +23,10 @@ import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.service.AccountService;
+import com.srm.platform.vendor.utility.AccountSearchItem;
 
 @Controller
-@RequestMapping(path = "/admin")
+@RequestMapping(path = "/admin/account")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class AccountController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -43,8 +44,8 @@ public class AccountController {
 	private AccountService accountService;
 
 	// 用户管理->列表
-	@GetMapping("/account")
-	public String account_list(Model model) {
+	@GetMapping({ "/", "" })
+	public String index(Model model) {
 
 		PageRequest request = PageRequest.of(0, 2);
 		Page<Account> result = accountRepository.findAll(request);
@@ -55,8 +56,8 @@ public class AccountController {
 	}
 
 	// 用户管理->列表
-	@GetMapping("/account_ajax")
-	public @ResponseBody Page<Account> account_list_ajax(@RequestParam Map<String, String> requestParams) {
+	@GetMapping("/list")
+	public @ResponseBody Page<Account> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
@@ -75,30 +76,30 @@ public class AccountController {
 	}
 
 	// 用户管理->修改
-	@GetMapping("/account/{id}/edit")
-	public String account_edit(@PathVariable("id") Long id, Model model) {
+	@GetMapping("/{id}/edit")
+	public String edit(@PathVariable("id") Long id, Model model) {
 		model.addAttribute("account", accountRepository.findOneById(id));
 		return "admin/account/edit";
 	}
 
 	// 用户管理->新建
-	@GetMapping("/account/add")
-	public String account_add(Model model) {
+	@GetMapping("/add")
+	public String add(Model model) {
 		model.addAttribute("account", new Account());
 		return "admin/account/edit";
 	}
 
 	// 用户管理->删除
-	@GetMapping("/account/{id}/delete")
-	public @ResponseBody Boolean account_delete(@PathVariable("id") Long id, Model model) {
+	@GetMapping("/{id}/delete")
+	public @ResponseBody Boolean delete(@PathVariable("id") Long id, Model model) {
 		Account account = accountRepository.findOneById(id);
 		accountRepository.delete(account);
 		return true;
 	}
 
 	// 用户修改
-	@PostMapping("/account/update")
-	public @ResponseBody Account account_update_ajax(@RequestParam Map<String, String> requestParams) {
+	@PostMapping("/update")
+	public @ResponseBody Account update_ajax(@RequestParam Map<String, String> requestParams) {
 		String id = requestParams.get("id");
 		String username = requestParams.get("username");
 		String realname = requestParams.get("realname");
@@ -154,4 +155,11 @@ public class AccountController {
 		return account;
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/search/{keyword}", produces = "application/json")
+	public Page<AccountSearchItem> search_ajax(@PathVariable("keyword") String keyword) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "realname");
+
+		return accountRepository.findForAutoComplete(keyword, request);
+	}
 }

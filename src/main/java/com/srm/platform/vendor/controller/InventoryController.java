@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.repository.InventoryRepository;
+import com.srm.platform.vendor.utility.InventorySearchItem;
 
 //商品档案表
 @Controller
@@ -67,6 +68,15 @@ public class InventoryController {
 		Page<Inventory> result = inventoryRepository.findBySearchTerm(search, request);
 
 		return result;
+	}
+
+	@RequestMapping(value = "/select", produces = "application/json")
+	public @ResponseBody Page<InventorySearchItem> inventory_list_for_select_ajax(
+			@RequestParam(value = "inv") String invName, @RequestParam(value = "vendor") String vendorCode) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
+		Page<InventorySearchItem> list = inventoryRepository.findSelectListBySearchTerm(vendorCode, invName, request);
+
+		return list;
 	}
 
 }
