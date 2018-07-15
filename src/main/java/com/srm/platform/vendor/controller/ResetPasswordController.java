@@ -47,33 +47,24 @@ public class ResetPasswordController {
 		}
 		String token = UUID.randomUUID().toString();
 		accountService.createPasswordResetTokenForUser(account, token);
-		SimpleMailMessage message = constructResetTokenEmail(request.getContextPath(), token, account);
-		// mailSender.send(message);
+		String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+		String url = baseUrl + "/changepassword?id=" + account.getId() + "&token=" + token;
+
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setSubject("重置密码");
+		message.setText("");
+		message.setTo(account.getEmail());
+		message.setFrom("no-reply@memorynotfound.com");
 
 		Map<String, Object> model = new HashMap<>();
 		model.put("token", token);
 		model.put("account", account);
-		model.put("signature", "https://memorynotfound.com");
-		String url = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-		model.put("resetUrl", url + "/reset-password?token=" + token);
+		model.put("url", url);
+		model.put("baseUrl", baseUrl);
 
-		// emailService.sendEmail(message, model);
+		emailService.sendEmail(message, model);
 
 		return "1";
-	}
-
-	private SimpleMailMessage constructResetTokenEmail(String contextPath, String token, Account account) {
-		String url = contextPath + "/changepassword?id=" + account.getId() + "&token=" + token;
-		String message = "";
-
-		logger.info(url);
-
-		SimpleMailMessage email = new SimpleMailMessage();
-		email.setSubject("重置密码");
-		email.setText(message);
-		email.setTo(account.getEmail());
-		email.setFrom("no-reply@memorynotfound.com");
-		return email;
 	}
 
 	@GetMapping(value = "/changepassword")

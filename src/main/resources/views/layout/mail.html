@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!-- Head BEGIN -->
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>供应商管理平台</title>
+
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  
+
+  <!-- Fonts START -->
+  <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|PT+Sans+Narrow|Source+Sans+Pro:200,300,400,600,700,900&amp;subset=all" rel="stylesheet" type="text/css">
+  <!-- Fonts END -->
+
+  <style>
+    body {
+        font-family:'Microsoft YaHei','SimSun' !important;
+        font-size: 12px;
+    }
+    .header {
+        box-shadow: 0 1px 3px #ddd;
+        background: #fff;
+        border-radius: 0;
+        margin-bottom: 23px;
+        z-index: 999;
+        position: relative;
+    }
+    a {
+        color: #d6410d;
+    }
+    .site-logo {        
+        float: left;
+        font-size: 23px;
+        font-weight: 400;
+        margin-right: 10px;
+        padding-top: 22px;
+        padding-bottom: 22px;
+        line-height: normal;
+    }
+    .main {
+        min-height: 305px;
+    }
+    .col-md-12 {
+        width: 100%;
+    }
+    .col-md-6 {
+        width: 50%;
+    }
+    .col-md-5 {
+        width: 41.66666667%;
+    }
+    .col-md-4 {
+        width: 33.33333333%;
+    }
+    .col-md-3 {
+        width: 25%;
+    }
+    .pre-footer {
+        background: #313030;
+        color: #b0b0b0;
+    }
+    .pre-footer .container {
+        padding-top: 15px;
+    }
+    h2 {
+        margin-top: 0px;
+        margin-bottom:10px;
+    }
+    .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+        position: relative;
+        min-height: 1px;
+        padding-right: 0px;
+        padding-left: 0px;
+        float: left;
+    }
+    .footer {
+        font-size: 12px;
+        padding: 15px 0;
+    }
+    .footer .powered {
+        color: #81848f;
+        margin: 5px 0 0;
+    }
+    
+    .footer .powered > a {
+        color: #e6400c;
+        text-decoration: none;
+    }
+
+    .pre-footer-col {
+        padding-bottom: 6px;
+    }
+
+    .row {
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+    
+    .container {
+        width: 1024x;
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+    
+    .clearfix:after, .container-fluid:after, .container:after, .row:after {
+        clear: both;
+    }
+    .clearfix:after, .clearfix:before, .container-fluid:after, .container-fluid:before, .container:after, .container:before, .row:after, .row:before {
+        display: table;
+        content: " ";
+    }
+    
+    .list-unstyled {
+        padding-left: 0;
+        list-style: none;
+    }
+    
+    .text-right {
+        text-align: right;
+    }
+    
+    .text-center {
+        text-align: center;
+    }
+  
+    a, a:focus, a:hover, a:active {
+        outline: 0;
+        text-decoration: none;
+    }
+    
+    address {
+        font-style: normal;
+    }
+
+  </style>  
+
+</head>
+<!-- Head END -->
+
+<!-- Body BEGIN -->
+<body class="corporate">
+    <!-- BEGIN HEADER -->
+    <div class="header">
+      <div class="container">
+        <a class="site-logo" th:href="${baseUrl}">美尔凯特</a>
+
+
+
+      </div>
+    </div>
+    <!-- Header END -->
+
+    <div class="main">
+      <div class="container"  layout:fragment="content">          
+      </div>
+    </div>
+    <!-- BEGIN FOOTER -->
+    <div class="footer" style="padding:15px;">
+      <div class="container">
+        <div class="row">
+          <!-- BEGIN COPYRIGHT -->
+          <div align="center" class="col-md-12 text-center">
+             <p class="powered"> Copyright © 嘉兴市<a href="http://www.cnyunl.com">云链</a>信息技术有限公司</p> 
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END FOOTER -->
+
+</body>
+</html>
