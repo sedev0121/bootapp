@@ -28,6 +28,8 @@ public interface StatementDetailItem {
 
 	String getCost();
 
+	String getUnitname();
+
 	String getCmassunitname();
 
 	String getAssitantunitname();

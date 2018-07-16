@@ -269,7 +269,7 @@ public class SyncController {
 							inventory.setIimptaxrate(Float.parseFloat(temp.get("iimptaxrate")));
 						inventory.setInvaddcode(temp.get("invaddcode"));
 						inventory.setiSupplyType(temp.get("iSupplyType"));
-						inventory.setMainMeasure(temp.get("main_measure"));
+						inventory.setMainMeasure(measurementUnitRepository.findOneByCode(temp.get("main_measure")));
 
 						tempValue = temp.get("ModifyDate");
 						if (tempValue != null)

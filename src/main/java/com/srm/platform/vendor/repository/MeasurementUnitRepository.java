@@ -9,4 +9,5 @@ import com.srm.platform.vendor.model.MeasurementUnit;
 
 public interface MeasurementUnitRepository extends JpaRepository<MeasurementUnit, Long> {
 
+	MeasurementUnit findOneByCode(String code);
 }

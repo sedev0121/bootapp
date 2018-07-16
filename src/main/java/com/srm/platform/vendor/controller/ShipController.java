@@ -118,7 +118,7 @@ public class ShipController extends CommonController {
 			order = "c.specs";
 			break;
 		case "unitname":
-			order = "c.puunit_name";
+			order = "e.name";
 			break;
 		}
 		page_index--;

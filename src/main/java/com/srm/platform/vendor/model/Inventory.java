@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,8 +50,9 @@ public class Inventory {
 	@Column(name = "stunit_code")
 	private String stunitCode;
 
-	@Column(name = "main_measure")
-	private String mainMeasure;
+	@OneToOne()
+	@JoinColumn(name = "main_measure", referencedColumnName = "code")
+	private MeasurementUnit mainMeasure;
 
 	@Column(name = "puunit_name")
 	private String puunitName;
@@ -224,11 +227,11 @@ public class Inventory {
 	}
 
 	@JsonProperty("main_measure")
-	public String getMainMeasure() {
+	public MeasurementUnit getMainMeasure() {
 		return mainMeasure;
 	}
 
-	public void setMainMeasure(String main_measure) {
+	public void setMainMeasure(MeasurementUnit main_measure) {
 		this.mainMeasure = main_measure;
 	}
 
