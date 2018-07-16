@@ -152,6 +152,18 @@ public class PurchaseInController {
 		case "reviewername":
 			order = "d.realname";
 			break;
+		case "inventoryname":
+			order = "c.name";
+			break;
+		case "specs":
+			order = "c.specs";
+			break;
+		case "unitname":
+			order = "m.name";
+			break;
+		case "closed_quantity":
+			order = "d.closed_quantity";
+			break;
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,

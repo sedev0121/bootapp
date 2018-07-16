@@ -64,6 +64,24 @@
                   <label>审核日期: </label>
                   <input type="text" th:value="${#dates.format(main.verifydate, 'yyyy-MM-dd')}" class="form-control" readonly>
                 </div>
+           
+
+                <div class="col-lg-3 col-md-3">
+                  <label for="invoice_code">税率: </label>
+                  <input type="text" id="tax_rate" value="1" class="form-control" readonly/>
+                </div>                
+                <div class="col-lg-3 col-md-3">
+                  <label for="invoice_code">数量合计: </label>
+                  <input type="text" id="total_quantity" value="1" class="form-control" readonly/>
+                </div>                
+                <div class="col-lg-3 col-md-3">
+                  <label for="invoice_code">结算未税合计: </label>
+                  <input type="text" id="total_money" value="1" class="form-control" readonly/>
+                </div>                
+                <div class="col-lg-3 col-md-3">
+                  <label for="invoice_code">结算含税合计: </label>
+                  <input type="text" id="total_tax_money" value="1" class="form-control" readonly/>
+                </div>      
                 <div class="col-lg-6 col-md-6">
                   <label for="remark">订单摘要: </label>
                   <input type="text" id="remark" name="remark" th:value="${main.remark}" class="form-control" />
@@ -71,8 +89,7 @@
                 <div class="col-lg-6 col-md-6">
                   <label for="invoice_code">发票号: </label>
                   <input type="text" id="invoice_code" name="invoice_code" th:value="${main.invoiceCode}" class="form-control" readonly/>
-                </div>                
-
+                </div>     
             </div>
             <div class="row margin-top-10">
               <div class="col-lg-12">
@@ -227,12 +244,14 @@ $(document).ready(function() {
         columns : [ {
           data : 'date',
           render : $.fn.date_renderer,
+          className:'dt-center',
           title : '入库日期'
         }, {
           data : 'code',
           title : '出入库单号'
         }, {
           data : 'rowno',
+          className:'dt-center',
           title : '行号',
         }, {
           data : 'inventoryname',
@@ -245,21 +264,27 @@ $(document).ready(function() {
           title : '规格型号',
         }, {
           data : 'unitname',
+          className:'dt-center',
           title : '单位',
         }, {
           data : 'price',
+          className:'dt-right',
           title : '入库单单价',
         }, {
           data : 'quantity',
+          className:'dt-right',
           title : '入库数量',
         }, {
           data : 'closed_quantity',
+          className:'dt-right',
           title : '已对账数量',
         }, {
           data : 'cost',
+          className:'dt-right',
           title : '金额',
         }, {
           data : 'number',
+          className:'dt-right',
           title : '件数',
 /*
         }, {
@@ -309,28 +334,33 @@ $(document).ready(function() {
     idSrc: "purchase_in_detail_id",
     fields: [ {
       attr: {
-        type: "number"
+        type: "number",
       },
+      id: "closed_quantity",
       name: "closed_quantity"            
     },{
       attr: {
-        type: "number"
+        type: "number",
       },
+      id: "closed_price",
       name: "closed_price"            
     },{
       attr: {
         type: "number"
       },
+      id: "closed_money",
       name: "closed_money"            
     },{
       attr: {
         type: "number"
       },
+      id: "closed_tax_price",
       name: "closed_tax_price"            
     },{
       attr: {
         type: "number"
       },
+      id: "closed_tax_money",
       name: "closed_tax_money"            
     }],
     i18n: {
@@ -344,6 +374,19 @@ $(document).ready(function() {
             }
         },
     }
+  }).on( 'preSubmit', function ( e, data, action ) {
+    $.each(data.data, function(key, item){    
+      if (item.closed_quantity <0 )
+        item.closed_quantity = -item.closed_quantity;
+      if (item.closed_price <0 )
+        item.closed_price = -item.closed_price;
+      if (item.closed_money <0 )
+        item.closed_money = -item.closed_money;
+      if (item.closed_tax_price <0 )
+        item.closed_tax_price = -item.closed_tax_price;
+      if (item.closed_money <0 )
+        item.closed_tax_money = -item.closed_tax_money;
+    })    
   });
     
   
@@ -433,6 +476,7 @@ $(document).ready(function() {
       }, {
         data : 'purchase_in_date',
         render : $.fn.date_renderer,
+        className:'dt-center',
         title : '入库日期',        
       }, {
         data : 'rowno',
@@ -452,59 +496,85 @@ $(document).ready(function() {
         data : 'inventorycode',
         title : '商品编码',
       }, {
-        data : 'specs',
-        visible:false,
-        title : '规格型号',
-      }, {
         data : 'unitname',
+        className:'dt-center',
         title : '单位',
       }, {
         data : 'price',
+        className:'dt-right',
         title : '单价',
       }, {
-        data : 'quantity',
-        title : '入库数量',
-/*        
-      }, {
-        data : 'assitantunitname',
-        title : '辅计量单位'
-      }, {
-        data : 'irate',
-        title : '换算率',
-*/        
-      }, {
         data : 'cost',
+        className:'dt-right',
         title : '金额',
       }, {
+        data : 'taxprice',
+        className:'dt-right',
+        title : '含税单价',
+      }, {
+        data : 'taxcost',
+        className:'dt-right',
+        title : '含税金额',
+      }, {
         data : 'number',
+        className:'dt-right',
         title : '件数',
       }, {
+        data : null,
+        title : '未对账数量',
+        className:'dt-right',
+        render:function(data, type, record) {
+          if (record.purchase_in_detail_id ==0)
+            return '';
+          
+          var closed_quantity = 0, quantity=0;
+          if (record.close_quantity)
+            closed_quantity = parseFloat(record.closed_quantity);
+          if (record.quantity)
+            quantity = parseFloat(record.quantity);
+          return quantity - closed_quantity;
+        }
+      }, {
         data : 'closed_quantity',
-        className: 'edit-cell',
+        className: 'edit-cell dt-right',
         title : '对账数量',
       }, {
         data : 'closed_price',
-        className: 'edit-cell',
+        className: 'edit-cell dt-right',
         title : '结算未税单价',
       }, {
         data : 'closed_money',
-        className: 'edit-cell',
+        className: 'edit-cell dt-right',
         title : '结算未税金额',
       }, {
         data : 'closed_tax_price',
-        className: 'edit-cell',
+        className: 'edit-cell dt-right',
         title : '结算含税单价',
       }, {
         data : 'closed_tax_money',
-        className: 'edit-cell',
+        className: 'edit-cell dt-right',
         title : '结算含税金额',
 
       } ],
-      "columnDefs": [ {
-        "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ],
+      columnDefs: [ {
+        "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
         "orderable": false
       } ],
       order: [  [ 0, "asc" ], [3, "asc"] ],
+      drawCallback: function( settings ) {
+        var data_list = this.api().rows().data().toArray()
+        var total_quantity=0, total_money=0, total_tax_money=0;
+        $.each(data_list, function(key, item){
+          item.dstartdate = $.fn.date_renderer(item.dstartdate);
+          item.denddate = $.fn.date_renderer(item.denddate);
+          total_quantity += parseFloat(item.closed_quantity);
+          total_money += parseFloat(item.closed_money);
+          total_tax_money += parseFloat(item.closed_tax_money);
+        });
+        $('#total_quantity').val(total_quantity);
+        $('#total_money').val(total_money);
+        $('#total_tax_money').val(total_tax_money);
+      }
     };
   
   if (state>1) {
@@ -518,7 +588,66 @@ $(document).ready(function() {
     basic_table.on( 'click', 'tbody td.edit-cell', function (e) {
       editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
     } );
-    App.addKeyDownEditor(editor, 9, 13);
+    App.addKeyDownEditor(editor, 11, 15);
+    var filed_name_list = ['closed_quantity', 'closed_price', 'closed_tax_price', 'closed_money', 'closed_tax_money'];
+    for(i=0; i<filed_name_list.length; i++){
+      $(editor.field(filed_name_list[i]).input()).on('keydown', function (e, d) {
+        if ( editor ) {
+          var tax_rate = $('#tax_rate').val();
+          if (!tax_rate)
+            tax_rate = 1;
+          
+          var closed_quantity = editor.field('closed_quantity');
+          var closed_price = editor.field('closed_price');
+          var closed_tax_price = editor.field('closed_tax_price');
+          var closed_money = editor.field('closed_money');
+          var closed_tax_money = editor.field('closed_tax_money');
+          
+          if (this.id=='closed_quantity') {
+            if (closed_quantity.val() != undefined) {
+              if (closed_price.val() != undefined) {
+                closed_money.val(parseFloat(closed_price.val() * closed_quantity.val()).toFixed(2));
+              }
+              if (closed_tax_price.val() != undefined) {
+                closed_tax_money.val(parseFloat(closed_tax_price.val() * closed_quantity.val()).toFixed(2));
+              }
+            }
+          }else if (this.id=='closed_price') {
+            if (closed_price.val() != undefined) {
+              closed_tax_price.val(((parseFloat(tax_rate) + 100) * closed_price.val()/100).toFixed(2));  
+              if (closed_quantity.val() != undefined) {
+                closed_money.val((closed_price.val() * closed_quantity.val()).toFixed(2));
+                closed_tax_money.val((closed_tax_price.val() * closed_quantity.val()).toFixed(2));
+              }
+            }
+          }else if (this.id=='closed_tax_price') {
+            if (closed_tax_price.val() != undefined) {
+              closed_price.val((closed_tax_price.val()*100/(parseFloat(tax_rate) + 100)).toFixed(2));
+              if (closed_quantity.val() != undefined) {
+                closed_money.val((closed_price.val() * closed_quantity.val()).toFixed(2));
+                closed_tax_money.val((closed_tax_price.val() * closed_quantity.val()).toFixed(2));
+              }
+            }
+          }else if (this.id=='closed_money') {
+            if (closed_money.val() != undefined) {
+              if (closed_quantity.val() != undefined) {
+                closed_price.val((closed_money.val()/closed_quantity.val()).toFixed(2));
+                closed_tax_price.val(((parseFloat(tax_rate) + 100) * closed_price.val()/100).toFixed(2));  
+                closed_tax_money.val((closed_tax_price.val() * closed_quantity.val()).toFixed(2));
+              }
+            }            
+          }else if (this.id=='closed_tax_money') {
+            if (closed_tax_money.val() != undefined) {
+              if (closed_quantity.val() != undefined) {
+                closed_tax_price.val((closed_tax_money.val()/closed_quantity.val()).toFixed(2));
+                closed_price.val((closed_tax_price.val()*100/(parseFloat(tax_rate) + 100)).toFixed(2));
+                closed_money.val((closed_price.val() * closed_quantity.val()).toFixed(2));
+              }
+            }
+          }
+        }
+      });
+    }
   }
 
   
@@ -581,11 +710,22 @@ $(document).ready(function() {
         item.purchase_in_detail_id = item.id;
         item.purchase_in_code = item.code;
         item.purchase_in_date = item.date;
-        item.closed_money = '';
-        item.closed_price = '';
-        item.closed_quantity = '';
-        item.closed_tax_money = '';
-        item.closed_tax_price = '';
+        item.closed_money = item.cost;
+        item.closed_price = item.price;
+        
+        item.closed_tax_money = item.cost;
+        item.closed_tax_price = item.price;
+        item.taxprice = item.price;
+        item.taxcost = item.cost;
+        item.taxrate = 1;
+        
+        var closed_quantity = 0, quantity=0;
+        if (item.close_quantity)
+          closed_quantity = parseFloat(item.closed_quantity);
+        if (item.quantity)
+          quantity = parseFloat(item.quantity);
+        
+        item.closed_quantity = quantity;
         basic_table.row.add(item);  
       }
     })
