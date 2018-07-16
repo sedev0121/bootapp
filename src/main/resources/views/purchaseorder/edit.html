@@ -217,17 +217,13 @@ $(document).ready(function() {
       table: "#basic_info",  
       idSrc: "id",
       fields: [ {        
-        label: "预付金额:",
-        attr: {
-          type: "number",
-          min:0,          
-        },
-        name: "prepaymoney" 
-      },{
-        label: "备注:",
         name: "arrivenote" 
       },{
-        label: "承诺交货日期:",
+        attr: {
+          type:'number',
+        },
+        name: "confirmquantity" 
+      },{
         type: "date",
         opts: {
           showOn: "focus",
@@ -235,7 +231,6 @@ $(document).ready(function() {
         },
         name: "confirmdate" 
       },{
-        label: "供方备注:",
         name: "confirmnote" 
       }],
     }).on( 'preSubmit', function ( e, data, action ) {
@@ -256,24 +251,27 @@ $(document).ready(function() {
     });
     
     basic_table = $('#basic_info').DataTable({
-        serverSide:false,
-        processing:false,
-        ajax : {
-            url : detail_url,
-            dataSrc : function(json) {
-              var prepay_sum = 0;
-              $.each(json, function(key, item){
-                item.confirmdate = $.fn.date_renderer(item.confirmdate);
-                prepay_sum += item.prepaymoney;
-              })
-              $("#prepay_total").val(prepay_sum);
-              return json;
-            },
-        },
+      serverSide:false,
+      processing:false,
+      ajax : {
+          url : detail_url,
+          dataSrc : function(json) {
+            var prepay_sum = 0;
+            $.each(json, function(key, item){
+              item.arrivedate = $.fn.date_renderer(item.arrivedate);
+              item.confirmdate = $.fn.date_renderer(item.confirmdate);
+              if (item.prepaymoney)
+                prepay_sum += parseFloat(item.prepaymoney);
+            })
+            $("#prepay_total").val(prepay_sum);
+            return json;
+          },
+      },
 
-        columns : [ {
-          data : 'rowno',
-          title : '行号',
+      columns : [ {
+        data : 'rowno',
+        className:'dt-center',
+        title : '行号',
       }, {
           data : 'inventory.name',
           title : '存货名称',
@@ -282,63 +280,69 @@ $(document).ready(function() {
           title : '存货代码',
       }, {
           data : 'inventory.main_measure.name',
+          className:'dt-center',
           title : '单位',
       }, {
           data : 'quantity',
+          className:'dt-right',
           title : '数量',
       }, {
           data : 'price',
+          className:'dt-right',
           title : '未税单价',
       }, {
           data : 'taxprice',
+          className:'dt-right',
           title : '含税单价',
       }, {
           data : 'money',
+          className:'dt-right',
           title : '未税金额',
       }, {
           data : 'sum',
+          className:'dt-right',
           title : '含税金额',
       }, {
           data : 'arrivedate',
           title : '需求日期',
+          className:'dt-center',
           render: $.fn.date_renderer,
       }, {
         data : 'prepaymoney',
-        className: 'buyer-cell dt-right',
+        className: 'dt-right',
         title : '预付金额',
       }, {
         data : 'arrivenote',
         className: 'buyer-cell',
         title : '备注',
       }, {
+        data : 'confirmquantity',
+        className:'dt-right vendor-cell',
+        title : '承诺交货数量',
+      }, {
           data : 'confirmdate',
           title : '承诺交货日期',
-          className: 'vendor-cell',
+          className: 'dt-center vendor-cell',
           render: $.fn.date_renderer,
       }, {
           data : 'confirmnote',
           className: 'vendor-cell',
           title : '供方备注',
       } ],
-        columnDefs:[{
-          className:'dt-center', targets:[0, 1, 2, 3] 
-        },{
-          className:'dt-right', targets:[4, 5, 6, 7, 8]
-        }],
     });
     
     if (state == 0 || state == 3) {
       $('#basic_info').on( 'click', 'tbody td.buyer-cell', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       });
-      App.addKeyDownEditor(editor, 10, 11);
+      App.addKeyDownEditor(editor, 11, 11);
     }
     
     if (state == 1) {
       $('#basic_info').on( 'click', 'tbody td.vendor-cell', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       });
-      App.addKeyDownEditor(editor, 12, 13);
+      App.addKeyDownEditor(editor, 12, 14);
     }
     
     
@@ -379,11 +383,46 @@ $(document).ready(function() {
     });
     
     $("#confirm").click(function() {
-      submit(2);
+      var data = basic_table.rows().data().toArray();
+      var error_msg = 0;
+      $.each(data, function(key, item){
+        if (item.confirmdate != item.arrivedate){
+          error_msg = "第" + item.rowno + "行商品承诺交货日期不一致！";
+          return;
+        }
+        if (item.confirmquantity != item.quantity){
+          error_msg = "第" + item.rowno + "行商品承诺交货数量不一致！";
+          return;
+        }
+      });
+      
+      if (!error_msg){
+        submit(2);  
+      }else{
+        App.showErrorDialog(error_msg);
+      }
+      
     });
 
     $("#cancel").click(function() {
-      submit(3);
+      var data = basic_table.rows().data().toArray();
+      var error_msg = 0;
+      $.each(data, function(key, item){
+        if (item.confirmdate != item.arrivedate){
+          error_msg = "第" + item.rowno + "行商品承诺交货日期不一致！";
+          return;
+        }
+        if (item.confirmquantity != item.quantity){
+          error_msg = "第" + item.rowno + "行商品承诺交货数量不一致！";
+          return;
+        }
+      });
+      
+      if (error_msg){
+        submit(3);  
+      }else{
+        App.showErrorDialog("没有商品承诺交货数量和承诺交货日期与需求不一致！");
+      }
     });
     
 });

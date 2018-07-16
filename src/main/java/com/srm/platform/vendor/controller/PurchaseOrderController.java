@@ -162,6 +162,7 @@ public class PurchaseOrderController extends CommonController {
 					else
 						detail.setPrepaymoney(null);
 					detail.setArrivenote(item.get("arrivenote"));
+					detail.setConfirmquantity(detail.getQuantity());
 					detail.setConfirmdate(detail.getArrivedate());
 					detail.setConfirmnote(null);
 				}
