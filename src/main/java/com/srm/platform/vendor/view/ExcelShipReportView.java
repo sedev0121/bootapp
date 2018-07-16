@@ -41,9 +41,9 @@ public class ExcelShipReportView extends AbstractXlsView {
 		header.createCell(7).setCellValue("数量");
 		header.createCell(8).setCellValue("已发货数量");
 		header.createCell(9).setCellValue("需求日期");
-		header.createCell(10).setCellValue("供应方备注");
+		header.createCell(10).setCellValue("备注");
 		header.createCell(11).setCellValue("承诺交货日期");
-		header.createCell(12).setCellValue("交货方备注");
+		header.createCell(12).setCellValue("供方备注");
 
 		int rowNum = 1;
 		for (PurchaseOrderDetail entry : list) {
