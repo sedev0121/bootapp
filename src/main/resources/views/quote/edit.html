@@ -264,7 +264,7 @@ is_vendor = 1;
     }
 
     if (state == 2) {
-      $(editor.field('iunitprice').input(), editor.field('itaxrate').input()).on('keydown', function (e, d) {
+      $(editor.field('iunitprice').input()).on('keydown', function (e, d) {
         if ( editor ) {
           //**Reset Plant Manager Approval function
           var price_field = editor.field('iunitprice');

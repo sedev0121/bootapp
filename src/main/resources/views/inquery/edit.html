@@ -143,8 +143,8 @@ is_vendor = 1;
   
   $(document).ready(function() {
 
-    $('#start_date').datepicker();
-    $('#end_date').datepicker();
+    $('#start_date').datepicker({minDate: new Date()});
+    $('#end_date').datepicker({minDate: new Date()});
     
     $(".select2").select2();
     $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
@@ -152,6 +152,7 @@ is_vendor = 1;
     $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 }).select2("val", supply_type.toString());
     $("#vendor").select2(App.getSelect2Options(vendor_search_url));
    
+
     if (state > 1) {
       $('input').attr("readonly", true);
       $('select').attr("readonly", true);
@@ -231,8 +232,13 @@ is_vendor = 1;
         },{
           label: "生效日期:",
           type: "date",
+          id: "dstartdate",
           opts: {
-            showOn: "focus"
+            minDate:$('#start_date').datepicker("getDate"),
+            onSelect:function() {
+              editor.field('denddate').input().datepicker("option", "minDate", editor.field('dstartdate').input().datepicker("getDate"));
+            },
+            showOn: "focus",
           },
           dateFormat: "yy-mm-dd",
           name: "dstartdate"                
@@ -240,6 +246,7 @@ is_vendor = 1;
           label: "有效日期:",
           type: "date",
           opts: {
+            minDate:$('#start_date').datepicker("getDate"),
             showOn: "focus"
           },
           dateFormat: $.datepicker.ISO_8601,
@@ -287,7 +294,12 @@ is_vendor = 1;
         App.showErrorDialog("请选择供应商！");
         return false;
       }
+      
+      this.field('dstartdate').input().datepicker("option", "minDate", $('#start_date').datepicker("getDate"));
+      this.field('denddate').input().datepicker("option", "minDate", $('#start_date').datepicker("getDate"));
+      
     }).on( 'open', function (e, mode, action) {
+      
       if (mode != 'main')
         return true;
       
@@ -302,6 +314,7 @@ is_vendor = 1;
         $('#select_inv_code').empty();
       }
       
+
       var select_options = App.getSelect2Options(inventory_search_url);
       $.extend(true, select_options, {
         ajax: {
@@ -468,7 +481,7 @@ is_vendor = 1;
     }
     
     if (state == 1) {
-      $(editor.field('iunitprice').input(), editor.field('itaxrate').input()).on('keydown', function (e, d) {
+      $(editor.field('iunitprice').input()).on('keydown', function (e, d) {
         if ( editor ) {
           //**Reset Plant Manager Approval function
           var price_field = editor.field('iunitprice');
@@ -509,6 +522,7 @@ is_vendor = 1;
           } 
         }
       });
+
     }
     
     $("#form" ).validate({
