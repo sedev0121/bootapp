@@ -385,14 +385,15 @@ public class SyncController {
 
 				if (errorCode == appProperties.getError_code_success()) {
 					total_page = Integer.parseInt((String) map.get("page_count"));
-					tempList = (List<LinkedHashMap<String, String>>) map.get("inventory");
+					tempList = (List<LinkedHashMap<String, String>>) map.get("unit");
 					for (LinkedHashMap<String, String> temp : tempList) {
 						logger.info(temp.get("code") + " " + temp.get("name"));
 						MeasurementUnit unit = new MeasurementUnit();
 						unit.setCode(temp.get("code"));
 						unit.setGroupCode(temp.get("group_code"));
 						unit.setName(temp.get("name"));
-						unit.setChangerate(Integer.parseInt(temp.get("changerate")));
+						// if (temp.get("changerate") != null && !temp.get("changerate").isEmpty())
+						// unit.setChangerate(Integer.parseInt(temp.get("changerate")));
 						unit.setMainFlag(Boolean.parseBoolean(temp.get("main_flag")));
 						measurementUnitRepository.save(unit);
 					}

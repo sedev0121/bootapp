@@ -162,6 +162,8 @@ is_vendor = 1;
     if (is_vendor)
       $('#vendor').attr("readonly", true);
     
+    var edit_mode = 'main';
+    
     editor = new $.fn.dataTable.Editor( {
       table: "#example",  
       idSrc: "id",
@@ -278,13 +280,17 @@ is_vendor = 1;
               system: "发生错误！"
           }
       }
-    }).on( 'preOpen', function ( e, json, data ) {
+    }).on( 'preOpen', function ( e, mode, action ) {
+      edit_mode = mode;
       if ($("#vendor").val() == "") {
         $('#vendor').focus();
         App.showErrorDialog("请选择供应商！");
         return false;
       }
     }).on( 'open', function (e, mode, action) {
+      if (mode != 'main')
+        return true;
+      
       if (action == "edit") {
         $('#select_inv_code').empty().append($("<option/>").val(this.field('cinvcode').val()).text(this.field('name').val()));
       }
@@ -319,33 +325,12 @@ is_vendor = 1;
         $('#denddate').val(selected_data.endDate);        
       });
       
-      $('#itaxrate, #iunitprice').change(function() {
-        if ($('#itaxrate').val() != undefined && $('#iunitprice').val() != undefined) {
-          value = (Number.parseFloat($('#itaxrate').val()) + 100) * $('#iunitprice').val()/100;
-          $('#itaxunitprice').val(Number.parseFloat(value).toFixed(2));  
-        }        
-      });
-
-      $('#itaxunitprice').change(function() {
-        if ($('#itaxrate').val() != undefined && $('#itaxunitprice').val() != undefined) {
-          value = $('#itaxunitprice').val()*100/(Number.parseFloat($('#itaxrate').val()) + 100);          
-          $('#iunitprice').val(Number.parseFloat(value).toFixed(2));  
-        }        
-      });
-/*      
-      if (state > 1) {
-        $(".DTE_Form_Content input").attr("readonly", true);
-        $('.DTE_Form_Content select').attr("readonly", true);
-        $(".DTE_Form_Content .hasDatepicker").datepicker( "option", "disabled", true );
+    }).on( 'preSubmit', function ( e, data, action ) {
+      if ( action == 'remove') {
+        return true;
       }
       
-      if (state != 5) {
-        this.field('ivalid').hide();
-      }
-      */    
-   
-    }).on( 'preSubmit', function ( e, data, action ) {
-      if ( action !== 'remove' ) {
+      if (edit_mode == 'main') {
           var iunitprice = this.field( 'iunitprice' );
   
           if ( ! iunitprice.val() ) {
@@ -369,8 +354,18 @@ is_vendor = 1;
           if ( this.inError() ) {
               return false;
           }
-      }      
-    } );
+      }   
+      if (edit_mode == 'inline') {
+        
+      }   
+    }).on( 'postEdit', function (e, json, data, action) {
+      var table_data = table.rows().data().toArray();
+      var prepay_sum = 0;
+      $.each(table_data, function(key, item){    
+        
+      })
+            
+    });
     
     var table_options = {
         serverSide:false,
@@ -406,29 +401,36 @@ is_vendor = 1;
           title : '单位',
         }, {
           data : 'fminquantity',
+          className: (state==1)?'edit-cell':'',
           title : '最小数量',
         }, {
           data : 'fmaxquantity',
+          className: (state==1)?'edit-cell':'',
           title : '最大数量',
         }, {
           data : 'iunitprice',
+          className: (state==1)?'edit-cell':'',
           title : '最新未税报价',
         }, {
           data : 'itaxrate',
+          className: (state==1)?'edit-cell':'',
           title : '税率',
         }, {
           data : 'itaxunitprice',
+          className: (state==1)?'edit-cell':'',
           title : '最新含税报价',
         }, {
           data : 'dstartdate',
+          className: (state==1)?'edit-cell':'',
           title : '生效日期',
         }, {
           data : 'denddate',
+          className: (state==1)?'edit-cell':'',
           title : '有效日期'
         }, {
           data : 'ivalid',
           title : '是否有效',
-          className: 'ivalid dt-center',
+          className: 'ivalid dt-center' + (state==3)?'edit-cell':'',
           visible: state>2,
           render: function ( data, type, row ) {
               if ( type === 'display' ) {
@@ -438,6 +440,7 @@ is_vendor = 1;
           },
         }, {
           data : 'cbodymemo',
+          className: (state==1)?'edit-cell':'',
           title : '备注',
 
         } ],
@@ -454,6 +457,57 @@ is_vendor = 1;
           editor.edit( $(this).closest('tr'), false )
               .set( 'ivalid', $(this).prop( 'checked' ) ? 1 : 0 )
               .submit();
+      });
+    }
+    
+    if (state == 1) {
+      table.on( 'click', 'tbody td.edit-cell', function (e) {
+        editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+      } );
+      App.addKeyDownEditor(editor, 4, 11);
+    }
+    
+    if (state == 1) {
+      $(editor.field('iunitprice').input(), editor.field('itaxrate').input()).on('keydown', function (e, d) {
+        if ( editor ) {
+          //**Reset Plant Manager Approval function
+          var price_field = editor.field('iunitprice');
+          var taxrate_field = editor.field('itaxrate');
+          var taxprice_field = editor.field('itaxunitprice');
+          
+          if (taxrate_field.val() != undefined && price_field.val() != undefined) {
+            value = (Number.parseFloat(taxrate_field.val()) + 100) * price_field.val()/100;
+            taxprice_field.val(Number.parseFloat(value).toFixed(2));  
+          } 
+        }
+      });
+      
+      $(editor.field('itaxrate').input()).on('keydown', function (e, d) {
+        if ( editor ) {
+          //**Reset Plant Manager Approval function
+          var price_field = editor.field('iunitprice');
+          var taxrate_field = editor.field('itaxrate');
+          var taxprice_field = editor.field('itaxunitprice');
+          
+          if (taxrate_field.val() != undefined && price_field.val() != undefined) {
+            value = (Number.parseFloat(taxrate_field.val()) + 100) * price_field.val()/100;
+            taxprice_field.val(Number.parseFloat(value).toFixed(2));  
+          } 
+        }
+      });
+      
+      $(editor.field('itaxunitprice').input()).on('keydown', function (e, d) {
+        if ( editor ) {
+          //**Reset Plant Manager Approval function
+          var price_field = editor.field('iunitprice');
+          var taxrate_field = editor.field('itaxrate');
+          var taxprice_field = editor.field('itaxunitprice');
+          
+          if (taxrate_field.val() != undefined && taxprice_field.val() != undefined) {
+            value = taxprice_field.val()*100/(Number.parseFloat(taxrate_field.val()) + 100);          
+            price_field.val(Number.parseFloat(value).toFixed(2));  
+          } 
+        }
       });
     }
     
