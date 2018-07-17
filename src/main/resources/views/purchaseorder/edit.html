@@ -12,7 +12,7 @@
 
       <div class="btn-group-bar">
         <div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-          <a class="btn btn-primary" id="deploy" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0 or main.srmstate==3 ) AND main.state =='审核'} "><i class="fa fa-undo"></i> 发布</a>
+          <a class="btn btn-primary" id="deploy" sec:authorize="hasAuthority('订单管理-新建/发布')" th:if="${(main.srmstate==0 or main.srmstate==3 ) AND main.state =='审核'} "><i class="fa fa-undo"></i> 发布</a>
           <a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a>
           <a class="btn btn-primary" id="cancel" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-undo"></i> 拒绝</a>
           <a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回</a>
@@ -111,6 +111,10 @@
   </div>  
 </body>
 </html>
+
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('订单管理-新建/发布')">
+is_readonly = 0;
+</script>
 
 <script th:inline="javascript">
 /*[+
@@ -331,7 +335,7 @@ $(document).ready(function() {
       } ],
     });
     
-    if (state == 0 || state == 3) {
+    if ((state == 0 || state == 3) && !is_readonly) {
       $('#basic_info').on( 'click', 'tbody td.buyer-cell', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       });
