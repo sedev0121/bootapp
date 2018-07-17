@@ -118,13 +118,14 @@ public class PermissionController {
 		for (int i = 0; i < functionList.size(); i++) {
 			Function tempF = functionList.get(i);
 			List<Action> actionList = tempF.getActions();
+			List<Action> newActionList = new ArrayList<>();
 			for (int j = 0; j < actionList.size(); j++) {
 				Action tempA = actionList.get(j);
-				tempA.setAvailable(false);
 				for (int k = 0; k < temp.getFunctionActions().size(); k++) {
 					FunctionAction tempG = temp.getFunctionActions().get(k);
 
 					if (tempG.getFunctionId() == tempF.getId() && tempG.getActionId() == tempA.getId()) {
+						tempA = Action.clone(tempA);
 						tempA.setAvailable(true);
 						break;
 					}
@@ -132,11 +133,14 @@ public class PermissionController {
 				for (int k = 0; k < functionActionList.size(); k++) {
 					FunctionAction tempG = functionActionList.get(k);
 					if (tempG.getFunctionId() == tempF.getId() && tempG.getActionId() == tempA.getId()) {
+						tempA = Action.clone(tempA);
 						tempA.setFunctionActionId(tempG.getId());
 						break;
 					}
 				}
+				newActionList.add(tempA);
 			}
+			tempF.setActions(newActionList);
 
 			for (int j = 0; j < unitList.size(); j++) {
 				IGroupFunctionUnit tempU = unitList.get(j);
@@ -145,7 +149,6 @@ public class PermissionController {
 					break;
 				}
 			}
-
 		}
 
 		model.addAttribute("permission_group", temp);
