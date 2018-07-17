@@ -68,6 +68,7 @@ public class InqueryController extends CommonController {
 	}
 
 	// 新建
+	@PreAuthorize("hasAuthority('询价管理-新建/发布')")
 	@GetMapping({ "/add" })
 	public String add(Model model) {
 		VenPriceAdjustMain main = new VenPriceAdjustMain(accountRepository);

@@ -23,7 +23,7 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-body"> 
-        <form id="form" th:action="@{/buyer/quote/update}" method="post">
+        <form id="form" th:action="@{/quote/update}" method="post">
             <div class="row">
                 <div class="col-lg-3 col-md-3">
                   <label for="code">单号: </label>
@@ -124,7 +124,7 @@ is_vendor = 1;
   var editor;
   /*[+    
   var detail_url = [[@{|/inquery/${main.ccode}/details|}]];
-  var edit_url = [[@{/buyer/quote/}]];
+  var edit_url = [[@{/quote/}]];
   +]*/ 
   var vendor_search_url = /*[[@{/vendor/search}]]*/'';
   var state = /*[[${main.iverifystate}]]*/'';
@@ -353,16 +353,23 @@ is_vendor = 1;
       }
     }); 
     
-    
-    $("#pass").click(function() {
-      $('#state').val(5);
+    $("#confirm").click(function() {
+      if ($('#type').val() == 1)
+        $('#state').val(5);
+      else
+        $('#state').val(3);
       $("#form").submit();            
-    }); 
+    });
     
     $("#cancel").click(function() {
       $('#state').val(4);
       $("#form").submit();            
     });
+    
+    $("#pass").click(function() {
+      $('#state').val(5);
+      $("#form").submit();            
+    }); 
     
     $("#verify").click(function() {
       $('#state').val(6);

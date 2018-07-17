@@ -13,13 +13,14 @@
     </ul>       
     <div class="btn-group-bar">
         <div class="text-right">
-          <a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a>
-          <a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-share"></i> 提交</a>
-          <a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="delete"><i class="fa fa-remove"></i> 删除</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.iverifystate==3 OR main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-share"></i> 提交</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-删除')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="delete"><i class="fa fa-remove"></i> 删除</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" th:if="${main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-归档')" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
           <a class="btn btn-default" th:href="@{/inquery}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
     </div>
@@ -126,6 +127,10 @@
 is_vendor = 1;
 </script>
 
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')">
+is_readonly = 0;
+</script>
+
 <script th:inline="javascript">
   var editor;
   /*[+
@@ -153,7 +158,7 @@ is_vendor = 1;
     $("#vendor").select2(App.getSelect2Options(vendor_search_url));
    
 
-    if (state > 1) {
+    if (state > 1 || is_readonly) {
       $('input').attr("readonly", true);
       $('select').attr("readonly", true);
       $("#start_date").datepicker( "option", "disabled", true );
@@ -383,7 +388,7 @@ is_vendor = 1;
     var table_options = {
         serverSide:false,
         processing:false,
-        select: true,
+        select: (state == 1 && !is_readonly),
         buttons: [
             { extend: "create", editor: editor },
             { extend: "edit",   editor: editor },
@@ -463,6 +468,10 @@ is_vendor = 1;
         }
       };
     
+    if (state != 1 || is_readonly) {
+      table_options.buttons = [];
+    }
+    
     var table = $('#example').DataTable(table_options);
 
     if (state == 3) {
@@ -473,14 +482,14 @@ is_vendor = 1;
       });
     }
     
-    if (state == 1) {
+    if (state == 1 && !is_readonly) {
       table.on( 'click', 'tbody td.edit-cell', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
       App.addKeyDownEditor(editor, 4, 11);
     }
     
-    if (state == 1) {
+    if (state == 1 && !is_readonly) {
       $(editor.field('iunitprice').input()).on('keydown', function (e, d) {
         if ( editor ) {
           //**Reset Plant Manager Approval function
