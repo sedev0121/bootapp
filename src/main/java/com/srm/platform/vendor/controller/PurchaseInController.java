@@ -1,8 +1,5 @@
 package com.srm.platform.vendor.controller;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +26,7 @@ import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.utility.PurchaseInDetailItem;
 import com.srm.platform.vendor.utility.PurchaseInSearchItem;
+import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/purchasein")
@@ -69,23 +67,8 @@ public class PurchaseInController {
 		String start_date = requestParams.getOrDefault("start_date", null);
 		String end_date = requestParams.getOrDefault("end_date", null);
 
-		Date startDate = null, endDate = null;
-		try {
-			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-			if (start_date != null && !start_date.isEmpty())
-				startDate = dateFormatter.parse(start_date);
-			if (end_date != null && !end_date.isEmpty()) {
-				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				endDate = dateFormatter.parse(end_date);
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(endDate);
-				cal.add(Calendar.DATE, 1);
-				endDate = cal.getTime();
-			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Date startDate = Utils.parseDate(start_date);
+		Date endDate = Utils.getNextDate(end_date);
 
 		switch (order) {
 		case "vendorname":
@@ -125,16 +108,7 @@ public class PurchaseInController {
 		String dateStr = requestParams.getOrDefault("date", null);
 		String inventory = requestParams.getOrDefault("inventory", "");
 
-		Date date;
-		try {
-			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-			if (dateStr != null && !dateStr.isEmpty())
-				date = dateFormatter.parse(dateStr);
-
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Date date = Utils.parseDate(dateStr);
 
 		switch (order) {
 		case "purchase_in_detail_id":

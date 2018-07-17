@@ -1,8 +1,5 @@
 package com.srm.platform.vendor.controller;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +34,7 @@ import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.StatementDetailItem;
 import com.srm.platform.vendor.utility.StatementSaveForm;
 import com.srm.platform.vendor.utility.StatementSearchItem;
+import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/statement")
@@ -99,23 +97,8 @@ public class StatementController extends CommonController {
 		String end_date = requestParams.getOrDefault("end_date", null);
 
 		Integer state = Integer.parseInt(stateStr);
-		Date startDate = null, endDate = null;
-		try {
-			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-			if (start_date != null && !start_date.isEmpty())
-				startDate = dateFormatter.parse(start_date);
-			if (end_date != null && !end_date.isEmpty()) {
-				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				endDate = dateFormatter.parse(end_date);
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(endDate);
-				cal.add(Calendar.DATE, 1);
-				endDate = cal.getTime();
-			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Date startDate = Utils.parseDate(start_date);
+		Date endDate = Utils.getNextDate(end_date);
 
 		switch (order) {
 		case "vendor_name":

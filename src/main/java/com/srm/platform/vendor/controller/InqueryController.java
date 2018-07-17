@@ -1,9 +1,6 @@
 package com.srm.platform.vendor.controller;
 
 import java.security.Principal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +31,7 @@ import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.Utils;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 import com.srm.platform.vendor.utility.VenPriceDetailItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
@@ -112,23 +110,8 @@ public class InqueryController extends CommonController {
 		String end_date = requestParams.getOrDefault("end_date", null);
 
 		Integer state = Integer.parseInt(stateStr);
-		Date startDate = null, endDate = null;
-		try {
-			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-			if (start_date != null && !start_date.isEmpty())
-				startDate = dateFormatter.parse(start_date);
-			if (end_date != null && !end_date.isEmpty()) {
-				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				endDate = dateFormatter.parse(end_date);
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(endDate);
-				cal.add(Calendar.DATE, 1);
-				endDate = cal.getTime();
-			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Date startDate = Utils.parseDate(start_date);
+		Date endDate = Utils.getNextDate(end_date);
 
 		switch (order) {
 		case "vendorname":
@@ -225,22 +208,11 @@ public class InqueryController extends CommonController {
 
 				if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())
 					detail.setIvalid(Integer.parseInt(row.get("ivalid")));
-				try {
-					String startDateStr = row.get("dstartdate");
-					String endDateStr = row.get("denddate");
-					SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-					if (startDateStr != null && !startDateStr.isEmpty()) {
-						detail.setDstartdate(dateFormatter.parse(startDateStr));
-					}
 
-					if (endDateStr != null && !endDateStr.isEmpty()) {
-						dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-						detail.setDenddate(dateFormatter.parse(endDateStr));
-					}
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				String startDateStr = row.get("dstartdate");
+				String endDateStr = row.get("denddate");
+				detail.setDstartdate(Utils.parseDate(startDateStr));
+				detail.setDenddate(Utils.getNextDate(endDateStr));
 
 				detail.setItaxrate(Float.parseFloat(row.get("itaxrate")));
 				detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));

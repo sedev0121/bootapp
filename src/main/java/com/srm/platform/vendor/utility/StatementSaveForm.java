@@ -1,7 +1,5 @@
 package com.srm.platform.vendor.utility;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -75,13 +73,7 @@ public class StatementSaveForm {
 	}
 
 	public void setMake_date(String make_date) {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			this.make_date = dateFormatter.parse(make_date);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.make_date = Utils.parseDate(make_date);
 	}
 
 	public Long getVerifier() {
@@ -97,13 +89,7 @@ public class StatementSaveForm {
 	}
 
 	public void setVerify_date(String verify_date) {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			this.verify_date = dateFormatter.parse(verify_date);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.verify_date = Utils.parseDate(verify_date);
 	}
 
 	public List<Map<String, String>> getTable() {

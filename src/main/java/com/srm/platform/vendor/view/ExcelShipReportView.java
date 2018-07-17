@@ -1,7 +1,6 @@
 package com.srm.platform.vendor.view;
 
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +13,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
+import com.srm.platform.vendor.utility.Utils;
 
 public class ExcelShipReportView extends AbstractXlsView {
 
@@ -59,15 +59,9 @@ public class ExcelShipReportView extends AbstractXlsView {
 			row.createCell(7).setCellValue(entry.getQuantity());
 			if (entry.getShippedQuantity() != null)
 				row.createCell(8).setCellValue(entry.getShippedQuantity());
-			if (entry.getArrivedate() != null) {
-				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				row.createCell(9).setCellValue(dateFormatter.format(entry.getArrivedate()));
-			}
+			row.createCell(9).setCellValue(Utils.formatDate(entry.getArrivedate()));
 			row.createCell(10).setCellValue(entry.getArrivenote());
-			if (entry.getConfirmdate() != null) {
-				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				row.createCell(11).setCellValue(dateFormatter.format(entry.getConfirmdate()));
-			}
+			row.createCell(11).setCellValue(Utils.formatDate(entry.getConfirmdate()));
 			row.createCell(12).setCellValue(entry.getConfirmnote());
 			rowNum++;
 		}

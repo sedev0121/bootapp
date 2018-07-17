@@ -1,7 +1,5 @@
 package com.srm.platform.vendor.utility;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -58,13 +56,7 @@ public class VenPriceSaveForm {
 	}
 
 	public void setStart_date(String start_date) {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			this.start_date = dateFormatter.parse(start_date);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.start_date = Utils.parseDate(start_date);
 	}
 
 	public Date getEnd_date() {
@@ -72,13 +64,7 @@ public class VenPriceSaveForm {
 	}
 
 	public void setEnd_date(String end_date) {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			this.end_date = dateFormatter.parse(end_date);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.end_date = Utils.parseDate(end_date);
 	}
 
 	public Integer getType() {
@@ -110,13 +96,7 @@ public class VenPriceSaveForm {
 	}
 
 	public void setMake_date(String make_date) {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			this.make_date = dateFormatter.parse(make_date);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.make_date = Utils.parseDate(make_date);
 	}
 
 	public List<Map<String, String>> getTable() {

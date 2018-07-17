@@ -1,7 +1,6 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Calendar;
@@ -41,6 +40,7 @@ import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.u8api.AppProperties;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.Utils;
 
 @RestController
 @RequestMapping(path = "/sync")
@@ -174,16 +174,7 @@ public class SyncController {
 						vendor.setCode(temp.get("code"));
 						vendor.setContact(temp.get("contact"));
 						vendor.setEmail(temp.get("email"));
-						String endDate = temp.get("end_date");
-						if (endDate != null && !endDate.isEmpty()) {
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-								vendor.setEndDate(formatter.parse(endDate));
-							} catch (ParseException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
+						vendor.setEndDate(Utils.parseDateTime(temp.get("end_date")));
 						vendor.setFax(temp.get("fax"));
 						vendor.setIndustry(temp.get("industry"));
 						vendor.setMemo(temp.get("memo"));
@@ -255,15 +246,9 @@ public class SyncController {
 						inventory.setDefwarehouse(temp.get("defwarehouse"));
 						inventory.setDefwarehousename(temp.get("defwarehousename"));
 						inventory.setDrawtype(temp.get("drawtype"));
-						tempValue = temp.get("end_date");
-						if (tempValue != null)
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-								inventory.setEndDate(formatter.parse(tempValue));
-							} catch (ParseException e2) {
-								// TODO Auto-generated catch block
-								e2.printStackTrace();
-							}
+
+						inventory.setEndDate(Utils.parseDateTime(temp.get("end_date")));
+
 						tempValue = temp.get("iimptaxrate");
 						if (tempValue != null)
 							inventory.setIimptaxrate(Float.parseFloat(temp.get("iimptaxrate")));
@@ -271,15 +256,7 @@ public class SyncController {
 						inventory.setiSupplyType(temp.get("iSupplyType"));
 						inventory.setMainMeasure(measurementUnitRepository.findOneByCode(temp.get("main_measure")));
 
-						tempValue = temp.get("ModifyDate");
-						if (tempValue != null)
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-								inventory.setModifyDate(formatter.parse(tempValue));
-							} catch (ParseException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+						inventory.setModifyDate(Utils.parseDateTime(temp.get("ModifyDate")));
 
 						inventory.setName(temp.get("name"));
 						inventory.setPuunitCode(temp.get("puunit_code"));
@@ -298,15 +275,7 @@ public class SyncController {
 						if (tempValue != null)
 							inventory.setSaunitIchangrate(Float.parseFloat(tempValue));
 
-						tempValue = temp.get("start_date");
-						if (tempValue != null && !tempValue.isEmpty())
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-								inventory.setStartDate(formatter.parse(tempValue));
-							} catch (ParseException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+						inventory.setStartDate(Utils.parseDateTime(temp.get("start_date")));
 						inventory.setStunitCode(temp.get("stunit_code"));
 
 						tempValue = temp.get("stunit_ichangrate");
@@ -522,18 +491,7 @@ public class SyncController {
 						PurchaseOrderMain main = new PurchaseOrderMain();
 						main.setCode(temp.get("code"));
 
-						String makeDateStr = temp.get("date");
-						Date makeDate = null;
-						if (makeDateStr != null && !makeDateStr.isEmpty()) {
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-								makeDate = formatter.parse(makeDateStr);
-							} catch (ParseException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-
+						Date makeDate = Utils.parseDate(temp.get("date"));
 						Vendor vendor = vendorRepository.findOneByCode(temp.get("vendorcode"));
 
 						if (makeDate == null || (!isAll && makeDate.before(new Date())) || temp.get("state") == "新建"
@@ -626,15 +584,7 @@ public class SyncController {
 						detail.setRowno(Integer.parseInt(entryMap.get("rowno")));
 
 					String arriveDateStr = entryMap.get("arrivedate");
-					if (arriveDateStr != null && !arriveDateStr.isEmpty()) {
-						try {
-							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-							detail.setArrivedate(formatter.parse(arriveDateStr));
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
+					detail.setArrivedate(Utils.parseDate(arriveDateStr));
 
 					purchaseOrderDetailRepository.save(detail);
 				}
@@ -707,19 +657,8 @@ public class SyncController {
 
 						String makeDateStr = temp.get("date");
 						String auditDateStr = temp.get("date");
-						Date makeDate = null, auditDate = null;
-						if (makeDateStr != null && !makeDateStr.isEmpty()) {
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-								makeDate = formatter.parse(makeDateStr);
-								formatter = new SimpleDateFormat("yyyy-MM-dd");
-								auditDate = formatter.parse(auditDateStr);
-
-							} catch (ParseException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
+						Date makeDate = Utils.parseDate(makeDateStr);
+						Date auditDate = Utils.parseDate(auditDateStr);
 
 						if (!isAll && makeDate.before(new Date())) {
 							continue;
