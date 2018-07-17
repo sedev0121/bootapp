@@ -285,3 +285,11 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
 .red {    
     color: #e6400c
 }
+
+.perm {
+    min-height: 140px !important;
+}
+
+.perm legend{
+    margin-bottom:10px;
+}

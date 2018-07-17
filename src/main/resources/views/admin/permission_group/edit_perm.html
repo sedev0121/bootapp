@@ -24,7 +24,7 @@
       <div class="panel panel-default">
         <div class="panel-body"> 
           <div class="row">
-            <fieldset class="col-lg-4 col-md-4 margin-top-10" th:each="item : ${function_list}">
+            <fieldset class="perm col-lg-4 col-md-4 margin-top-10" th:each="item : ${function_list}">
               <input type="hidden" th:id="'function_' + ${item.id}" th:name="'units_' + ${item.id}" th:value="${item.units}">
               <legend><label th:text="${item.name}">供应商档案管理 </label>- 
                 <input type="checkbox" class="select-all" th:attrappend="subclass=${item.id}?'class_' + ${item.id}">
