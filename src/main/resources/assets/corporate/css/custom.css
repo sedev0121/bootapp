@@ -281,3 +281,7 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
 .detail-tabs .ui-widget.ui-widget-content {
     border: 0px solid #c5c5c5
 }
+
+.red {    
+    color: #e6400c
+}

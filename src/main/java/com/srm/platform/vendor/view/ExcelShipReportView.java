@@ -44,7 +44,7 @@ public class ExcelShipReportView extends AbstractXlsView {
 		header.createCell(10).setCellValue("备注");
 		header.createCell(11).setCellValue("承诺交货日期");
 		header.createCell(12).setCellValue("供方备注");
-
+		header.createCell(13).setCellValue("识别编码");
 		int rowNum = 1;
 		for (PurchaseOrderDetail entry : list) {
 			// create the row data
@@ -55,7 +55,7 @@ public class ExcelShipReportView extends AbstractXlsView {
 			row.createCell(3).setCellValue(entry.getInventory().getName());
 			row.createCell(4).setCellValue(entry.getInventory().getCode());
 			row.createCell(5).setCellValue(entry.getInventory().getSpecs());
-			row.createCell(6).setCellValue(entry.getInventory().getPuunitName());
+			row.createCell(6).setCellValue(entry.getInventory().getMainMeasure().getName());
 			row.createCell(7).setCellValue(entry.getQuantity());
 			if (entry.getShippedQuantity() != null)
 				row.createCell(8).setCellValue(entry.getShippedQuantity());
@@ -63,6 +63,7 @@ public class ExcelShipReportView extends AbstractXlsView {
 			row.createCell(10).setCellValue(entry.getArrivenote());
 			row.createCell(11).setCellValue(Utils.formatDate(entry.getConfirmdate()));
 			row.createCell(12).setCellValue(entry.getConfirmnote());
+			row.createCell(13).setCellValue(entry.getId());
 			rowNum++;
 		}
 

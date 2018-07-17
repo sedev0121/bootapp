@@ -80,7 +80,7 @@ is_vendor = 1;
   
 var import_result = [[${#vars['message']}]];  
 var importUrl = [[@{/ship/import}]];  
-var editable = [[${#strings.startsWith(#httpServletRequest.requestURI,'/vendor/purchaseorder/ship')?true:false}]];
+var editable = [[${#strings.startsWith(#httpServletRequest.requestURI,'/ship/index')?true:false}]];
 
 var list_url = [[@{/ship/list}]];
 
@@ -177,7 +177,12 @@ var list_url = [[@{/ship/list}]];
             columnDefs: [ {
               "targets": 10,
               "orderable": false
-            }]
+            }],
+            createdRow: function ( row, data, index ) {
+              if ( (new Date(data.confirmdate)).getTime() < (new Date()).getTime() && data.remain_quantity>0) {
+                $('td', row).eq(8).addClass('red');
+              }
+            }
 		});
 		
     $("#btn_search").click(function() {
