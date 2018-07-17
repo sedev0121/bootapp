@@ -108,7 +108,7 @@ select[readonly].select2-hidden-accessible + .select2-container .select2-selecti
     color:#32C5D2;
 }
 
-#confirm {
+#confirm, #review_ok {
     background-color:#1BA39C;
 }
 .inquery_state_3 {
@@ -121,7 +121,7 @@ select[readonly].select2-hidden-accessible + .select2-container .select2-selecti
     border-color: #f13e46;
 }
 
-#cancel {
+#cancel, #review_no {
     background-color:red;
 }
 .inquery_state_4 {

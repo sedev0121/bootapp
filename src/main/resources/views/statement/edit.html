@@ -15,9 +15,11 @@
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1  or main.state==4}" id="save"><i class="fa fa-save"></i> 保存</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1  or main.state==4}" id="submit"><i class="fa fa-share"></i> 发布</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==2}" id="verify"><i class="fa fa-check-square"></i> 确认</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==3}" id="review_yes"><i class="fa fa-arrow-up"></i> 审核</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==3}" id="review_no"><i class="fa fa-undo"></i> 反审核</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1  or main.state==4}" id="delete"><i class="fa fa-remove"></i> 删除</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3}" id="invoice"><i class="fa fa-check-square"></i> 填发票号</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==5}" id="invoice"><i class="fa fa-check-square"></i> 填发票号</a>
           <a class="btn btn-default" th:href="@{/statement}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
     </div>
@@ -325,7 +327,7 @@ $(document).ready(function() {
     $('select').attr("readonly", true);
   }
 
-  if (state == 3 && is_vendor) {
+  if (state == 5 && is_vendor) {
     $('#invoice_code').removeAttr("readonly");
   }
   
@@ -760,8 +762,13 @@ $(document).ready(function() {
     $("#form").submit();            
   });   
   
-  $("#cancel").click(function() {
+  $("#cancel, #review_no").click(function() {
     $('#state').val(4);
+    $("#form").submit();            
+  });
+  
+  $("#review_yes").click(function() {
+    $('#state').val(5);
     $("#form").submit();            
   });
 
