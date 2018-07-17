@@ -12,10 +12,11 @@
       </ul>
     <div class="btn-group-bar">
         <div class="text-right">
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.iverifystate==3 OR main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('报价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('报价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('报价管理-审核/退回')" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('报价管理-审核/退回')" th:if="${main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('报价管理-归档')" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.iverifystate==2}" id="confirm"><i class="fa fa-arrow-up"></i> 确认</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.iverifystate==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
           <a class="btn btn-default" th:href="@{/quote}"><i class="fa fa-arrow-left"></i> 返回</a>
