@@ -22,7 +22,7 @@ import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.utility.UnitNode;
 
 @Controller
-@RequestMapping(path = "/admin/unit")
+@RequestMapping(path = "/unit")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class UnitController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());

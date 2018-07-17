@@ -41,7 +41,7 @@ import com.srm.platform.vendor.utility.AccountSearchItem;
 import com.srm.platform.vendor.utility.IGroupFunctionUnit;
 
 @Controller
-@RequestMapping(path = "/admin/permission_group")
+@RequestMapping(path = "/permission_group")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class PermissionController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());

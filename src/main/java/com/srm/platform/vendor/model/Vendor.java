@@ -6,6 +6,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,8 +35,20 @@ public class Vendor {
 	private String fax;
 	private String email;
 
+	@JoinColumn(name = "unit_id")
+	@ManyToOne()
+	private Unit unit;
+
 	public Vendor() {
 
+	}
+
+	public Unit getUnit() {
+		return unit;
+	}
+
+	public void setUnit(Unit unit) {
+		this.unit = unit;
 	}
 
 	public String getPhone() {

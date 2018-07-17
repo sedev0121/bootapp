@@ -67,7 +67,7 @@
         <!-- BEGIN NAVIGATION -->
         <div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR')">
           <ul>
-            <li class="dropdown" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/inquery')} or ${#strings.startsWith(#httpServletRequest.requestURI,'/quote')}? active : ''" >   
+            <li class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/inquery')} or ${#strings.startsWith(#request.requestURI,'/quote')}? active : ''" >   
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">价格管理</a>
                 
               <ul class="dropdown-menu">
@@ -75,10 +75,10 @@
                 <li><a th:href="@{/quote}">报价管理</a></li>
               </ul>
             </li>         
-            <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/purchaseorder')} ? active : ''" >
+            <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/purchaseorder')} ? active : ''" >
               <a th:href="@{/purchaseorder}">订单管理</a>
             </li>
-            <li sec:authorize="hasRole('ROLE_VENDOR')" class="dropdown" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/ship/index') or #strings.startsWith(#httpServletRequest.requestURI,'/purchaseorder')}? active : ''" >
+            <li sec:authorize="hasRole('ROLE_VENDOR')" class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/ship/index') or #strings.startsWith(#request.requestURI,'/purchaseorder')}? active : ''" >
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">订单管理 </a>
                 
               <ul class="dropdown-menu">
@@ -86,16 +86,16 @@
                 <li><a th:href="@{/ship/index}">订单发货</a></li>
               </ul>
             </li>
-            <li th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/ship/view')} ? active : ''" >
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/ship/view')} ? active : ''" >
               <a th:href="@{/ship/view}">出货看板</a>
             </li>
-            <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/purchasein')} ? active : ''" >
+            <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/purchasein')} ? active : ''" >
               <a th:href="@{/purchasein}">出入库单据</a>
             </li>
-            <li th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/statement')} ? active : ''" >
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/statement')} ? active : ''" >
               <a th:href="@{/statement}">对账单管理</a>
             </li>
-            <li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/vendor')} or ${#strings.startsWith(#httpServletRequest.requestURI,'/inventory')} or ${#strings.startsWith(#httpServletRequest.requestURI,'/price')}? active : ''" >   
+            <li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')} or ${#strings.startsWith(#request.requestURI,'/price')}? active : ''" >   
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
                 
               <ul class="dropdown-menu">
@@ -104,7 +104,7 @@
                 <li><a th:href="@{/price}">商品价格查询</a></li>
               </ul>
             </li>
-            <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/report')} ? active : ''" >
+            <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/report')} ? active : ''" >
               <a th:href="@{/report}">报表中心</a>
             </li>
           </ul>
@@ -113,15 +113,19 @@
         <!-- BEGIN NAVIGATION -->
         <div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_ADMIN')">
           <ul>
-            <li th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/account')} ? active : ''" >
-              <a th:href="@{/admin/account}">用户管理</a>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/account')} ? active : ''" >
+              <a th:href="@{/account}">用户管理</a>
             </li>
-            <li th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/permission_group')} ? active : ''" >
-              <a th:href="@{/admin/permission_group}">权限组管理</a>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/permission_group')} ? active : ''" >
+              <a th:href="@{/permission_group}">权限组管理</a>
             </li>
-            <li th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/unit')} ? active : ''" >
-              <a th:href="@{/admin/unit}">组织架构管理</a>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/unit')} ? active : ''" >
+              <a th:href="@{/unit}">组织架构管理</a>
             </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/vendor')} ? active : ''" >
+              <a th:href="@{/vendor}">供应商管理</a>
+            </li>
+            
           </ul>
         </div>
 
@@ -238,6 +242,8 @@
 <!-- END BODY -->
 <script type="text/javascript">
 var is_vendor = 0;
+var is_admin = 0;
+
 jQuery(document).ready(function() {
     Layout.init();
     Layout.initUniform();

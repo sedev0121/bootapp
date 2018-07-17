@@ -15,8 +15,8 @@
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1  or main.state==4}" id="save"><i class="fa fa-save"></i> 保存</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1  or main.state==4}" id="submit"><i class="fa fa-share"></i> 发布</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==2}" id="verify"><i class="fa fa-check-square"></i> 确认</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==3}" id="review_yes"><i class="fa fa-arrow-up"></i> 审核</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==3}" id="review_no"><i class="fa fa-undo"></i> 反审核</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==3}" id="review"><i class="fa fa-arrow-up"></i> 审核</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==3}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1  or main.state==4}" id="delete"><i class="fa fa-remove"></i> 删除</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==5}" id="invoice"><i class="fa fa-check-square"></i> 填发票号</a>
@@ -661,7 +661,7 @@ $(document).ready(function() {
             required: true
         }, 
         invoice_code: {
-          required: state==3
+          required: state==5
         }, 
     },
     
@@ -762,12 +762,12 @@ $(document).ready(function() {
     $("#form").submit();            
   });   
   
-  $("#cancel, #review_no").click(function() {
+  $("#cancel").click(function() {
     $('#state').val(4);
     $("#form").submit();            
   });
   
-  $("#review_yes").click(function() {
+  $("#review").click(function() {
     $('#state').val(5);
     $("#form").submit();            
   });

@@ -14,7 +14,7 @@
           <label for="supplier_code">用户名/真实姓名/所属部门/职位/邮箱：</label>
           <input type="text" id="search" class="form-control">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-          <a class="btn btn-primary" th:href="@{/admin/account/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+          <a class="btn btn-primary" th:href="@{/account/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
     </div>
     <div class="row">
@@ -45,7 +45,7 @@ $(document).ready(function() {
     var table = $('#example').DataTable({
       ordering: true,
       ajax : {
-        url : /*[[@{/admin/account/list}]]*/'',
+        url : /*[[@{/account/list}]]*/'',
         data : function(data) {
           var filter = {
             rows_per_page : data.length,
@@ -67,7 +67,7 @@ $(document).ready(function() {
         data : 'username',
         title : '用户名',
         render: function (data, display, record) {
-          var edit_url = /*[[@{/admin/account/}]]*/'';
+          var edit_url = /*[[@{/account/}]]*/'';
           edit_url +=  record.id + '/edit';
           return '<a href="' + edit_url + '">' + data  + '</a>';
         },

@@ -6,9 +6,9 @@
         <li>
           <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
-        <li th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/ship/index')}">订单管理</li>
-        <li class="active" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/ship/index')}">订单发货</li>
-        <li class="active" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/ship/view')}">出货看板</li>
+        <li th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}">订单管理</li>
+        <li class="active" th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}">订单发货</li>
+        <li class="active" th:if="${#strings.startsWith(#request.requestURI,'/ship/view')}">出货看板</li>
       </ul>
       <div class="search-content">
           <div class="search-cell width-10">
@@ -33,8 +33,8 @@
           </div>
           <div style="vertical-align: bottom" class="search-cell width-15">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-            <button sec:authorize="hasRole('ROLE_VENDOR')" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/ship/index')}" class="btn btn-default" id="export"><i class="fa fa-level-down"></i> 导出</button>
-            <button sec:authorize="hasRole('ROLE_VENDOR')" th:if="${#strings.startsWith(#httpServletRequest.requestURI,'/ship/index')}" class="btn btn-default" id="import"><i class="fa fa-level-up"></i> 导入</button>
+            <button sec:authorize="hasRole('ROLE_VENDOR')" th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}" class="btn btn-default" id="export"><i class="fa fa-level-down"></i> 导出</button>
+            <button sec:authorize="hasRole('ROLE_VENDOR')" th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}" class="btn btn-default" id="import"><i class="fa fa-level-up"></i> 导入</button>
           </div>
       </div>
       <div class="row">
@@ -80,7 +80,7 @@ is_vendor = 1;
   
 var import_result = [[${#vars['message']}]];  
 var importUrl = [[@{/ship/import}]];  
-var editable = [[${#strings.startsWith(#httpServletRequest.requestURI,'/ship/index')?true:false}]];
+var editable = [[${#strings.startsWith(#request.requestURI,'/ship/index')?true:false}]];
 
 var list_url = [[@{/ship/list}]];
 

@@ -7,17 +7,17 @@
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li><a th:href="@{/admin/permission_group}">权限组管理</a></li>
+      <li><a th:href="@{/permission_group}">权限组管理</a></li>
       <li class="active">权限组详细</li>
     </ul>
     <div class="btn-group-bar">
       <div class="text-right margin-right-20">
           <a id="save" class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
           <a id="del" class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
-          <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
+          <a class="btn btn-default" th:href="@{/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
       </div>
     </div>
-    <form id="form" th:action="@{/admin/permission_group/update}" method="post">  
+    <form id="form" th:action="@{/permission_group/update}" method="post">  
       <input type="hidden" id="id" name="id" th:value="${permission_group.id}">
       <div class="panel panel-default">
         <div class="panel-body"> 
@@ -51,8 +51,8 @@
 </html>
 
 <script th:inline="javascript">
-var edit_url = /*[[@{/admin/permission_group/}]]*/'';
-var account_url = /*[[@{/admin/account/search/}]]*/'';
+var edit_url = /*[[@{/permission_group/}]]*/'';
+var account_url = /*[[@{/account/search/}]]*/'';
 
 jQuery(document).ready(function() {   
 	var is_add = $("#id").val().length==0;

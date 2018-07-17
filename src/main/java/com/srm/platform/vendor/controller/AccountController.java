@@ -26,7 +26,7 @@ import com.srm.platform.vendor.service.AccountService;
 import com.srm.platform.vendor.utility.AccountSearchItem;
 
 @Controller
-@RequestMapping(path = "/admin/account")
+@RequestMapping(path = "/account")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class AccountController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
