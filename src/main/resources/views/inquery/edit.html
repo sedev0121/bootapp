@@ -416,39 +416,40 @@ is_readonly = 0;
           title : '规格型号',
         }, {
           data : 'puunit_name',
+          className: 'dt-center',
           title : '单位',
         }, {
           data : 'fminquantity',
-          className: (state==1)?'edit-cell':'',
+          className: 'dt-right ' + ((state==1)?'edit-cell':''),
           title : '最小数量',
         }, {
           data : 'fmaxquantity',
-          className: (state==1)?'edit-cell':'',
+          className: 'dt-right ' + ((state==1)?'edit-cell':''),
           title : '最大数量',
         }, {
           data : 'iunitprice',
-          className: (state==1)?'edit-cell':'',
+          className: 'dt-right ' + ((state==1)?'edit-cell':''),
           title : '最新未税报价',
         }, {
           data : 'itaxrate',
-          className: (state==1)?'edit-cell':'',
+          className: 'dt-center ' + ((state==1)?'edit-cell':''),
           title : '税率',
         }, {
           data : 'itaxunitprice',
-          className: (state==1)?'edit-cell':'',
+          className: 'dt-right ' + ((state==1)?'edit-cell':''),
           title : '最新含税报价',
         }, {
           data : 'dstartdate',
-          className: (state==1)?'edit-cell':'',
+          className: 'dt-center ' + ((state==1)?'edit-cell':''),
           title : '生效日期',
         }, {
           data : 'denddate',
-          className: (state==1)?'edit-cell':'',
+          className: 'dt-center ' + ((state==1)?'edit-cell':''),
           title : '有效日期'
         }, {
           data : 'ivalid',
           title : '是否有效',
-          className: 'ivalid dt-center' + (state==3)?'edit-cell':'',
+          className: 'ivalid dt-center' + ((state==3)?'edit-cell':''),
           visible: state>2,
           render: function ( data, type, row ) {
               if ( type === 'display' ) {

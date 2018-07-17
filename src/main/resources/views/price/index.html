@@ -75,29 +75,34 @@ $(document).ready(function() {
       },
 
       columns : [ {
-          data : 'vendor.name',
+          data : 'vendorname',
           title : '供应商名称',
           defaultContent : ''
       }, {
-          data : 'cinvcode.name',
+          data : 'inventoryname',
           title : '存货名称',
       }, {
           data : 'description',
           title : '描述',
       }, {
           data : 'fauxunit',
+          className: 'dt-center',
           title : '辅助单位',             
       }, {
           data : 'fprice',
+          className: 'dt-right',
           title : '未税单价',             
       }, {
           data : 'ftax',
+          className: 'dt-center',
           title : '税率',             
       }, {
           data : 'ftaxprice',
+          className: 'dt-right',
           title : '含税单价',             
       }, {
           data : 'faddqty',
+          className: 'dt-right',
           title : '订货增量',             
       }, {
           data : 'foldcheckdate',
@@ -105,39 +110,45 @@ $(document).ready(function() {
           render : $.fn.date_renderer         
       }, {
           data : 'cinvdate',
+          className: 'dt-center',
           title : '单据日期',
           render : $.fn.date_renderer           
       }, {
           data : 'fcheckdate',
+          className: 'dt-center',
           title : '调价时间',
           render : $.fn.date_renderer        
       }, {
           data : 'foldavdate',
+          className: 'dt-center',
           title : '有效日期',
           render : $.fn.date_renderer          
       }, {
           data : 'favdate',
+          className: 'dt-center',
           title : '报价有效期',
           render : $.fn.date_renderer        
       }, {
           data : 'fcancelno',
+          className: 'dt-center',
           title : '失效人',             
       }, {
           data : 'fcanceldate',
+          className: 'dt-center',
           title : '报价失效期',
           render : $.fn.date_renderer,    
       }, {
           data : 'fisoutside',
+          className: 'dt-center',
           title : '是否失效',
           render: App.valid_render    
       }, {
-          data : 'funitid',
-          title : '单位',             
-      }, {
-          data : 'createby',
+          data : 'createname',
+          className: 'dt-center',
           title : '制单人',             
       }, {
           data : 'createdate',
+          className: 'dt-center',
           title : '制单日期',      
           render: $.fn.date_renderer, 
       }, {

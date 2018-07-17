@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.repository.PriceRepository;
+import com.srm.platform.vendor.utility.PriceSearchItem;
 
 @Controller
 @RequestMapping(path = "/price")
@@ -48,7 +49,7 @@ public class PriceController {
 
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody Page<Price> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<PriceSearchItem> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
@@ -59,19 +60,22 @@ public class PriceController {
 		String endDate = requestParams.getOrDefault("end", "");
 
 		switch (order) {
-		case "vendor.name":
+		case "vendorname":
 			order = "b.name";
 			break;
-		case "cinvcode.name":
+		case "inventoryname":
 			order = "c.name";
+			break;
+		case "createname":
+			order = "d.name";
 			break;
 		}
 		logger.info(startDate + " ~ " + endDate);
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<Price> result = priceRepository.findBySearchTerm(search_vendor, search_inventory, startDate, endDate,
-				request);
+		Page<PriceSearchItem> result = priceRepository.findBySearchTerm(search_vendor, search_inventory, startDate,
+				endDate, request);
 
 		return result;
 	}

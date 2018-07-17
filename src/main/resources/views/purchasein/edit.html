@@ -127,6 +127,7 @@
 
       columns : [ {
         data : 'rowno',
+        className: 'dt-center',
         title : '行号',
       }, {
         data : 'inventoryname',
@@ -139,32 +140,31 @@
         title : '规格型号',
       }, {
         data : 'unitname',
+        className: 'dt-center',
         title : '单位',
       }, {
         data : 'price',
+        className: 'dt-right',
         title : '入库单单价',
       }, {
         data : 'quantity',
+        className: 'dt-right',
         title : '入库数量',
       }, {
         data : 'closed_quantity',
+        className: 'dt-right',
         title : '已对账数量',
-/*        
-      }, {
-        data : 'assitantunitname',
-        title : '辅计量单位'
-      }, {
-        data : 'irate',
-        title : '换算率',
-*/        
       }, {
         data : 'cost',
+        className: 'dt-right',
         title : '金额',
       }, {
         data : 'number',
+        className: 'dt-right',
         title : '件数',
       }, {
         data : 'state',
+        className: 'dt-center',
         title : '状态',
         render : function(data, type, row){
           if (row.closed_quantity<row.quantity) {

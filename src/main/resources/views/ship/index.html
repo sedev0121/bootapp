@@ -149,18 +149,23 @@ var list_url = [[@{/ship/list}]];
               title : '商品描述',
             }, {
               data : 'unitname',
+              className: 'dt-center',
               title : '单位',
             }, {
               data : 'quantity',
+              className: 'dt-right',
               title : '数量',
             }, {
               data : 'shipped_quantity',
+              className: 'dt-right',
               title : '已发货数量',      
             }, {
               data : 'remain_quantity',
+              className: 'dt-right',
               title : '未交数量',               
 			}, {
               data : 'arrivedate',
+              className: 'dt-center',
               title : '需求日期',
               render: $.fn.date_renderer,
             }, {
@@ -168,6 +173,7 @@ var list_url = [[@{/ship/list}]];
               title : '备注',
             }, {
               data : 'confirmdate',
+              className: 'dt-center',
               title : '承诺交货日期',
               render: $.fn.date_renderer,
             }, {

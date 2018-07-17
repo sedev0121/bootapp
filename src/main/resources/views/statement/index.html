@@ -115,6 +115,7 @@ $(document).ready(function() {
     }, {
       data : 'state',
       title : '状态',
+      className: 'dt-center',
       createdCell: App.getInqueryStateClass,
       render : App.getStatementStateOfId
     }, {
@@ -122,16 +123,20 @@ $(document).ready(function() {
       title : '发票号',
     }, {
       data : 'maker',
+      className: 'dt-center',
       title : '制单人',
     }, {
       data : 'makedate',
+      className: 'dt-center',
       title : '制单日期',
       render : $.fn.date_renderer
     }, {        
       data : 'verifier',
+      className: 'dt-center',
       title : '审核人',
     }, {
       data : 'verifydate',
+      className: 'dt-center',
       title : '审核日期',
       render : $.fn.date_renderer
 

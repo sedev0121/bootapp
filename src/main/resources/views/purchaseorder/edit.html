@@ -163,33 +163,42 @@ $(document).ready(function() {
               title : '存货代码',
           }, {
             data : 'inventory.main_measure.name',
+            className: 'dt-center',            
             title : '单位',              
           }, {
               data : 'quantity',
+              className: 'dt-right',            
               title : '数量',
           }, {
               data : 'price',
+              className: 'dt-right',            
               title : '未税单价',
           }, {
               data : 'taxprice',
+              className: 'dt-right',            
               title : '含税单价',
           }, {
               data : 'money',
+              className: 'dt-right',            
               title : '未税金额',
           }, {
               data : 'sum',
+              className: 'dt-right',            
               title : '含税金额',
           }, {
             data : 'prepaymoney',
+            className: 'dt-right',            
             title : '预付金额',
           }, {
             data : null,
+            className: 'dt-right',            
             render: function(data, type, record) {
               return record.sum - record.prepaymoney;
             },
             title : '未付金额',
           }, {
               data : 'arrivedate',
+              className: 'dt-center',            
               title : '需求日期',
               render: $.fn.date_renderer,
           }, {
@@ -197,17 +206,13 @@ $(document).ready(function() {
               title : '备注',
           }, {
               data : 'confirmdate',
+              className: 'dt-center',            
               title : '承诺交货日期',
               render: $.fn.date_renderer,
           }, {
               data : 'confirmnote',
               title : '供方备注',
           } ],
-          columnDefs:[{
-            className:'dt-center', targets:[0, 1, 2, 3] 
-          },{
-            className:'dt-right', targets:[4, 5, 6, 7, 8, 9]
-          }],
         });
     }
     
