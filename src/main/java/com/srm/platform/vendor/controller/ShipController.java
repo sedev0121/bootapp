@@ -55,7 +55,7 @@ import com.srm.platform.vendor.view.ExcelShipReportView;
 
 @Controller
 @RequestMapping(path = "/ship")
-
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('出货看板-查看列表')")
 public class ShipController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

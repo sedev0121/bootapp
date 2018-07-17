@@ -30,7 +30,7 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/purchasein")
-@PreAuthorize("hasRole('ROLE_BUYER')")
+@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('报价管理-查看列表')")
 public class PurchaseInController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
