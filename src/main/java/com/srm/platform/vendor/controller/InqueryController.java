@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -145,6 +146,7 @@ public class InqueryController extends CommonController {
 	}
 
 	// 更新API
+	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody VenPriceAdjustMain update_ajax(VenPriceSaveForm form, Principal principal) {
 		VenPriceAdjustMain venPriceAdjustMain = new VenPriceAdjustMain();

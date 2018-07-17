@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,6 +62,7 @@ public class UnitController {
 	}
 
 	// 组织架构管理->删除
+	@Transactional
 	@GetMapping("/{id}/delete")
 	public @ResponseBody Boolean delete_ajax(@PathVariable("id") Long id) {
 		Unit unit = unitRepository.findOneById(id);
@@ -74,6 +76,7 @@ public class UnitController {
 	}
 
 	// 组织架构管理->改名
+	@Transactional
 	@GetMapping("/{id}/rename/{name}")
 	public @ResponseBody Unit rename_ajax(@PathVariable("id") Long id, @PathVariable("name") String name) {
 		Unit unit = unitRepository.findOneById(id);
@@ -83,6 +86,7 @@ public class UnitController {
 	}
 
 	// 组织架构管理->移动
+	@Transactional
 	@GetMapping("/{id}/move/{parent_id}")
 	public @ResponseBody Unit move_ajax(@PathVariable("id") Long id, @PathVariable("parent_id") Long parent_id) {
 		Unit unit = unitRepository.findOneById(id);
@@ -92,6 +96,7 @@ public class UnitController {
 	}
 
 	// 组织架构管理->新建
+	@Transactional
 	@GetMapping("/add/{parent_id}/{name}")
 	public @ResponseBody Unit add_ajax(@PathVariable("parent_id") Long parentId, @PathVariable("name") String name) {
 		Unit unit = new Unit(name, parentId);

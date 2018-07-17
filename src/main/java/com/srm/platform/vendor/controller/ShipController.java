@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -186,6 +187,7 @@ public class ShipController extends CommonController {
 		return new ModelAndView(new ExcelShipReportView(), "exportList", exportList);
 	}
 
+	@Transactional
 	@RequestMapping("/import")
 	public String import_file(@RequestParam("import_file") MultipartFile excelFile, HttpServletRequest request,
 			RedirectAttributes redirectAttributes, Principal principal) {

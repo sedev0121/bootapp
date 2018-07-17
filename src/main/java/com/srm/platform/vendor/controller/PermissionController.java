@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -164,6 +165,7 @@ public class PermissionController {
 	}
 
 	// 权限组管理->更新
+	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody PermissionGroup update_ajax(@RequestParam Map<String, String> requestParams) {
 
@@ -206,6 +208,7 @@ public class PermissionController {
 	}
 
 	// 权限组管理->更新
+	@Transactional
 	@PostMapping("/update/function")
 	public @ResponseBody PermissionGroup update_function_ajax(@RequestParam(value = "id") Long groupId,
 			@RequestParam(value = "functions[]", required = false) Long[] functions,
@@ -247,6 +250,7 @@ public class PermissionController {
 	}
 
 	// 权限组管理->删除
+	@Transactional
 	@GetMapping("/{id}/delete")
 	public @ResponseBody Boolean delete_ajax(@PathVariable("id") Long id) {
 

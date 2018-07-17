@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -122,6 +123,7 @@ public class SyncController {
 		return result;
 	}
 
+	@Transactional
 	private boolean vendor(boolean isAll) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -203,6 +205,7 @@ public class SyncController {
 		return true;
 	}
 
+	@Transactional
 	@RequestMapping(value = "/inventory")
 	public boolean inventory() {
 
@@ -323,6 +326,7 @@ public class SyncController {
 		return true;
 	}
 
+	@Transactional
 	@RequestMapping(value = "/measurementunit")
 	public boolean measurementunit() {
 
@@ -382,6 +386,7 @@ public class SyncController {
 		return true;
 	}
 
+	@Transactional
 	@RequestMapping(value = "/inventory_class")
 	public boolean inventoryClass() {
 
@@ -449,6 +454,7 @@ public class SyncController {
 		return purchaseOrder(true);
 	}
 
+	@Transactional
 	private boolean purchaseOrder(boolean isAll) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -612,6 +618,7 @@ public class SyncController {
 		return purchaseIn(true);
 	}
 
+	@Transactional
 	private boolean purchaseIn(boolean isAll) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -706,6 +713,7 @@ public class SyncController {
 		return true;
 	}
 
+	@Transactional
 	private boolean purchaseInDetail(PurchaseInMain main) {
 
 		ObjectMapper objectMapper = new ObjectMapper();

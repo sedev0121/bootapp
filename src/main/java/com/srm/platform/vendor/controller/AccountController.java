@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -98,6 +99,7 @@ public class AccountController {
 	}
 
 	// 用户修改
+	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody Account update_ajax(@RequestParam Map<String, String> requestParams) {
 		String id = requestParams.get("id");
