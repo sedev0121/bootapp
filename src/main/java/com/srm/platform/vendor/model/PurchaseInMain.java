@@ -13,8 +13,6 @@ import javax.persistence.Table;
 @Table(name = "purchase_in_main")
 public class PurchaseInMain {
 	@Id
-	private Long id;
-
 	private String code;
 
 	private Date date;
@@ -38,14 +36,6 @@ public class PurchaseInMain {
 	Vendor vendor;
 
 	private Integer bredvouch;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public Integer getState() {
 		return state;

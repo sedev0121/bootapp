@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.utility.UniqueIdGenerator;
+import com.srm.platform.vendor.utility.Utils;
 
 @Entity
 @Table(name = "venpriceadjust_main")
@@ -65,7 +65,7 @@ public class VenPriceAdjustMain {
 
 	public VenPriceAdjustMain(AccountRepository accountRepository) {
 
-		this.ccode = UniqueIdGenerator.generateId();
+		this.ccode = Utils.generateId();
 		this.isupplytype = 1;
 		this.type = 1;
 		this.itaxrate = (float) 17.0;

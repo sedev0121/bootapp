@@ -10,17 +10,21 @@
         <li class="active">商品价格查询</li>
       </ul>
       <div class="search-content">
-          <div class="search-cell width-10">
+          <div class="search-cell width-6">
             <label for="product_code">商品编码/名称:</label>
             <input type="text" id="inventory" class="form-control">
           </div>
-          <div class="search-cell width-10">
+          <div class="search-cell width-6">
             <label for="supplier_code">供应商编码/名称：</label>
             <input type="text" id="vendor" class="form-control">
           </div>
-          <div class="search-cell width-10">
-            <label for="date_range">有效日期: </label>
-            <input type="text" id="daterange" value="" class="form-control" />
+          <div class="search-cell width-6 form-group">
+            <label for="start_date">有效日期: </label>
+            <input type="text" id="start_date" value="" class="form-control" />
+          </div>
+          <div class="search-cell width-6 form-group">
+            <label for="end_date">　</label>
+            <input type="text" id="end_date" value="" class="form-control" />
           </div>
           <div style="vertical-align: bottom" class="search-cell width-15">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
@@ -40,123 +44,127 @@
 <script th:inline="javascript">
 
 $(document).ready(function() {	
-    var table;
-    
-    $('#daterange').daterangepicker({
-      opens: 'right',
-      locale: {
-        format: 'YYYY-MM-DD'
+  
+  $('#start_date').datepicker();
+  $('#end_date').datepicker();
+  
+  var table;
+  
+  table = $('#example').DataTable({
+      ordering: true,
+      ajax : {
+          url : /*[[@{/price/list}]]*/'',
+          data : function(data) {
+              var filter = {
+                      rows_per_page : data.length,
+                      page_index : data.start / data.length + 1,
+                      order: data.columns[data.order[0].column].data,
+                      dir:data.order[0].dir,
+                      vendor: $('#vendor').val(),
+                      inventory: $('#inventory').val(),
+                      start_date : $('#start_date').val(),
+                      end_date : $('#end_date').val()
+              }
+              return filter;
+          },
+          dataSrc : function(json) {
+              json.recordsTotal = json.totalElements;
+              json.recordsFiltered = json.totalElements;
+              return json.content;
+          },
       },
-      startDate: moment().subtract('days', 10),
-      endDate: moment().add('days', 10)
-    }, function(start, end, label) {
+
+      columns : [ {
+          data : 'vendorname',
+          title : '供应商名称',
+          defaultContent : ''
+      }, {
+          data : 'inventoryname',
+          title : '存货名称',
+      }, {
+          data : 'description',
+          title : '描述',
+      }, {
+          data : 'fauxunit',
+          className: 'dt-center',
+          title : '辅助单位',             
+      }, {
+          data : 'fprice',
+          className: 'dt-right',
+          title : '未税单价',             
+      }, {
+          data : 'ftax',
+          className: 'dt-center',
+          title : '税率',             
+      }, {
+          data : 'ftaxprice',
+          className: 'dt-right',
+          title : '含税单价',             
+      }, {
+          data : 'faddqty',
+          className: 'dt-right',
+          title : '订货增量',             
+      }, {
+          data : 'foldcheckdate',
+          title : '原调价时间',
+          render : $.fn.date_renderer         
+      }, {
+          data : 'cinvdate',
+          className: 'dt-center',
+          title : '单据日期',
+          render : $.fn.date_renderer           
+      }, {
+          data : 'fcheckdate',
+          className: 'dt-center',
+          title : '调价时间',
+          render : $.fn.date_renderer        
+      }, {
+          data : 'foldavdate',
+          className: 'dt-center',
+          title : '有效日期',
+          render : $.fn.date_renderer          
+      }, {
+          data : 'favdate',
+          className: 'dt-center',
+          title : '报价有效期',
+          render : $.fn.date_renderer        
+      }, {
+          data : 'fcancelno',
+          className: 'dt-center',
+          title : '失效人',             
+      }, {
+          data : 'fcanceldate',
+          className: 'dt-center',
+          title : '报价失效期',
+          render : $.fn.date_renderer,    
+      }, {
+          data : 'fisoutside',
+          className: 'dt-center',
+          title : '是否失效',
+          render: App.valid_render    
+      }, {
+          data : 'createname',
+          className: 'dt-center',
+          title : '制单人',             
+      }, {
+          data : 'createdate',
+          className: 'dt-center',
+          title : '制单日期',      
+          render: $.fn.date_renderer, 
+      }, {
+          data : 'fnote',
+          title : '备注',             
+      } ],
+  });
+  
+  $("#btn_search").click(function() {
       table.draw();
-    });
-    
-    table = $('#example').DataTable({
-    	ordering: true,
-  		ajax : {
-  			url : /*[[@{/price/list}]]*/'',
-  			data : function(data) {
-  				var filter = {
-  						rows_per_page : data.length,
-                        page_index : data.start / data.length + 1,
-                        order: data.columns[data.order[0].column].data,
-                        dir:data.order[0].dir,
-                        vendor: $('#vendor').val(),
-                        inventory: $('#inventory').val(),
-                        start: $('#daterange').data('daterangepicker').startDate.format('YYYY-MM-DD'),
-                        end:$('#daterange').data('daterangepicker').endDate.format('YYYY-MM-DD')
-  				}
-  				return filter;
-  			},
-  			dataSrc : function(json) {
-  				json.recordsTotal = json.totalElements;
-                json.recordsFiltered = json.totalElements;
-                return json.content;
-  			},
-  		},
-  
-  		columns : [ {
-            data : 'vendor.name',
-            title : '供应商名称',
-            defaultContent : ''
-        }, {
-            data : 'cinvcode.name',
-            title : '存货名称',
-        }, {
-  			data : 'description',
-  			title : '描述',
-  		}, {
-  			data : 'fauxunit',
-  			title : '辅助单位',				
-        }, {
-            data : 'fprice',
-            title : '未税单价',             
-        }, {
-            data : 'ftax',
-            title : '税率',             
-        }, {
-            data : 'ftaxprice',
-            title : '含税单价',             
-        }, {
-            data : 'faddqty',
-            title : '订货增量',             
-        }, {
-            data : 'foldcheckdate',
-            title : '原调价时间',
-            render : $.fn.date_renderer         
-        }, {
-            data : 'cinvdate',
-            title : '单据日期',
-            render : $.fn.date_renderer           
-        }, {
-            data : 'fcheckdate',
-            title : '调价时间',
-            render : $.fn.date_renderer        
-        }, {
-            data : 'foldavdate',
-            title : '有效日期',
-            render : $.fn.date_renderer          
-        }, {
-            data : 'favdate',
-            title : '报价有效期',
-            render : $.fn.date_renderer        
-        }, {
-            data : 'fcancelno',
-            title : '失效人',             
-        }, {
-            data : 'fcanceldate',
-            title : '报价失效期',
-            render : $.fn.date_renderer,    
-        }, {
-            data : 'fisoutside',
-            title : '是否失效',
-            render: App.valid_render    
-        }, {
-            data : 'funitid',
-            title : '单位',             
-        }, {
-            data : 'createby',
-            title : '制单人',             
-        }, {
-            data : 'createdate',
-            title : '制单日期',      
-            render: $.fn.date_renderer, 
-        }, {
-            data : 'fnote',
-            title : '备注',             
-  		} ],
-  	});
-  	
-    $("#btn_search").click(function() {
-    	table.draw();
-    });
-  
-    $('#vendor, #inventory').keyup(function(e){
-        if(e.keyCode == 13)
-            table.draw();
-    });		
+  });
+
+  $('#vendor, #inventory').keyup(function(e){
+      if(e.keyCode == 13)
+          table.draw();
+  });     
     
 
 });

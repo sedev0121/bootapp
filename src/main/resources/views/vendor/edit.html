@@ -8,22 +8,25 @@
         <li>
           <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
-        <li><a href="#">基础资料</a></li>
-        <li><a th:href="@{/vendor}">供应商档案表</a></li>
+        <li sec:authorize="hasRole('ROLE_BUYER')"><a href="#">基础资料</a></li>
+        <li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/vendor}">供应商档案表</a></li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{/vendor}">供应商管理</a></li>
         <li class="active">详细信息</li>
       </ul>
 
       <div class="btn-group-bar">
         <div class="text-right">
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_ADMIN')" id="save"><i class="fa fa-save"></i> 保存</a>  
           <a class="btn btn-default" th:href="@{/vendor}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
       </div>
       <div class="panel panel-default">
         <div class="panel-body">
+        <form id="form" th:action="@{/vendor/update}" method="post">
           <div class="row">
               <div class="col-lg-4 col-md-4">
                 <label>供应商编码: </label>
-                <input type="text" class="form-control" readonly th:value="${data.code}"/>
+                <input type="text" name="code" class="form-control" readonly th:value="${data.code}"/>
               </div>
               <div class="col-lg-4 col-md-4">
                 <label>供应商名称: </label>
@@ -34,7 +37,7 @@
                 <input type="text" class="form-control" readonly th:value="${data.abbrname}"/>
               </div>
 
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>所属地区: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
@@ -42,12 +45,12 @@
                 <label>所属类别: </label>
                 <input type="text" class="form-control" readonly th:value="${data.sortCode}"/>
               </div>
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>员工人数: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
 
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>供应商总公司: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
@@ -55,20 +58,20 @@
                 <label>所属行业: </label>
                 <input type="text" class="form-control" readonly th:value="${data.industry}"/>
               </div>
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>对应客户: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
 
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>币种: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>税号: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>注册资金: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
@@ -81,20 +84,20 @@
                 <label>银行账号: </label>
                 <input type="text" class="form-control" readonly th:value="${data.bankAccNumber}"/>
               </div>
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>法人: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
 
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>税率: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>分管部门: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>专营业务员: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
@@ -112,11 +115,11 @@
                 <input type="text" class="form-control" readonly th:value="${data.mobile}"/>
               </div>
 
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>呼机: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>邮政编码: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
@@ -125,7 +128,7 @@
                 <input type="text" class="form-control" readonly th:value="${data.contact}"/>
               </div>
 
-              <div class="col-lg-12 col-md-12">
+              <div class="col-lg-4 col-md-4">
                 <label>地址: </label>
                 <input type="text" class="form-control" readonly th:value="${data.address}"/>
               </div>
@@ -134,34 +137,34 @@
                 <label>Email地址: </label>
                 <input type="text" class="form-control" readonly th:value="${data.email}"/>
               </div>
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>结算方式: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>到货方式: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
 
-              <div class="col-lg-12 col-md-12">
+              <div class="col-lg-12 col-md-12 hidden">
                 <label>到货地址: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
 
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>到货仓库: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>建档人: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>建档日期: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
 
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-4 col-md-4 hidden">
                 <label>变更人: </label>
                 <input type="text" class="form-control" readonly/>
               </div>
@@ -169,11 +172,118 @@
                 <label>变更日期: </label>
                 <input type="text" class="form-control" readonly th:value="${data.timestamp}"/>
               </div>
+              <div class="col-lg-4 col-md-4">
+                <label>采购组织: </label>
+                <input type="hidden" id="unit" name="unit" th:value="${data.unit?.id}">
+                <input type="text" id="unit_name" name="unit_name" class="form-control select-unit" th:value="${data.unit?.name}" readonly>
+              </div>
           </div>
+        </form>
         </div>
-
+        <div class="modal fade" id="tree_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                                                        选择所属部门
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <i class="fa fa-sitemap"></i> 组织结构
+                        <div id="tree_3"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="save_unit">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
   </div>  
+  </div>
 </body>
 </html>
 
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_ADMIN')">
+is_admin = 1;
+</script>
 
+<script th:inline="javascript">
+
+/*[+
+var tree_url = [[@{/unit/tree}]];  
+var edit_url = [[@{/vendor/}]];
++]*/ 
+
+
+
+$(document).ready(function() {
+
+  if (!is_admin) {
+    $('#unit_name').removeClass("select-unit");
+  }
+  
+  $(".select-unit").click(function(){  //"select all" change
+    $('#tree_3').jstree(true).deselect_all();
+    var unit_id = $('#unit').val();
+    
+    $('#tree_3').jstree(true).select_node(unit_id);
+    $('#tree_dialog').modal('show');
+  });
+
+  $("#save").click(function() {
+    jQuery(form).ajaxSubmit({
+      success: function(res, status, xhr, form) {
+        App.showSuccessDialog("操作成功", function(){
+          window.location.href = edit_url + res.code + "/edit";
+        });
+      },
+      error: function (res, status, xhr, form) {
+        App.showErrorDialog("操作失败", "请输入正确的值");
+      }
+    });
+  });
+  
+  if (is_admin) {
+    $("#tree_3").jstree({
+      'plugins': ["types"],
+      'core': {
+          'data' : {
+            'url' : function (node) {
+              return tree_url;
+            }
+          }
+      },
+      "types" : {
+          "default" : {
+              "icon" : "fa fa-folder m--font-warning"
+          },
+          "file" : {
+              "icon" : "fa fa-file  m--font-warning"
+          }
+      },
+    }).on('loaded.jstree', function() {
+        $(this).jstree("open_all");
+    });
+  }
+  
+  
+  $('#save_unit').click(function(){
+      var selected_node = $("#tree_3").jstree("get_selected",true);
+      
+      if (selected_node.length == 0) {
+        App.showErrorDialog("请选择一个部门");
+        return;
+      }
+      var selected_unit_id = selected_node[0].id; 
+      var selected_unit_name = selected_node[0].text;
+      $('#unit').val(selected_unit_id);
+      $('#unit_name').val(selected_unit_name);
+      $('#tree_dialog').modal('hide');//modal_1 is the id 1
+   });
+
+});
+
+</script>

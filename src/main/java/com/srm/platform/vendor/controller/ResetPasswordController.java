@@ -39,6 +39,7 @@ public class ResetPasswordController {
 	@Autowired
 	private PasswordResetTokenRepository passwordTokenRepository;
 
+	@Transactional
 	@RequestMapping(value = "/resetpassword")
 	public @ResponseBody String resetPassword(HttpServletRequest request, @RequestParam("email") String email) {
 		Account account = accountService.loadUserByEmail(email);

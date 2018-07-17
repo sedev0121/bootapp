@@ -13,13 +13,14 @@
     </ul>       
     <div class="btn-group-bar">
         <div class="text-right">
-          <a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a>
-          <a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-share"></i> 提交</a>
-          <a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="delete"><i class="fa fa-remove"></i> 删除</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.iverifystate==3 OR main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-share"></i> 提交</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-删除')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="delete"><i class="fa fa-remove"></i> 删除</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" th:if="${main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-归档')" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
           <a class="btn btn-default" th:href="@{/inquery}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
     </div>
@@ -126,6 +127,10 @@
 is_vendor = 1;
 </script>
 
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')">
+is_readonly = 0;
+</script>
+
 <script th:inline="javascript">
   var editor;
   /*[+
@@ -143,8 +148,8 @@ is_vendor = 1;
   
   $(document).ready(function() {
 
-    $('#start_date').datepicker();
-    $('#end_date').datepicker();
+    $('#start_date').datepicker({minDate: new Date()});
+    $('#end_date').datepicker({minDate: new Date()});
     
     $(".select2").select2();
     $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
@@ -152,7 +157,8 @@ is_vendor = 1;
     $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 }).select2("val", supply_type.toString());
     $("#vendor").select2(App.getSelect2Options(vendor_search_url));
    
-    if (state > 1) {
+
+    if (state > 1 || is_readonly) {
       $('input').attr("readonly", true);
       $('select').attr("readonly", true);
       $("#start_date").datepicker( "option", "disabled", true );
@@ -161,6 +167,8 @@ is_vendor = 1;
 
     if (is_vendor)
       $('#vendor').attr("readonly", true);
+    
+    var edit_mode = 'main';
     
     editor = new $.fn.dataTable.Editor( {
       table: "#example",  
@@ -229,8 +237,13 @@ is_vendor = 1;
         },{
           label: "生效日期:",
           type: "date",
+          id: "dstartdate",
           opts: {
-            showOn: "focus"
+            minDate:$('#start_date').datepicker("getDate"),
+            onSelect:function() {
+              editor.field('denddate').input().datepicker("option", "minDate", editor.field('dstartdate').input().datepicker("getDate"));
+            },
+            showOn: "focus",
           },
           dateFormat: "yy-mm-dd",
           name: "dstartdate"                
@@ -238,6 +251,7 @@ is_vendor = 1;
           label: "有效日期:",
           type: "date",
           opts: {
+            minDate:$('#start_date').datepicker("getDate"),
             showOn: "focus"
           },
           dateFormat: $.datepicker.ISO_8601,
@@ -278,13 +292,22 @@ is_vendor = 1;
               system: "发生错误！"
           }
       }
-    }).on( 'preOpen', function ( e, json, data ) {
+    }).on( 'preOpen', function ( e, mode, action ) {
+      edit_mode = mode;
       if ($("#vendor").val() == "") {
         $('#vendor').focus();
         App.showErrorDialog("请选择供应商！");
         return false;
       }
+      
+      this.field('dstartdate').input().datepicker("option", "minDate", $('#start_date').datepicker("getDate"));
+      this.field('denddate').input().datepicker("option", "minDate", $('#start_date').datepicker("getDate"));
+      
     }).on( 'open', function (e, mode, action) {
+      
+      if (mode != 'main')
+        return true;
+      
       if (action == "edit") {
         $('#select_inv_code').empty().append($("<option/>").val(this.field('cinvcode').val()).text(this.field('name').val()));
       }
@@ -296,6 +319,7 @@ is_vendor = 1;
         $('#select_inv_code').empty();
       }
       
+
       var select_options = App.getSelect2Options(inventory_search_url);
       $.extend(true, select_options, {
         ajax: {
@@ -319,33 +343,12 @@ is_vendor = 1;
         $('#denddate').val(selected_data.endDate);        
       });
       
-      $('#itaxrate, #iunitprice').change(function() {
-        if ($('#itaxrate').val() != undefined && $('#iunitprice').val() != undefined) {
-          value = (Number.parseFloat($('#itaxrate').val()) + 100) * $('#iunitprice').val()/100;
-          $('#itaxunitprice').val(Number.parseFloat(value).toFixed(2));  
-        }        
-      });
-
-      $('#itaxunitprice').change(function() {
-        if ($('#itaxrate').val() != undefined && $('#itaxunitprice').val() != undefined) {
-          value = $('#itaxunitprice').val()*100/(Number.parseFloat($('#itaxrate').val()) + 100);          
-          $('#iunitprice').val(Number.parseFloat(value).toFixed(2));  
-        }        
-      });
-/*      
-      if (state > 1) {
-        $(".DTE_Form_Content input").attr("readonly", true);
-        $('.DTE_Form_Content select').attr("readonly", true);
-        $(".DTE_Form_Content .hasDatepicker").datepicker( "option", "disabled", true );
+    }).on( 'preSubmit', function ( e, data, action ) {
+      if ( action == 'remove') {
+        return true;
       }
       
-      if (state != 5) {
-        this.field('ivalid').hide();
-      }
-      */    
-   
-    }).on( 'preSubmit', function ( e, data, action ) {
-      if ( action !== 'remove' ) {
+      if (edit_mode == 'main') {
           var iunitprice = this.field( 'iunitprice' );
   
           if ( ! iunitprice.val() ) {
@@ -369,13 +372,23 @@ is_vendor = 1;
           if ( this.inError() ) {
               return false;
           }
-      }      
-    } );
+      }   
+      if (edit_mode == 'inline') {
+        
+      }   
+    }).on( 'postEdit', function (e, json, data, action) {
+      var table_data = table.rows().data().toArray();
+      var prepay_sum = 0;
+      $.each(table_data, function(key, item){    
+        
+      })
+            
+    });
     
     var table_options = {
         serverSide:false,
         processing:false,
-        select: true,
+        select: (state == 1 && !is_readonly),
         buttons: [
             { extend: "create", editor: editor },
             { extend: "edit",   editor: editor },
@@ -403,32 +416,40 @@ is_vendor = 1;
           title : '规格型号',
         }, {
           data : 'puunit_name',
+          className: 'dt-center',
           title : '单位',
         }, {
           data : 'fminquantity',
+          className: 'dt-right ' + ((state==1)?'edit-cell':''),
           title : '最小数量',
         }, {
           data : 'fmaxquantity',
+          className: 'dt-right ' + ((state==1)?'edit-cell':''),
           title : '最大数量',
         }, {
           data : 'iunitprice',
+          className: 'dt-right ' + ((state==1)?'edit-cell':''),
           title : '最新未税报价',
         }, {
           data : 'itaxrate',
+          className: 'dt-center ' + ((state==1)?'edit-cell':''),
           title : '税率',
         }, {
           data : 'itaxunitprice',
+          className: 'dt-right ' + ((state==1)?'edit-cell':''),
           title : '最新含税报价',
         }, {
           data : 'dstartdate',
+          className: 'dt-center ' + ((state==1)?'edit-cell':''),
           title : '生效日期',
         }, {
           data : 'denddate',
+          className: 'dt-center ' + ((state==1)?'edit-cell':''),
           title : '有效日期'
         }, {
           data : 'ivalid',
           title : '是否有效',
-          className: 'ivalid dt-center',
+          className: 'ivalid dt-center' + ((state==3)?'edit-cell':''),
           visible: state>2,
           render: function ( data, type, row ) {
               if ( type === 'display' ) {
@@ -438,6 +459,7 @@ is_vendor = 1;
           },
         }, {
           data : 'cbodymemo',
+          className: (state==1)?'edit-cell':'',
           title : '备注',
 
         } ],
@@ -447,6 +469,10 @@ is_vendor = 1;
         }
       };
     
+    if (state != 1 || is_readonly) {
+      table_options.buttons = [];
+    }
+    
     var table = $('#example').DataTable(table_options);
 
     if (state == 3) {
@@ -455,6 +481,58 @@ is_vendor = 1;
               .set( 'ivalid', $(this).prop( 'checked' ) ? 1 : 0 )
               .submit();
       });
+    }
+    
+    if (state == 1 && !is_readonly) {
+      table.on( 'click', 'tbody td.edit-cell', function (e) {
+        editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+      } );
+      App.addKeyDownEditor(editor, 4, 11);
+    }
+    
+    if (state == 1 && !is_readonly) {
+      $(editor.field('iunitprice').input()).on('keydown', function (e, d) {
+        if ( editor ) {
+          //**Reset Plant Manager Approval function
+          var price_field = editor.field('iunitprice');
+          var taxrate_field = editor.field('itaxrate');
+          var taxprice_field = editor.field('itaxunitprice');
+          
+          if (taxrate_field.val() != undefined && price_field.val() != undefined) {
+            value = (Number.parseFloat(taxrate_field.val()) + 100) * price_field.val()/100;
+            taxprice_field.val(Number.parseFloat(value).toFixed(2));  
+          } 
+        }
+      });
+      
+      $(editor.field('itaxrate').input()).on('keydown', function (e, d) {
+        if ( editor ) {
+          //**Reset Plant Manager Approval function
+          var price_field = editor.field('iunitprice');
+          var taxrate_field = editor.field('itaxrate');
+          var taxprice_field = editor.field('itaxunitprice');
+          
+          if (taxrate_field.val() != undefined && price_field.val() != undefined) {
+            value = (Number.parseFloat(taxrate_field.val()) + 100) * price_field.val()/100;
+            taxprice_field.val(Number.parseFloat(value).toFixed(2));  
+          } 
+        }
+      });
+      
+      $(editor.field('itaxunitprice').input()).on('keydown', function (e, d) {
+        if ( editor ) {
+          //**Reset Plant Manager Approval function
+          var price_field = editor.field('iunitprice');
+          var taxrate_field = editor.field('itaxrate');
+          var taxprice_field = editor.field('itaxunitprice');
+          
+          if (taxrate_field.val() != undefined && taxprice_field.val() != undefined) {
+            value = taxprice_field.val()*100/(Number.parseFloat(taxrate_field.val()) + 100);          
+            price_field.val(Number.parseFloat(value).toFixed(2));  
+          } 
+        }
+      });
+
     }
     
     $("#form" ).validate({

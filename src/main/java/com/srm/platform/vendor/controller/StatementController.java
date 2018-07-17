@@ -1,8 +1,5 @@
 package com.srm.platform.vendor.controller;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +15,9 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,10 +36,11 @@ import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.StatementDetailItem;
 import com.srm.platform.vendor.utility.StatementSaveForm;
 import com.srm.platform.vendor.utility.StatementSearchItem;
+import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/statement")
-
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('对账单管理-查看列表')")
 public class StatementController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -66,6 +66,7 @@ public class StatementController extends CommonController {
 	}
 
 	@GetMapping({ "/add" })
+	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
 	public String add(Model model) {
 		StatementMain main = new StatementMain(accountRepository);
 		model.addAttribute("main", main);
@@ -79,6 +80,7 @@ public class StatementController extends CommonController {
 	}
 
 	@GetMapping("/{code}/delete")
+	@PreAuthorize("hasAuthority('对账单管理-删除')")
 	public @ResponseBody Boolean delete(@PathVariable("code") String code) {
 		StatementMain main = statementMainRepository.findOneByCode(code);
 		if (main != null)
@@ -99,23 +101,8 @@ public class StatementController extends CommonController {
 		String end_date = requestParams.getOrDefault("end_date", null);
 
 		Integer state = Integer.parseInt(stateStr);
-		Date startDate = null, endDate = null;
-		try {
-			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-			if (start_date != null && !start_date.isEmpty())
-				startDate = dateFormatter.parse(start_date);
-			if (end_date != null && !end_date.isEmpty()) {
-				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				endDate = dateFormatter.parse(end_date);
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(endDate);
-				cal.add(Calendar.DATE, 1);
-				endDate = cal.getTime();
-			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Date startDate = Utils.parseDate(start_date);
+		Date endDate = Utils.getNextDate(end_date);
 
 		switch (order) {
 		case "vendor_name":
@@ -153,6 +140,7 @@ public class StatementController extends CommonController {
 		return list;
 	}
 
+	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody StatementMain update_ajax(StatementSaveForm form) {
 		StatementMain main = new StatementMain();

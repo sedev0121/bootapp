@@ -112,39 +112,35 @@ var edit_url = [[@{/quote/}]];
       }, {
         data : 'dstartdate',
         title : '生效日期',
+        className: 'dt-center',
         render : $.fn.date_renderer
       }, {
         data : 'denddate',
+        className: 'dt-center',
         title : '有效日期',
         render : $.fn.date_renderer
       }, {
         data : 'iverifystate',
+        className: 'dt-center',
         title : '状态',
         createdCell: App.getInqueryStateClass,
         render : App.getInqueryStateOfId
       }, {
         data : 'makername',
+        className: 'dt-center',
         title : '制单人',
       }, {
         data : 'dmakedate',
+        className: 'dt-center',
         title : '制单日期',
         render : $.fn.date_renderer
       }, {
-        /*            
-         data : 'itaxrate',
-         title : '税率',
-         }, {
-         data : 'isupplytype',
-         title : '供应类型',
-         }, {
-         data : 'type',
-         title : '报价形式',
-         }, {
-         */
         data : 'verifiername',
+        className: 'dt-center',
         title : '审核人',
       }, {
         data : 'dverifydate',
+        className: 'dt-center',
         title : '审核日期',
         render : $.fn.date_renderer
 

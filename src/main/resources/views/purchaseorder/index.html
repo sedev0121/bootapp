@@ -113,9 +113,11 @@ var edit_url = [[@{/purchaseorder/}]];
         title : '订单类型'
       }, {
         data : 'money',
+        className: 'dt-right',
         title : '原币价税合计'
       }, {
         data : 'sum',
+        className: 'dt-right',
         title : '原币金额'
       }, {
 /*        
@@ -125,20 +127,25 @@ var edit_url = [[@{/purchaseorder/}]];
 */  
         data : 'srmstate',
         title : '状态',
+        className: 'dt-center',
         createdCell: App.getInqueryStateClass,
         render : App.getPurchaseOrderStateOfId
       }, {
         data : 'deployername',
+        className: 'dt-center',
         title : '发布人'
       }, {
         data : 'deploydate',
+        className: 'dt-center',
         title : '发布日期',
         render : $.fn.date_renderer
       }, {
         data : 'reviewername',
+        className: 'dt-center',
         title : '确认人'
       }, {
         data : 'reviewdate',
+        className: 'dt-center',
         title : '确认日期',
         render : $.fn.date_renderer
       } ],

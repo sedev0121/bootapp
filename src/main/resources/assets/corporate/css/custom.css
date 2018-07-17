@@ -3,12 +3,17 @@ body {
     font-size: 12px;
 }
 
+.select-unit {
+    background-color:#fff !important
+}
+
+
 .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
     /* padding: 6px; */    
 }
 
 table.dataTable.table thead th.sorting:after, table.dataTable.table thead th.sorting_asc:after, table.dataTable.table thead th.sorting_desc:after, table.dataTable.table thead td.sorting:after, table.dataTable.table thead td.sorting_asc:after, table.dataTable.table thead td.sorting_desc:after {
-    top: 7px;
+    top: 9px;
     right: 5px;
 }
 
@@ -108,7 +113,7 @@ select[readonly].select2-hidden-accessible + .select2-container .select2-selecti
     color:#32C5D2;
 }
 
-#confirm {
+#confirm, #review_ok {
     background-color:#1BA39C;
 }
 .inquery_state_3 {
@@ -121,7 +126,7 @@ select[readonly].select2-hidden-accessible + .select2-container .select2-selecti
     border-color: #f13e46;
 }
 
-#cancel {
+#cancel, #review_no {
     background-color:red;
 }
 .inquery_state_4 {
@@ -280,4 +285,16 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
 
 .detail-tabs .ui-widget.ui-widget-content {
     border: 0px solid #c5c5c5
+}
+
+.red {    
+    color: #e6400c
+}
+
+.perm {
+    min-height: 140px !important;
+}
+
+.perm legend{
+    margin-bottom:10px;
 }

@@ -12,7 +12,7 @@ import com.srm.platform.vendor.utility.InventorySearchItem;
 // CRUD refers Create, Read, Update, Delete
 
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
-	@Query(value = "SELECT * FROM inventory WHERE code LIKE %?1% or name LIKE %?1% ", nativeQuery = true)
+	@Query(value = "SELECT * FROM inventory a left join measurement_unit b on a.main_measure=b.code WHERE a.code LIKE %?1% or a.name LIKE %?1% ", nativeQuery = true)
 	Page<Inventory> findBySearchTerm(String search, Pageable pageable);
 
 	Inventory findByCode(String code);

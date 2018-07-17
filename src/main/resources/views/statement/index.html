@@ -33,7 +33,7 @@
         </div>
         <div style="vertical-align: bottom" class="search-cell width-15">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:href="@{/statement/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/发布')"  th:href="@{/statement/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
     </div>
     <div class="row">
@@ -115,6 +115,7 @@ $(document).ready(function() {
     }, {
       data : 'state',
       title : '状态',
+      className: 'dt-center',
       createdCell: App.getInqueryStateClass,
       render : App.getStatementStateOfId
     }, {
@@ -122,21 +123,25 @@ $(document).ready(function() {
       title : '发票号',
     }, {
       data : 'maker',
+      className: 'dt-center',
       title : '制单人',
     }, {
       data : 'makedate',
+      className: 'dt-center',
       title : '制单日期',
       render : $.fn.date_renderer
     }, {        
       data : 'verifier',
+      className: 'dt-center',
       title : '审核人',
     }, {
       data : 'verifydate',
+      className: 'dt-center',
       title : '审核日期',
       render : $.fn.date_renderer
 
     } ],
-    order: [  [ 0, "desc" ] ]
+    order: [  [ 6, "desc" ] ]
 
     
   });

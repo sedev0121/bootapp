@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +39,7 @@ public class ProfileController extends CommonController {
 		return "home/profile";
 	}
 
+	@Transactional
 	@PostMapping("/profile/update")
 	public @ResponseBody Account profile_update_ajax(@RequestParam Map<String, String> requestParams,
 			Principal principal) {
@@ -67,6 +69,7 @@ public class ProfileController extends CommonController {
 		return account;
 	}
 
+	@Transactional
 	@PostMapping("/profile/changepwd")
 	public @ResponseBody String change_password_ajax(@RequestParam Map<String, String> requestParams,
 			Principal principal) {

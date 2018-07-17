@@ -42,6 +42,15 @@ public class Action {
 
 	}
 
+	public static Action clone(Action action) {
+		Action clone = new Action();
+		clone.id = action.id;
+		clone.name = action.name;
+		clone.available = action.available;
+		clone.functionActionId = action.functionActionId;
+		return clone;
+	}
+
 	public Action(String name) {
 		this.name = name;
 	}

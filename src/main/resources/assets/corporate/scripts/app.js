@@ -12,7 +12,7 @@ var App = function() {
   var purchase_order_state_data = [{id:0, text:'审核'}, {id:1, text:'发布'}, {id:2, text:'确认'}, {id:3, text:'拒绝'}];
   var purchase_in_state_data = [{id:0, text:'未对账'}, {id:1, text:'已对账'}];
   var purchase_in_bredvouch_data = [{id:0, text:'蓝字'}, {id:1, text:'红字'}];
-  var statement_state_data = [{id:1, text:"新建"}, {id:2, text:"发布"}, {id:3, text:"确认"}, {id:4, text:"退回"}];
+  var statement_state_data = [{id:1, text:"新建"}, {id:2, text:"发布"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"审核"}];
     
   var getLabelOfId = function(store, id) {
     var title = "";

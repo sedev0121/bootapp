@@ -1,9 +1,6 @@
 package com.srm.platform.vendor.controller;
 
 import java.security.Principal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,11 +35,13 @@ import com.srm.platform.vendor.repository.PriceRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.Utils;
 import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
 
 @Controller
 @RequestMapping(path = "/quote")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('报价管理-查看列表')")
 public class QuoteController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -112,23 +113,8 @@ public class QuoteController extends CommonController {
 		String end_date = requestParams.getOrDefault("end_date", null);
 
 		Integer state = Integer.parseInt(stateStr);
-		Date startDate = null, endDate = null;
-		try {
-			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-			if (start_date != null && !start_date.isEmpty())
-				startDate = dateFormatter.parse(start_date);
-			if (end_date != null && !end_date.isEmpty()) {
-				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				endDate = dateFormatter.parse(end_date);
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(endDate);
-				cal.add(Calendar.DATE, 1);
-				endDate = cal.getTime();
-			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Date startDate = Utils.parseDate(start_date);
+		Date endDate = Utils.getNextDate(end_date);
 
 		switch (order) {
 		case "vendorname":
@@ -162,6 +148,7 @@ public class QuoteController extends CommonController {
 	}
 
 	// 更新API
+	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody VenPriceAdjustMain update_ajax(VenPriceSaveForm form) {
 		String ccode = form.getCcode();

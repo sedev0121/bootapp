@@ -50,6 +50,7 @@ public class PurchaseOrderDetail {
 	private Date confirmdate;
 	private String arrivenote;
 	private String confirmnote;
+	private Float confirmquantity;
 
 	public PurchaseOrderDetail() {
 
@@ -61,6 +62,14 @@ public class PurchaseOrderDetail {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Float getConfirmquantity() {
+		return confirmquantity;
+	}
+
+	public void setConfirmquantity(Float confirmquantity) {
+		this.confirmquantity = confirmquantity;
 	}
 
 	public PurchaseOrderMain getMain() {

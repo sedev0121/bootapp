@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,12 +23,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +41,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
-import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.Vendor;
@@ -57,7 +55,7 @@ import com.srm.platform.vendor.view.ExcelShipReportView;
 
 @Controller
 @RequestMapping(path = "/ship")
-
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('出货看板-查看列表')")
 public class ShipController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -118,7 +116,7 @@ public class ShipController extends CommonController {
 			order = "c.specs";
 			break;
 		case "unitname":
-			order = "c.puunit_name";
+			order = "e.name";
 			break;
 		}
 		page_index--;
@@ -189,6 +187,7 @@ public class ShipController extends CommonController {
 		return new ModelAndView(new ExcelShipReportView(), "exportList", exportList);
 	}
 
+	@Transactional
 	@RequestMapping("/import")
 	public String import_file(@RequestParam("import_file") MultipartFile excelFile, HttpServletRequest request,
 			RedirectAttributes redirectAttributes, Principal principal) {
@@ -213,7 +212,7 @@ public class ShipController extends CommonController {
 					continue;
 
 				ArrayList<String> row = new ArrayList<>();
-				List<Integer> valueList = Arrays.asList(1, 2, 4, 8);
+				List<Integer> valueList = Arrays.asList(1, 2, 4, 8, 13);
 				for (int column : valueList) {
 
 					Cell currentCell = currentRow.getCell(column);
@@ -237,20 +236,19 @@ public class ShipController extends CommonController {
 			if (vendor != null) {
 
 				for (ArrayList<String> row : importList) {
+					logger.info("row=" + row.toString());
 					PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(row.get(0));
 					if (main.getVendor().getCode().equals(vendor.getCode())) {
-						PurchaseOrderDetail detail = new PurchaseOrderDetail();
-						detail.setMain(main);
-						detail.setRowno((int) Double.parseDouble(row.get(1)));
-						Inventory inventory = inventoryRepository.findByCode(row.get(2));
-						detail.setInventory(inventory);
 
-						Example<PurchaseOrderDetail> example = Example.of(detail);
-						Optional<PurchaseOrderDetail> result = purchaseOrderDetailRepository.findOne(example);
-						if (result.isPresent()) {
-							detail = result.get();
+						PurchaseOrderDetail detail = purchaseOrderDetailRepository
+								.findOneById((long) Float.parseFloat(row.get(4)));
+						logger.info(detail.getMain().getCode() + " " + detail.getRowno() + " "
+								+ detail.getInventory().getCode());
+						if (detail != null) {
 							if (row.get(3) != null) {
-								detail.setShippedQuantity(detail.getShippedQuantity() + Float.parseFloat(row.get(3)));
+								float quantity = detail.getShippedQuantity() == null ? 0 : detail.getShippedQuantity();
+
+								detail.setShippedQuantity(quantity + Float.parseFloat(row.get(3)));
 								purchaseOrderDetailRepository.save(detail);
 								importCount++;
 							}
@@ -266,6 +264,6 @@ public class ShipController extends CommonController {
 		}
 
 		redirectAttributes.addFlashAttribute("message", "成功导入" + importCount + "行数据！");
-		return "redirect:/ship";
+		return "redirect:/ship/index";
 	}
 }

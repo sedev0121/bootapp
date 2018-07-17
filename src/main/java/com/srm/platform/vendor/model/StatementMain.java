@@ -14,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.utility.Constants;
-import com.srm.platform.vendor.utility.UniqueIdGenerator;
+import com.srm.platform.vendor.utility.Utils;
 
 @Entity
 @Table(name = "statement_main")
@@ -49,7 +49,7 @@ public class StatementMain {
 	}
 
 	public StatementMain(AccountRepository accountRepository) {
-		this.code = UniqueIdGenerator.generateId();
+		this.code = Utils.generateId();
 		this.makedate = new Date();
 		this.state = Constants.STATEMENT_STATE_NEW;
 		this.maker = accountRepository

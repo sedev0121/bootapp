@@ -6,15 +6,16 @@
           <li>
             <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
           </li>
-          <li><a href="#">基础资料</a></li>
-          <li class="active">供应商档案表</li>
+          <li sec:authorize="hasRole('ROLE_BUYER')"><a href="#">基础资料</a></li>
+          <li class="active" sec:authorize="hasRole('ROLE_BUYER')">供应商档案表</li>
+          <li class="active" sec:authorize="hasRole('ROLE_ADMIN')">供应商管理</li>
       </ul>
       <div class="search-content form-inline">
           <div class="search-cell width-10">
               <label for="product_name">供应商名称/编码:</label>
               <input type="text" id="product_name" class="form-control">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-            <button class="btn btn-success" id="btn_sync_vendor"><i class="fa fa-download"></i> 同步U8供应商</button>
+            <button class="btn btn-success" id="btn_sync_vendor" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fa fa-download"></i> 同步U8供应商</button>
           </div>
       </div>
       <div class="row">
@@ -26,7 +27,9 @@
   </div>  
 </body>
 </html>
-
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_ADMIN')">
+is_admin = 1;
+</script>
 
 <script th:inline="javascript">
     var sync_vendor_url = /*[[@{/sync/vendor/part}]]*/'';
@@ -76,59 +79,40 @@
 			}, {
 				data : 'name',
 				title : '供应商名称',
-				defaultContent : ''
 			}, {
 				data : 'abbrname',
 				title : '供应商简称',
-				defaultContent : ''
-			}, {
-				data : 'sort_code',
-				title : '所属分类码',
-				defaultContent : ''
-			}, {
-				data : 'industry',
-				title : '所属行业',
-				defaultContent : ''
+            }, {
+                data : "unitname",
+                title : '采购组织',
+                visible:is_admin
 			}, {
 				data : 'address',
 				title : '地址',
-				defaultContent : ''
 			}, {
 				data : 'bank_open',
 				title : '开户银行',
-				defaultContent : ''
 			}, {
 				data : 'bank_acc_number',
 				title : '银行帐号',
-				defaultContent : ''
 			}, {
 				data : 'fax',
 				title : '传真 ',
-				defaultContent : ''
 			}, {
                 data : 'email',
                 title : 'Email地址',
-                defaultContent : ''
             }, {
                 data : 'mobile',
+                className: 'dt-right',
                 title : '手机',
-                defaultContent : ''
             }, {
                 data : 'receive_site',
-                title : '到货地址',
-                defaultContent : ''                
+                title : '到货地址',                
             }, {
                 data : 'end_date',
-                title : '停用日期',
-                defaultContent : ''                
-            }, {
-                data : 'timestamp',
-                title : '变更日期',
-                defaultContent : ''    
-            }, {
-                data : 'memo',
-                title : '备注',
-                defaultContent : ''                   
+                className: 'dt-center',
+                render : $.fn.date_renderer,
+                title : '停用日期',                
 			} ],
 		});
 		

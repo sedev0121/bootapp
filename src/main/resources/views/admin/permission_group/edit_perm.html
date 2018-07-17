@@ -9,26 +9,26 @@
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li><a th:href="@{/admin/permission_group}">权限组管理</a></li>
+      <li><a th:href="@{/permission_group}">权限组管理</a></li>
       <li class="active">权限设置</li>
     </ul>
     <div class="btn-group-bar">
       <div class="text-right margin-right-20">
           <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
-          <a class="btn btn-default" th:href="@{/admin/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
+          <a class="btn btn-default" th:href="@{/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
       </div>
     </div>
-    <form id="form" th:action="@{/admin/permission_group/update/function}" method="post">  
+    <form id="form" th:action="@{/permission_group/update/function}" method="post">  
       <h1 th:text="${permission_group.name}"></h1>
       <input type="hidden" name="id" th:value="${permission_group.id}">
       <div class="panel panel-default">
         <div class="panel-body"> 
           <div class="row">
-            <fieldset class="col-lg-4 col-md-4 margin-top-10" th:each="item : ${function_list}">
+            <fieldset class="perm col-lg-4 col-md-4 margin-top-10" th:each="item : ${function_list}">
               <input type="hidden" th:id="'function_' + ${item.id}" th:name="'units_' + ${item.id}" th:value="${item.units}">
               <legend><label th:text="${item.name}">供应商档案管理 </label>- 
                 <input type="checkbox" class="select-all" th:attrappend="subclass=${item.id}?'class_' + ${item.id}">
-                <label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary select-unit" th:attrappend="data=${item.id}?'function_' + ${item.id}"> 数据范围</a>
+                <label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary select-units" th:attrappend="data=${item.id}?'function_' + ${item.id}"> 数据范围</a>
               </legend>
    
               <div class="col-lg-4 col-md-4" th:each="action : ${item.Actions}">
@@ -70,8 +70,8 @@
 </html>
 
 <script th:inline="javascript">
-var url = /*[[@{/admin/unit/}]]*/'';
-var tree_url = /*[[@{/admin/unit/tree}]]*/'';
+var url = /*[[@{/unit/}]]*/'';
+var tree_url = /*[[@{/unit/tree}]]*/'';
 $(function () {
     $("#save").click(function() {
     	jQuery(form).ajaxSubmit({
@@ -91,7 +91,7 @@ $(function () {
 	    $(sub_class).uniform();
 	});
 	
-	$(".select-unit").click(function(){  //"select all" change
+	$(".select-units").click(function(){  //"select all" change
 		$('#tree_3').jstree(true).deselect_all();
 	    var selected_function_id = $(this).attr('data');
 		$('#current_function').val(selected_function_id);
@@ -110,7 +110,7 @@ $(function () {
             }
         },
         "checkbox" : {
-            "three_state" : false,
+            "three_state" : true,
       	},
         "types" : {
             "default" : {

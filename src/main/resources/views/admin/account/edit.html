@@ -1,28 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}">
-<head>
-<style>
-    .select-unit {background-color:#fff !important}
-</style>
-</head>  
+ 
 <body>
   <div class="container" layout:fragment="content">
     <ul class="breadcrumb">
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li><a th:href="@{/admin/account}">用户管理</a></li>
+      <li><a th:href="@{/account}">用户管理</a></li>
       <li class="active">用户详细</li>
     </ul>
     <div class="btn-group-bar">
       <div class="text-right margin-right-20">
           <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
           <a class="btn btn-danger" id="del"><i class="fa fa-remove"></i> 删除</a>
-          <a class="btn btn-default" th:href="@{/admin/account}"><i class="fa fa-arrow-left"></i> 返回</a>
+          <a class="btn btn-default" th:href="@{/account}"><i class="fa fa-arrow-left"></i> 返回</a>
       </div>
     </div>
-    <form id="form" th:action="@{/admin/account/update}" method="post">  
+    <form id="form" th:action="@{/account/update}" method="post">  
     <input type="hidden" id="id" name="id" th:value="${account.id}">
     <div class="panel panel-default">
       <div class="panel-body"> 
@@ -141,8 +137,8 @@
 
 
 <script th:inline="javascript">
-var edit_url = /*[[@{/admin/account/}]]*/'';
-var tree_url = /*[[@{/admin/unit/tree}]]*/'';
+var edit_url = /*[[@{/account/}]]*/'';
+var tree_url = /*[[@{/unit/tree}]]*/'';
 var vendor_search_url = /*[[@{/vendor/search}]]*/'';
 
 jQuery(document).ready(function() {   

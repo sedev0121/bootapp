@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +42,7 @@ import com.srm.platform.vendor.utility.AccountSearchItem;
 import com.srm.platform.vendor.utility.IGroupFunctionUnit;
 
 @Controller
-@RequestMapping(path = "/admin/permission_group")
+@RequestMapping(path = "/permission_group")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class PermissionController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -118,13 +119,14 @@ public class PermissionController {
 		for (int i = 0; i < functionList.size(); i++) {
 			Function tempF = functionList.get(i);
 			List<Action> actionList = tempF.getActions();
+			List<Action> newActionList = new ArrayList<>();
 			for (int j = 0; j < actionList.size(); j++) {
 				Action tempA = actionList.get(j);
-				tempA.setAvailable(false);
 				for (int k = 0; k < temp.getFunctionActions().size(); k++) {
 					FunctionAction tempG = temp.getFunctionActions().get(k);
 
 					if (tempG.getFunctionId() == tempF.getId() && tempG.getActionId() == tempA.getId()) {
+						tempA = Action.clone(tempA);
 						tempA.setAvailable(true);
 						break;
 					}
@@ -132,11 +134,14 @@ public class PermissionController {
 				for (int k = 0; k < functionActionList.size(); k++) {
 					FunctionAction tempG = functionActionList.get(k);
 					if (tempG.getFunctionId() == tempF.getId() && tempG.getActionId() == tempA.getId()) {
+						tempA = Action.clone(tempA);
 						tempA.setFunctionActionId(tempG.getId());
 						break;
 					}
 				}
+				newActionList.add(tempA);
 			}
+			tempF.setActions(newActionList);
 
 			for (int j = 0; j < unitList.size(); j++) {
 				IGroupFunctionUnit tempU = unitList.get(j);
@@ -145,7 +150,6 @@ public class PermissionController {
 					break;
 				}
 			}
-
 		}
 
 		model.addAttribute("permission_group", temp);
@@ -161,6 +165,7 @@ public class PermissionController {
 	}
 
 	// 权限组管理->更新
+	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody PermissionGroup update_ajax(@RequestParam Map<String, String> requestParams) {
 
@@ -203,6 +208,7 @@ public class PermissionController {
 	}
 
 	// 权限组管理->更新
+	@Transactional
 	@PostMapping("/update/function")
 	public @ResponseBody PermissionGroup update_function_ajax(@RequestParam(value = "id") Long groupId,
 			@RequestParam(value = "functions[]", required = false) Long[] functions,
@@ -244,6 +250,7 @@ public class PermissionController {
 	}
 
 	// 权限组管理->删除
+	@Transactional
 	@GetMapping("/{id}/delete")
 	public @ResponseBody Boolean delete_ajax(@PathVariable("id") Long id) {
 

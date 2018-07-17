@@ -1,7 +1,6 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Calendar;
@@ -16,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,6 +41,7 @@ import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.u8api.AppProperties;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.Utils;
 
 @RestController
 @RequestMapping(path = "/sync")
@@ -122,6 +123,7 @@ public class SyncController {
 		return result;
 	}
 
+	@Transactional
 	private boolean vendor(boolean isAll) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -174,16 +176,7 @@ public class SyncController {
 						vendor.setCode(temp.get("code"));
 						vendor.setContact(temp.get("contact"));
 						vendor.setEmail(temp.get("email"));
-						String endDate = temp.get("end_date");
-						if (endDate != null && !endDate.isEmpty()) {
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-								vendor.setEndDate(formatter.parse(endDate));
-							} catch (ParseException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
+						vendor.setEndDate(Utils.parseDateTime(temp.get("end_date")));
 						vendor.setFax(temp.get("fax"));
 						vendor.setIndustry(temp.get("industry"));
 						vendor.setMemo(temp.get("memo"));
@@ -212,6 +205,7 @@ public class SyncController {
 		return true;
 	}
 
+	@Transactional
 	@RequestMapping(value = "/inventory")
 	public boolean inventory() {
 
@@ -255,31 +249,17 @@ public class SyncController {
 						inventory.setDefwarehouse(temp.get("defwarehouse"));
 						inventory.setDefwarehousename(temp.get("defwarehousename"));
 						inventory.setDrawtype(temp.get("drawtype"));
-						tempValue = temp.get("end_date");
-						if (tempValue != null)
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-								inventory.setEndDate(formatter.parse(tempValue));
-							} catch (ParseException e2) {
-								// TODO Auto-generated catch block
-								e2.printStackTrace();
-							}
+
+						inventory.setEndDate(Utils.parseDateTime(temp.get("end_date")));
+
 						tempValue = temp.get("iimptaxrate");
 						if (tempValue != null)
 							inventory.setIimptaxrate(Float.parseFloat(temp.get("iimptaxrate")));
 						inventory.setInvaddcode(temp.get("invaddcode"));
 						inventory.setiSupplyType(temp.get("iSupplyType"));
-						inventory.setMainMeasure(temp.get("main_measure"));
+						inventory.setMainMeasure(measurementUnitRepository.findOneByCode(temp.get("main_measure")));
 
-						tempValue = temp.get("ModifyDate");
-						if (tempValue != null)
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-								inventory.setModifyDate(formatter.parse(tempValue));
-							} catch (ParseException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+						inventory.setModifyDate(Utils.parseDateTime(temp.get("ModifyDate")));
 
 						inventory.setName(temp.get("name"));
 						inventory.setPuunitCode(temp.get("puunit_code"));
@@ -298,15 +278,7 @@ public class SyncController {
 						if (tempValue != null)
 							inventory.setSaunitIchangrate(Float.parseFloat(tempValue));
 
-						tempValue = temp.get("start_date");
-						if (tempValue != null && !tempValue.isEmpty())
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-								inventory.setStartDate(formatter.parse(tempValue));
-							} catch (ParseException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+						inventory.setStartDate(Utils.parseDateTime(temp.get("start_date")));
 						inventory.setStunitCode(temp.get("stunit_code"));
 
 						tempValue = temp.get("stunit_ichangrate");
@@ -354,6 +326,7 @@ public class SyncController {
 		return true;
 	}
 
+	@Transactional
 	@RequestMapping(value = "/measurementunit")
 	public boolean measurementunit() {
 
@@ -385,14 +358,15 @@ public class SyncController {
 
 				if (errorCode == appProperties.getError_code_success()) {
 					total_page = Integer.parseInt((String) map.get("page_count"));
-					tempList = (List<LinkedHashMap<String, String>>) map.get("inventory");
+					tempList = (List<LinkedHashMap<String, String>>) map.get("unit");
 					for (LinkedHashMap<String, String> temp : tempList) {
 						logger.info(temp.get("code") + " " + temp.get("name"));
 						MeasurementUnit unit = new MeasurementUnit();
 						unit.setCode(temp.get("code"));
 						unit.setGroupCode(temp.get("group_code"));
 						unit.setName(temp.get("name"));
-						unit.setChangerate(Integer.parseInt(temp.get("changerate")));
+						// if (temp.get("changerate") != null && !temp.get("changerate").isEmpty())
+						// unit.setChangerate(Integer.parseInt(temp.get("changerate")));
 						unit.setMainFlag(Boolean.parseBoolean(temp.get("main_flag")));
 						measurementUnitRepository.save(unit);
 					}
@@ -412,6 +386,7 @@ public class SyncController {
 		return true;
 	}
 
+	@Transactional
 	@RequestMapping(value = "/inventory_class")
 	public boolean inventoryClass() {
 
@@ -479,6 +454,7 @@ public class SyncController {
 		return purchaseOrder(true);
 	}
 
+	@Transactional
 	private boolean purchaseOrder(boolean isAll) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -521,18 +497,7 @@ public class SyncController {
 						PurchaseOrderMain main = new PurchaseOrderMain();
 						main.setCode(temp.get("code"));
 
-						String makeDateStr = temp.get("date");
-						Date makeDate = null;
-						if (makeDateStr != null && !makeDateStr.isEmpty()) {
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-								makeDate = formatter.parse(makeDateStr);
-							} catch (ParseException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-
+						Date makeDate = Utils.parseDate(temp.get("date"));
 						Vendor vendor = vendorRepository.findOneByCode(temp.get("vendorcode"));
 
 						if (makeDate == null || (!isAll && makeDate.before(new Date())) || temp.get("state") == "新建"
@@ -625,15 +590,7 @@ public class SyncController {
 						detail.setRowno(Integer.parseInt(entryMap.get("rowno")));
 
 					String arriveDateStr = entryMap.get("arrivedate");
-					if (arriveDateStr != null && !arriveDateStr.isEmpty()) {
-						try {
-							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-							detail.setArrivedate(formatter.parse(arriveDateStr));
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
+					detail.setArrivedate(Utils.parseDate(arriveDateStr));
 
 					purchaseOrderDetailRepository.save(detail);
 				}
@@ -661,6 +618,7 @@ public class SyncController {
 		return purchaseIn(true);
 	}
 
+	@Transactional
 	private boolean purchaseIn(boolean isAll) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -701,24 +659,12 @@ public class SyncController {
 						logger.info(temp.get("code") + " " + temp.get("name"));
 
 						PurchaseInMain main = new PurchaseInMain();
-						main.setId(Long.parseLong(temp.get("id")));
 						main.setCode(temp.get("code"));
 
 						String makeDateStr = temp.get("date");
 						String auditDateStr = temp.get("date");
-						Date makeDate = null, auditDate = null;
-						if (makeDateStr != null && !makeDateStr.isEmpty()) {
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-								makeDate = formatter.parse(makeDateStr);
-								formatter = new SimpleDateFormat("yyyy-MM-dd");
-								auditDate = formatter.parse(auditDateStr);
-
-							} catch (ParseException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
+						Date makeDate = Utils.parseDate(makeDateStr);
+						Date auditDate = Utils.parseDate(auditDateStr);
 
 						if (!isAll && makeDate.before(new Date())) {
 							continue;
@@ -766,6 +712,7 @@ public class SyncController {
 		return true;
 	}
 
+	@Transactional
 	private boolean purchaseInDetail(PurchaseInMain main) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -792,7 +739,7 @@ public class SyncController {
 
 				for (LinkedHashMap<String, String> entryMap : entryList) {
 					PurchaseInDetail detail = new PurchaseInDetail();
-					detail.setMain(purchaseInMainRepository.findOneById(main.getId()));
+					detail.setMain(purchaseInMainRepository.findOneByCode(main.getCode()));
 					detail.setInventory(inventoryRepository.findByCode(entryMap.get("inventorycode")));
 
 					if (entryMap.get("quantity") != null && !entryMap.get("quantity").isEmpty())

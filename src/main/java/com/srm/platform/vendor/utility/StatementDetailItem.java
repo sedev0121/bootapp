@@ -28,6 +28,14 @@ public interface StatementDetailItem {
 
 	String getCost();
 
+	String getTaxprice();
+
+	String getTaxcost();
+
+	String getTaxrate();
+
+	String getUnitname();
+
 	String getCmassunitname();
 
 	String getAssitantunitname();

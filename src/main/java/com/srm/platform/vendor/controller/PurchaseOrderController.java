@@ -1,9 +1,6 @@
 package com.srm.platform.vendor.controller;
 
 import java.security.Principal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,10 +33,11 @@ import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.PurchaseOrderSearchItem;
+import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/purchaseorder")
-
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('订单管理-查看列表')")
 public class PurchaseOrderController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -84,23 +84,8 @@ public class PurchaseOrderController extends CommonController {
 		String start_date = requestParams.getOrDefault("start_date", null);
 		String end_date = requestParams.getOrDefault("end_date", null);
 
-		Date startDate = null, endDate = null;
-		try {
-			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-			if (start_date != null && !start_date.isEmpty())
-				startDate = dateFormatter.parse(start_date);
-			if (end_date != null && !end_date.isEmpty()) {
-				dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				endDate = dateFormatter.parse(end_date);
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(endDate);
-				cal.add(Calendar.DATE, 1);
-				endDate = cal.getTime();
-			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Date startDate = Utils.parseDate(start_date);
+		Date endDate = Utils.getNextDate(end_date);
 
 		switch (order) {
 		case "vendorname":
@@ -128,6 +113,7 @@ public class PurchaseOrderController extends CommonController {
 		return result;
 	}
 
+	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody PurchaseOrderMain update_ajax(PurchaseOrderSaveForm form, Principal principal) {
 
@@ -143,18 +129,7 @@ public class PurchaseOrderController extends CommonController {
 
 				PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneById(Long.parseLong(item.get("id")));
 				if (this.isVendor()) {
-					if (item.get("confirmdate") != null && !item.get("confirmdate").isEmpty()) {
-						SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-						try {
-							detail.setConfirmdate(dateFormatter.parse(item.get("confirmdate")));
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					} else {
-						detail.setConfirmdate(null);
-					}
-
+					detail.setConfirmdate(Utils.parseDate(item.get("confirmdate")));
 					detail.setConfirmnote(item.get("confirmnote"));
 				} else {
 					if (item.get("prepaymoney") != null && !item.get("prepaymoney").isEmpty())
@@ -162,6 +137,9 @@ public class PurchaseOrderController extends CommonController {
 					else
 						detail.setPrepaymoney(null);
 					detail.setArrivenote(item.get("arrivenote"));
+					detail.setConfirmquantity(detail.getQuantity());
+					detail.setConfirmdate(detail.getArrivedate());
+					detail.setConfirmnote(null);
 				}
 
 				purchaseOrderDetailRepository.save(detail);
