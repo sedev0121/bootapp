@@ -659,7 +659,6 @@ public class SyncController {
 						logger.info(temp.get("code") + " " + temp.get("name"));
 
 						PurchaseInMain main = new PurchaseInMain();
-						main.setId(Long.parseLong(temp.get("id")));
 						main.setCode(temp.get("code"));
 
 						String makeDateStr = temp.get("date");
@@ -740,7 +739,7 @@ public class SyncController {
 
 				for (LinkedHashMap<String, String> entryMap : entryList) {
 					PurchaseInDetail detail = new PurchaseInDetail();
-					detail.setMain(purchaseInMainRepository.findOneById(main.getId()));
+					detail.setMain(purchaseInMainRepository.findOneByCode(main.getCode()));
 					detail.setInventory(inventoryRepository.findByCode(entryMap.get("inventorycode")));
 
 					if (entryMap.get("quantity") != null && !entryMap.get("quantity").isEmpty())

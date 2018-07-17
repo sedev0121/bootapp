@@ -15,8 +15,6 @@ public interface PurchaseInMainRepository extends JpaRepository<PurchaseInMain, 
 
 	PurchaseInMain findOneByCode(String code);
 
-	PurchaseInMain findOneById(Long id);
-
 	@Query(value = "SELECT a.*, b.name vendorname FROM purchase_in_main a left join vendor b on a.vendorcode=b.code WHERE a.code like %?1% and (b.code LIKE %?2% or b.name LIKE %?2% )", countQuery = "SELECT count(*) FROM purchase_in_main a left join vendor b on a.vendorcode=b.code WHERE a.code like %?1% and (b.code LIKE %?2% or b.name LIKE %?2% )", nativeQuery = true)
 	Page<PurchaseInSearchItem> findBySearchTerm(String code, String vendor, Pageable pageable);
 
