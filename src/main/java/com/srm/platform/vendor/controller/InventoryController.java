@@ -62,6 +62,9 @@ public class InventoryController {
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
 
+		if ("main_measure.name".equals(order)) {
+			order = "b.name";
+		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);

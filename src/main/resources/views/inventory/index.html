@@ -73,90 +73,38 @@
           edit_url += record.code + '/edit';
           return '<a href="' + edit_url + '">' + data + '</a>';
         },
-        defaultContent : ''
       }, {
         data : 'name',
-        title : '存货名称',
-        defaultContent : ''
-      }, {
-        data : 'invaddcode',
-        title : '存货代码',
-        defaultContent : ''
+        title : '存货名称',        
       }, {
         data : 'specs',
         title : '规格型号',
-        defaultContent : ''
       }, {
-        data : 'ref_sale_price',
-        title : '参考售价',
-        defaultContent : ''
-      }, {
-        data : 'bottom_sale_price',
-        title : '最低售价',
-        defaultContent : ''
-      }, {
-        data : 'main_measure',
+        data : 'main_measure.name',
         title : '主计量单位',
-        defaultContent : ''
-      }, {
-        data : 'unitgroup_code',
-        title : '计量单位组编码',
-        defaultContent : ''
-      }, {
-        data : 'saunit_code',
-        title : '销售默认单位编码',
-        defaultContent : ''
-      }, {
-        data : 'puunit_code',
-        title : '采购默认单位编码',
-        defaultContent : ''
-      }, {
-        data : 'stunit_code',
-        title : '库存默认单位编码',
-        defaultContent : ''
       }, {
         data : 'tax_rate',
         title : '销项税率',
-        defaultContent : ''
       }, {
         data : 'iimptaxrate',
         title : '进项税率',
-        defaultContent : ''
-      }, {
-        data : 'iSupplyType',
-        title : '供应类型',
-        defaultContent : ''
-      }, {
-        data : 'puunit_name',
-        title : '采购默认单位名称',
-        defaultContent : ''
-      }, {
-        data : 'saunit_name',
-        title : '销售默认单位名称',
-        defaultContent : ''
-      }, {
-        data : 'stunit_name',
-        title : '库存默认单位名称',
-        defaultContent : ''
       }, {
         data : 'defwarehousename',
         title : '默认仓库名称',
-        defaultContent : ''
       }, {
         data : 'start_date',
         title : '启用日期',
         type : 'date',
-        defaultContent : ''
+        render : $.fn.date_renderer
       }, {
         data : 'end_date',
         type : 'date',
         title : '停用日期',
-        defaultContent : ''
+        render : $.fn.date_renderer
       }, {
         data : 'modify_date',
         title : '变更日期',
         render : $.fn.date_renderer,
-        defaultContent : ''
       } ],
     });
 
