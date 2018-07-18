@@ -75,7 +75,11 @@ public class StatementController extends CommonController {
 
 	@GetMapping({ "/{code}/edit" })
 	public String edit(@PathVariable("code") String code, Model model) {
-		model.addAttribute("main", this.statementMainRepository.findOneByCode(code));
+		StatementMain main = this.statementMainRepository.findOneByCode(code);
+		if (main == null)
+			show404();
+
+		model.addAttribute("main", main);
 		return "statement/edit";
 	}
 

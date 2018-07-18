@@ -26,4 +26,6 @@ public class Constants {
 	public static int STATEMENT_STATE_CONFIRM = 3;
 	public static int STATEMENT_STATE_CANCEL = 4;
 
+	public static String KEY_DEFAULT_UNIT_LIST = "my_unit_list";
+
 }

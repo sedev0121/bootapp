@@ -61,7 +61,11 @@ public class PurchaseOrderController extends CommonController {
 
 	@GetMapping({ "/{code}/edit" })
 	public String edit(@PathVariable("code") String code, Model model) {
-		model.addAttribute("main", this.purchaseOrderMainRepository.findOneByCode(code));
+		PurchaseOrderMain main = this.purchaseOrderMainRepository.findOneByCode(code);
+		if (main == null)
+			show404();
+
+		model.addAttribute("main", main);
 		return "purchaseorder/edit";
 	}
 

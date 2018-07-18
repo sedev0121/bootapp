@@ -36,6 +36,7 @@ import com.srm.platform.vendor.repository.PasswordResetTokenRepository;
 import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.PermissionItem;
 import com.srm.platform.vendor.utility.PermissionUnit;
 
@@ -133,6 +134,30 @@ public class AccountService implements UserDetailsService {
 		return new User(account.getUsername(), account.getPassword(), createAuthorities(account));
 	}
 
+	private List<GrantedAuthority> createAuthorities(Account account) {
+
+		List<PermissionUnit> permissionUnitList = permissionGroupFunctionUnitRepository
+				.findPermissionUnitsForAccount(account.getId());
+		for (PermissionUnit unit : permissionUnitList) {
+			httpSession.setAttribute(unit.getName(), unit.getUnits());
+		}
+
+		String myUnitList = String.valueOf(account.getUnit().getId());
+		myUnitList = StringUtils.append(myUnitList, "," + searchChildren(myUnitList));
+
+		httpSession.setAttribute(Constants.KEY_DEFAULT_UNIT_LIST, myUnitList);
+
+		List<PermissionItem> permissions = permissionGroupRepository.findPermissionForAccount(account.getId());
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority(account.getRole()));
+
+		for (PermissionItem item : permissions) {
+			authorities.add(new SimpleGrantedAuthority(item.getFunction() + "-" + item.getAction()));
+		}
+
+		return authorities;
+	}
+
 	private String searchChildren(String parentIdList) {
 		String childList = "";
 		List<PermissionUnit> unitList = permissionGroupFunctionUnitRepository
@@ -148,30 +173,6 @@ public class AccountService implements UserDetailsService {
 			childList = StringUtils.append(childList, "," + searchChildren(childList));
 			return childList;
 		}
-	}
-
-	private List<GrantedAuthority> createAuthorities(Account account) {
-
-		List<PermissionUnit> permissionUnitList = permissionGroupFunctionUnitRepository
-				.findPermissionUnitsForAccount(account.getId());
-		for (PermissionUnit unit : permissionUnitList) {
-			logger.info(unit.getName() + unit.getUnits().toString());
-		}
-
-		String myUnitList = String.valueOf(account.getUnit().getId());
-
-		myUnitList = StringUtils.append(myUnitList, "," + searchChildren(myUnitList));
-		String[] list = StringUtils.split(myUnitList, ",");
-
-		List<PermissionItem> permissions = permissionGroupRepository.findPermissionForAccount(account.getId());
-		List<GrantedAuthority> authorities = new ArrayList<>();
-		authorities.add(new SimpleGrantedAuthority(account.getRole()));
-
-		for (PermissionItem item : permissions) {
-			authorities.add(new SimpleGrantedAuthority(item.getFunction() + "-" + item.getAction()));
-		}
-
-		return authorities;
 	}
 
 }

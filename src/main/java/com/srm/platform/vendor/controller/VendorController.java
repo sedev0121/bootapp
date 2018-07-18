@@ -1,10 +1,9 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -29,7 +28,7 @@ import com.srm.platform.vendor.utility.VendorSearchItem;
 @Controller
 @RequestMapping(path = "/vendor")
 
-public class VendorController {
+public class VendorController extends CommonController {
 
 	@Autowired
 	private VendorRepository vendorRepository;
@@ -48,11 +47,11 @@ public class VendorController {
 	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
-		Vendor vendor = new Vendor();
-		vendor.setCode(code);
-		Example<Vendor> example = Example.of(vendor);
-		Optional<Vendor> result = vendorRepository.findOne(example);
-		model.addAttribute("data", result.isPresent() ? result.get() : new Vendor());
+		Vendor vendor = vendorRepository.findOneByCode(code);
+		if (vendor == null)
+			show404();
+
+		model.addAttribute("data", vendor);
 		return "vendor/edit";
 	}
 
@@ -66,13 +65,21 @@ public class VendorController {
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
 
+		List<String> unitList = this.getDefaultUnitList();
+		logger.info(unitList.toString());
+
 		if (order.equals("unitname")) {
 			order = "b.name";
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<VendorSearchItem> result = vendorRepository.findBySearchTerm(search, request);
+
+		Page<VendorSearchItem> result = null;
+		if (isAdmin())
+			result = vendorRepository.findBySearchTerm(search, request);
+		else
+			result = vendorRepository.findBySearchTerm(search, unitList, request);
 
 		return result;
 	}

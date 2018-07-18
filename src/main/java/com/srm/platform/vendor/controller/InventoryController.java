@@ -1,13 +1,11 @@
 package com.srm.platform.vendor.controller;
 
 import java.util.Map;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -28,7 +26,7 @@ import com.srm.platform.vendor.utility.InventorySearchItem;
 @Controller
 @RequestMapping(path = "/inventory")
 @PreAuthorize("hasRole('ROLE_BUYER')")
-public class InventoryController {
+public class InventoryController extends CommonController {
 
 	@PersistenceContext
 	private EntityManager em;
@@ -45,11 +43,11 @@ public class InventoryController {
 	// 详细
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
-		Inventory data = new Inventory();
-		data.setCode(code);
-		Example<Inventory> example = Example.of(data);
-		Optional<Inventory> result = inventoryRepository.findOne(example);
-		model.addAttribute("data", result.isPresent() ? result.get() : new Inventory());
+		Inventory main = inventoryRepository.findByCode(code);
+		if (main == null)
+			show404();
+		model.addAttribute("data", main);
+
 		return "inventory/edit";
 	}
 

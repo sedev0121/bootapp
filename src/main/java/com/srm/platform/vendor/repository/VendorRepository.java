@@ -1,5 +1,7 @@
 package com.srm.platform.vendor.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +23,7 @@ public interface VendorRepository extends JpaRepository<Vendor, Long> {
 	Page<SearchItem> findForSelect(String search, Pageable pageable);
 
 	Vendor findOneByCode(String code);
+
+	@Query(value = "SELECT a.*, b.name unitname FROM vendor a left join unit b on a.unit_id=b.id WHERE b.id in ?2 and (a.code LIKE %?1% or a.name LIKE %?1%) ", countQuery = "SELECT count(*) FROM vendor a left join unit b on a.unit_id=b.id WHERE b.id in ?2 and (a.code LIKE %?1% or a.name LIKE %?1%) ", nativeQuery = true)
+	Page<VendorSearchItem> findBySearchTerm(String search, List<String> unitList, Pageable pageable);
 }

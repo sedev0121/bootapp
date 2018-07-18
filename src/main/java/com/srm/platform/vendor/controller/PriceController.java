@@ -25,7 +25,7 @@ import com.srm.platform.vendor.utility.PriceSearchItem;
 @Controller
 @RequestMapping(path = "/price")
 @PreAuthorize("hasRole('ROLE_BUYER')")
-public class PriceController {
+public class PriceController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired

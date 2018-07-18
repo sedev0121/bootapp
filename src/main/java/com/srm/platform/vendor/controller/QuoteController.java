@@ -93,7 +93,10 @@ public class QuoteController extends CommonController {
 	// 详细
 	@GetMapping("/{ccode}/edit")
 	public String edit(@PathVariable("ccode") String ccode, Model model) {
-		model.addAttribute("main", this.venPriceAdjustMainRepository.findOneByCcode(ccode));
+		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
+		if (main == null)
+			show404();
+		model.addAttribute("main", main);
 		return "quote/edit";
 	}
 
