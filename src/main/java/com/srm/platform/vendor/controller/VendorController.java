@@ -51,6 +51,8 @@ public class VendorController extends CommonController {
 		if (vendor == null)
 			show404();
 
+		checkVendor(vendor);
+
 		model.addAttribute("data", vendor);
 		return "vendor/edit";
 	}

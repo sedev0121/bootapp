@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.utility.Constants;
 
@@ -66,6 +68,18 @@ public class CommonController {
 
 	public void show404() {
 		throw new ResourceNotFoundException();
+	}
+
+	public void show403() {
+		throw new AccessDeniedException("access denied");
+	}
+
+	public void checkVendor(Vendor vendor) {
+		List<String> unitList = getDefaultUnitList();
+
+		if (!isAdmin() && (vendor.getUnit() == null || !unitList.contains(String.valueOf(vendor.getUnit().getId())))) {
+			show403();
+		}
 	}
 
 	public boolean hasAuthority(String authority) {

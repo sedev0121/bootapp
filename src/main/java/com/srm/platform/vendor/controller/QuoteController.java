@@ -96,6 +96,9 @@ public class QuoteController extends CommonController {
 		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
 		if (main == null)
 			show404();
+
+		checkVendor(main.getVendor());
+
 		model.addAttribute("main", main);
 		return "quote/edit";
 	}

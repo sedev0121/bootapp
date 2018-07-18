@@ -65,6 +65,8 @@ public class PurchaseOrderController extends CommonController {
 		if (main == null)
 			show404();
 
+		checkVendor(main.getVendor());
+
 		model.addAttribute("main", main);
 		return "purchaseorder/edit";
 	}
