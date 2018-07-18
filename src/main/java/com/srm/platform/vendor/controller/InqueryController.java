@@ -203,7 +203,6 @@ public class InqueryController extends CommonController {
 		}
 
 		BigInteger totalCount = (BigInteger) q.getSingleResult();
-		logger.info("totalCount=" + totalCount);
 
 		selectQuery += bodyQuery + orderBy;
 		q = em.createNativeQuery(selectQuery, "InquerySearchResult");
@@ -213,7 +212,6 @@ public class InqueryController extends CommonController {
 
 		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
 
-		logger.info("size=" + list.size());
 		return new PageImpl<InquerySearchResult>(list, request, totalCount.longValue());
 
 	}
