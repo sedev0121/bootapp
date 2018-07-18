@@ -132,7 +132,7 @@ var App = function() {
       return purchase_order_state_data;
     },
     getPurchaseOrderStateDataWithAll: function() {
-      return [{id:0, text:"　"}, ...purchase_order_state_data];
+      return [{id:-1, text:"　"}, ...purchase_order_state_data];
     },
     getStatementStateData: function() {
       return statement_state_data;

@@ -149,7 +149,7 @@ public class InqueryController extends CommonController {
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
 		String selectQuery = "select distinct a.*, c.code vendorcode, c.name vendorname, e.realname makername, f.realname verifiername ";
-		String countQuery = "select count(distinct a.ccode) ";
+		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from venpriceadjust_main a left join venpriceadjust_detail b on a.ccode = b.mainid "
