@@ -2,9 +2,12 @@ package com.srm.platform.vendor.controller;
 
 import java.io.File;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,8 +53,9 @@ import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.utility.ExportShipForm;
-import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchItem;
+import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchResult;
 import com.srm.platform.vendor.utility.UploadFileHelper;
+import com.srm.platform.vendor.utility.Utils;
 import com.srm.platform.vendor.view.ExcelShipReportView;
 
 @Controller
@@ -88,15 +93,20 @@ public class ShipController extends CommonController {
 	}
 
 	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody Page<PurchaseOrderDetailSearchItem> list_ajax(Principal principal,
+	public @ResponseBody Page<PurchaseOrderDetailSearchResult> list_ajax(Principal principal,
 			@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "ccode");
 		String dir = requestParams.getOrDefault("dir", "asc");
-		String vendor = requestParams.getOrDefault("vendor", "");
+		String vendorStr = requestParams.getOrDefault("vendor", "");
 		String inventory = requestParams.getOrDefault("inventory", "");
 		String code = requestParams.getOrDefault("code", "");
+		String arrive_date = requestParams.getOrDefault("arrive_date", null);
+		String confirm_date = requestParams.getOrDefault("confirm_date", null);
+
+		Date arriveDate = Utils.parseDate(arrive_date);
+		Date confirmDate = Utils.parseDate(confirm_date);
 
 		switch (order) {
 		case "remain_quantity":
@@ -123,16 +133,71 @@ public class ShipController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		Page<PurchaseOrderDetailSearchItem> result = null;
-		if (this.isVendor()) {
-			result = purchaseOrderDetailRepository.findDetailsForShip(this.getLoginAccount().getVendor().getCode(),
-					code, inventory, request);
-		} else {
-			List<String> unitList = this.getDefaultUnitList();
-			result = purchaseOrderDetailRepository.findDetailsForBuyerShip(unitList, vendor, code, inventory, request);
+		String selectQuery = "select a.*, d.code vendorcode, (a.quantity-ifnull(a.shipped_quantity,0)) remain_quantity, d.name vendorname, c.name inventoryname, c.specs, e.name unitname ";
+		String countQuery = "select count(*) ";
+		String orderBy = " order by " + order + " " + dir;
+
+		String bodyQuery = "from purchase_order_detail a left join purchase_order_main b on a.code = b.code "
+				+ "left join inventory c on a.inventorycode=c.code left join vendor d on b.vencode=d.code "
+				+ "left join measurement_unit e on c.main_measure=e.code where b.srmstate=2 ";
+
+		List<String> unitList = this.getDefaultUnitList();
+		Map<String, Object> params = new HashMap<>();
+
+		if (!code.trim().isEmpty()) {
+			bodyQuery += " and a.code like CONCAT('%',:code, '%') ";
+			params.put("code", code.trim());
 		}
 
-		return result;
+		if (isVendor()) {
+			Vendor vendor = this.getLoginAccount().getVendor();
+			vendorStr = vendor == null ? "0" : vendor.getCode();
+			bodyQuery += " and d.code= :vendor";
+			params.put("vendor", vendorStr);
+		} else {
+			bodyQuery += " and d.unit_id in :unitList";
+			params.put("unitList", unitList);
+			if (!vendorStr.trim().isEmpty()) {
+				bodyQuery += " and (d.name like CONCAT('%',:vendor, '%') or d.code like CONCAT('%',:vendor, '%')) ";
+				params.put("vendor", vendorStr.trim());
+			}
+
+		}
+
+		if (!inventory.trim().isEmpty()) {
+			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
+			params.put("inventory", inventory.trim());
+		}
+
+		if (arriveDate != null) {
+			bodyQuery += " and a.arrivedate=:arrivedate";
+			params.put("arrivedate", arriveDate);
+		}
+
+		if (confirmDate != null) {
+			bodyQuery += " and a.confirmdate=:confirmdate";
+			params.put("confirmdate", confirmDate);
+		}
+
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "PurchaseOrderDetailSearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		return new PageImpl<PurchaseOrderDetailSearchResult>(list, request, totalCount.longValue());
+
 	}
 
 	@PostMapping("/export")

@@ -4,19 +4,36 @@ import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.StatementSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
 @Entity
+
+@SqlResultSetMapping(name = "StatementSearchResult", classes = {
+		@ConstructorResult(targetClass = StatementSearchResult.class, columns = {
+				@ColumnResult(name = "code", type = String.class), @ColumnResult(name = "state", type = String.class),
+				@ColumnResult(name = "maker", type = String.class),
+				@ColumnResult(name = "makedate", type = String.class),
+				@ColumnResult(name = "verifier", type = String.class),
+				@ColumnResult(name = "verifydate", type = String.class),
+				@ColumnResult(name = "remark", type = String.class),
+				@ColumnResult(name = "invoice_code", type = String.class),
+				@ColumnResult(name = "vendor_name", type = String.class),
+				@ColumnResult(name = "vendor_code", type = String.class) }) })
+
 @Table(name = "statement_main")
 public class StatementMain {
 	@Id

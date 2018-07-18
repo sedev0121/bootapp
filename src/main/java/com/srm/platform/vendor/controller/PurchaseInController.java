@@ -1,16 +1,20 @@
 package com.srm.platform.vendor.controller;
 
+import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,7 +30,8 @@ import com.srm.platform.vendor.model.PurchaseInMain;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.utility.PurchaseInDetailItem;
-import com.srm.platform.vendor.utility.PurchaseInSearchItem;
+import com.srm.platform.vendor.utility.PurchaseInDetailResult;
+import com.srm.platform.vendor.utility.PurchaseInSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
@@ -63,17 +68,18 @@ public class PurchaseInController extends CommonController {
 	}
 
 	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody Page<PurchaseInSearchItem> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<PurchaseInSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
-		String order = requestParams.getOrDefault("order", "ccode");
-		String dir = requestParams.getOrDefault("dir", "asc");
-		String vendor = requestParams.getOrDefault("vendor", "");
-		String state = requestParams.getOrDefault("state", "0");
+		String order = requestParams.getOrDefault("order", "date");
+		String dir = requestParams.getOrDefault("dir", "desc");
+		String vendorStr = requestParams.getOrDefault("vendor", "");
+		String stateStr = requestParams.getOrDefault("state", "0");
 		String code = requestParams.getOrDefault("code", "");
 		String start_date = requestParams.getOrDefault("start_date", null);
 		String end_date = requestParams.getOrDefault("end_date", null);
 
+		Integer state = Integer.parseInt(stateStr);
 		Date startDate = Utils.parseDate(start_date);
 		Date endDate = Utils.getNextDate(end_date);
 
@@ -92,10 +98,60 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		List<String> unitList = this.getDefaultUnitList();
-		Page<PurchaseInSearchItem> result = purchaseInMainRepository.findBySearchTerm(unitList, code, vendor, request);
+		String selectQuery = "SELECT a.*, b.name vendorname  ";
+		String countQuery = "select count(*) ";
+		String orderBy = " order by " + order + " " + dir;
 
-		return result;
+		String bodyQuery = "FROM purchase_in_main a left join vendor b on a.vendorcode=b.code where 1=1 ";
+
+		List<String> unitList = this.getDefaultUnitList();
+		Map<String, Object> params = new HashMap<>();
+
+		bodyQuery += " and b.unit_id in :unitList";
+		params.put("unitList", unitList);
+
+		if (!vendorStr.trim().isEmpty()) {
+			bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
+			params.put("vendor", vendorStr.trim());
+		}
+
+		if (!code.trim().isEmpty()) {
+			bodyQuery += " and a.code like CONCAT('%',:code, '%') ";
+			params.put("code", code.trim());
+		}
+
+		if (state > 0) {
+			bodyQuery += " and state=:state";
+			params.put("state", state);
+		}
+
+		if (startDate != null) {
+			bodyQuery += " and a.date>=:startDate";
+			params.put("startDate", startDate);
+		}
+		if (endDate != null) {
+			bodyQuery += " and a.date<:endDate";
+			params.put("endDate", endDate);
+		}
+
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "PurchaseInSearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		return new PageImpl<PurchaseInSearchResult>(list, request, totalCount.longValue());
 	}
 
 	@RequestMapping(value = "/{code}/details", produces = "application/json")
@@ -106,7 +162,7 @@ public class PurchaseInController extends CommonController {
 	}
 
 	@RequestMapping(value = "/select", produces = "application/json")
-	public @ResponseBody Page<PurchaseInDetailItem> select_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<PurchaseInDetailResult> select_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "code");
@@ -151,9 +207,52 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		Page<PurchaseInDetailItem> result = purchaseInDetailRepository.findForSelect(vendor, code, inventory, request);
+		String selectQuery = "select a.*, m.name unitname, d.closed_quantity, b.date, c.name inventoryname,c.specs ";
+		String countQuery = "select count(*) ";
+		String orderBy = " order by " + order + " " + dir;
 
-		return result;
+		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventorycode=c.code "
+				+ "left join measurement_unit m on c.main_measure=m.code left join statement_detail d on d.purchase_in_detail_id=a.id "
+				+ "where d.closed_quantity is null and b.vendorcode=:vendor ";
+
+		Map<String, Object> params = new HashMap<>();
+
+		params.put("vendor", vendor);
+
+		if (!inventory.trim().isEmpty()) {
+			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
+			params.put("inventory", inventory.trim());
+		}
+
+		if (!code.trim().isEmpty()) {
+			bodyQuery += " and a.code like CONCAT('%',:code, '%')";
+			params.put("code", code);
+		}
+
+		if (date != null) {
+			bodyQuery += " and b.date=:date";
+			params.put("date", date);
+		}
+
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "PurchaseInDetailResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		return new PageImpl<PurchaseInDetailResult>(list, request, totalCount.longValue());
+
 	}
 
 }

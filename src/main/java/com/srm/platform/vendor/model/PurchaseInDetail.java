@@ -1,6 +1,8 @@
 package com.srm.platform.vendor.model;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,11 +10,30 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 
 @Entity
+
+@SqlResultSetMapping(name = "PurchaseInDetailResult", classes = {
+		@ConstructorResult(targetClass = PurchaseInDetailResult.class, columns = {
+				@ColumnResult(name = "id", type = String.class), @ColumnResult(name = "code", type = String.class),
+				@ColumnResult(name = "date", type = String.class), @ColumnResult(name = "rowno", type = Integer.class),
+				@ColumnResult(name = "inventoryname", type = String.class),
+				@ColumnResult(name = "inventorycode", type = String.class),
+				@ColumnResult(name = "specs", type = String.class),
+				@ColumnResult(name = "unitname", type = String.class),
+				@ColumnResult(name = "quantity", type = String.class),
+				@ColumnResult(name = "price", type = String.class), @ColumnResult(name = "cost", type = String.class),
+				@ColumnResult(name = "cmassunitname", type = String.class),
+				@ColumnResult(name = "assitantunitname", type = String.class),
+				@ColumnResult(name = "irate", type = String.class), @ColumnResult(name = "number", type = String.class),
+				@ColumnResult(name = "state", type = String.class),
+				@ColumnResult(name = "closed_quantity", type = String.class) }) })
+
 @Table(name = "purchase_in_detail")
 public class PurchaseInDetail {
 	@Id

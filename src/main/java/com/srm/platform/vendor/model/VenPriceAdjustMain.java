@@ -4,19 +4,40 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.utility.InquerySearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
 @Entity
+
+@SqlResultSetMapping(name = "InquerySearchResult", classes = {
+		@ConstructorResult(targetClass = InquerySearchResult.class, columns = {
+				@ColumnResult(name = "ccode", type = String.class),
+				@ColumnResult(name = "vendorname", type = String.class),
+				@ColumnResult(name = "vendorcode", type = String.class),
+				@ColumnResult(name = "dstartdate", type = Date.class),
+				@ColumnResult(name = "denddate", type = Date.class),
+				@ColumnResult(name = "makername", type = String.class),
+				@ColumnResult(name = "verifiername", type = String.class),
+				@ColumnResult(name = "dmakedate", type = Date.class),
+				@ColumnResult(name = "dverifydate", type = Date.class),
+				@ColumnResult(name = "iverifystate", type = Integer.class),
+				@ColumnResult(name = "type", type = Integer.class),
+				@ColumnResult(name = "isupplytype", type = Integer.class),
+				@ColumnResult(name = "itaxrate", type = Float.class) }) })
+
 @Table(name = "venpriceadjust_main")
 public class VenPriceAdjustMain {
 

@@ -3,16 +3,34 @@ package com.srm.platform.vendor.model;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.srm.platform.vendor.utility.PurchaseOrderSearchResult;
 
 @Entity
+
+@SqlResultSetMapping(name = "PurchaseOrderSearchResult", classes = {
+		@ConstructorResult(targetClass = PurchaseOrderSearchResult.class, columns = {
+				@ColumnResult(name = "code", type = String.class), @ColumnResult(name = "state", type = String.class),
+				@ColumnResult(name = "vendorname", type = String.class),
+				@ColumnResult(name = "deployername", type = String.class),
+				@ColumnResult(name = "reviewername", type = String.class),
+				@ColumnResult(name = "deploydate", type = Date.class),
+				@ColumnResult(name = "reviewdate", type = Date.class),
+				@ColumnResult(name = "maker", type = String.class), @ColumnResult(name = "makedate", type = Date.class),
+				@ColumnResult(name = "sum", type = Float.class), @ColumnResult(name = "money", type = Float.class),
+				@ColumnResult(name = "srmstate", type = Integer.class),
+				@ColumnResult(name = "purchase_type_name", type = String.class) }) })
+
 @Table(name = "purchase_order_main")
 public class PurchaseOrderMain {
 	@Id

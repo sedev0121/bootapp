@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,11 +13,25 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchResult;
 
 @Entity
+
+@SqlResultSetMapping(name = "PurchaseOrderDetailSearchResult", classes = {
+		@ConstructorResult(targetClass = PurchaseOrderDetailSearchResult.class, columns = {
+				@ColumnResult(name = "rowno", type = Integer.class), @ColumnResult(name = "code"),
+				@ColumnResult(name = "quantity", type = Float.class),
+				@ColumnResult(name = "shipped_quantity", type = Float.class), @ColumnResult(name = "inventoryname"),
+				@ColumnResult(name = "inventorycode"), @ColumnResult(name = "vendorname"),
+				@ColumnResult(name = "vendorcode"), @ColumnResult(name = "specs"), @ColumnResult(name = "unitname"),
+				@ColumnResult(name = "arrivedate", type = Date.class),
+				@ColumnResult(name = "confirmdate", type = Date.class), @ColumnResult(name = "arrivenote"),
+				@ColumnResult(name = "confirmnote"), @ColumnResult(name = "remain_quantity", type = Float.class) }) })
+
 @Table(name = "purchase_order_detail")
 public class PurchaseOrderDetail {
 	@Id

@@ -12,11 +12,11 @@
     <div class="search-content">
         <div class="search-cell width-10">
           <label for="start_date">对账日期: </label>
-          <input type="text" id="start_date" value="" class="form-control" />
+          <input type="text" id="start_date" value="" class="form-control datepicker" />
         </div>
         <div class="search-cell width-10">
           <label for="end_date">　</label>
-          <input type="text" id="end_date" value="" class="form-control" />
+          <input type="text" id="end_date" value="" class="form-control datepicker" />
         </div>
         <div class="search-cell width-10">
           <label for="code">单据号:</label>
@@ -66,8 +66,11 @@ $(document).ready(function() {
     minimumResultsForSearch : -1
   });
 
-  $('#start_date').datepicker();
-  $('#end_date').datepicker();
+  $(".datepicker").datepicker({
+    onSelect: function(dateText) {
+      table.draw();
+    }
+  });
 
   
   var table = $('#example').DataTable({

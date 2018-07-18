@@ -1,18 +1,22 @@
 package com.srm.platform.vendor.controller;
 
+import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
+import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
@@ -35,7 +40,7 @@ import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.StatementDetailItem;
 import com.srm.platform.vendor.utility.StatementSaveForm;
-import com.srm.platform.vendor.utility.StatementSearchItem;
+import com.srm.platform.vendor.utility.StatementSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
@@ -93,12 +98,12 @@ public class StatementController extends CommonController {
 	}
 
 	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody Page<StatementSearchItem> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<StatementSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "ccode");
 		String dir = requestParams.getOrDefault("dir", "asc");
-		String vendor = requestParams.getOrDefault("vendor", "");
+		String vendorStr = requestParams.getOrDefault("vendor", "");
 		String stateStr = requestParams.getOrDefault("state", "0");
 		String code = requestParams.getOrDefault("code", "");
 		String start_date = requestParams.getOrDefault("start_date", null);
@@ -126,15 +131,71 @@ public class StatementController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		Page<StatementSearchItem> result = null;
+		String selectQuery = "select a.*, b.name vendor_name, c.realname maker, d.realname verifier ";
+		String countQuery = "select count(*) ";
+		String orderBy = " order by " + order + " " + dir;
 
-		if (this.isVendor()) {
-			result = statementMainRepository.findBySearchTermForVendor(code,
-					this.getLoginAccount().getVendor().getCode(), request);
+		String bodyQuery = "from statement_main a left join vendor b on a.vendor_code=b.code left join account c on a.maker_id=c.id "
+				+ "left join account d on a.verifier_id=d.id where 1=1 ";
+
+		List<String> unitList = this.getDefaultUnitList();
+		Map<String, Object> params = new HashMap<>();
+
+		if (isVendor()) {
+			Vendor vendor = this.getLoginAccount().getVendor();
+			vendorStr = vendor == null ? "0" : vendor.getCode();
+			bodyQuery += " and b.code= :vendor";
+			params.put("vendor", vendorStr);
+
+			bodyQuery += " and a.state>1";
+
 		} else {
-			result = statementMainRepository.findBySearchTerm(code, vendor, request);
+			bodyQuery += " and b.unit_id in :unitList";
+			params.put("unitList", unitList);
+			if (!vendorStr.trim().isEmpty()) {
+				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
+				params.put("vendor", vendorStr.trim());
+			}
 		}
-		return result;
+
+		if (!code.trim().isEmpty()) {
+			bodyQuery += " and a.code like CONCAT('%',:code, '%') ";
+			params.put("code", code.trim());
+		}
+
+		if (state > 0) {
+			bodyQuery += " and state=:state";
+			params.put("state", state);
+		}
+
+		if (startDate != null) {
+			bodyQuery += " and a.makedate>=:startDate";
+			params.put("startDate", startDate);
+		}
+		if (endDate != null) {
+			bodyQuery += " and a.makedate<:endDate";
+			params.put("endDate", endDate);
+		}
+
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "StatementSearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		return new PageImpl<StatementSearchResult>(list, request, totalCount.longValue());
+
 	}
 
 	@RequestMapping(value = "/{code}/details", produces = "application/json")
