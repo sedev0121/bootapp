@@ -139,12 +139,13 @@ public class QuoteController extends CommonController {
 
 		Page<VenPriceAdjustSearchItem> result = null;
 		if (isVendor()) {
-			result = venPriceAdjustMainRepository.findBySearchTermForVendor(Constants.CREATE_TYPE_BUYER,
+			result = venPriceAdjustMainRepository.findQuoteSearchTermForVendor(Constants.CREATE_TYPE_BUYER,
 					this.getLoginAccount().getVendor().getCode(), inventory, request);
 
 		} else {
-			result = venPriceAdjustMainRepository.findBySearchTermForBuyer(Constants.CREATE_TYPE_VENDOR, vendor,
-					inventory, request);
+			List<String> unitList = this.getDefaultUnitList();
+			result = venPriceAdjustMainRepository.findQuoteSearchTermForBuyer(Constants.CREATE_TYPE_VENDOR, unitList,
+					vendor, inventory, request);
 		}
 
 		return result;

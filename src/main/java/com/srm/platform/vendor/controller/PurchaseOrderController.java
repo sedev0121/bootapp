@@ -111,7 +111,8 @@ public class PurchaseOrderController extends CommonController {
 			result = purchaseOrderMainRepository.findBySearchTermForVendor(code,
 					this.getLoginAccount().getVendor().getCode(), request);
 		} else {
-			result = purchaseOrderMainRepository.findBySearchTerm(code, vendor, request);
+			List<String> unitList = this.getDefaultUnitList();
+			result = purchaseOrderMainRepository.findBySearchTerm(unitList, code, vendor, request);
 		}
 
 		return result;

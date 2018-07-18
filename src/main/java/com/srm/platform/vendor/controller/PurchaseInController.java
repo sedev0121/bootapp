@@ -90,7 +90,8 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		Page<PurchaseInSearchItem> result = purchaseInMainRepository.findBySearchTerm(code, vendor, request);
+		List<String> unitList = this.getDefaultUnitList();
+		Page<PurchaseInSearchItem> result = purchaseInMainRepository.findBySearchTerm(unitList, code, vendor, request);
 
 		return result;
 	}

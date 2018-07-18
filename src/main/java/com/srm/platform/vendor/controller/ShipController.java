@@ -128,7 +128,8 @@ public class ShipController extends CommonController {
 			result = purchaseOrderDetailRepository.findDetailsForShip(this.getLoginAccount().getVendor().getCode(),
 					code, inventory, request);
 		} else {
-			result = purchaseOrderDetailRepository.findDetailsForBuyerShip(vendor, code, inventory, request);
+			List<String> unitList = this.getDefaultUnitList();
+			result = purchaseOrderDetailRepository.findDetailsForBuyerShip(unitList, vendor, code, inventory, request);
 		}
 
 		return result;

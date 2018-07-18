@@ -31,7 +31,7 @@
               <div class="col-lg-2 col-md-2 form-group">
                 <label for="unit_name">所属部门: </label>
                 <input type="hidden" id="unit" name="unit" th:value="${account.unit==null?'':account.unit.id}">
-                <input type="text" id="unit_name" name="unit_name" class="form-control select-unit" th:value="${account.unit==null?'':account.unit.name}" readonly>
+                <input type="text" id="unit_name" name="unit_name" class="form-control" th:value="${account.unit==null?'':account.unit.name}" readonly>
               </div>
               <div class="col-lg-2 col-md-2 form-group">
                 <label for="duty">职位: </label>
