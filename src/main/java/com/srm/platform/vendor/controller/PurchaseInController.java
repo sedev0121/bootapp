@@ -56,6 +56,7 @@ public class PurchaseInController extends CommonController {
 		if (main == null)
 			show404();
 
+		checkVendor(main.getVendor());
 		model.addAttribute("main", main);
 		return "purchasein/edit";
 	}
