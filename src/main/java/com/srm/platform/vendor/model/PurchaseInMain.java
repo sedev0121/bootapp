@@ -3,13 +3,34 @@ package com.srm.platform.vendor.model;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
+import com.srm.platform.vendor.utility.PurchaseInSearchResult;
+
 @Entity
+
+@SqlResultSetMapping(name = "PurchaseInSearchResult", classes = {
+		@ConstructorResult(targetClass = PurchaseInSearchResult.class, columns = {
+				@ColumnResult(name = "code", type = String.class), @ColumnResult(name = "state", type = Integer.class),
+				@ColumnResult(name = "warehousename", type = String.class),
+				@ColumnResult(name = "maker", type = String.class), @ColumnResult(name = "date", type = Date.class),
+				@ColumnResult(name = "receivename", type = String.class),
+				@ColumnResult(name = "departmentname", type = String.class),
+				@ColumnResult(name = "purchasetypename", type = String.class),
+				@ColumnResult(name = "auditdate", type = Date.class),
+				@ColumnResult(name = "memory", type = String.class),
+				@ColumnResult(name = "handler", type = String.class),
+				@ColumnResult(name = "bredvouch", type = Integer.class),
+				@ColumnResult(name = "vendorname", type = String.class),
+				@ColumnResult(name = "vendorcode", type = String.class) }) })
+
 @Table(name = "purchase_in_main")
 public class PurchaseInMain {
 	@Id

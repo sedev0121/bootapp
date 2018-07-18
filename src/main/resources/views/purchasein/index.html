@@ -19,11 +19,11 @@
           </div>
           <div class="search-cell width-10">
             <label for="start_date">入库时间: </label>
-            <input type="text" id="start_date" value="" class="form-control" />
+            <input type="text" id="start_date" value="" class="form-control datepicker" />
           </div>
           <div class="search-cell width-10">
             <label for="end_date">　</label>
-            <input type="text" id="end_date" value="" class="form-control" />
+            <input type="text" id="end_date" value="" class="form-control datepicker" />
           </div>
           <div class="search-cell width-10">
             <label for="state">状态:</label>
@@ -51,6 +51,13 @@ var edit_url = [[@{/purchasein/}]];
 +]*/ 
 
   $(document).ready(function() {
+    
+    $(".datepicker").datepicker({
+      onSelect: function(dateText) {
+        table.draw();
+      }
+    });
+    
     $("#state").select2({
       data : App.getPurchaseInStateDataWithAll(),
       minimumResultsForSearch : -1
