@@ -90,7 +90,13 @@ public class VendorController extends CommonController {
 	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
 
-		return vendorRepository.findForSelect(search, request);
+		if (isAdmin()) {
+			return vendorRepository.findForSelect(search, request);
+		} else {
+			List<String> unitList = this.getDefaultUnitList();
+			return vendorRepository.findForSelect(unitList, search, request);
+		}
+
 	}
 
 	// 修改
