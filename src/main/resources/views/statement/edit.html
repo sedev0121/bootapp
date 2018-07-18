@@ -323,6 +323,17 @@ $(document).ready(function() {
   });
   
   $('#date').datepicker();
+  
+  $("#search_date").datepicker({
+    onSelect: function(dateText) {
+      import_table.draw();
+    }
+  });
+  
+  $('#search_inventory, #search_code, #search_date').keyup(function(e) {
+    if (e.keyCode == 13)
+      import_table.draw();
+  });
     
   $(".select2").select2();
   $("#state").select2({ data: App.getStatementStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());

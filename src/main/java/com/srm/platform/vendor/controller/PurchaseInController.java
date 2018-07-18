@@ -30,6 +30,7 @@ import com.srm.platform.vendor.model.PurchaseInMain;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.utility.PurchaseInDetailItem;
+import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 import com.srm.platform.vendor.utility.PurchaseInSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
@@ -161,7 +162,7 @@ public class PurchaseInController extends CommonController {
 	}
 
 	@RequestMapping(value = "/select", produces = "application/json")
-	public @ResponseBody Page<PurchaseInDetailItem> select_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<PurchaseInDetailResult> select_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "code");
@@ -206,9 +207,52 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		Page<PurchaseInDetailItem> result = purchaseInDetailRepository.findForSelect(vendor, code, inventory, request);
+		String selectQuery = "select a.*, m.name unitname, d.closed_quantity, b.date, c.name inventoryname,c.specs ";
+		String countQuery = "select count(*) ";
+		String orderBy = " order by " + order + " " + dir;
 
-		return result;
+		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventorycode=c.code "
+				+ "left join measurement_unit m on c.main_measure=m.code left join statement_detail d on d.purchase_in_detail_id=a.id "
+				+ "where d.closed_quantity is null and b.vendorcode=:vendor ";
+
+		Map<String, Object> params = new HashMap<>();
+
+		params.put("vendor", vendor);
+
+		if (!inventory.trim().isEmpty()) {
+			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
+			params.put("inventory", inventory.trim());
+		}
+
+		if (!code.trim().isEmpty()) {
+			bodyQuery += " and a.code like CONCAT('%',:code, '%')";
+			params.put("code", code);
+		}
+
+		if (date != null) {
+			bodyQuery += " and b.date=:date";
+			params.put("date", date);
+		}
+
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "PurchaseInDetailResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		return new PageImpl<PurchaseInDetailResult>(list, request, totalCount.longValue());
+
 	}
 
 }
