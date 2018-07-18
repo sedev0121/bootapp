@@ -3,17 +3,41 @@ package com.srm.platform.vendor.model;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.srm.platform.vendor.utility.PriceSearchResult;
 
 @Entity
+
+@SqlResultSetMapping(name = "PriceSearchResult", classes = {
+		@ConstructorResult(targetClass = PriceSearchResult.class, columns = {
+				@ColumnResult(name = "cinvdate", type = String.class),
+				@ColumnResult(name = "createdate", type = String.class),
+				@ColumnResult(name = "description", type = String.class),
+				@ColumnResult(name = "faddqty", type = String.class),
+				@ColumnResult(name = "fauxunit", type = String.class),
+				@ColumnResult(name = "vendorname", type = String.class),
+				@ColumnResult(name = "inventoryname", type = String.class),
+				@ColumnResult(name = "favdate", type = String.class),
+				@ColumnResult(name = "fcanceldate", type = String.class),
+				@ColumnResult(name = "fcancelno", type = String.class),
+				@ColumnResult(name = "fprice", type = String.class), @ColumnResult(name = "ftax", type = String.class),
+				@ColumnResult(name = "ftaxprice", type = String.class),
+				@ColumnResult(name = "foldcheckdate", type = String.class),
+				@ColumnResult(name = "fisoutside", type = String.class),
+				@ColumnResult(name = "createname", type = String.class),
+				@ColumnResult(name = "fnote", type = String.class) }) })
+
 @Table(name = "price")
 public class Price {
 	@Id
