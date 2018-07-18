@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ import com.srm.platform.vendor.utility.PriceSearchItem;
 @Controller
 @RequestMapping(path = "/price")
 @PreAuthorize("hasRole('ROLE_BUYER')")
-public class PriceController {
+public class PriceController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
@@ -74,8 +75,11 @@ public class PriceController {
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<PriceSearchItem> result = priceRepository.findBySearchTerm(search_vendor, search_inventory, startDate,
-				endDate, request);
+
+		List<String> unitList = this.getDefaultUnitList();
+
+		Page<PriceSearchItem> result = priceRepository.findBySearchTerm(unitList, search_vendor, search_inventory,
+				startDate, endDate, request);
 
 		return result;
 	}

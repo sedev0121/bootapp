@@ -26,6 +26,7 @@ import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
+import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PriceRepository;
@@ -79,7 +80,13 @@ public class InqueryController extends CommonController {
 	// 详细
 	@GetMapping({ "/{ccode}/edit" })
 	public String edit(@PathVariable("ccode") String ccode, Model model) {
-		model.addAttribute("main", this.venPriceAdjustMainRepository.findOneByCcode(ccode));
+		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
+		if (main == null)
+			show404();
+
+		checkVendor(main.getVendor());
+
+		model.addAttribute("main", main);
 		return "inquery/edit";
 	}
 
@@ -108,7 +115,7 @@ public class InqueryController extends CommonController {
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "ccode");
 		String dir = requestParams.getOrDefault("dir", "asc");
-		String vendor = requestParams.getOrDefault("vendor", "");
+		String vendorStr = requestParams.getOrDefault("vendor", "");
 		String stateStr = requestParams.getOrDefault("state", "0");
 		String inventory = requestParams.getOrDefault("inventory", "");
 		String start_date = requestParams.getOrDefault("start_date", null);
@@ -139,11 +146,14 @@ public class InqueryController extends CommonController {
 		Page<VenPriceAdjustSearchItem> result = null;
 
 		if (isVendor()) {
-			result = venPriceAdjustMainRepository.findBySearchTerm(Constants.CREATE_TYPE_VENDOR, vendor, inventory,
-					request);
+			Vendor vendor = this.getLoginAccount().getVendor();
+			vendorStr = vendor == null ? "00" : vendor.getCode();
+			result = venPriceAdjustMainRepository.findInquerySearchTermForVendor(Constants.CREATE_TYPE_VENDOR,
+					vendorStr, inventory, request);
 		} else {
-			result = venPriceAdjustMainRepository.findBySearchTerm(Constants.CREATE_TYPE_BUYER, vendor, inventory,
-					request);
+			List<String> unitList = this.getDefaultUnitList();
+			result = venPriceAdjustMainRepository.findInquerySearchTermForBuyer(Constants.CREATE_TYPE_BUYER, unitList,
+					vendorStr, inventory, request);
 		}
 
 		return result;

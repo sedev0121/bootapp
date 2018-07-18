@@ -1,5 +1,7 @@
 package com.srm.platform.vendor.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +17,7 @@ public interface PurchaseInMainRepository extends JpaRepository<PurchaseInMain, 
 
 	PurchaseInMain findOneByCode(String code);
 
-	@Query(value = "SELECT a.*, b.name vendorname FROM purchase_in_main a left join vendor b on a.vendorcode=b.code WHERE a.code like %?1% and (b.code LIKE %?2% or b.name LIKE %?2% )", countQuery = "SELECT count(*) FROM purchase_in_main a left join vendor b on a.vendorcode=b.code WHERE a.code like %?1% and (b.code LIKE %?2% or b.name LIKE %?2% )", nativeQuery = true)
-	Page<PurchaseInSearchItem> findBySearchTerm(String code, String vendor, Pageable pageable);
+	@Query(value = "SELECT a.*, b.name vendorname FROM purchase_in_main a left join vendor b on a.vendorcode=b.code WHERE b.unit_id in ?1 and a.code like %?2% and (b.code LIKE %?3% or b.name LIKE %?3% )", countQuery = "SELECT count(*) FROM purchase_in_main a left join vendor b on a.vendorcode=b.code WHERE b.unit_id in ?1 and a.code like %?2% and (b.code LIKE %?3% or b.name LIKE %?3% )", nativeQuery = true)
+	Page<PurchaseInSearchItem> findBySearchTerm(List<String> unitList, String code, String vendor, Pageable pageable);
 
 }

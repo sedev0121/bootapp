@@ -28,7 +28,7 @@
               <input type="hidden" th:id="'function_' + ${item.id}" th:name="'units_' + ${item.id}" th:value="${item.units}">
               <legend><label th:text="${item.name}">供应商档案管理 </label>- 
                 <input type="checkbox" class="select-all" th:attrappend="subclass=${item.id}?'class_' + ${item.id}">
-                <label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary select-units" th:attrappend="data=${item.id}?'function_' + ${item.id}"> 数据范围</a>
+                <label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary select-units hidden" th:attrappend="data=${item.id}?'function_' + ${item.id}"> 数据范围</a>
               </legend>
    
               <div class="col-lg-4 col-md-4" th:each="action : ${item.Actions}">

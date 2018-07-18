@@ -93,7 +93,13 @@ public class QuoteController extends CommonController {
 	// 详细
 	@GetMapping("/{ccode}/edit")
 	public String edit(@PathVariable("ccode") String ccode, Model model) {
-		model.addAttribute("main", this.venPriceAdjustMainRepository.findOneByCcode(ccode));
+		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
+		if (main == null)
+			show404();
+
+		checkVendor(main.getVendor());
+
+		model.addAttribute("main", main);
 		return "quote/edit";
 	}
 
@@ -136,12 +142,13 @@ public class QuoteController extends CommonController {
 
 		Page<VenPriceAdjustSearchItem> result = null;
 		if (isVendor()) {
-			result = venPriceAdjustMainRepository.findBySearchTermForVendor(Constants.CREATE_TYPE_BUYER,
+			result = venPriceAdjustMainRepository.findQuoteSearchTermForVendor(Constants.CREATE_TYPE_BUYER,
 					this.getLoginAccount().getVendor().getCode(), inventory, request);
 
 		} else {
-			result = venPriceAdjustMainRepository.findBySearchTermForBuyer(Constants.CREATE_TYPE_VENDOR, vendor,
-					inventory, request);
+			List<String> unitList = this.getDefaultUnitList();
+			result = venPriceAdjustMainRepository.findQuoteSearchTermForBuyer(Constants.CREATE_TYPE_VENDOR, unitList,
+					vendor, inventory, request);
 		}
 
 		return result;

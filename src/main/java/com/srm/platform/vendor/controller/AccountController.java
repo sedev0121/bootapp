@@ -29,7 +29,7 @@ import com.srm.platform.vendor.utility.AccountSearchItem;
 @Controller
 @RequestMapping(path = "/account")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
-public class AccountController {
+public class AccountController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
@@ -79,7 +79,11 @@ public class AccountController {
 	// 用户管理->修改
 	@GetMapping("/{id}/edit")
 	public String edit(@PathVariable("id") Long id, Model model) {
-		model.addAttribute("account", accountRepository.findOneById(id));
+		Account account = accountRepository.findOneById(id);
+		if (account == null)
+			show404();
+
+		model.addAttribute("account", account);
 		return "admin/account/edit";
 	}
 

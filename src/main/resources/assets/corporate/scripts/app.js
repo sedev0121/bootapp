@@ -69,7 +69,7 @@ var App = function() {
           delay: 250,
           data: function(params) {
               return {
-                  q: params.term
+                  q: params.term || ''
               };
           },
           processResults: function(data, page) {
@@ -82,7 +82,7 @@ var App = function() {
       escapeMarkup: function(markup) {
           return markup;
       }, // let our custom formatter work
-      minimumInputLength: 1,
+      minimumInputLength: 0,
       templateResult: function(item) {
         return "<div>" + (item.text || item.title) + "</div>";
       },

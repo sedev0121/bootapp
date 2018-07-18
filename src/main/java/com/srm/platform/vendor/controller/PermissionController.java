@@ -44,7 +44,7 @@ import com.srm.platform.vendor.utility.IGroupFunctionUnit;
 @Controller
 @RequestMapping(path = "/permission_group")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
-public class PermissionController {
+public class PermissionController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
@@ -95,6 +95,10 @@ public class PermissionController {
 	@GetMapping("/{id}/edit")
 	public String edit(@PathVariable("id") Long id, Model model) {
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
+
+		if (temp == null)
+			show404();
+
 		model.addAttribute("permission_group", temp);
 
 		List<AccountSearchItem> accounts = permissionGroupRepository.findAccountsInGroupById(id);
@@ -112,6 +116,10 @@ public class PermissionController {
 	@GetMapping("/{id}/edit_perm")
 	public String edit_perm(@PathVariable("id") Long id, Model model) {
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
+
+		if (temp == null)
+			show404();
+
 		List<Function> functionList = functionRepository.findAll();
 		List<FunctionAction> functionActionList = functionActionRepository.findAll();
 		List<IGroupFunctionUnit> unitList = permissionGroupFunctionUnitRepository.findUnitsByGroupId(id);

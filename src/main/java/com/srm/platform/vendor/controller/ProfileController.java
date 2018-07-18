@@ -35,6 +35,10 @@ public class ProfileController extends CommonController {
 	@GetMapping("/profile")
 	public String profile(Model model, Principal principal) {
 		Account account = accountRepository.findOneByUsername(principal.getName());
+
+		if (account == null)
+			show404();
+
 		model.addAttribute("account", account);
 		return "home/profile";
 	}

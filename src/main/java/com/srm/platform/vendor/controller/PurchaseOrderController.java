@@ -61,7 +61,13 @@ public class PurchaseOrderController extends CommonController {
 
 	@GetMapping({ "/{code}/edit" })
 	public String edit(@PathVariable("code") String code, Model model) {
-		model.addAttribute("main", this.purchaseOrderMainRepository.findOneByCode(code));
+		PurchaseOrderMain main = this.purchaseOrderMainRepository.findOneByCode(code);
+		if (main == null)
+			show404();
+
+		checkVendor(main.getVendor());
+
+		model.addAttribute("main", main);
 		return "purchaseorder/edit";
 	}
 
@@ -107,7 +113,8 @@ public class PurchaseOrderController extends CommonController {
 			result = purchaseOrderMainRepository.findBySearchTermForVendor(code,
 					this.getLoginAccount().getVendor().getCode(), request);
 		} else {
-			result = purchaseOrderMainRepository.findBySearchTerm(code, vendor, request);
+			List<String> unitList = this.getDefaultUnitList();
+			result = purchaseOrderMainRepository.findBySearchTerm(unitList, code, vendor, request);
 		}
 
 		return result;

@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PasswordResetToken;
@@ -32,9 +33,12 @@ import com.srm.platform.vendor.repository.ActionRepository;
 import com.srm.platform.vendor.repository.FunctionActionRepository;
 import com.srm.platform.vendor.repository.FunctionRepository;
 import com.srm.platform.vendor.repository.PasswordResetTokenRepository;
+import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.PermissionItem;
+import com.srm.platform.vendor.utility.PermissionUnit;
 
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -50,6 +54,9 @@ public class AccountService implements UserDetailsService {
 
 	@Autowired
 	private PermissionGroupRepository permissionGroupRepository;
+
+	@Autowired
+	private PermissionGroupFunctionUnitRepository permissionGroupFunctionUnitRepository;
 
 	@Autowired
 	private FunctionRepository functionRepository;
@@ -129,6 +136,17 @@ public class AccountService implements UserDetailsService {
 
 	private List<GrantedAuthority> createAuthorities(Account account) {
 
+		List<PermissionUnit> permissionUnitList = permissionGroupFunctionUnitRepository
+				.findPermissionUnitsForAccount(account.getId());
+		for (PermissionUnit unit : permissionUnitList) {
+			httpSession.setAttribute(unit.getName(), unit.getUnits());
+		}
+
+		String myUnitList = String.valueOf(account.getUnit().getId());
+		myUnitList = StringUtils.append(myUnitList, "," + searchChildren(myUnitList));
+
+		httpSession.setAttribute(Constants.KEY_DEFAULT_UNIT_LIST, myUnitList);
+
 		List<PermissionItem> permissions = permissionGroupRepository.findPermissionForAccount(account.getId());
 		List<GrantedAuthority> authorities = new ArrayList<>();
 		authorities.add(new SimpleGrantedAuthority(account.getRole()));
@@ -138,6 +156,23 @@ public class AccountService implements UserDetailsService {
 		}
 
 		return authorities;
+	}
+
+	private String searchChildren(String parentIdList) {
+		String childList = "";
+		List<PermissionUnit> unitList = permissionGroupFunctionUnitRepository
+				.findChildrenByParentId(StringUtils.split(parentIdList, ","));
+		for (PermissionUnit unit : unitList) {
+			if (unit != null)
+				childList = StringUtils.append(childList, "," + unit.getUnits());
+		}
+
+		if (childList.isEmpty()) {
+			return childList;
+		} else {
+			childList = StringUtils.append(childList, "," + searchChildren(childList));
+			return childList;
+		}
 	}
 
 }

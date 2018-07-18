@@ -155,6 +155,7 @@ is_readonly = 0;
     $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
     $("#type").select2({ data: App.getInqueryTypeData(),minimumResultsForSearch: -1 }).select2("val", type.toString());
     $("#provide_type").select2({ data: App.getInqueryProvideTypeData(),minimumResultsForSearch: -1 }).select2("val", supply_type.toString());
+    
     $("#vendor").select2(App.getSelect2Options(vendor_search_url));
    
 
@@ -325,7 +326,7 @@ is_readonly = 0;
         ajax: {
           data: function(params) {
               return {
-                inv: params.term,
+                inv: params.term || '',
                 vendor: $("#vendor").val(),
               };
           },

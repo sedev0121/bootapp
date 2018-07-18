@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.srm.platform.vendor.model.PurchaseInMain;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.utility.PurchaseInDetailItem;
@@ -31,7 +32,7 @@ import com.srm.platform.vendor.utility.Utils;
 @Controller
 @RequestMapping(path = "/purchasein")
 @PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('出入库单据-查看列表')")
-public class PurchaseInController {
+public class PurchaseInController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@PersistenceContext
@@ -51,7 +52,11 @@ public class PurchaseInController {
 
 	@GetMapping({ "/{code}/edit" })
 	public String edit(@PathVariable("code") String code, Model model) {
-		model.addAttribute("main", this.purchaseInMainRepository.findOneByCode(code));
+		PurchaseInMain main = this.purchaseInMainRepository.findOneByCode(code);
+		if (main == null)
+			show404();
+
+		model.addAttribute("main", main);
 		return "purchasein/edit";
 	}
 
@@ -85,7 +90,8 @@ public class PurchaseInController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		Page<PurchaseInSearchItem> result = purchaseInMainRepository.findBySearchTerm(code, vendor, request);
+		List<String> unitList = this.getDefaultUnitList();
+		Page<PurchaseInSearchItem> result = purchaseInMainRepository.findBySearchTerm(unitList, code, vendor, request);
 
 		return result;
 	}
