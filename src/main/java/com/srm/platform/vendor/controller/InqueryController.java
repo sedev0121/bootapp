@@ -1,14 +1,19 @@
 package com.srm.platform.vendor.controller;
 
+import java.math.BigInteger;
 import java.security.Principal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.persistence.Query;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,8 +39,8 @@ import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.InquerySearchResult;
 import com.srm.platform.vendor.utility.Utils;
-import com.srm.platform.vendor.utility.VenPriceAdjustSearchItem;
 import com.srm.platform.vendor.utility.VenPriceDetailItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
 
@@ -110,7 +115,7 @@ public class InqueryController extends CommonController {
 
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody Page<VenPriceAdjustSearchItem> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<InquerySearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "ccode");
@@ -143,20 +148,74 @@ public class InqueryController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		Page<VenPriceAdjustSearchItem> result = null;
+		String selectQuery = "select distinct a.*, c.code vendorcode, c.name vendorname, e.realname makername, f.realname verifiername ";
+		String countQuery = "select count(distinct a.ccode) ";
+		String orderBy = " order by " + order + " " + dir;
+
+		String bodyQuery = "from venpriceadjust_main a left join venpriceadjust_detail b on a.ccode = b.mainid "
+				+ "left join vendor c on a.cvencode=c.code left join inventory d on b.cinvcode=d.code "
+				+ "left join account e on a.maker_id=e.id left join account f on a.cverifier_id=f.id "
+				+ "where a.createtype= :createType ";
+
+		List<String> unitList = this.getDefaultUnitList();
+		Map<String, Object> params = new HashMap<>();
 
 		if (isVendor()) {
 			Vendor vendor = this.getLoginAccount().getVendor();
-			vendorStr = vendor == null ? "00" : vendor.getCode();
-			result = venPriceAdjustMainRepository.findInquerySearchTermForVendor(Constants.CREATE_TYPE_VENDOR,
-					vendorStr, inventory, request);
+			vendorStr = vendor == null ? "0" : vendor.getCode();
+			bodyQuery += " and c.code= :vendor";
+			params.put("vendor", vendorStr);
+			params.put("createType", Constants.CREATE_TYPE_VENDOR);
 		} else {
-			List<String> unitList = this.getDefaultUnitList();
-			result = venPriceAdjustMainRepository.findInquerySearchTermForBuyer(Constants.CREATE_TYPE_BUYER, unitList,
-					vendorStr, inventory, request);
+			bodyQuery += " and c.unit_id in :unitList";
+			params.put("unitList", unitList);
+			if (!vendorStr.trim().isEmpty()) {
+				bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";
+				params.put("vendor", vendorStr.trim());
+			}
+			params.put("createType", Constants.CREATE_TYPE_BUYER);
 		}
 
-		return result;
+		if (!inventory.trim().isEmpty()) {
+			bodyQuery += " and (d.name like CONCAT('%',:inventory, '%') or d.code like CONCAT('%',:inventory, '%')) ";
+			params.put("inventory", inventory.trim());
+		}
+
+		if (state > 0) {
+			bodyQuery += " and iverifystate=:state";
+			params.put("state", state);
+		}
+
+		if (startDate != null) {
+			bodyQuery += " and a.dstartdate>=:startDate";
+			params.put("startDate", startDate);
+		}
+		if (endDate != null) {
+			bodyQuery += " and a.denddate<:endDate";
+			params.put("endDate", endDate);
+		}
+
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+		logger.info("totalCount=" + totalCount);
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "InquerySearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		logger.info("size=" + list.size());
+		return new PageImpl<InquerySearchResult>(list, request, totalCount.longValue());
+
 	}
 
 	// 更新API

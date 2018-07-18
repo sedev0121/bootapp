@@ -12,12 +12,12 @@
     </ul>
     <div class="search-content">
         <div class="search-cell width-10 form-group">
-          <label for="start_date">生效时间: </label>
-          <input type="text" id="start_date" value="" class="form-control" />
+          <label for="start_date">生效日期: </label>
+          <input type="text" id="start_date" value="" class="form-control datepicker" />
         </div>
         <div class="search-cell width-10 form-group">
-          <label for="end_date">有效时间: </label>
-          <input type="text" id="end_date" value="" class="form-control" />
+          <label for="end_date">有效日期: </label>
+          <input type="text" id="end_date" value="" class="form-control datepicker" />
         </div>
         <div class="search-cell width-10 form-group" id="vendor_div">
           <label for="vendor">供应商编码/名称：</label>
@@ -67,9 +67,12 @@ var edit_url = [[@{/inquery/}]];
       data : App.getInqueryStateDataWithAll(),
       minimumResultsForSearch : -1
     });
-    $('#start_date').datepicker();
-    $('#end_date').datepicker();
 
+    $(".datepicker").datepicker({
+      onSelect: function(dateText) {
+        table.draw();
+      }
+    });
     var table = $('#example').DataTable({
       ordering : true,
       ajax : {
@@ -154,6 +157,8 @@ var edit_url = [[@{/inquery/}]];
       
     });
 
+    
+    
     $("#btn_search").click(function() {
       table.draw();
     });
