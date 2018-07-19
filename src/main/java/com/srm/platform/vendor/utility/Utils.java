@@ -49,6 +49,13 @@ public class Utils {
 		return cal.getTime();
 	}
 
+	public static Date getAlertDate(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DATE, 3);
+		return cal.getTime();
+	}
+
 	public static Date getNextDate(String dateStr) {
 		Date date = parseDate(dateStr);
 		if (date != null) {
