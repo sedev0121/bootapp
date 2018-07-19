@@ -21,7 +21,7 @@
     <div class="panel panel-default">
       <div class="panel-body"> 
         <div class="row">
-          <div class="content-form-page">
+          <div class="account">
             <fieldset>
               <legend>基本信息</legend>
               <div class="col-lg-2 col-md-2 form-group">
@@ -56,7 +56,7 @@
                   <option value="ROLE_ADMIN"  th:selected="(${account.role}=='ROLE_ADMIN')">管理员</option>
                 </select>
               </div>
-              <div class="col-lg-6 col-md-6 form-group">
+              <div class="col-lg-6 col-md-6 form-group" sec:authorize="hasRole('ROLE_VENDOR')">
                   <label for="vendor">供应商:</label>
                   <select id="vendor" name="vendor" class="form-control" readonly>
                     <option th:if="${account.vendor != null}" th:value="${account.vendor.code}" th:text="${account.vendor.name}" selected="selected"></option>
