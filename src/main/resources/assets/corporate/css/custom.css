@@ -89,6 +89,13 @@ span.error {
     min-height:605px;
 }
 
+@media (max-height: 900px) {
+    .main {
+        min-height:549px;
+    }
+}
+
+
 .btn {
     font-size: 12px;
     padding: 8px 12px;
