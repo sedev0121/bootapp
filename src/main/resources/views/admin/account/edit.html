@@ -58,7 +58,7 @@
                   <option value="ROLE_ADMIN"  th:selected="(${account.role}=='ROLE_ADMIN')">管理员</option>
                 </select>
               </div>
-              <div class="col-lg-6 col-md-6 form-group">
+              <div class="col-lg-6 col-md-6 form-group" id="vendor_div">
                   <label for="vendor">供应商:</label>
                   <select id="vendor" name="vendor" class="form-control">
                     <option th:if="${account.vendor != null}" th:value="${account.vendor.code}" th:text="${account.vendor.name}" selected="selected"></option>
@@ -149,10 +149,10 @@ jQuery(document).ready(function() {
     
     $('#role').change(function() {
       if ($('#role').val() == 'ROLE_VENDOR') {
-        $('#vendor').removeClass('hidden');
+        $('#vendor_div').removeClass('hidden');
         $('#vendor').prop('disabled', false);
       }else{
-        $('#vendor').addClass('hidden');
+        $('#vendor_div').addClass('hidden');
         $('#vendor').prop('disabled', true);
       }
     });
