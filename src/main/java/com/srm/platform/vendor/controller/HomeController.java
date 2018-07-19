@@ -1,6 +1,5 @@
 package com.srm.platform.vendor.controller;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,9 +8,6 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,29 +27,6 @@ public class HomeController {
 
 	@Autowired
 	private HttpSession httpSession;
-
-	@GetMapping({ "/", "" })
-	@PreAuthorize("hasRole('ROLE_BUYER') OR hasRole('ROLE_VENDOR') OR hasRole('ROLE_ADMIN')")
-	public String index(Authentication authentication) {
-		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-
-		String redirectUrl = "/buyer";
-
-		for (GrantedAuthority a : authorities) {
-			logger.info(a.getAuthority());
-			if (a.getAuthority().equals("ROLE_VENDOR")) {
-				redirectUrl = "/vendor";
-				break;
-			}
-			if (a.getAuthority().equals("ROLE_ADMIN")) {
-				redirectUrl = "/admin";
-				break;
-			}
-
-		}
-
-		return "index";
-	}
 
 	@GetMapping("/forbidden")
 	public String forbidden() {

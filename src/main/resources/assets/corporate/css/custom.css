@@ -298,3 +298,7 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
 .perm legend{
     margin-bottom:10px;
 }
+
+#dashboard .panel-body {
+    min-height: 165px;
+}

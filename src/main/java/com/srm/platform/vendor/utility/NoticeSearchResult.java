@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.utility;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class NoticeSearchResult implements Serializable {
 
@@ -12,13 +13,13 @@ public class NoticeSearchResult implements Serializable {
 
 	String content;
 
-	String create_date;
+	Date create_date;
 
 	String create_name;
 
 	String create_unitname;
 
-	public NoticeSearchResult(String id, String title, String content, String create_date, String create_name,
+	public NoticeSearchResult(String id, String title, String content, Date create_date, String create_name,
 			String create_unitname) {
 
 		this.id = id;
@@ -53,11 +54,11 @@ public class NoticeSearchResult implements Serializable {
 		this.content = content;
 	}
 
-	public String getCreate_date() {
+	public Date getCreate_date() {
 		return create_date;
 	}
 
-	public void setCreate_date(String create_date) {
+	public void setCreate_date(Date create_date) {
 		this.create_date = create_date;
 	}
 

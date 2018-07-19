@@ -13,13 +13,10 @@
               <div class="panel panel-default">
                 <div class="panel-heading">
                   <label>公告通知</label>
-                  <div class="pull-right"><a href="#">更多></a></div>
+                  <div class="pull-right"><a th:href="@{/notice}">更多></a></div>
                 </div>
-                <div class="panel-body">
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
+                <div class="panel-body" >
+                  <p th:each="notice : ${noticeList}"><span th:text="|${#dates.format(notice.create_date, 'yyyy-MM-dd HH:mm:ss')} |">aaa</span><a class="active" th:href="@{|/notice/${notice.id}/edit|}" th:text="${notice.title}">2018-6-11 9:29:09 采购管理平台</a></p>
                 </div>
               </div>
             </div>
@@ -30,6 +27,7 @@
                     <div class="pull-right"><a href="#">更多></a></div>
                 </div>
                 <div class="panel-body">
+                  <p>2018-6-11 9:29:09 采购管理平台</p>
                   <p>2018-6-11 9:29:09 采购管理平台</p>
                   <p>2018-6-11 9:29:09 采购管理平台</p>
                   <p>2018-6-11 9:29:09 采购管理平台</p>

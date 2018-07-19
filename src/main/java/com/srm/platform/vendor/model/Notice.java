@@ -23,7 +23,7 @@ import com.srm.platform.vendor.utility.NoticeSearchResult;
 		@ConstructorResult(targetClass = NoticeSearchResult.class, columns = {
 				@ColumnResult(name = "id", type = String.class), @ColumnResult(name = "title", type = String.class),
 				@ColumnResult(name = "content", type = String.class),
-				@ColumnResult(name = "create_date", type = String.class),
+				@ColumnResult(name = "create_date", type = Date.class),
 				@ColumnResult(name = "create_name", type = String.class),
 				@ColumnResult(name = "create_unitname", type = String.class) }) })
 
