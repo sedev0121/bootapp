@@ -7,6 +7,18 @@ body {
     background-color:#fff !important
 }
 
+.select2 {
+    width:100%!important;
+}
+
+.select2-container--default .select2-selection--single {
+    border: 1px solid #ccc;
+}
+
+.datepicker {
+  padding:6px 12px;
+}
+
 .account legend {
     border: none; 
     font-size: 18px;
