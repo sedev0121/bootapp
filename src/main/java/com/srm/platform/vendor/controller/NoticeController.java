@@ -173,6 +173,7 @@ public class NoticeController extends CommonController {
 
 		notice.setTitle(title);
 		notice.setContent(content);
+		notice.setCreateDate(new Date());
 
 		notice.setUnit(this.getLoginAccount().getUnit());
 		notice.setAccount(this.getLoginAccount());

@@ -75,7 +75,7 @@ public class MessageController extends CommonController {
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM message where 1=1 ";
+		String bodyQuery = "FROM message a where 1=1 ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -159,6 +159,7 @@ public class MessageController extends CommonController {
 
 		message.setTitle(title);
 		message.setContent(content);
+		message.setCreateDate(new Date());
 
 		message = messageRepository.save(message);
 

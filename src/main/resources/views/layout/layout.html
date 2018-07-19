@@ -134,7 +134,9 @@
             <li th:classappend="${#strings.startsWith(#request.requestURI,'/vendor')} ? active : ''" >
               <a th:href="@{/vendor}">供应商管理</a>
             </li>
-            
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/message')} ? active : ''" >
+              <a th:href="@{/message}">系统消息</a>
+            </li>
           </ul>
         </div>
 
