@@ -295,7 +295,7 @@ is_readonly = 0;
       }
     }).on( 'preOpen', function ( e, mode, action ) {
       edit_mode = mode;
-      if ($("#vendor").val() == "") {
+      if (!$("#vendor").val()) {
         $('#vendor').focus();
         App.showErrorDialog("请选择供应商！");
         return false;

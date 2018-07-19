@@ -420,7 +420,7 @@ $(document).ready(function() {
             text: "取出入库单", 
             action: function( e, dt, node, config) {
               
-              if ($("#vendor").val() == undefined) {
+              if (!$("#vendor").val()) {
                 $('#vendor').focus();
                 App.showErrorDialog("请选择供应商！");
                 return false;
@@ -434,7 +434,7 @@ $(document).ready(function() {
           { 
             text: "增加扣款项", 
             action: function( e, dt, node, config) {
-              if ($("#vendor").val() == undefined) {
+              if (!$("#vendor").val()) {
                 $('#vendor').focus();
                 App.showErrorDialog("请选择供应商！");
                 return false;
@@ -461,9 +461,12 @@ $(document).ready(function() {
                   purchase_in_detail_id:0,
                   inventorycode:null,
                   inventoryname:"扣款",
+                  unitname:null,
                   irate:null,
                   number:null,
                   price:null,
+                  taxprice:null,
+                  taxcost:null,
                   purchase_in_code:null,
                   purchase_in_date:null,
                   quantity:null,
@@ -586,9 +589,9 @@ $(document).ready(function() {
         $.each(data_list, function(key, item){
           item.dstartdate = $.fn.date_renderer(item.dstartdate);
           item.denddate = $.fn.date_renderer(item.denddate);
-          total_quantity += parseFloat(item.closed_quantity);
-          total_money += parseFloat(item.closed_money);
-          total_tax_money += parseFloat(item.closed_tax_money);
+          total_quantity += parseFloat(item.closed_quantity||0);
+          total_money += parseFloat(item.closed_money||0);
+          total_tax_money += parseFloat(item.closed_tax_money||0);
         });
         $('#total_quantity').val(total_quantity);
         $('#total_money').val(total_money);
