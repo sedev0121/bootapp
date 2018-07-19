@@ -23,16 +23,16 @@
     <div class="panel panel-default">
       <div class="panel-body form-body"> 
         <div class="row">
-          <div class="col-lg-10 col-md-10">
+          <div class="col-lg-10 col-md-10 form-group">
             <label for="title">标题: </label>
             <input type="text" name="title" id="title" class="form-control" th:value="${message.title}">
           </div>
-          <div class="col-lg-2 col-md-2">
+          <div class="col-lg-2 col-md-2 form-group">
             <label for="date">发布日期: </label>
             <input type="text" name="date" id="date" class="form-control" readonly th:value="${#dates.format(message.createDate, 'yyyy-MM-dd HH:mm:ss')}">
           </div>
 
-          <div class="col-lg-12 col-md-12">
+          <div class="col-lg-12 col-md-12 form-group">
             <label for="content">内容: </label>
             <textarea name="content" id="content" class="form-control" rows=10 th:text="${message.content}"></textarea>
           </div>

@@ -7,6 +7,13 @@ body {
     background-color:#fff !important
 }
 
+.account legend {
+    border: none; 
+    font-size: 18px;
+    padding-top: 20px; 
+    margin-bottom: 10px;
+    color: #3E4D5C;
+}
 
 .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
     /* padding: 6px; */    
