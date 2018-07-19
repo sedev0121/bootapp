@@ -26,29 +26,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.srm.platform.vendor.model.Notice;
-import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.repository.NoticeRepository;
-import com.srm.platform.vendor.utility.NoticeSearchResult;
+import com.srm.platform.vendor.model.Message;
+import com.srm.platform.vendor.repository.MessageRepository;
+import com.srm.platform.vendor.utility.MessageSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
-@RequestMapping(path = "/notice")
-public class NoticeController extends CommonController {
+@RequestMapping(path = "/message")
+public class MessageController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
-	private NoticeRepository noticeRepository;
+	private MessageRepository messageRepository;
 
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
 	public String index(Model model) {
-		return "notice/list";
+		return "message/list";
 	}
 
 	// 用户管理->列表
 	@GetMapping("/list")
-	public @ResponseBody Page<NoticeSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<MessageSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "deploydate");
@@ -72,23 +71,13 @@ public class NoticeController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT a.*, b.realname create_name, c.name create_unitname ";
+		String selectQuery = "SELECT *";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id where 1=1 ";
+		String bodyQuery = "FROM message where 1=1 ";
 
-		List<String> unitList = this.getDefaultUnitList();
 		Map<String, Object> params = new HashMap<>();
-
-		if (isVendor()) {
-			Vendor vendor = this.getLoginAccount().getVendor();
-			String vendorStr = vendor == null ? "0" : vendor.getCode();
-
-		} else {
-			// bodyQuery += " and c.unit_id in :unitList";
-			// params.put("unitList", unitList);
-		}
 
 		if (!search.trim().isEmpty()) {
 			bodyQuery += " and (a.title like CONCAT('%',:search, '%') or a.content like CONCAT('%',:search, '%')) ";
@@ -114,72 +103,66 @@ public class NoticeController extends CommonController {
 		BigInteger totalCount = (BigInteger) q.getSingleResult();
 
 		selectQuery += bodyQuery + orderBy;
-		q = em.createNativeQuery(selectQuery, "NoticeSearchResult");
+		q = em.createNativeQuery(selectQuery, "MessageSearchResult");
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			q.setParameter(entry.getKey(), entry.getValue());
 		}
 
 		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
 
-		return new PageImpl<NoticeSearchResult>(list, request, totalCount.longValue());
+		return new PageImpl<MessageSearchResult>(list, request, totalCount.longValue());
 	}
 
 	// 用户管理->修改
 	@GetMapping("/{id}/edit")
 	public String edit(@PathVariable("id") Long id, Model model) {
-		Notice notice = noticeRepository.findOneById(id);
-		if (notice == null)
+		Message message = messageRepository.findOneById(id);
+		if (message == null)
 			show404();
 
-		model.addAttribute("notice", notice);
-		return "notice/edit";
+		model.addAttribute("message", message);
+		return "message/edit";
 	}
 
 	// 用户管理->新建
 	@GetMapping("/add")
-	@PreAuthorize("hasAuthority('ROLE_BUYER')")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public String add(Model model) {
-		Notice notice = new Notice();
-		notice.setUnit(this.getLoginAccount().getUnit());
-		notice.setAccount(this.getLoginAccount());
-		model.addAttribute("notice", notice);
-		return "notice/edit";
+		model.addAttribute("message", new Message());
+		return "message/edit";
 	}
 
 	// 用户管理->删除
 	@GetMapping("/{id}/delete")
-	@PreAuthorize("hasAuthority('ROLE_BUYER')")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public @ResponseBody Boolean delete(@PathVariable("id") Long id, Model model) {
-		Notice notice = noticeRepository.findOneById(id);
-		noticeRepository.delete(notice);
+		Message message = messageRepository.findOneById(id);
+		messageRepository.delete(message);
 		return true;
 	}
 
 	// 用户修改
 	@Transactional
 	@PostMapping("/update")
-	@PreAuthorize("hasAuthority('ROLE_BUYER')")
-	public @ResponseBody Notice update_ajax(@RequestParam Map<String, String> requestParams) {
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public @ResponseBody Message update_ajax(@RequestParam Map<String, String> requestParams) {
 		String id = requestParams.get("id");
 		String title = requestParams.get("title");
 		String content = requestParams.get("content");
 
-		Notice notice = new Notice();
+		Message message = new Message();
 
 		if (id != null && !id.isEmpty()) {
-			notice = noticeRepository.findOneById(Long.parseLong(id));
+			message = messageRepository.findOneById(Long.parseLong(id));
 
 		}
 
-		notice.setTitle(title);
-		notice.setContent(content);
+		message.setTitle(title);
+		message.setContent(content);
 
-		notice.setUnit(this.getLoginAccount().getUnit());
-		notice.setAccount(this.getLoginAccount());
+		message = messageRepository.save(message);
 
-		notice = noticeRepository.save(notice);
-
-		return notice;
+		return message;
 	}
 
 }

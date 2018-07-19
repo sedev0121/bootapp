@@ -8,40 +8,33 @@
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li><a th:href="@{/notice}">公告通知</a></li>
+      <li><a th:href="@{/message}">系统消息</a></li>
       <li class="active">详细</li>
     </ul>
     <div class="btn-group-bar">
       <div class="text-right">
-          <a class="btn btn-primary" id="save" sec:authorize="hasRole('ROLE_BUYER')"><i class="fa fa-save"></i> 保存</a>
-          <a class="btn btn-danger" id="del" th:if="${notice.id}" sec:authorize="hasRole('ROLE_BUYER')"><i class="fa fa-remove"></i> 删除</a>
-          <a class="btn btn-default" th:href="@{/notice}"><i class="fa fa-arrow-left"></i> 返回</a>
+          <a class="btn btn-primary" id="save" sec:authorize="hasAuthority('ROLE_ADMIN')"><i class="fa fa-save"></i> 保存</a>
+          <a class="btn btn-danger" id="del" th:if="${message.id}" sec:authorize="hasAuthority('ROLE_ADMIN')"><i class="fa fa-remove"></i> 删除</a>
+          <a class="btn btn-default" th:href="@{/message}"><i class="fa fa-arrow-left"></i> 返回</a>
       </div>
     </div>
-    <form id="form" th:action="@{/notice/update}" method="post">  
-    <input type="hidden" id="id" name="id" th:value="${notice.id}">
+    <form id="form" th:action="@{/message/update}" method="post">  
+    <input type="hidden" id="id" name="id" th:value="${message.id}">
     <div class="panel panel-default">
       <div class="panel-body form-body"> 
         <div class="row">
-          <div class="col-lg-6 col-md-6">
+          <div class="col-lg-10 col-md-10">
             <label for="title">标题: </label>
-            <input type="text" name="title" id="title" class="form-control" th:value="${notice.title}">
+            <input type="text" name="title" id="title" class="form-control" th:value="${message.title}">
           </div>
           <div class="col-lg-2 col-md-2">
-            <label for="title">发布组织: </label>
-            <input type="text" class="form-control" readonly th:value="${notice.unit.name}">
+            <label for="date">发布日期: </label>
+            <input type="text" name="date" id="date" class="form-control" readonly th:value="${#dates.format(message.createDate, 'yyyy-MM-dd HH:mm:ss')}">
           </div>
-          <div class="col-lg-2 col-md-2">
-            <label for="title">发布人: </label>
-            <input type="text" class="form-control" readonly th:value="${notice.account.realname}">
-          </div>
-          <div class="col-lg-2 col-md-2">
-            <label for="title">发布日期: </label>
-            <input type="text" class="form-control" readonly th:value="${#dates.format(notice.createDate, 'yyyy-MM-dd HH:mm:ss')}">
-          </div>                    
+
           <div class="col-lg-12 col-md-12">
             <label for="content">内容: </label>
-            <textarea name="content" id="content" class="form-control" rows=10 th:text="${notice.content}"></textarea>
+            <textarea name="content" id="content" class="form-control" rows=10 th:text="${message.content}"></textarea>
           </div>
         </div>
       </div>
@@ -51,19 +44,20 @@
     </div>
 </body>
 </html>
-<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
-is_vendor = 1;
+
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_ADMIN')">
+is_admin = 1;
 </script>
 
 <script th:inline="javascript">
-var edit_url = /*[[@{/notice/}]]*/'';
+var edit_url = /*[[@{/message/}]]*/'';
 
 
 jQuery(document).ready(function() {   
 
-    if (is_vendor){
-      $('#title').attr("readonly", true);
-      $("#content").attr("readonly", true);
+    if (!is_admin){
+      $('input').attr("readonly", true);
+      $('#content').attr("readonly", true);
     }
     
     var is_add = $("#id").val().length==0;

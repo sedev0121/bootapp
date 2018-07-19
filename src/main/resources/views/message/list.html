@@ -7,14 +7,14 @@
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li class="active">公告通知</li>
+      <li class="active">系统消息</li>
     </ul>
     <div class="search-content form-inline">
         <div class="search-cell width-18">
           <label for="supplier_code">标题/内容：</label>
           <input type="text" id="search" class="form-control">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-          <a class="btn btn-primary" th:href="@{/notice/add}" sec:authorize="hasRole('ROLE_BUYER')"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+          <a class="btn btn-primary" th:href="@{/message/add}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
     </div>
     <div class="row">
@@ -31,7 +31,7 @@ $(document).ready(function() {
     var table = $('#example').DataTable({
       ordering: true,
       ajax : {
-        url : /*[[@{/notice/list}]]*/'',
+        url : /*[[@{/message/list}]]*/'',
         data : function(data) {
           var filter = {
             rows_per_page : data.length,
@@ -48,12 +48,12 @@ $(document).ready(function() {
           return json.content;
         },
       },
-      order: [ [2, 'desc'] ],
+      order: [ [1, 'desc'] ],
       columns : [ {
         data : 'title',
         title : '标题',
         render: function (data, display, record) {
-          var edit_url = /*[[@{/notice/}]]*/'';
+          var edit_url = /*[[@{/message/}]]*/'';
           edit_url +=  record.id + '/edit';
           return '<a href="' + edit_url + '">' + data  + '</a>';
         },
@@ -61,12 +61,6 @@ $(document).ready(function() {
           data : 'create_date',
           title : '发布日期',
           render : $.fn.date_renderer
-      }, {
-          data : 'create_unitname',
-          title : '发布组织',
-      }, {    	  
-        data : 'create_name',
-        title : '发布人',
       } ],
     });
 

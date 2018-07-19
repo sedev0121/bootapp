@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import com.srm.platform.vendor.model.Vendor;
+import com.srm.platform.vendor.utility.MessageSearchResult;
 import com.srm.platform.vendor.utility.NoticeSearchResult;
 import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchResult;
 import com.srm.platform.vendor.utility.Utils;
@@ -41,9 +42,11 @@ public class DashboardController extends CommonController {
 	public String index(Model model) {
 		List<NoticeSearchResult> noticeList = getLastNotice();
 		List<PurchaseOrderDetailSearchResult> alertList = getLastAlert();
+		List<MessageSearchResult> messageList = getLastMessage();
 
 		model.addAttribute("noticeList", noticeList);
 		model.addAttribute("alertList", alertList);
+		model.addAttribute("messageList", messageList);
 		return "index";
 	}
 
@@ -75,6 +78,23 @@ public class DashboardController extends CommonController {
 	}
 
 	@SuppressWarnings("unchecked")
+	private List<MessageSearchResult> getLastMessage() {
+		String selectQuery = "SELECT * FROM message where 1=1 ";
+
+		String orderBy = " order by create_date desc ";
+
+		Map<String, Object> params = new HashMap<>();
+
+		selectQuery += orderBy;
+		Query q = em.createNativeQuery(selectQuery, "MessageSearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		return q.setFirstResult(0).setMaxResults(5).getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
 	private List<PurchaseOrderDetailSearchResult> getLastAlert() {
 		String selectQuery = "select a.*, d.code vendorcode, (a.quantity-ifnull(a.shipped_quantity,0)) remain_quantity, d.name vendorname, c.name inventoryname, c.specs, e.name unitname "
 				+ "from purchase_order_detail a left join purchase_order_main b on a.code = b.code "
@@ -89,8 +109,11 @@ public class DashboardController extends CommonController {
 		if (isVendor()) {
 			Vendor vendor = this.getLoginAccount().getVendor();
 			String vendorStr = vendor == null ? "0" : vendor.getCode();
+			selectQuery += " and d.code= :vendor";
+			params.put("vendor", vendorStr);
 		} else {
-
+			selectQuery += " and d.unit_id in :unitList";
+			params.put("unitList", unitList);
 		}
 
 		selectQuery += " and a.confirmdate<:confirmdate";
