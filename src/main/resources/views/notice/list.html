@@ -7,14 +7,14 @@
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li class="active">用户管理</li>
+      <li class="active">公告</li>
     </ul>
     <div class="search-content form-inline">
         <div class="search-cell width-18">
-          <label for="supplier_code">用户名/真实姓名/所属部门/职位/邮箱：</label>
+          <label for="supplier_code">标题/内容：</label>
           <input type="text" id="search" class="form-control">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-          <a class="btn btn-primary" th:href="@{/account/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+          <a class="btn btn-primary" th:href="@{/notice/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
     </div>
     <div class="row">
@@ -28,11 +28,10 @@
 </html>
 <script th:inline="javascript">
 $(document).ready(function() {
-
     var table = $('#example').DataTable({
       ordering: true,
       ajax : {
-        url : /*[[@{/account/list}]]*/'',
+        url : /*[[@{/notice/list}]]*/'',
         data : function(data) {
           var filter = {
             rows_per_page : data.length,
@@ -49,48 +48,28 @@ $(document).ready(function() {
           return json.content;
         },
       },
-      order: [ [0, 'asc'] ],
+      order: [ [2, 'desc'] ],
       columns : [ {
-        data : 'username',
-        title : '用户名',
+        data : 'title',
+        title : '标题',
         render: function (data, display, record) {
-          var edit_url = /*[[@{/account/}]]*/'';
+          var edit_url = /*[[@{/notice/}]]*/'';
           edit_url +=  record.id + '/edit';
           return '<a href="' + edit_url + '">' + data  + '</a>';
         },
       }, {
-        data : 'realname',
-        title : '真实姓名',
+        data : 'content',
+        title : '内容',
       }, {
-          data : 'unit_id',
-          render: function (data, display, record) {
-            return record.unit.name;
-          },
-          title : '所属部门',
+          data : 'create_date',
+          title : '公告日期',
+          render : $.fn.date_renderer
       }, {
-          data : 'duty',
-          title : '职位',
+          data : 'create_unitname',
+          title : '公告组织',
       }, {    	  
-        data : 'role',
-        title : '角色',
-        render: function (data, display, record) {
-          return record.rolename;
-        },
-      }, {
-        data : 'vendor',
-        title : '供应商',
-        render: function (data, display, record) {
-          return record.vendor==null?'':record.vendor.name;
-        },
-      }, {
-        data : 'email',
-        title : '邮箱',
-      }, {
-        data : 'tel',
-        title : '电话',
-      }, {
-          data : 'mobile',
-          title : '手机',
+        data : 'create_name',
+        title : '公告人',
       } ],
     });
 

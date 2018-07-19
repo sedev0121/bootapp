@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
+ 
+<body>
+  <div class="container" layout:fragment="content">
+    <ul class="breadcrumb">
+      <li>
+        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+      </li>
+      <li><a th:href="@{/notice}">公告</a></li>
+      <li class="active">详细</li>
+    </ul>
+    <div class="btn-group-bar">
+      <div class="text-right margin-right-20">
+          <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
+          <a class="btn btn-danger" id="del"><i class="fa fa-remove"></i> 删除</a>
+          <a class="btn btn-default" th:href="@{/notice}"><i class="fa fa-arrow-left"></i> 返回</a>
+      </div>
+    </div>
+    <form id="form" th:action="@{/notice/update}" method="post">  
+    <input type="hidden" id="id" name="id" th:value="${notice.id}">
+    <div class="panel panel-default">
+      <div class="panel-body form-body"> 
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <label for="title">标题: </label>
+            <input type="text" name="title" id="title" class="form-control" th:value="${notice.title}">
+          </div>
+
+          <div class="col-lg-12 col-md-12">
+            <label for="content">内容: </label>
+            <textarea name="content" id="content" class="form-control" rows=5 th:text="${notice.content}"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    </form>
+    
+    </div>
+</body>
+</html>
+
+
+<script th:inline="javascript">
+var edit_url = /*[[@{/notice/}]]*/'';
+
+
+jQuery(document).ready(function() {   
+
+    
+    
+    var is_add = $("#id").val().length==0;
+    $("#form" ).validate({
+        // define validation rules
+        rules: {
+        	title: {
+                required: true
+            }, 
+            content: {
+                required: true
+            },
+        },
+        
+        //display error alert on form submit  
+        invalidHandler: function(event, validator) {
+          App.showErrorDialog("输入有误", "请输入正确的值");
+        },
+  
+        submitHandler: function (form) {
+            jQuery(form).ajaxSubmit({
+                success: function(res, status, xhr, form) {
+                  App.showSuccessDialog("操作成功", function(){
+                      window.location.href = edit_url + res.id + "/edit";
+                  });
+                },
+                error: function (res, status, xhr, form) {
+                  App.showErrorDialog("操作失败", "请输入正确的值");
+                }
+            });
+        }
+      }); 
+    
+    $("#save").click(function() {
+        $("#form").submit();            
+    });
+    
+    $("#del").click(function(){
+      App.showConfirmDialog('确定要删除吗?', function(){
+        var del_url = edit_url + $("#id").val() + "/delete";  
+        $.get(del_url, function(data, status){
+          App.showSuccessDialog("操作成功", function() {
+            window.location.href = edit_url;
+          });
+        });
+      });
+    });
+
+    
+
+});
+
+
+</script>
+
