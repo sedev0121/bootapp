@@ -9,12 +9,12 @@
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
       <li><a th:href="@{/account}">用户管理</a></li>
-      <li class="active">用户详细</li>
+      <li class="active" th:text="${account.id}?'用户详细':'新建用户'"></li>
     </ul>
     <div class="btn-group-bar">
       <div class="text-right">
           <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
-          <a class="btn btn-danger" id="del"><i class="fa fa-remove"></i> 删除</a>
+          <a class="btn btn-danger" id="del" th:if="${account.id}"><i class="fa fa-remove"></i> 删除</a>
           <a class="btn btn-default" th:href="@{/account}"><i class="fa fa-arrow-left"></i> 返回</a>
       </div>
     </div>
@@ -69,15 +69,18 @@
               <legend>账号状态</legend>
               <div class="col-lg-2 col-md-2 form-group">
                 <label for="state">状态: </label>
-                <input type="checkbox" name="public">
+                <div class="ui toggle checkbox">
+                  <input type="checkbox" name="state" value="1" th:checked="${account.state}">
+                  <label>启用  /  停用</label>
+                </div>
               </div>
               <div class="col-lg-2 col-md-2 form-group">
                 <label for="start_date">启用日期: </label>
-                <input type="text" class="form-control" readonly th:value="${#dates.format(account.entryTime, 'yyyy-MM-dd')}">
+                <input type="text" class="form-control" readonly th:value="${#dates.format(account.startDate, 'yyyy-MM-dd')}">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
                   <label for="stop_date">停用日期:</label>
-                  <input type="text" class="form-control" readonly th:value="${#dates.format(account.entryTime, 'yyyy-MM-dd')}">
+                  <input type="text" class="form-control" readonly th:value="${#dates.format(account.stopDate, 'yyyy-MM-dd')}">
             </fieldset>            
             <fieldset>
               <legend>联系信息</legend>

@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.Date;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -123,6 +124,7 @@ public class AccountController extends CommonController {
 		String role = requestParams.get("role");
 		String duty = requestParams.get("duty");
 		String vendorCode = requestParams.get("vendor");
+		String state = requestParams.get("state");
 
 		Account account;
 		if (id != null && !id.isEmpty()) {
@@ -145,6 +147,14 @@ public class AccountController extends CommonController {
 		account.setRole(role);
 		account.setDuty(duty);
 		account.setUnit(unitRepository.findOneById(Long.parseLong(unit)));
+
+		if (state != null) {
+			account.setState(1);
+			account.setStartDate(new Date());
+		} else {
+			account.setState(0);
+			account.setStopDate(new Date());
+		}
 
 		if (vendorCode != null && !vendorCode.isEmpty())
 			account.setVendor(vendorRepository.findOneByCode(vendorCode));

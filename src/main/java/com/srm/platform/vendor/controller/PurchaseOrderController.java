@@ -133,7 +133,7 @@ public class PurchaseOrderController extends CommonController {
 			bodyQuery += " and a.srmstate>0 ";
 
 		} else {
-			bodyQuery += " and c.unit_id in :unitList";
+			bodyQuery += " and b.unit_id in :unitList";
 			params.put("unitList", unitList);
 			if (!vendorStr.trim().isEmpty()) {
 				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";

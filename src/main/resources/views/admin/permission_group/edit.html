@@ -8,12 +8,12 @@
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
       <li><a th:href="@{/permission_group}">权限组管理</a></li>
-      <li class="active">权限组详细</li>
+      <li class="active" th:text="${permission_group.id}?'权限组详细':'新建权限组'">权限组详细</li>
     </ul>
     <div class="btn-group-bar">
       <div class="text-right">
           <a id="save" class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
-          <a id="del" class="btn btn-danger"><i class="fa fa-remove"></i> 删除</a>
+          <a id="del" class="btn btn-danger" th:if="${permission_group.id}"><i class="fa fa-remove"></i> 删除</a>
           <a class="btn btn-default" th:href="@{/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
       </div>
     </div>

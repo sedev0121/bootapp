@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.model;
 
 import java.time.Instant;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +34,7 @@ public class Account {
 
 	private String address;
 	@Column(name = "entry_time")
-	private Instant entryTime;
+	private Date entryTime;
 
 	@JoinColumn(name = "unit_id")
 	@ManyToOne()
@@ -53,6 +54,14 @@ public class Account {
 	private String mobile;
 	@Column(name = "modify_time")
 	private Instant modifyTime;
+
+	private Integer state = 1;
+
+	@Column(name = "start_date")
+	private Date startDate = new Date();
+
+	@Column(name = "stop_date")
+	private Date stopDate;
 
 	public String getDuty() {
 		return duty;
@@ -181,11 +190,11 @@ public class Account {
 		this.realname = realname;
 	}
 
-	public Instant getEntryTime() {
+	public Date getEntryTime() {
 		return entryTime;
 	}
 
-	public void setEntryTime(Instant entryTime) {
+	public void setEntryTime(Date entryTime) {
 		this.entryTime = entryTime;
 	}
 
@@ -228,6 +237,30 @@ public class Account {
 		default:
 			return "";
 		}
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getStopDate() {
+		return stopDate;
+	}
+
+	public void setStopDate(Date stopDate) {
+		this.stopDate = stopDate;
 	}
 
 }

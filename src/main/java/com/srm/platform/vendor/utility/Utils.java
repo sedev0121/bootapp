@@ -39,6 +39,7 @@ public class Utils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		return date;
 	}
 
@@ -74,7 +75,8 @@ public class Utils {
 	public static String generateId() {
 		String id = "";
 
-		id = getDateFormat().format(new Date());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		id = dateFormat.format(new Date());
 
 		int rand = (int) (Math.random() * 1000);
 		id += String.format("%03d", rand);

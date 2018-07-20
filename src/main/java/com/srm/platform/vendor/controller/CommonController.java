@@ -72,7 +72,9 @@ public class CommonController {
 	public void checkVendor(Vendor vendor) {
 		List<String> unitList = getDefaultUnitList();
 
-		if (!isAdmin() && (vendor.getUnit() == null || !unitList.contains(String.valueOf(vendor.getUnit().getId())))) {
+		logger.info(vendor.getCode() + " " + this.getLoginAccount().getVendor().getCode());
+		if ((isVendor() && !vendor.getCode().equals(this.getLoginAccount().getVendor().getCode())) || (!isVendor()
+				&& (vendor.getUnit() == null || !unitList.contains(String.valueOf(vendor.getUnit().getId()))))) {
 			show403();
 		}
 	}

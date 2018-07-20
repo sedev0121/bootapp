@@ -9,7 +9,7 @@
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
       <li><a th:href="@{/notice}">公告通知</a></li>
-      <li class="active">详细</li>
+      <li class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建公告通知':'公告通知详细'"></li>
     </ul>
     <div class="btn-group-bar">
       <div class="text-right">

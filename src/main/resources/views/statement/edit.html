@@ -8,7 +8,7 @@
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
       <li><a th:href="@{/statement}" class="active">对账单管理</a></li>
-      <li class="active">对账单详细</li>
+      <li class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建对账单':'对账单详细'"></li>
     </ul>       
     <div class="btn-group-bar">
         <div class="text-right">
@@ -16,7 +16,7 @@
           <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.state==1  or main.state==4}" id="submit"><i class="fa fa-share"></i> 发布</a>
           <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-审核/退回')" th:if="${main.state==3}" id="review"><i class="fa fa-arrow-up"></i> 审核</a>
           <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-审核/退回')" th:if="${main.state==3}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-删除')" th:if="${main.state==1  or main.state==4}" id="delete"><i class="fa fa-remove"></i> 删除</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-删除')" th:if="${!#strings.contains(#request.requestURI,'add') and (main.state==1  or main.state==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
 
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==2}" id="verify"><i class="fa fa-check-square"></i> 确认</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>

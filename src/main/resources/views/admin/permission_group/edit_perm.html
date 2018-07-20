@@ -73,6 +73,9 @@
 var url = /*[[@{/unit/}]]*/'';
 var tree_url = /*[[@{/unit/tree}]]*/'';
 $(function () {
+  
+  Layout.initUniform();
+  
     $("#save").click(function() {
     	jQuery(form).ajaxSubmit({
             success: function(res, status, xhr, form) {
