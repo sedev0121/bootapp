@@ -178,43 +178,43 @@ jQuery(document).ready(function() {
     
     var is_add = $("#id").val().length==0;
     $("#form" ).validate({
-        // define validation rules
-        rules: {
-        	realname: {
-                required: true
-            }, 
-            duty: {
-                required: true
-            },
-            username: {
-                required: true
-            },    
-            unit_name: {
-            	required: true
-            },
-            role: {
-                required: true
-            },    
-        },
-        
-        //display error alert on form submit  
-        invalidHandler: function(event, validator) {
-          App.showErrorDialog("输入有误", "请输入正确的值");
-        },
-  
-        submitHandler: function (form) {
-            jQuery(form).ajaxSubmit({
-                success: function(res, status, xhr, form) {
-                  App.showSuccessDialog("操作成功", function(){
-                      window.location.href = edit_url + res.id + "/edit";
-                  });
-                },
-                error: function (res, status, xhr, form) {
-                  App.showErrorDialog("操作失败", "请输入正确的值");
-                }
-            });
-        }
-      }); 
+      // define validation rules
+      rules: {
+          realname: {
+              required: true
+          }, 
+          duty: {
+              required: true
+          },
+          username: {
+              required: true
+          },    
+          unit_name: {
+              required: true
+          },
+          role: {
+              required: true
+          },    
+      },
+      
+      //display error alert on form submit  
+      invalidHandler: function(event, validator) {
+        App.showErrorDialog("输入有误", "请输入正确的值");
+      },
+
+      submitHandler: function (form) {
+          jQuery(form).ajaxSubmit({
+              success: function(res, status, xhr, form) {
+                App.showSuccessDialog("操作成功", function(){
+                    window.location.href = edit_url + res.id + "/edit";
+                });
+              },
+              error: function (res, status, xhr, form) {
+                App.showErrorDialog("操作失败", "请输入正确的值");
+              }
+          });
+      }
+    }); 
     
     $("#save").click(function() {
         $("#form").submit();            

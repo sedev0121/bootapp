@@ -72,7 +72,6 @@ public class CommonController {
 	public void checkVendor(Vendor vendor) {
 		List<String> unitList = getDefaultUnitList();
 
-		logger.info(vendor.getCode() + " " + this.getLoginAccount().getVendor().getCode());
 		if ((isVendor() && !vendor.getCode().equals(this.getLoginAccount().getVendor().getCode())) || (!isVendor()
 				&& (vendor.getUnit() == null || !unitList.contains(String.valueOf(vendor.getUnit().getId()))))) {
 			show403();
