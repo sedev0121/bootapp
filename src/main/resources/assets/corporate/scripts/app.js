@@ -260,7 +260,7 @@ var App = function() {
         "type": "error"
       })
     },
-    showConfirmDialog: function(title, callback) {
+    showConfirmDialog: function(title, ok_callback,cancel_callback) {
       swal({
         title: title,
         type: 'warning',
@@ -269,7 +269,11 @@ var App = function() {
         cancelButtonText: '否'
       }).then((result) => {
         if (result.value) {
-          callback();
+          if (ok_callback)
+            ok_callback();
+        }else{
+          if (cancel_callback)
+            cancel_callback();
         }
       })
     },

@@ -32,4 +32,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	@Query(value = "SELECT * FROM account where vendor_code=?1", nativeQuery = true)
 	List<Account> findAccountsByVendor(String vendorCode);
+
+	@Query(value = "SELECT * FROM account where unit_id in ?1", nativeQuery = true)
+	List<Account> findAccountsByUnitIdList(List<String> unitIdList);
 }

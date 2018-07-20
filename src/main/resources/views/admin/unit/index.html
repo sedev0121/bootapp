@@ -33,12 +33,7 @@ var url = /*[[@{/unit/}]]*/'';
         jQuery("#tree_3").jstree({
           core:{
             check_callback: function (operation, node, node_parent, node_position, more) {
-            	console.log(operation);
-            	if (operation == 'delete_node') {
-            		return confirm("确定要删除吗?"); 
-            	}else{
-            		return true;
-            	}            	
+      	
             },
             data: function (node, cb) {
             	$.ajax({
@@ -89,12 +84,22 @@ var url = /*[[@{/unit/}]]*/'';
               data.instance.refresh();
             });
         }).on('delete_node.jstree', function (e, data) {
-        	$.get(url + data.node.id + "/delete").done(function (d) {
-        	    
+          App.showConfirmDialog('确定要删除吗?', function(){
+            $.get(url + data.node.id + "/delete").done(function (d) {
+              if (d.success == 1){
+                App.showSuccessDialog("操作成功！");
+              }else{
+                App.showErrorDialog(d.errmsg);
+              }
+              $("#tree_3").jstree("refresh");
             })
             .fail(function () {
-              data.instance.refresh();
+              $("#tree_3").jstree("refresh");
+              App.showErrorDialog("操作失败！");
             });  
+          }, function(){
+            $("#tree_3").jstree("refresh");
+          });        	
         });
         
         $(document).bind("dnd_start.vakata", function(e, data) {
