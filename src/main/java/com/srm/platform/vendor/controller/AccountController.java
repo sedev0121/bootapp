@@ -1,11 +1,15 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -20,11 +24,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.PermissionGroup;
+import com.srm.platform.vendor.model.PermissionGroupUser;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.PermissionGroupRepository;
+import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.service.AccountService;
+import com.srm.platform.vendor.utility.AccountSaveForm;
 import com.srm.platform.vendor.utility.AccountSearchItem;
 
 @Controller
@@ -35,6 +46,11 @@ public class AccountController extends CommonController {
 
 	@Autowired
 	private AccountRepository accountRepository;
+
+	@Autowired
+	private PermissionGroupRepository permissionGroupRepository;
+	@Autowired
+	private PermissionGroupUserRepository permissionGroupUserRepository;
 
 	@Autowired
 	private VendorRepository vendorRepository;
@@ -84,7 +100,27 @@ public class AccountController extends CommonController {
 		if (account == null)
 			show404();
 
+		PermissionGroupUser temp = new PermissionGroupUser();
+		temp.setAccountId(account.getId());
+
+		Example<PermissionGroupUser> example = Example.of(temp);
+		List<PermissionGroupUser> resultList = permissionGroupUserRepository.findAll(example);
+
+		List<PermissionGroup> groupList = new ArrayList<>();
+		for (PermissionGroupUser group : resultList) {
+			groupList.add(permissionGroupRepository.findOneById(group.getGroupId()));
+		}
+
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonGroupString = "";
+		try {
+			jsonGroupString = mapper.writeValueAsString(groupList);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		model.addAttribute("account", account);
+		model.addAttribute("groupList", jsonGroupString);
 		return "admin/account/edit";
 	}
 
@@ -106,49 +142,30 @@ public class AccountController extends CommonController {
 	// 用户修改
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody Account update_ajax(@RequestParam Map<String, String> requestParams) {
-		String id = requestParams.get("id");
-		String username = requestParams.get("username");
-		String realname = requestParams.get("realname");
-		String skype = requestParams.get("skype");
-		String qq = requestParams.get("qq");
-		String unit = requestParams.get("unit");
-		String yahoo = requestParams.get("yahoo");
-		String wangwang = requestParams.get("wangwang");
-		String mobile = requestParams.get("mobile");
-		String tel = requestParams.get("tel");
-		String address = requestParams.get("address");
-		String gtalk = requestParams.get("gtalk");
-		String email = requestParams.get("email");
-		String password = requestParams.get("password");
-		String role = requestParams.get("role");
-		String duty = requestParams.get("duty");
-		String vendorCode = requestParams.get("vendor");
-		String state = requestParams.get("state");
+	public @ResponseBody Account update_ajax(AccountSaveForm accountSaveForm) {
 
-		Account account;
-		if (id != null && !id.isEmpty()) {
-			account = accountRepository.findOneById(Long.parseLong(id));
-		} else {
-			account = new Account();
+		Account account = new Account();
+		if (accountSaveForm.getId() != null) {
+			account = accountRepository.findOneById(accountSaveForm.getId());
+
 		}
 
-		account.setUsername(username);
-		account.setRealname(realname);
-		account.setSkype(skype);
-		account.setQq(qq);
-		account.setYahoo(yahoo);
-		account.setWangwang(wangwang);
-		account.setMobile(mobile);
-		account.setTel(tel);
-		account.setAddress(address);
-		account.setGtalk(gtalk);
-		account.setEmail(email);
-		account.setRole(role);
-		account.setDuty(duty);
-		account.setUnit(unitRepository.findOneById(Long.parseLong(unit)));
+		account.setUsername(accountSaveForm.getUsername());
+		account.setRealname(accountSaveForm.getRealname());
+		account.setSkype(accountSaveForm.getSkype());
+		account.setQq(accountSaveForm.getQq());
+		account.setYahoo(accountSaveForm.getYahoo());
+		account.setWangwang(accountSaveForm.getWangwang());
+		account.setMobile(accountSaveForm.getMobile());
+		account.setTel(accountSaveForm.getTel());
+		account.setAddress(accountSaveForm.getAddress());
+		account.setGtalk(accountSaveForm.getGtalk());
+		account.setEmail(accountSaveForm.getEmail());
+		account.setRole(accountSaveForm.getRole());
+		account.setDuty(accountSaveForm.getDuty());
+		account.setUnit(unitRepository.findOneById(accountSaveForm.getUnit()));
 
-		if (state != null) {
+		if (accountSaveForm.getState() != null) {
 			account.setState(1);
 			account.setStartDate(new Date());
 		} else {
@@ -156,16 +173,28 @@ public class AccountController extends CommonController {
 			account.setStopDate(new Date());
 		}
 
-		if (vendorCode != null && !vendorCode.isEmpty())
-			account.setVendor(vendorRepository.findOneByCode(vendorCode));
+		if (accountSaveForm.getVendor() != null && !accountSaveForm.getVendor().isEmpty())
+			account.setVendor(vendorRepository.findOneByCode(accountSaveForm.getVendor()));
 		else
 			account.setVendor(null);
 
-		if (password != null) {
-			account.setPassword(password);
-			account = accountService.save(account);
-		} else {
-			account = accountRepository.save(account);
+		account = accountRepository.save(account);
+
+		permissionGroupUserRepository.deleteByAccountId(account.getId());
+
+		List<Long> permissionList = accountSaveForm.getPermission();
+		for (Long id : permissionList) {
+			PermissionGroupUser temp = new PermissionGroupUser();
+			temp.setAccountId(account.getId());
+			temp.setGroupId(id);
+
+			Example<PermissionGroupUser> example = Example.of(temp);
+			Optional<PermissionGroupUser> result = permissionGroupUserRepository.findOne(example);
+			if (result.isPresent()) {
+				temp = result.get();
+			}
+
+			permissionGroupUserRepository.save(temp);
 		}
 
 		return account;

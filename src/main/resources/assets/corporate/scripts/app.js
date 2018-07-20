@@ -122,7 +122,14 @@ var App = function() {
     getSelect2Options: function(search_url) {
       return $.extend(true, {ajax:{url:search_url}}, select2_default_options);
     },
-  
+    getSelect2TagOptions: function(search_url) {
+      return $.extend(true, {
+        maximumSelectionLength: 5,
+        ajax:{
+          url:search_url
+        },  
+      }, select2_default_options);
+    }, 
     getInqueryStateData: function() {
       return inquery_state_data;
     },

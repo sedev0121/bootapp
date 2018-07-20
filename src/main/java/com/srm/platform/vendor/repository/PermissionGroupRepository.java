@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.utility.AccountSearchItem;
 import com.srm.platform.vendor.utility.PermissionItem;
+import com.srm.platform.vendor.utility.SearchItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
@@ -21,7 +22,7 @@ public interface PermissionGroupRepository extends JpaRepository<PermissionGroup
 
 	PermissionGroup findOneByName(String name);
 
-	@Query(value = "select distinct b.id, b.realname, b.username from permission_group_user a left join account b on a.account_id = b.id where a.group_id=:group_id", nativeQuery = true)
+	@Query(value = "select distinct b.id, b.realname, b.username from permission_group_user a left join account b on a.account_id = b.id where b.id is not null and a.group_id=:group_id", nativeQuery = true)
 	List<AccountSearchItem> findAccountsInGroupById(@Param("group_id") Long id);
 
 	@Query(value = "SELECT * FROM permission_group t WHERE "
@@ -30,4 +31,7 @@ public interface PermissionGroupRepository extends JpaRepository<PermissionGroup
 
 	@Query(value = "select c.name function, d.name action from permission_group_function_action a left join function_action b on a.function_action_id=b.id left join function c on b.function_id=c.id left join action d on b.action_id=d.id left join permission_group e on a.group_id=e.id LEFT JOIN permission_group_user f on e.id=f.group_id left join account g on f.account_id=g.id where g.id=:account_id", nativeQuery = true)
 	List<PermissionItem> findPermissionForAccount(Long account_id);
+
+	@Query(value = "SELECT id code, name FROM permission_group WHERE name LIKE %?1%", countQuery = "SELECT count(*) FROM permission_group WHERE name LIKE %?1%", nativeQuery = true)
+	Page<SearchItem> findForSelect(String search, Pageable pageable);
 }

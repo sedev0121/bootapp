@@ -27,6 +27,10 @@ body {
     color: #3E4D5C;
 }
 
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    border-radius: 2px; 
+}
+
 .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
     /* padding: 6px; */    
 }

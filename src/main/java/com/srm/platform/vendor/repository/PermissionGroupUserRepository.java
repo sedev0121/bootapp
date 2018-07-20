@@ -21,4 +21,9 @@ public interface PermissionGroupUserRepository extends JpaRepository<PermissionG
 	@Query(value = "delete from permission_group_user where group_id=:groupId", nativeQuery = true)
 	void deleteByGroupId(Long groupId);
 
+	@Transactional
+	@Modifying(clearAutomatically = true)
+	@Query(value = "delete from permission_group_user where account_id=?1", nativeQuery = true)
+	void deleteByAccountId(Long accountId);
+
 }
