@@ -128,6 +128,7 @@ public class AccountController extends CommonController {
 	@GetMapping("/add")
 	public String add(Model model) {
 		model.addAttribute("account", new Account());
+		model.addAttribute("groupList", "[]");
 		return "admin/account/edit";
 	}
 
