@@ -218,6 +218,10 @@ is_vendor = 1;
         },
 
         columns : [ {
+          data : 'rowno',
+          className: 'dt-center',
+          title : '行号',
+        }, {          
           data : 'cinvcode',
           title : '商品编码',
         }, {
@@ -283,7 +287,7 @@ is_vendor = 1;
       table.on( 'click', 'tbody td.edit-cell', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
-      App.addKeyDownEditor(editor, 6, 8);
+      App.addKeyDownEditor(editor, 7, 9);
     }
 
     

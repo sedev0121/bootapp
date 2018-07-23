@@ -238,7 +238,7 @@ is_readonly = 0;
     
     editor = new $.fn.dataTable.Editor( {
       table: "#example",  
-      idSrc: "id",
+      idSrc: "rowno",
       //template: '#customForm',
       fields: [ {
           label: "最小数量:",
@@ -373,6 +373,13 @@ is_readonly = 0;
       $.each(table_data, function(key, item){    
         
       })
+    }).on( 'postRemove', function (e, json, data, action) {
+      var table_data = table.rows().data().toArray();
+      var id = 1;
+      $.each(table_data, function(key, item){    
+        item.rowno = id++; 
+      })
+      table.rows().invalidate();
             
     });
     
@@ -398,7 +405,7 @@ is_readonly = 0;
           { 
             text: "复制行", 
             action: function( e, dt, node, config) {
-              
+              copyRow();
             } 
           },
           { extend: "remove", editor: editor }
@@ -406,7 +413,9 @@ is_readonly = 0;
         ajax : {
           url : detail_url,
           dataSrc : function(json) {
+            var id = 1;
             $.each(json, function(key, item){
+              item.rowno = id++;
               item.dstartdate = $.fn.date_renderer(item.dstartdate);
               item.denddate = $.fn.date_renderer(item.denddate);
             });
@@ -415,6 +424,10 @@ is_readonly = 0;
         },
 
         columns : [ {
+          data : 'rowno',
+          className: 'dt-center',
+          title : '行号',
+        }, {
           data : 'cinvcode',
           title : '商品编码',
         }, {
@@ -472,7 +485,7 @@ is_readonly = 0;
         rowCallback: function ( row, data ) {
             // Set the checked state of the checkbox in the table
             $('input.editor-valid', row).prop( 'checked', data.ivalid == 1 );
-        }
+        },
       };
     
     if (state != 1 || is_readonly) {
@@ -499,13 +512,13 @@ is_readonly = 0;
           table.on( 'click', 'td.unitprice, td.taxunitprice', function (e) {
             editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
           } );
-          App.addKeyDownEditor(editor, 6, 11);
+          App.addKeyDownEditor(editor, 7, 13);
         }else{
           table.off( 'click', 'td.unitprice, td.taxunitprice');
           table.on( 'click', 'td.minquantity, td.maxquantity', function (e) {
             editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
           } );
-          App.addKeyDownEditor(editor, 4, 11);
+          App.addKeyDownEditor(editor, 5, 13);
         }
       }
     }
@@ -558,7 +571,15 @@ is_readonly = 0;
       $('#btn_search').trigger('click');
     });
     
-    
+    function copyRow(){
+      var selected_data = table.rows('.selected').data().toArray();
+      if (selected_data.length>0){
+        var newRow = $.extend(true, {}, selected_data[0]);
+        newRow.rowno = table.rows().data().toArray().length + 1;
+        table.row.add(newRow);
+        table.draw(); 
+      }
+    }
     
     $("#btn_search").click(function() {
       import_table.draw();
@@ -588,7 +609,7 @@ is_readonly = 0;
         
         if (available) {
           var temp = {};
-          temp.id = App.generatePaperCode();
+          temp.rowno = table.rows().data().toArray().length + 1;
           temp.cbodymemo = null;
           temp.cinvcode = item.code;
           temp.denddate = $('#end_date').val();

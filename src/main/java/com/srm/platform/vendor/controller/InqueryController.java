@@ -297,6 +297,9 @@ public class InqueryController extends CommonController {
 				if (endDateStr != null && !endDateStr.isEmpty())
 					detail.setDenddate(Utils.getNextDate(endDateStr));
 
+				if (row.get("rowno") != null && !row.get("rowno").isEmpty())
+					detail.setRowno(Integer.parseInt(row.get("rowno")));
+
 				if (row.get("itaxrate") != null && !row.get("itaxrate").isEmpty())
 					detail.setItaxrate(Float.parseFloat(row.get("itaxrate")));
 				if (row.get("itaxunitprice") != null && !row.get("itaxunitprice").isEmpty())
