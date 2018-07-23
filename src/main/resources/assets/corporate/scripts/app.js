@@ -186,7 +186,9 @@ var App = function() {
     getPurchaseInBredvouchOfId: function(id) {
       return getLabelOfId(purchase_in_bredvouch_data, id);
     },
-
+    getInqueryTypeOfId: function(id) {
+      return getLabelOfId(inquery_type, id);
+    },
     getInqueryTypeData: function() {
       return inquery_type;
     },

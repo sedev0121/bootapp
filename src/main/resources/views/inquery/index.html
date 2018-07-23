@@ -109,6 +109,11 @@ var edit_url = [[@{/inquery/}]];
           return '<a href="' + url + '">' + data + '</a>';
         },
       }, {
+        data : 'type',
+        className: 'dt-center',
+        render:App.getInqueryTypeOfId,
+        title : '报价类型',
+      }, {
         data : 'vendorname',
         visible:!is_vendor,
         title : '供应商名称',
