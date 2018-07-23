@@ -29,7 +29,8 @@ import com.srm.platform.vendor.utility.PurchaseOrderSearchResult;
 				@ColumnResult(name = "maker", type = String.class), @ColumnResult(name = "makedate", type = Date.class),
 				@ColumnResult(name = "sum", type = Float.class), @ColumnResult(name = "money", type = Float.class),
 				@ColumnResult(name = "srmstate", type = Integer.class),
-				@ColumnResult(name = "purchase_type_name", type = String.class) }) })
+				@ColumnResult(name = "purchase_type_name", type = String.class),
+				@ColumnResult(name = "prepaymoney", type = Float.class) }) })
 
 @Table(name = "purchase_order_main")
 public class PurchaseOrderMain {
