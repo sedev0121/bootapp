@@ -497,19 +497,28 @@ is_readonly = 0;
 
 
     table.on( 'select', function ( e, dt, type, indexes ) {
-      var selected_data = table.rows('.selected').data().toArray();
-      if (selected_data.length>0){
-        table.button(1).enable();
+      if ($('#type').val() == 2) {
+        var selected_data = table.rows('.selected').data().toArray();
+        if (selected_data.length>0){
+          table.button(1).enable();
+        }else{
+          table.button(1).disable();
+        }
       }else{
         table.button(1).disable();
-      }
+      }        
+      
     }).on( 'deselect', function ( e, dt, type, indexes ) {
-      var selected_data = table.rows('.selected').data().toArray();
-      if (selected_data.length>0){
-        table.button(1).disable();
+      if ($('#type').val() == 2) {
+        var selected_data = table.rows('.selected').data().toArray();
+        if (selected_data.length>0){
+          table.button(1).enable();
+        }else{
+          table.button(1).disable();
+        }
       }else{
         table.button(1).disable();
-      }
+      }   
     });
     
     if (state == 3) {
