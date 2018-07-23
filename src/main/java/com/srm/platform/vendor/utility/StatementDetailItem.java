@@ -11,6 +11,8 @@ public interface StatementDetailItem {
 
 	Float getClosed_quantity();
 
+	Float getRemain_quantity();
+
 	Float getClosed_price();
 
 	Float getClosed_money();

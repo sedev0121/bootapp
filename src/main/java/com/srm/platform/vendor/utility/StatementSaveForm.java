@@ -18,6 +18,8 @@ public class StatementSaveForm {
 	private Long verifier;
 	private Date verify_date;
 
+	private Float tax_rate;
+
 	private List<Map<String, String>> table;
 
 	public String getCode() {
@@ -34,6 +36,22 @@ public class StatementSaveForm {
 
 	public void setVendor(String vendor) {
 		this.vendor = vendor;
+	}
+
+	public Float getTax_rate() {
+		return tax_rate;
+	}
+
+	public void setTax_rate(Float tax_rate) {
+		this.tax_rate = tax_rate;
+	}
+
+	public void setMake_date(Date make_date) {
+		this.make_date = make_date;
+	}
+
+	public void setVerify_date(Date verify_date) {
+		this.verify_date = verify_date;
 	}
 
 	public String getInvoice_code() {

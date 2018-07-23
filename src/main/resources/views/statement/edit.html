@@ -71,7 +71,7 @@
 
                 <div class="col-lg-3 col-md-3">
                   <label for="invoice_code">税率: </label>
-                  <input type="number" id="tax_rate" value="1" class="form-control" readonly/>
+                  <input type="number" id="tax_rate" name="tax_rate" th:value="${main.taxRate}" class="form-control"/>
                 </div>                
                 <div class="col-lg-3 col-md-3">
                   <label for="invoice_code">数量合计: </label>
@@ -86,7 +86,7 @@
                   <input type="number" id="total_tax_money" value="1" class="form-control" readonly/>
                 </div>      
                 <div class="col-lg-6 col-md-6">
-                  <label for="remark">订单摘要: </label>
+                  <label for="remark">摘要: </label>
                   <input type="text" id="remark" name="remark" th:value="${main.remark}" class="form-control" />
                 </div>                
                 <div class="col-lg-6 col-md-6">
@@ -355,6 +355,12 @@ $(document).ready(function() {
       attr: {
         type: "number",
       },
+      id: "taxrate",
+      name: "taxrate"            
+    },{
+      attr: {
+        type: "number",
+      },
       id: "closed_quantity",
       name: "closed_quantity"            
     },{
@@ -394,18 +400,110 @@ $(document).ready(function() {
         },
     }
   }).on( 'preSubmit', function ( e, data, action ) {
-    $.each(data.data, function(key, item){    
-      if (item.closed_quantity <0 )
-        item.closed_quantity = -item.closed_quantity;
-      if (item.closed_price <0 )
-        item.closed_price = -item.closed_price;
-      if (item.closed_money <0 )
-        item.closed_money = -item.closed_money;
-      if (item.closed_tax_price <0 )
-        item.closed_tax_price = -item.closed_tax_price;
-      if (item.closed_money <0 )
-        item.closed_tax_money = -item.closed_tax_money;
-    })    
+    if ( action == 'remove') {
+      return true;
+    }
+    
+    var currentFieldName = e.currentTarget.s.includeFields[0];
+    
+    var editingField = editor.field(currentFieldName);
+    if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val())<=0) {
+      editingField.input().addClass('error');
+      return false;
+    }else{
+      editingField.input().removeClass('error');
+    }
+
+    if (currentFieldName == 'taxrate') {
+      $.each(data.data, function(key, item){  
+        if (item.closed_price != undefined && item.taxrate != undefined) {
+          item.closed_price =parseFloat(item.closed_price).toFixed(2); 
+          value = (Number.parseFloat(item.taxrate) + 100) * item.closed_price/100;
+          item.closed_tax_price =value?parseFloat(value).toFixed(2):'';   
+        }
+        if (item.closed_price != undefined && item.closed_quantity != undefined) {
+          value = item.closed_price * item.closed_quantity;
+          item.closed_money =value?parseFloat(value).toFixed(2):'';   
+        }
+        if (item.closed_tax_price != undefined && item.closed_quantity != undefined) {
+          value = item.closed_tax_price * item.closed_quantity 
+          item.closed_tax_money =value?parseFloat(value).toFixed(2):'';
+        }
+      });
+    }
+    
+    if (currentFieldName == 'closed_price') {
+      $.each(data.data, function(key, item){  
+        if (item.closed_price != undefined && item.closed_quantity != undefined) {
+          item.closed_price =parseFloat(item.closed_price).toFixed(2); 
+          value = item.closed_price * item.closed_quantity;
+          item.closed_money =value?parseFloat(value).toFixed(2):'';   
+        }
+        if (item.closed_price != undefined && item.taxrate != undefined) {
+          value = (Number.parseFloat(item.taxrate) + 100) * item.closed_price/100;
+          item.closed_tax_price =value?parseFloat(value).toFixed(2):'';   
+        }
+        if (item.closed_tax_price != undefined && item.closed_quantity != undefined) {
+          value = item.closed_tax_price * item.closed_quantity 
+          item.closed_tax_money =value?parseFloat(value).toFixed(2):'';
+        }
+      });
+    }
+
+    if (currentFieldName == 'closed_money') {
+      $.each(data.data, function(key, item){  
+        if (item.closed_money != undefined && item.closed_quantity != undefined) {
+          item.closed_money =parseFloat(item.closed_money).toFixed(2); 
+          value = item.closed_money / item.closed_quantity;
+          item.closed_price =value?parseFloat(value).toFixed(2):'';   
+        }
+        if (item.closed_price != undefined && item.taxrate != undefined) {
+          value = (Number.parseFloat(item.taxrate) + 100) * item.closed_price/100;
+          item.closed_tax_price =value?parseFloat(value).toFixed(2):'';   
+        }
+        if (item.closed_tax_price != undefined && item.closed_quantity != undefined) {
+          value = item.closed_tax_price * item.closed_quantity 
+          item.closed_tax_money =value?parseFloat(value).toFixed(2):'';
+        }
+      });
+    }
+
+    if (currentFieldName == 'closed_tax_price') {
+      $.each(data.data, function(key, item){  
+        if (item.closed_tax_price != undefined && item.closed_quantity != undefined) {
+          item.closed_tax_price =parseFloat(item.closed_tax_price).toFixed(2); 
+          value = item.closed_tax_price * item.closed_quantity;
+          item.closed_tax_money =value?parseFloat(value).toFixed(2):'';   
+        }
+        if (item.closed_tax_price != undefined && item.taxrate != undefined) {
+          value = item.closed_tax_price*100/(Number.parseFloat(item.taxrate) + 100);    
+          item.closed_price =value?parseFloat(value).toFixed(2):'';   
+        }
+        if (item.closed_price != undefined && item.closed_quantity != undefined) {
+          value = item.closed_price * item.closed_quantity;
+          item.closed_money =value?parseFloat(value).toFixed(2):'';   
+        }
+      });
+    }
+
+    if (currentFieldName == 'closed_tax_money') {
+      $.each(data.data, function(key, item){  
+        if (item.closed_tax_money != undefined && item.closed_quantity != undefined) {
+          item.closed_tax_money =parseFloat(item.closed_tax_money).toFixed(2); 
+          value = item.closed_tax_money / item.closed_quantity;
+          item.closed_tax_price =value?parseFloat(value).toFixed(2):'';   
+        }
+        if (item.closed_tax_price != undefined && item.taxrate != undefined) {
+          value = item.closed_tax_price*100/(Number.parseFloat(item.taxrate) + 100);    
+          item.closed_price =value?parseFloat(value).toFixed(2):'';  
+        }
+        if (item.closed_price != undefined && item.closed_quantity != undefined) {
+          value = item.closed_price * item.closed_quantity;
+          item.closed_money =value?parseFloat(value).toFixed(2):'';   
+        }
+      });
+    }
+
   });
     
   
@@ -453,16 +551,16 @@ $(document).ready(function() {
                   assitantunitname:null,
                   closed_money:'',
                   closed_price:'',
-                  closed_quantity:'',
+                  closed_quantity:1,
                   closed_tax_money:'',
                   closed_tax_price:'',
                   cmassunitname:null,
                   cost:null,
                   purchase_in_detail_id:0,
                   inventorycode:null,
-                  inventoryname:"扣款",
+                  inventoryname:"扣款",                  
                   unitname:null,
-                  irate:null,
+                  taxrate:$('#tax_rate').val(),
                   number:null,
                   price:null,
                   taxprice:null,
@@ -524,11 +622,11 @@ $(document).ready(function() {
       }, {
         data : 'price',
         className:'dt-right',
-        title : '单价',
+        title : '未税单价',
       }, {
         data : 'cost',
         className:'dt-right',
-        title : '金额',
+        title : '未税金额',
       }, {
         data : 'taxprice',
         className:'dt-right',
@@ -542,23 +640,18 @@ $(document).ready(function() {
         className:'dt-right',
         title : '件数',
       }, {
-        data : null,
+        data : 'quantity',
         title : '未对账数量',
         className:'dt-right',
         render:function(data, type, record) {
           if (record.purchase_in_detail_id ==0)
             return '';
-          
-          var closed_quantity = 0, quantity=0;
-          if (record.close_quantity)
-            closed_quantity = parseFloat(record.closed_quantity);
-          if (record.quantity)
-            quantity = parseFloat(record.quantity);
-          return quantity - closed_quantity;
+          else
+            return data;
         }
       }, {
         data : 'closed_quantity',
-        className: 'edit-cell dt-right',
+        className: 'dt-right',
         title : '对账数量',
       }, {
         data : 'closed_price',
@@ -568,6 +661,10 @@ $(document).ready(function() {
         data : 'closed_money',
         className: 'edit-cell dt-right',
         title : '结算未税金额',
+      }, {
+        data : 'taxrate',
+        className:' edit-cell dt-right',
+        title : '税率',
       }, {
         data : 'closed_tax_price',
         className: 'edit-cell dt-right',
@@ -579,7 +676,7 @@ $(document).ready(function() {
 
       } ],
       columnDefs: [ {
-        "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+        "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
         "orderable": false
       } ],
       order: [  [ 0, "asc" ], [3, "asc"] ],
@@ -594,8 +691,13 @@ $(document).ready(function() {
           total_tax_money += parseFloat(item.closed_tax_money||0);
         });
         $('#total_quantity').val(total_quantity);
-        $('#total_money').val(total_money);
-        $('#total_tax_money').val(total_tax_money);
+        $('#total_money').val(total_money.toFixed(2));
+        $('#total_tax_money').val(total_tax_money.toFixed(2));
+        if (data_list.length > 0)
+          $('#vendor').attr("readonly", true);
+        else
+          $('#vendor').attr("readonly", false);
+
       }
     };
   
@@ -610,66 +712,7 @@ $(document).ready(function() {
     basic_table.on( 'click', 'tbody td.edit-cell', function (e) {
       editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
     } );
-    App.addKeyDownEditor(editor, 11, 15);
-    var filed_name_list = ['closed_quantity', 'closed_price', 'closed_tax_price', 'closed_money', 'closed_tax_money'];
-    for(i=0; i<filed_name_list.length; i++){
-      $(editor.field(filed_name_list[i]).input()).on('keydown', function (e, d) {
-        if ( editor ) {
-          var tax_rate = $('#tax_rate').val();
-          if (!tax_rate)
-            tax_rate = 1;
-          
-          var closed_quantity = editor.field('closed_quantity');
-          var closed_price = editor.field('closed_price');
-          var closed_tax_price = editor.field('closed_tax_price');
-          var closed_money = editor.field('closed_money');
-          var closed_tax_money = editor.field('closed_tax_money');
-          
-          if (this.id=='closed_quantity') {
-            if (closed_quantity.val() != undefined) {
-              if (closed_price.val() != undefined) {
-                closed_money.val(parseFloat(closed_price.val() * closed_quantity.val()).toFixed(2));
-              }
-              if (closed_tax_price.val() != undefined) {
-                closed_tax_money.val(parseFloat(closed_tax_price.val() * closed_quantity.val()).toFixed(2));
-              }
-            }
-          }else if (this.id=='closed_price') {
-            if (closed_price.val() != undefined) {
-              closed_tax_price.val(((parseFloat(tax_rate) + 100) * closed_price.val()/100).toFixed(2));  
-              if (closed_quantity.val() != undefined) {
-                closed_money.val((closed_price.val() * closed_quantity.val()).toFixed(2));
-                closed_tax_money.val((closed_tax_price.val() * closed_quantity.val()).toFixed(2));
-              }
-            }
-          }else if (this.id=='closed_tax_price') {
-            if (closed_tax_price.val() != undefined) {
-              closed_price.val((closed_tax_price.val()*100/(parseFloat(tax_rate) + 100)).toFixed(2));
-              if (closed_quantity.val() != undefined) {
-                closed_money.val((closed_price.val() * closed_quantity.val()).toFixed(2));
-                closed_tax_money.val((closed_tax_price.val() * closed_quantity.val()).toFixed(2));
-              }
-            }
-          }else if (this.id=='closed_money') {
-            if (closed_money.val() != undefined) {
-              if (closed_quantity.val() != undefined) {
-                closed_price.val((closed_money.val()/closed_quantity.val()).toFixed(2));
-                closed_tax_price.val(((parseFloat(tax_rate) + 100) * closed_price.val()/100).toFixed(2));  
-                closed_tax_money.val((closed_tax_price.val() * closed_quantity.val()).toFixed(2));
-              }
-            }            
-          }else if (this.id=='closed_tax_money') {
-            if (closed_tax_money.val() != undefined) {
-              if (closed_quantity.val() != undefined) {
-                closed_tax_price.val((closed_tax_money.val()/closed_quantity.val()).toFixed(2));
-                closed_price.val((closed_tax_price.val()*100/(parseFloat(tax_rate) + 100)).toFixed(2));
-                closed_money.val((closed_price.val() * closed_quantity.val()).toFixed(2));
-              }
-            }
-          }
-        }
-      });
-    }
+    App.addKeyDownEditor(editor, 12, 16);    
   }
 
   
@@ -678,8 +721,11 @@ $(document).ready(function() {
     // define validation rules
     rules: {
         vendor: {
-            required: true
+          required: true
         }, 
+        tax_rate: {
+          required: true,
+        },
         invoice_code: {
           required: state==5
         }, 
@@ -737,17 +783,15 @@ $(document).ready(function() {
         
         item.closed_tax_money = item.cost;
         item.closed_tax_price = item.price;
-        item.taxprice = item.price;
-        item.taxcost = item.cost;
-        item.taxrate = 1;
+        item.taxrate = $('#tax_rate').val();
+        if (item.taxrate == undefined || item.taxrate == ''){
+          item.taxrate = 17;
+        }
+        item.taxprice = item.price * (100 + parseFloat(item.taxrate)) /100 ;
+        item.taxcost = item.cost * (100 + parseFloat(item.taxrate)) /100 ;
+
         
-        var closed_quantity = 0, quantity=0;
-        if (item.close_quantity)
-          closed_quantity = parseFloat(item.closed_quantity);
-        if (item.quantity)
-          quantity = parseFloat(item.quantity);
-        
-        item.closed_quantity = quantity;
+        item.closed_quantity = item.quantity;
         basic_table.row.add(item);  
       }
     })

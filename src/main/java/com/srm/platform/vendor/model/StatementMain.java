@@ -54,6 +54,9 @@ public class StatementMain {
 	@Column(name = "invoice_code")
 	private String invoiceCode;
 
+	@Column(name = "tax_rate")
+	private Float taxRate = 17F;
+
 	private String remark;
 	private Integer state;
 
@@ -79,6 +82,14 @@ public class StatementMain {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Float getTaxRate() {
+		return taxRate;
+	}
+
+	public void setTaxRate(Float taxRate) {
+		this.taxRate = taxRate;
 	}
 
 	public Date getMakedate() {

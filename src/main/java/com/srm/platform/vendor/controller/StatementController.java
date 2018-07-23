@@ -223,6 +223,7 @@ public class StatementController extends CommonController {
 			main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
 			main.setMaker(accountRepository.findOneById(form.getMaker()));
 			main.setRemark(form.getRemark());
+			main.setTaxRate(form.getTax_rate());
 		} else if (form.getState() >= Constants.STATEMENT_STATE_CONFIRM) {
 
 			main.setVerifier(this.getLoginAccount());
@@ -249,6 +250,7 @@ public class StatementController extends CommonController {
 				String closedMoney = row.get("closed_money");
 				String closedTaxPrice = row.get("closed_tax_price");
 				String closedTaxMoney = row.get("closed_tax_money");
+				String taxRate = row.get("taxrate");
 
 				if (closedQuantity != null && !closedQuantity.isEmpty())
 					detail.setClosedQuantity(Float.parseFloat(closedQuantity));
@@ -264,6 +266,9 @@ public class StatementController extends CommonController {
 
 				if (closedTaxMoney != null && !closedTaxMoney.isEmpty())
 					detail.setClosedTaxMoney(Float.parseFloat(closedTaxMoney));
+
+				if (taxRate != null && !taxRate.isEmpty())
+					detail.setTaxRate(Float.parseFloat(taxRate));
 
 				statementDetailRepository.save(detail);
 			}
