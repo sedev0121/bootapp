@@ -19,6 +19,45 @@ body {
   padding:6px 12px;
 }
 
+
+input[type=file]:focus, input[type=checkbox]:focus, input[type=radio]:focus {
+    outline: thin dotted;
+    outline: 0px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+
+input[type=number]::-webkit-inner-spin-button { 
+    -webkit-appearance: none;
+    cursor:pointer;
+    display:block;
+    width:0px;
+    color: #333;
+    text-align:center;
+    position:relative;
+}
+
+input[type=number] {
+    text-align:right;
+}
+
+input[type=number]::-webkit-inner-spin-button:before,
+input[type=number]::-webkit-inner-spin-button:after {
+    content: "^";
+    position:absolute;
+    right: 0;
+    font-family:monospace;
+    line-height:
+}
+
+input[type=number]::-webkit-inner-spin-button:before {
+    top:0px;
+}
+
+input[type=number]::-webkit-inner-spin-button:after {
+    bottom:0px;
+    -webkit-transform: rotate(180deg);
+}
+
 .account legend {
     border: none; 
     font-size: 18px;

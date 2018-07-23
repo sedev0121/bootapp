@@ -261,7 +261,7 @@ public class InqueryController extends CommonController {
 		venPriceAdjustMain.setIverifystate(form.getState());
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 
-		if (form.getState() <= Constants.STATE_SUBMIT && form.getTable() != null) {
+		if (form.getState() <= Constants.STATE_PASS && form.getTable() != null) {
 			venPriceAdjustDetailRepository
 					.deleteInBatch(venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode()));
 
@@ -271,6 +271,11 @@ public class InqueryController extends CommonController {
 				detail.setInventory(inventoryRepository.findByCode(row.get("cinvcode")));
 				detail.setCbodymemo(row.get("cbodymemo"));
 				detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
+				if (row.get("ivalid") != null && !row.get("ivalid").isEmpty()) {
+					detail.setIvalid(Integer.parseInt(row.get("ivalid")));
+				} else {
+					detail.setIvalid(0);
+				}
 				String max = row.get("fmaxquantity");
 				String min = row.get("fminquantity");
 				if (max != null && !max.isEmpty())

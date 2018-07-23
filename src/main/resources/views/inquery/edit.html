@@ -264,6 +264,7 @@ is_readonly = 0;
           options:   [
               { label: '', value: 1 }
           ],
+          id: "ivalid",
           name: "ivalid"                
         },{
           label: "备注:",
@@ -300,7 +301,7 @@ is_readonly = 0;
         App.showErrorDialog("请选择供应商！");
         return false;
       }
-      
+
       this.field('dstartdate').input().datepicker("option", "minDate", $('#start_date').datepicker("getDate"));
       this.field('denddate').input().datepicker("option", "minDate", $('#start_date').datepicker("getDate"));
       
@@ -450,14 +451,9 @@ is_readonly = 0;
         }, {
           data : 'ivalid',
           title : '是否有效',
-          className: 'ivalid dt-center' + ((state==3)?'edit-cell':''),
-          visible: state>2,
-          render: function ( data, type, row ) {
-              if ( type === 'display' ) {
-                  return '<input type="checkbox" value="1" class="editor-valid" readonly disabled>';
-              }
-              return data;
-          },
+          className: 'ivalid dt-center ' + ((state==3)?'edit-cell':''),
+          visible: state>2 && type==2,
+          render: App.valid_render,
         }, {
           data : 'cbodymemo',
           className: (state==1)?'edit-cell':'',
@@ -477,11 +473,10 @@ is_readonly = 0;
     var table = $('#example').DataTable(table_options);
 
     if (state == 3) {
-      $('#example').on( 'change', 'input.editor-valid', function () {
-          editor.edit( $(this).closest('tr'), false )
-              .set( 'ivalid', $(this).prop( 'checked' ) ? 1 : 0 )
-              .submit();
-      });
+      table.on( 'click', 'tbody td.ivalid', function (e) {
+        editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+      } );
+
     }
     
     if (state == 1 && !is_readonly) {
@@ -559,6 +554,7 @@ is_readonly = 0;
       },
 
       submitHandler: function (form) {
+        editor.submit();
         var data = table.rows().data().toArray();
           jQuery(form).ajaxSubmit({
               data: {table:data},
@@ -585,6 +581,7 @@ is_readonly = 0;
     });    
     
     $("#save").click(function() {
+      
       $('#state').val(1);
       $("#form").submit();            
     });

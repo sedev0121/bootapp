@@ -70,8 +70,8 @@
                 <input type="text" class="form-control" th:value="${#dates.format(main.reviewdate, 'yyyy-MM-dd')}" readonly/>
               </div>
               <div class="col-lg-2 col-md-2">
-                <label>预付款总金额: </label>
-                <input type="text" class="form-control" id="prepay_total" readonly/>
+                <label>订金总金额: </label>
+                <input type="number" class="form-control" id="prepay_total" readonly/>
               </div>
               <div class="col-lg-4 col-md-4">
                 <label>供应商地址: </label>
@@ -89,7 +89,7 @@
                 <div class="tab-style-1" id="tabs">
                   <ul class="nav nav-tabs">
                     <li class="active"><a data-toggle="tab" href="#tab-1">基本信息</a></li>
-                    <li><a data-toggle="tab" href="#tab-2">预付款信息</a></li>
+                    <li><a data-toggle="tab" href="#tab-2">订金信息</a></li>
                   </ul>
                   <div class="tab-content">
                     <div id="tab-1" class="tab-pane row-fluid fade in active">

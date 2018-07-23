@@ -207,7 +207,7 @@ var App = function() {
       else if (data == 0)
         return '【否】';
       else
-        return "";
+        return "【否】";
     },
     blockUI : function(options) {
       options = $.extend(true, {}, options);
