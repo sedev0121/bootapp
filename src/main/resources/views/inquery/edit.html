@@ -307,6 +307,38 @@ is_readonly = 0;
         return true;
       }
       
+      var currentFieldName = e.currentTarget.s.includeFields[0];
+      
+      var checkList = ['iunitprice', 'itaxrate', 'itaxunitprice', 'fmaxquantity', 'fminquantity'];
+      if (checkList.indexOf(currentFieldName) >= 0){
+        var editingField = editor.field(currentFieldName);
+        if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val())<=0) {
+          editingField.input().addClass('error');
+          return false;
+        }else{
+          editingField.input().removeClass('error');
+        }
+      }
+
+      
+      if (currentFieldName == 'iunitprice' || currentFieldName == 'itaxrate') {
+        $.each(data.data, function(key, item){  
+          if (item.itaxrate != undefined && item.iunitprice != undefined) {
+            value = (Number.parseFloat(item.itaxrate) + 100) * item.iunitprice/100;
+            item.itaxunitprice =value?parseFloat(value).toFixed(2):'';   
+          }
+        });
+      }
+      
+      if (currentFieldName == 'itaxunitprice') {
+        $.each(data.data, function(key, item){  
+          if (item.itaxrate != undefined && item.itaxunitprice != undefined) {
+            value = item.itaxunitprice*100/(Number.parseFloat(item.itaxrate) + 100);     
+            item.iunitprice = value?parseFloat(value).toFixed(2):'';  
+          } 
+        });
+      }
+      
     }).on( 'postEdit', function (e, json, data, action) {
       var table_data = table.rows().data().toArray();
       var prepay_sum = 0;
@@ -433,51 +465,6 @@ is_readonly = 0;
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
       App.addKeyDownEditor(editor, 4, 11);
-    }
-    
-    if (state == 1 && !is_readonly) {
-      $(editor.field('iunitprice').input()).on('keydown', function (e, d) {
-        if ( editor ) {
-          //**Reset Plant Manager Approval function
-          var price_field = editor.field('iunitprice');
-          var taxrate_field = editor.field('itaxrate');
-          var taxprice_field = editor.field('itaxunitprice');
-          
-          if (taxrate_field.val() != undefined && price_field.val() != undefined) {
-            value = (Number.parseFloat(taxrate_field.val()) + 100) * price_field.val()/100;
-            taxprice_field.val(Number.parseFloat(value).toFixed(2));  
-          } 
-        }
-      });
-      
-      $(editor.field('itaxrate').input()).on('keydown', function (e, d) {
-        if ( editor ) {
-          //**Reset Plant Manager Approval function
-          var price_field = editor.field('iunitprice');
-          var taxrate_field = editor.field('itaxrate');
-          var taxprice_field = editor.field('itaxunitprice');
-          
-          if (taxrate_field.val() != undefined && price_field.val() != undefined) {
-            value = (Number.parseFloat(taxrate_field.val()) + 100) * price_field.val()/100;
-            taxprice_field.val(Number.parseFloat(value).toFixed(2));  
-          } 
-        }
-      });
-      
-      $(editor.field('itaxunitprice').input()).on('keydown', function (e, d) {
-        if ( editor ) {
-          //**Reset Plant Manager Approval function
-          var price_field = editor.field('iunitprice');
-          var taxrate_field = editor.field('itaxrate');
-          var taxprice_field = editor.field('itaxunitprice');
-          
-          if (taxrate_field.val() != undefined && taxprice_field.val() != undefined) {
-            value = taxprice_field.val()*100/(Number.parseFloat(taxrate_field.val()) + 100);          
-            price_field.val(Number.parseFloat(value).toFixed(2));  
-          } 
-        }
-      });
-
     }
     
     var import_table;
