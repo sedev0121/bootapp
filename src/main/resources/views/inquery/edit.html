@@ -404,6 +404,7 @@ is_readonly = 0;
           },
           { 
             text: "复制行", 
+            enabled: false,
             action: function( e, dt, node, config) {
               copyRow();
             } 
@@ -494,6 +495,23 @@ is_readonly = 0;
     
     table = $('#example').DataTable(table_options);
 
+
+    table.on( 'select', function ( e, dt, type, indexes ) {
+      var selected_data = table.rows('.selected').data().toArray();
+      if (selected_data.length>0){
+        table.button(1).enable();
+      }else{
+        table.button(1).disable();
+      }
+    }).on( 'deselect', function ( e, dt, type, indexes ) {
+      var selected_data = table.rows('.selected').data().toArray();
+      if (selected_data.length>0){
+        table.button(1).disable();
+      }else{
+        table.button(1).disable();
+      }
+    });
+    
     if (state == 3) {
       table.on( 'click', 'tbody td.ivalid', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
