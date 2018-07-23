@@ -208,4 +208,18 @@ public class AccountController extends CommonController {
 
 		return accountRepository.findForAutoComplete(keyword, request);
 	}
+
+	// 用户修改
+	@Transactional
+	@GetMapping("/checkuser")
+	public @ResponseBody Boolean checkUser_ajax(@RequestParam("id") Long id,
+			@RequestParam("username") String username) {
+		Account account = accountRepository.findOneByUsername(username);
+
+		if (account != null && account.getId() != id) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 }

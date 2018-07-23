@@ -117,6 +117,42 @@
         </form>
     </div>
     </div>
+    <div class="modal fade" id="import_dialog" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="width:1000px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                                                    选择商品
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body form-horizontal">
+
+                  <div class="search-content form-inline">
+                      <div class="search-cell width-6">
+                        <label for="search_inventory">商品编码/名称：</label>
+                        <input type="text" id="search_inventory" class="form-control">
+                      </div>
+                      <div style="vertical-align: bottom" class="search-cell width-15">
+                        <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+                      </div>
+                  </div>
+            
+                  <div class="row">
+                    <div class="col-lg-12 table-responsive">
+                        <table id="import_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
+                        </table>
+                    </div>
+                  </div>  
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="btn_import">保存</button>
+                </div>
+            </div>
+        </div>
+    </div> 
   </div>
   </div>
 </body>
@@ -150,7 +186,7 @@ is_readonly = 0;
 
     $('#start_date').datepicker({minDate: new Date()});
     $('#end_date').datepicker({minDate: new Date()});
-    
+
     $(".select2").select2();
     $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
     $("#type").select2({ data: App.getInqueryTypeData(),minimumResultsForSearch: -1 }).select2("val", type.toString());
@@ -169,6 +205,7 @@ is_readonly = 0;
     if (is_vendor)
       $('#vendor').attr("readonly", true);
     
+    
     var edit_mode = 'main';
     
     editor = new $.fn.dataTable.Editor( {
@@ -176,31 +213,6 @@ is_readonly = 0;
       idSrc: "id",
       //template: '#customForm',
       fields: [ {
-          id: "select_inv_code",
-          label: "选择商品:",
-          type: "select",
-          name: "select"
-        },{
-          label: "商品编码:",
-          type:  "readonly",
-          id: "cinvcode",
-          name: "cinvcode"          
-        },{
-          label: "商品名称:",
-          type:  "readonly",
-          id: "name",
-          name: "name"
-        },{
-          label: "规格型号:",
-          type:  "readonly",
-          id: "specs",
-          name: "specs"  
-        },{
-          label: "单位:",
-          type:  "readonly",
-          id: "puunit_name",
-          name: "puunit_name"            
-        },{
           label: "最小数量:",
           attr: {
             type: "number"
@@ -271,18 +283,8 @@ is_readonly = 0;
           name: "cbodymemo"                
         }],
       i18n: {
-          create: {
-              button: "添加商品",
-              title:  "添加",
-              submit: "保存"
-          },
-          edit: {
-              button: "修改商品",
-              title:  "修改",
-              submit: "保存"
-          },
           remove: {
-              button: "删除商品",
+              button: "删除行",
               title:  "删除",
               submit: "是",
               confirm: {
@@ -295,89 +297,16 @@ is_readonly = 0;
           }
       }
     }).on( 'preOpen', function ( e, mode, action ) {
-      edit_mode = mode;
-      if (!$("#vendor").val()) {
-        $('#vendor').focus();
-        App.showErrorDialog("请选择供应商！");
-        return false;
-      }
-
       this.field('dstartdate').input().datepicker("option", "minDate", $('#start_date').datepicker("getDate"));
       this.field('denddate').input().datepicker("option", "minDate", $('#start_date').datepicker("getDate"));
       
     }).on( 'open', function (e, mode, action) {
-      
-      if (mode != 'main')
-        return true;
-      
-      if (action == "edit") {
-        $('#select_inv_code').empty().append($("<option/>").val(this.field('cinvcode').val()).text(this.field('name').val()));
-      }
-      
-      if (action == "create") {
-        this.field('itaxrate').val($('#tax_rate').val());
-        this.field('dstartdate').val($('#start_date').val());
-        this.field('denddate').val($('#end_date').val());
-        $('#select_inv_code').empty();
-      }
-      
-
-      var select_options = App.getSelect2Options(inventory_search_url);
-      $.extend(true, select_options, {
-        ajax: {
-          data: function(params) {
-              return {
-                inv: params.term || '',
-                vendor: $("#vendor").val(),
-              };
-          },
-        }
-      });
-      var select_inv = $("#select_inv_code").select2(select_options);
-      select_inv.on("select2:select", function(e) {
-        var selected_data = e.params.data;
-        $('#cinvcode').val(selected_data.id);
-        $('#name').val(selected_data.title);
-        $('#specs').val(selected_data.specs);
-        $('#iunitprice').val(selected_data.price);
-        $('#iunitprice').trigger('change');        
-        $('#dstartdate').val(selected_data.startDate);
-        $('#denddate').val(selected_data.endDate);        
-      });
       
     }).on( 'preSubmit', function ( e, data, action ) {
       if ( action == 'remove') {
         return true;
       }
       
-      if (edit_mode == 'main') {
-          var iunitprice = this.field( 'iunitprice' );
-  
-          if ( ! iunitprice.val() ) {
-            iunitprice.error( '不能为空！' );
-          }
-          
-          var select_inv_code = this.field( 'select' );
-          if (! $('#select_inv_code').select2('val')) {
-            select_inv_code.error( '请选择商品！' );
-          }
-          
-          if ($("#type").select2('val') == 2) {
-            if ( ! this.field( 'fminquantity' ).val() ) {
-              this.field( 'fminquantity' ).error( '不能为空！' );
-            }
-            if ( ! this.field( 'fmaxquantity' ).val() ) {
-              this.field( 'fmaxquantity' ).error( '不能为空！' );
-            }
-          }
-          // If any error was reported, cancel the submission so it can be corrected
-          if ( this.inError() ) {
-              return false;
-          }
-      }   
-      if (edit_mode == 'inline') {
-        
-      }   
     }).on( 'postEdit', function (e, json, data, action) {
       var table_data = table.rows().data().toArray();
       var prepay_sum = 0;
@@ -392,9 +321,27 @@ is_readonly = 0;
         processing:false,
         select: (state == 1 && !is_readonly),
         buttons: [
-            { extend: "create", editor: editor },
-            { extend: "edit",   editor: editor },
-            { extend: "remove", editor: editor }
+          { 
+            text: "添加商品", 
+            action: function( e, dt, node, config) {
+              
+              if (!$("#vendor").val()) {
+                $('#vendor').focus();
+                App.showErrorDialog("请选择供应商！");
+                return false;
+              }
+              
+              $('#import_dialog').modal('show');
+              
+            } 
+          },
+          { 
+            text: "复制行", 
+            action: function( e, dt, node, config) {
+              
+            } 
+          },
+          { extend: "remove", editor: editor }
         ],
         ajax : {
           url : detail_url,
@@ -442,10 +389,12 @@ is_readonly = 0;
           title : '最新含税报价',
         }, {
           data : 'dstartdate',
+          render : $.fn.date_renderer,
           className: 'dt-center ' + ((state==1)?'edit-cell':''),
           title : '生效日期',
         }, {
           data : 'denddate',
+          render : $.fn.date_renderer,
           className: 'dt-center ' + ((state==1)?'edit-cell':''),
           title : '有效日期'
         }, {
@@ -530,6 +479,94 @@ is_readonly = 0;
       });
 
     }
+    
+    var import_table;
+    
+    $('.modal').on('shown.bs.modal', function () {
+      $('#search_inventory').val('');
+      if (import_table == undefined) {
+        import_table = $('#import_table').DataTable({
+          ordering : true,
+          select: true,
+          ajax : {
+            url : /*[[@{/inventory/list}]]*/'',
+            data : function(data) {
+              var filter = {
+                rows_per_page : data.length,
+                page_index : data.start / data.length + 1,
+                order : data.columns[data.order[0].column].data,
+                dir : data.order[0].dir,
+                search : $('#search_inventory').val()
+              }
+              return filter;
+            },
+            dataSrc : function(json) {
+              json.recordsTotal = json.totalElements;
+              json.recordsFiltered = json.totalElements;
+              return json.content;
+            },
+          },
+
+          columns : [ {
+            data : 'code',
+            title : '商品编码',
+          }, {
+            data : 'name',
+            title : '商品名称',        
+          }, {
+            data : 'specs',
+            title : '规格型号',
+          }, {
+            data : 'main_measure.name',
+            className: 'dt-center',
+            title : '单位',
+          } ],
+        });
+      }
+      $('#btn_search').trigger('click');
+    });
+    
+    
+    
+    $("#btn_search").click(function() {
+      import_table.draw();
+    });
+    
+    $('#search_inventory').keyup(function(e) {
+      if (e.keyCode == 13)
+        import_table.draw();
+    });
+    
+    $('#btn_import').click(function(){
+      $('#import_dialog').modal('hide');//modal_1 is the id 1
+      var selected_data = import_table.rows('.selected').data().toArray();
+      $.each(selected_data, function(key, item){
+
+        var temp = {};
+        temp.id = App.generatePaperCode();
+        temp.cbodymemo = null;
+        temp.cinvcode = item.code;
+        temp.denddate = $('#end_date').val();
+        temp.dstartdate = $('#start_date').val();
+        
+        temp.fmaxquantity = null;
+        temp.fminquantity = null;
+        temp.itaxrate = $('#tax_rate').val();
+        temp.itaxunitprice = null;
+        temp.iunitprice = null;
+        
+        temp.ivalid = 0;
+        temp.name = item.name;
+        temp.puunit_name = item.main_measure.name;
+        temp.specs = item.specs;
+
+        table.row.add(temp);  
+  
+      })
+      
+      table.draw();      
+      
+    });
     
     $("#form" ).validate({
       // define validation rules

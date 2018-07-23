@@ -270,7 +270,10 @@ public class InqueryController extends CommonController {
 				detail.setMain(venPriceAdjustMain);
 				detail.setInventory(inventoryRepository.findByCode(row.get("cinvcode")));
 				detail.setCbodymemo(row.get("cbodymemo"));
-				detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
+				if (row.get("iunitprice") != null && !row.get("iunitprice").isEmpty()) {
+					detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
+				}
+
 				if (row.get("ivalid") != null && !row.get("ivalid").isEmpty()) {
 					detail.setIvalid(Integer.parseInt(row.get("ivalid")));
 				} else {
@@ -289,11 +292,15 @@ public class InqueryController extends CommonController {
 
 				String startDateStr = row.get("dstartdate");
 				String endDateStr = row.get("denddate");
-				detail.setDstartdate(Utils.parseDate(startDateStr));
-				detail.setDenddate(Utils.getNextDate(endDateStr));
+				if (startDateStr != null && !startDateStr.isEmpty())
+					detail.setDstartdate(Utils.parseDate(startDateStr));
+				if (endDateStr != null && !endDateStr.isEmpty())
+					detail.setDenddate(Utils.getNextDate(endDateStr));
 
-				detail.setItaxrate(Float.parseFloat(row.get("itaxrate")));
-				detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
+				if (row.get("itaxrate") != null && !row.get("itaxrate").isEmpty())
+					detail.setItaxrate(Float.parseFloat(row.get("itaxrate")));
+				if (row.get("itaxunitprice") != null && !row.get("itaxunitprice").isEmpty())
+					detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
 
 				venPriceAdjustDetailRepository.save(detail);
 			}

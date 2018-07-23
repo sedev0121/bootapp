@@ -48,7 +48,7 @@
               <legend>账号信息</legend>
               <div class="col-lg-2 col-md-2 form-group">
                 <label for="username">用户名: </label>
-                <input type="text" name="username" class="form-control" th:value="${account.username}">
+                <input type="text" name="username" id="username" class="form-control" th:value="${account.username}">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
                 <label for="role">角色: </label>
@@ -162,6 +162,7 @@
 <script th:inline="javascript">
 var edit_url = /*[[@{/account/}]]*/'';
 var tree_url = /*[[@{/unit/tree}]]*/'';
+var checkuser_url = /*[[@{/account/checkuser/}]]*/'';
 var vendor_search_url = /*[[@{/vendor/search}]]*/'';
 var perm_search_url = /*[[@{/permission_group/search}]]*/'';
 
@@ -199,56 +200,43 @@ jQuery(document).ready(function() {
   
   $('#role').trigger('change');
   
-  
-  $('#permission22').select2({
-    tags: true,
-    // automatically creates tag when user hit space or comma:
-    tokenSeparators: [",", " "],
-    minimumInputLength: 0,
-    ajax: {
-      url: perm_search_url,
-      dataType: 'json',
-      //search term
-      data: function (params, page) {
-          return {
-            q: params.term || ''
-          };
-      },
-      processResults: function(data, page) {
-        return {
-            results: data.content
-        };
-      },
-      results: function(data, page) {
-        return {
-            results: data.content
-        };
-      },
-      cache: true
-    }
-  });
-  
   var is_add = $("#id").val().length==0;
   $("#form" ).validate({
     // define validation rules
     rules: {
-        realname: {
-            required: true
-        }, 
-        duty: {
-            required: true
-        },
-        username: {
-            required: true
-        },    
-        unit_name: {
-            required: true
-        },
-        role: {
-            required: true
-        },    
+      realname: {
+        required: true
+      }, 
+      duty: {
+        required: true
+      },
+      username: {
+        required: true,
+        remote: {
+          url: checkuser_url,
+          data: {
+            username: function() {
+              return $( "#username" ).val();
+            },
+            id: function() {
+              return $("#id").val();
+            }
+          }
+        }
+      },    
+      unit_name: {
+        required: true
+      },
+      role: {
+        required: true
+      },    
     },
-    
+    messages: {
+      username: {
+        remote: "该用户名已在使用！"
+      }
+    },
+   
     //display error alert on form submit  
     invalidHandler: function(event, validator) {
       App.showErrorDialog("输入有误", "请输入正确的值");

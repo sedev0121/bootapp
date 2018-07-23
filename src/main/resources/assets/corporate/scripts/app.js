@@ -116,7 +116,7 @@ var App = function() {
       else if (suffix < 100)
         suffix = '0' + suffix;
 
-      return $.datepicker.formatDate('yymmdd', new Date()) + hours + minutes + seconds + millisecs + suffix;
+      return $.datepicker.formatDate('yymmdd', new Date()) + hours + minutes + seconds + millisecs;
     },
     
     getSelect2Options: function(search_url) {
