@@ -18,22 +18,46 @@
           <a class="btn btn-default" th:href="@{/notice}"><i class="fa fa-arrow-left"></i> 返回</a>
       </div>
     </div>
-    <form id="form" th:action="@{/notice/update}" method="post">  
+    <form id="form" th:action="@{/notice/update}" method="post" enctype="multipart/form-data">  
     <input type="hidden" id="id" name="id" th:value="${notice.id}">
     <div class="panel panel-default">
       <div class="panel-body form-body"> 
         <div class="row">
-          <div class="col-lg-6 col-md-6 form-group">
+          <div class="col-lg-10 col-md-10 form-group">
             <label for="title">标题: </label>
             <input type="text" name="title" id="title" class="form-control" th:value="${notice.title}">
           </div>
           <div class="col-lg-2 col-md-2 form-group">
-            <label for="title">发布组织: </label>
-            <input type="text" class="form-control" readonly th:value="${notice.unit.name}">
+            <label for="title">状态: </label>
+            <select type="text" id="state" name="state" class="form-control" readonly></select>
+          </div>                    
+          
+          <div class="col-lg-12 col-md-12 form-group">
+            <label for="content">内容: </label>
+            <textarea name="content" id="content" class="form-control" rows=5 th:text="${notice.content}"></textarea>
+          </div>
+          <div class="col-lg-12 col-md-12 form-group" id="file_select" th:if="!${notice.attachFileName}">
+            <label for="content">附件: </label>
+            <div class="input-group input-file" name="attach">
+              <span class="input-group-btn">
+                <button class="btn btn-success btn-file btn-choose" type="button">选择附件</button>
+              </span>
+              <input type="text" class="form-control" placeholder='请选择附件' />
+              <span class="input-group-btn">
+                 <button class="btn btn-warning btn-file btn-reset" type="button">重置</button>
+              </span>
+            </div>
+          </div>
+          <div class="col-lg-12 col-md-12 form-group" id="file_show" th:if="${notice.attachFileName}">
+            <label for="content">附件: </label>
+            <div>
+              <a th:href="@{|/uploads/notice/${notice.attachFileName}|}" th:text="${notice.attachOriginalName}">aaaaaa.aaa</a>
+              <a class="btn btn-danger" id="del_attach">删除附件</a>
+            </div>
           </div>
           <div class="col-lg-2 col-md-2 form-group">
             <label for="title">创建人: </label>
-            <input type="text" class="form-control" readonly th:value="${notice.account.realname}">
+            <input type="text" class="form-control" readonly th:value="${notice.createAccount?.realname}">
           </div>
           <div class="col-lg-2 col-md-2 form-group">
             <label for="title">创建时间: </label>
@@ -41,20 +65,12 @@
           </div>                    
           <div class="col-lg-2 col-md-2 form-group">
             <label for="title">发布人: </label>
-            <input type="text" class="form-control" readonly th:value="${notice.account.realname}">
+            <input type="text" class="form-control" readonly th:value="${notice.verifyAccount?.realname}">
           </div>
           <div class="col-lg-2 col-md-2 form-group">
             <label for="title">发布时间: </label>
-            <input type="text" class="form-control" readonly th:value="${#dates.format(notice.createDate, 'yyyy-MM-dd HH:mm:ss')}">
+            <input type="text" class="form-control" readonly th:value="${#dates.format(notice.verifyDate, 'yyyy-MM-dd HH:mm:ss')}">
           </div> 
-          <div class="col-lg-2 col-md-2 form-group">
-            <label for="title">状态: </label>
-            <select type="text" class="form-control" readonly></select>
-          </div>                    
-          <div class="col-lg-12 col-md-12 form-group">
-            <label for="content">内容: </label>
-            <textarea name="content" id="content" class="form-control" rows=10 th:text="${notice.content}"></textarea>
-          </div>
         </div>
       </div>
     </div>
@@ -73,7 +89,8 @@ var state = /*[[${notice.state}]]*/'';
 
 jQuery(document).ready(function() {   
 
-  $("#state").select2({ data: App.getInqueryStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
+  App.bs_input_file();
+  $("#state").select2({ data: App.getNoticeStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
   
   if (is_vendor){
     $('#title').attr("readonly", true);
@@ -126,7 +143,16 @@ jQuery(document).ready(function() {
     });
   });
 
-    
+  $("#del_attach").click(function(){
+    App.showConfirmDialog('确定要删除吗?', function(){
+      var del_url = edit_url + $("#id").val() + "/deleteattach";  
+      $.get(del_url, function(data, status){
+        App.showSuccessDialog("操作成功", function() {
+          window.location.reload(true);
+        });
+      });
+    });
+  });
 
 });
 

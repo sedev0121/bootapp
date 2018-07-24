@@ -62,6 +62,7 @@ public class Notice {
 	private Integer toAllVendor;
 	private Integer toUnitAccount;
 	private String attachFileName;
+	private String attachOriginalName;
 
 	public Notice() {
 		this.createDate = new Date();
@@ -169,6 +170,14 @@ public class Notice {
 
 	public void setType(Integer type) {
 		this.type = type;
+	}
+
+	public String getAttachOriginalName() {
+		return attachOriginalName;
+	}
+
+	public void setAttachOriginalName(String attachOriginalName) {
+		this.attachOriginalName = attachOriginalName;
 	}
 
 }

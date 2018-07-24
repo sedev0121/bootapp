@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Query;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +27,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.NoticeSearchResult;
+import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
@@ -154,7 +159,7 @@ public class NoticeController extends CommonController {
 		return "notice/edit";
 	}
 
-	// 用户管理->新建
+	// 新建
 	@GetMapping("/add")
 	@PreAuthorize("hasAuthority('ROLE_BUYER')")
 	public String add(Model model) {
@@ -165,7 +170,7 @@ public class NoticeController extends CommonController {
 		return "notice/edit";
 	}
 
-	// 用户管理->删除
+	// 删除
 	@GetMapping("/{id}/delete")
 	@PreAuthorize("hasAuthority('ROLE_BUYER')")
 	public @ResponseBody Boolean delete(@PathVariable("id") Long id, Model model) {
@@ -174,11 +179,37 @@ public class NoticeController extends CommonController {
 		return true;
 	}
 
+	@GetMapping("/{id}/deleteattach")
+	@PreAuthorize("hasAuthority('ROLE_BUYER')")
+	public @ResponseBody Boolean deleteAttach(@PathVariable("id") Long id, HttpServletRequest request) {
+		Notice notice = noticeRepository.findOneById(id);
+		String applicationPath = request.getServletContext().getRealPath("");
+		File attach = new File(applicationPath + File.separator + notice.getAttachFileName());
+		if (attach.exists())
+			attach.delete();
+		notice.setAttachFileName(null);
+		notice.setAttachOriginalName(null);
+		noticeRepository.save(notice);
+		return true;
+	}
+
 	// 用户修改
 	@Transactional
 	@PostMapping("/update")
 	@PreAuthorize("hasAuthority('ROLE_BUYER')")
-	public @ResponseBody Notice update_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Notice update_ajax(@RequestParam(value = "attach", required = false) MultipartFile attach,
+			HttpServletRequest request, @RequestParam Map<String, String> requestParams) {
+
+		String origianlFileName = null;
+		String savedFileName = null;
+		if (attach != null) {
+			origianlFileName = attach.getOriginalFilename();
+			File file = UploadFileHelper.simpleUpload(attach, request, true, Constants.PATH_UPLOADS_NOTICE);
+			logger.info(attach.getOriginalFilename());
+			if (file != null)
+				savedFileName = file.getName();
+		}
+
 		String id = requestParams.get("id");
 		String title = requestParams.get("title");
 		String content = requestParams.get("content");
@@ -193,6 +224,10 @@ public class NoticeController extends CommonController {
 		notice.setTitle(title);
 		notice.setContent(content);
 		notice.setCreateDate(new Date());
+		if (savedFileName != null) {
+			notice.setAttachFileName(savedFileName);
+			notice.setAttachOriginalName(origianlFileName);
+		}
 
 		notice.setUnit(this.getLoginAccount().getUnit());
 		notice.setCreateAccount(this.getLoginAccount());

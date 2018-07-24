@@ -28,4 +28,9 @@ public class Constants {
 
 	public static String KEY_DEFAULT_UNIT_LIST = "my_unit_list";
 
+	public static String PATH_UPLOADS = "uploads";
+	public static String PATH_UPLOADS_SHIP = PATH_UPLOADS + "/ship";
+	public static String PATH_UPLOADS_NOTICE = PATH_UPLOADS + "/notice";
+	public static String PATH_UPLOADS_STATEMENT = PATH_UPLOADS + "/statement";
+
 }
