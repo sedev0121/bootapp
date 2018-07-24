@@ -811,11 +811,13 @@ $(document).ready(function() {
   });
   
   $("#save").click(function() {
+    editor.submit();
     $('#state').val(1);
     $("#form").submit();            
   });
   
   $("#submit").click(function() {
+    editor.submit();
     var data = basic_table.rows().data().toArray();
     if (data.length == 0) {
       App.showErrorDialog("操作失败", "没有要发布的商品");
@@ -826,11 +828,13 @@ $(document).ready(function() {
   });
   
   $("#verify").click(function() {
+    editor.submit();
     $('#state').val(3);
     $("#form").submit();            
   });   
   
   $("#cancel").click(function() {
+    editor.submit();
     $('#state').val(4);
     $("#form").submit();            
   });

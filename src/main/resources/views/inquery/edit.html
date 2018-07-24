@@ -223,7 +223,7 @@ is_readonly = 0;
       });
     });
 
-    if (state > 1 || is_readonly) {
+    if ((state != 1 && state != 4) || is_readonly) {
       $('input').attr("readonly", true);
       $('select').attr("readonly", true);
       $("#start_date").datepicker( "option", "disabled", true );
@@ -489,7 +489,7 @@ is_readonly = 0;
         },
       };
     
-    if (state != 1 || is_readonly) {
+    if ((state != 1 && state != 4)|| is_readonly) {
       table_options.buttons = [];
     }
     
@@ -529,7 +529,7 @@ is_readonly = 0;
     }
     
     function onChangeType(){
-      if (state == 1 && !is_readonly) {
+      if ((state == 1 || state == 4) && !is_readonly) {
         table.on( 'click', 'td.memo, td.startdate, td.enddate, td.taxrate', function (e) {
           editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
         } );

@@ -357,6 +357,7 @@ $(document).ready(function() {
     
     
     function submit(state) {
+      editor.submit();
       var data = basic_table.rows().data().toArray();
       var small_data = [];
       $.each(data, function(key, item){
@@ -388,10 +389,12 @@ $(document).ready(function() {
     }
     
     $("#deploy").click(function() {
+      editor.submit();
       submit(1);
     });
     
     $("#confirm").click(function() {
+      editor.submit();
       var data = basic_table.rows().data().toArray();
       var error_msg = 0;
       $.each(data, function(key, item){
@@ -414,6 +417,7 @@ $(document).ready(function() {
     });
 
     $("#cancel").click(function() {
+      editor.submit();
       var data = basic_table.rows().data().toArray();
       var error_msg = 0;
       $.each(data, function(key, item){
