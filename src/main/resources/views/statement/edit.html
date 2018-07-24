@@ -339,7 +339,7 @@ $(document).ready(function() {
   $("#state").select2({ data: App.getStatementStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
   $("#vendor").select2(App.getSelect2Options(vendor_search_url));
   
-  if (state > 1 || is_readonly) {
+  if ((state != 1 && state != 4) || is_readonly) {
     $('input').attr("readonly", true);
     $('select').attr("readonly", true);
   }
@@ -693,15 +693,19 @@ $(document).ready(function() {
         $('#total_quantity').val(total_quantity);
         $('#total_money').val(total_money.toFixed(2));
         $('#total_tax_money').val(total_tax_money.toFixed(2));
+        
         if (data_list.length > 0)
           $('#vendor').attr("readonly", true);
         else
           $('#vendor').attr("readonly", false);
 
+        if ((state!=1 && state != 4) || is_readonly) {
+          $('#vendor').attr("readonly", true);
+        }
       }
     };
   
-  if (state>1 || is_readonly) {
+  if ((state!=1 && state != 4) || is_readonly) {
     table_options.select = false;
     table_options.buttons = [];
   }
