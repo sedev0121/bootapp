@@ -52,7 +52,7 @@ public class DashboardController extends CommonController {
 
 	@SuppressWarnings("unchecked")
 	private List<NoticeSearchResult> getLastNotice() {
-		String selectQuery = "SELECT a.*, b.realname create_name, c.name create_unitname FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id where 1=1 ";
+		String selectQuery = "SELECT a.*, b.realname create_name, c.name create_unitname, c.name verify_name FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id where 1=1 ";
 
 		String orderBy = " order by create_date desc ";
 

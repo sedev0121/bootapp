@@ -26,6 +26,10 @@ public class Constants {
 	public static int STATEMENT_STATE_CONFIRM = 3;
 	public static int STATEMENT_STATE_CANCEL = 4;
 
+	public static int NOTICE_TYPE_USER = 1;
+	public static int NOTICE_TYPE_SYSTEM = 2;
+	public static int NOTICE_TYPE_ALERT = 3;
+
 	public static String KEY_DEFAULT_UNIT_LIST = "my_unit_list";
 
 	public static String PATH_UPLOADS = "uploads";

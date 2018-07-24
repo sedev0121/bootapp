@@ -131,6 +131,7 @@ public class AccountService implements UserDetailsService {
 	private User createUser(Account account) {
 		httpSession.setAttribute("account", account);
 		httpSession.setAttribute("realname", account.getRealname());
+		httpSession.setAttribute("account_id", account.getId());
 		return new User(account.getUsername(), account.getPassword(), createAuthorities(account));
 	}
 

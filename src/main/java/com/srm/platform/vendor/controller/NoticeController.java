@@ -213,7 +213,8 @@ public class NoticeController extends CommonController {
 		String id = requestParams.get("id");
 		String title = requestParams.get("title");
 		String content = requestParams.get("content");
-
+		String stateStr = requestParams.get("state");
+		Integer state = Integer.parseInt(stateStr);
 		Notice notice = new Notice();
 
 		if (id != null && !id.isEmpty()) {
@@ -221,16 +222,24 @@ public class NoticeController extends CommonController {
 
 		}
 
-		notice.setTitle(title);
-		notice.setContent(content);
-		notice.setCreateDate(new Date());
-		if (savedFileName != null) {
-			notice.setAttachFileName(savedFileName);
-			notice.setAttachOriginalName(origianlFileName);
-		}
+		notice.setState(state);
 
-		notice.setUnit(this.getLoginAccount().getUnit());
-		notice.setCreateAccount(this.getLoginAccount());
+		if (state <= 2) {
+			notice.setTitle(title);
+			notice.setType(Constants.NOTICE_TYPE_USER);
+			notice.setContent(content);
+			notice.setCreateDate(new Date());
+			if (savedFileName != null) {
+				notice.setAttachFileName(savedFileName);
+				notice.setAttachOriginalName(origianlFileName);
+			}
+
+			notice.setUnit(this.getLoginAccount().getUnit());
+			notice.setCreateAccount(this.getLoginAccount());
+		} else {
+			notice.setVerifyAccount(this.getLoginAccount());
+			notice.setVerifyDate(new Date());
+		}
 
 		notice = noticeRepository.save(notice);
 

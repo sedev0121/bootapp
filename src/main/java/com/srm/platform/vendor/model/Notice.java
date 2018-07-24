@@ -58,7 +58,7 @@ public class Notice {
 	private Account verifyAccount;
 
 	private Integer type;
-	private Integer state;
+	private Integer state = 1;
 	private Integer toAllVendor;
 	private Integer toUnitAccount;
 	private String attachFileName;
