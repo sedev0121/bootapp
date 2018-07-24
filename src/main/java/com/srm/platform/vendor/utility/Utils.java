@@ -39,6 +39,7 @@ public class Utils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		return date;
 	}
 
@@ -46,6 +47,13 @@ public class Utils {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		cal.add(Calendar.DATE, 1);
+		return cal.getTime();
+	}
+
+	public static Date getAlertDate(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DATE, 3);
 		return cal.getTime();
 	}
 
@@ -67,7 +75,8 @@ public class Utils {
 	public static String generateId() {
 		String id = "";
 
-		id = getDateFormat().format(new Date());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		id = dateFormat.format(new Date());
 
 		int rand = (int) (Math.random() * 1000);
 		id += String.format("%03d", rand);

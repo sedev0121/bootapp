@@ -44,6 +44,8 @@ public class VenPriceAdjustDetail {
 	Date denddate;
 
 	Integer ivalid;
+
+	Integer rowno;
 	String cbodymemo;
 
 	Long ipriceid;
@@ -58,6 +60,14 @@ public class VenPriceAdjustDetail {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Integer getRowno() {
+		return rowno;
+	}
+
+	public void setRowno(Integer rowNo) {
+		this.rowno = rowNo;
 	}
 
 	public VenPriceAdjustMain getMain() {

@@ -83,13 +83,13 @@ public class ShipController extends CommonController {
 	@PreAuthorize("hasRole('ROLE_VENDOR')")
 	@GetMapping({ "/index" })
 	public String index() {
-		return "/ship/index";
+		return "ship/index";
 	}
 
 	// 出货看板
 	@GetMapping({ "/view" })
 	public String view() {
-		return "/ship/index";
+		return "ship/index";
 	}
 
 	@RequestMapping(value = "/list", produces = "application/json")

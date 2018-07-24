@@ -32,7 +32,8 @@ import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 				@ColumnResult(name = "assitantunitname", type = String.class),
 				@ColumnResult(name = "irate", type = String.class), @ColumnResult(name = "number", type = String.class),
 				@ColumnResult(name = "state", type = String.class),
-				@ColumnResult(name = "closed_quantity", type = String.class) }) })
+				@ColumnResult(name = "closed_quantity", type = String.class),
+				@ColumnResult(name = "remain_quantity", type = String.class) }) })
 
 @Table(name = "purchase_in_detail")
 public class PurchaseInDetail {

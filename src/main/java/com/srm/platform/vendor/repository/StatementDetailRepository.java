@@ -18,7 +18,7 @@ public interface StatementDetailRepository extends JpaRepository<StatementDetail
 	@Query(value = "SELECT * FROM statement_detail WHERE code= :code", nativeQuery = true)
 	List<StatementDetail> findByCode(String code);
 
-	@Query(value = "select a.*, 1 taxrate, c.code purchase_in_code, c.rowno, c.quantity, c.price, c.cost, f.name unitname, c.cmassunitname, c.assitantunitname, c.irate, c.number, d.date purchase_in_date, e.code inventorycode, e.name inventoryname, e.specs from statement_detail a left join statement_main b on a.code=b.code left join purchase_in_detail c on a.purchase_in_detail_id=c.id left join purchase_in_main d on c.code=d.code left join inventory e on c.inventorycode=e.code left join measurement_unit f on e.main_measure=f.code where a.code=?1 order by c.code, c.rowno", nativeQuery = true)
+	@Query(value = "select a.*, a.tax_rate taxrate, c.quantity-ifnull(a.closed_quantity, 0) remain_quantity, c.code purchase_in_code, c.rowno, c.quantity, c.price, c.cost, f.name unitname, c.cmassunitname, c.assitantunitname, c.irate, c.number, d.date purchase_in_date, e.code inventorycode, e.name inventoryname, e.specs from statement_detail a left join statement_main b on a.code=b.code left join purchase_in_detail c on a.purchase_in_detail_id=c.id left join purchase_in_main d on c.code=d.code left join inventory e on c.inventorycode=e.code left join measurement_unit f on e.main_measure=f.code where a.code=?1 order by c.code, c.rowno", nativeQuery = true)
 	List<StatementDetailItem> findDetailsByCode(String code);
 
 }

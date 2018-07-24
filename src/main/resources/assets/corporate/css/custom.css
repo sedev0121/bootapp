@@ -7,6 +7,68 @@ body {
     background-color:#fff !important
 }
 
+.select2 {
+    width:100%!important;
+}
+
+.select2-container--default .select2-selection--single {
+    border: 1px solid #ccc;
+}
+
+.datepicker {
+  padding:6px 12px;
+}
+
+
+input[type=file]:focus, input[type=checkbox]:focus, input[type=radio]:focus {
+    outline: thin dotted;
+    outline: 0px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+
+input[type=number]::-webkit-inner-spin-button { 
+    -webkit-appearance: none;
+    cursor:pointer;
+    display:block;
+    width:0px;
+    color: #333;
+    text-align:center;
+    position:relative;
+}
+
+input[type=number] {
+    text-align:right;
+}
+
+input[type=number]::-webkit-inner-spin-button:before,
+input[type=number]::-webkit-inner-spin-button:after {
+    content: "^";
+    position:absolute;
+    right: 0;
+    font-family:monospace;
+    line-height:
+}
+
+input[type=number]::-webkit-inner-spin-button:before {
+    top:0px;
+}
+
+input[type=number]::-webkit-inner-spin-button:after {
+    bottom:0px;
+    -webkit-transform: rotate(180deg);
+}
+
+.account legend {
+    border: none; 
+    font-size: 18px;
+    padding-top: 20px; 
+    margin-bottom: 10px;
+    color: #3E4D5C;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    border-radius: 2px; 
+}
 
 .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
     /* padding: 6px; */    
@@ -69,6 +131,13 @@ span.error {
 .main {
     min-height:605px;
 }
+
+@media (max-height: 900px) {
+    .main {
+        min-height:549px;
+    }
+}
+
 
 .btn {
     font-size: 12px;
@@ -297,4 +366,8 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
 
 .perm legend{
     margin-bottom:10px;
+}
+
+#dashboard .panel-body {
+    min-height: 165px;
 }

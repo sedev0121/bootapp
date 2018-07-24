@@ -9,34 +9,34 @@
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
       <li><a th:href="@{/account}">用户管理</a></li>
-      <li class="active">用户详细</li>
+      <li class="active" th:text="${account.id}?'用户详细':'新建用户'"></li>
     </ul>
     <div class="btn-group-bar">
-      <div class="text-right margin-right-20">
+      <div class="text-right">
           <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
-          <a class="btn btn-danger" id="del"><i class="fa fa-remove"></i> 删除</a>
+          <a class="btn btn-danger" id="del" th:if="${account.id}"><i class="fa fa-remove"></i> 删除</a>
           <a class="btn btn-default" th:href="@{/account}"><i class="fa fa-arrow-left"></i> 返回</a>
       </div>
     </div>
     <form id="form" th:action="@{/account/update}" method="post">  
     <input type="hidden" id="id" name="id" th:value="${account.id}">
     <div class="panel panel-default">
-      <div class="panel-body"> 
+      <div class="panel-body form-body"> 
         <div class="row">
-          <div class="content-form-page">
+          <div class="account">
             <fieldset>
               <legend>基本信息</legend>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">真实姓名: </label>
+                <label for="realname">真实姓名: </label>
                 <input type="text" name="realname" class="form-control" th:value="${account.realname}">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">所属部门: </label>
+                <label for="unit_name">所属部门: </label>
                 <input type="hidden" id="unit" name="unit" th:value="${account.unit==null?'':account.unit.id}">
                 <input type="text" id="unit_name" name="unit_name" class="form-control select-unit" th:value="${account.unit==null?'':account.unit.name}" readonly>
               </div>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">职位: </label>
+                <label for="duty">职位: </label>
                 <input type="text" name="duty" th:value="${account.duty}" class="form-control">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
@@ -47,24 +47,46 @@
             <fieldset>
               <legend>账号信息</legend>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">用户名: </label>
-                <input type="text" name="username" class="form-control" th:value="${account.username}">
+                <label for="username">用户名: </label>
+                <input type="text" name="username" id="username" class="form-control" th:value="${account.username}">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">角色: </label>
+                <label for="role">角色: </label>
                 <select name="role" id="role" class="form-control">
                   <option value="ROLE_BUYER" th:selected="(${account.role}=='ROLE_BUYER')">采购员</option>
                   <option value="ROLE_VENDOR" th:selected="(${account.role}=='ROLE_VENDOR')">供应商</option>
                   <option value="ROLE_ADMIN"  th:selected="(${account.role}=='ROLE_ADMIN')">管理员</option>
                 </select>
               </div>
-              <div class="col-lg-6 col-md-6 form-group">
-                  <label for="vendor">供应商:</label>
-                  <select id="vendor" name="vendor" class="form-control">
-                    <option th:if="${account.vendor != null}" th:value="${account.vendor.code}" th:text="${account.vendor.name}" selected="selected"></option>
-                  </select>
-                </div>
+              <div class="col-lg-6 col-md-6 form-group" id="vendor_div">
+                <label for="vendor">供应商:</label>
+                <select id="vendor" name="vendor" class="form-control">
+                  <option th:if="${account.vendor != null}" th:value="${account.vendor.code}" th:text="${account.vendor.name}" selected="selected"></option>
+                </select>
+              </div>
+              <div class="col-lg-8 col-md-8 form-group" id="permission_div">
+                <label for="vendor">权限组:</label>
+                <select multiple="true" name="permission" id="permission" class="form-control">
+                </select>
+              </div>              
             </fieldset>
+            <fieldset>
+              <legend>账号状态</legend>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="state">状态: </label>
+                <div class="ui toggle checkbox">
+                  <input type="checkbox" name="state" value="1" th:checked="${account.state}">
+                  <label>启用  /  停用</label>
+                </div>
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="start_date">启用日期: </label>
+                <input type="text" class="form-control" readonly th:value="${#dates.format(account.startDate, 'yyyy-MM-dd')}">
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                  <label for="stop_date">停用日期:</label>
+                  <input type="text" class="form-control" readonly th:value="${#dates.format(account.stopDate, 'yyyy-MM-dd')}">
+            </fieldset>            
             <fieldset>
               <legend>联系信息</legend>
               <div class="col-lg-2 col-md-2 form-group">
@@ -102,13 +124,14 @@
               </div>
               <div class="col-lg-6 col-md-6 form-group">
                 <label for="address">通讯地址:</label>
-                <input type="text" name="address" class="form-control datepicker" th:value="${account.address}">
+                <input type="text" name="address" class="form-control" th:value="${account.address}">
               </div>
             </fieldset>
           </div>
         </div>
       </div>
 
+    </div>
     </form>
     <div class="modal fade" id="tree_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -139,122 +162,157 @@
 <script th:inline="javascript">
 var edit_url = /*[[@{/account/}]]*/'';
 var tree_url = /*[[@{/unit/tree}]]*/'';
+var checkuser_url = /*[[@{/account/checkuser/}]]*/'';
 var vendor_search_url = /*[[@{/vendor/search}]]*/'';
+var perm_search_url = /*[[@{/permission_group/search}]]*/'';
+
+
 
 jQuery(document).ready(function() {   
-    $('.datepicker').datepicker();
-    $('#role').select2({minimumResultsForSearch: -1});
-    $("#vendor").select2(App.getSelect2Options(vendor_search_url));
-    
-    $('#role').change(function() {
-      if ($('#role').val() == 'ROLE_VENDOR') {
-        $('#vendor').removeClass('hidden');
-        $('#vendor').prop('disabled', false);
-      }else{
-        $('#vendor').addClass('hidden');
-        $('#vendor').prop('disabled', true);
-      }
-    });
-    
-    $('#role').trigger('change');
-    
-    var is_add = $("#id").val().length==0;
-    $("#form" ).validate({
-        // define validation rules
-        rules: {
-        	realname: {
-                required: true
-            }, 
-            duty: {
-                required: true
-            },
-            username: {
-                required: true
-            },    
-            unit_name: {
-            	required: true
-            },
-            role: {
-                required: true
-            },    
-        },
-        
-        //display error alert on form submit  
-        invalidHandler: function(event, validator) {
-          App.showErrorDialog("输入有误", "请输入正确的值");
-        },
+  $('.datepicker').datepicker();
+  $('#role').select2({minimumResultsForSearch: -1});
+  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
+  $("#permission").select2(App.getSelect2TagOptions(perm_search_url));
   
-        submitHandler: function (form) {
-            jQuery(form).ajaxSubmit({
-                success: function(res, status, xhr, form) {
-                  App.showSuccessDialog("操作成功", function(){
-                      window.location.href = edit_url + res.id + "/edit";
-                  });
-                },
-                error: function (res, status, xhr, form) {
-                  App.showErrorDialog("操作失败", "请输入正确的值");
-                }
-            });
+  var data = $.parseJSON(/*[[${groupList}]]*/'');
+  $.each(data, function(key, item){
+    var option = new Option(item.name, item.id, true, true);
+    $("#permission").append(option);
+  })
+  $("#permission").trigger('change');
+  
+  
+  $('#role').change(function() {
+    $('#vendor_div').addClass('hidden');
+    $('#permission_div').addClass('hidden');
+    $('#vendor').prop('disabled', true);
+
+    switch($('#role').val()){
+      case 'ROLE_VENDOR':
+        $('#vendor_div').removeClass('hidden');
+        $('#vendor').prop('disabled', false);
+        break;
+      case 'ROLE_BUYER':
+        $('#permission_div').removeClass('hidden');
+        break;
+    }
+  });
+  
+  $('#role').trigger('change');
+  
+  var is_add = $("#id").val().length==0;
+  $("#form" ).validate({
+    // define validation rules
+    rules: {
+      realname: {
+        required: true
+      }, 
+      duty: {
+        required: true
+      },
+      username: {
+        required: true,
+        remote: {
+          url: checkuser_url,
+          data: {
+            username: function() {
+              return $( "#username" ).val();
+            },
+            id: function() {
+              return $("#id").val();
+            }
+          }
         }
-      }); 
-    
-    $("#save").click(function() {
-        $("#form").submit();            
-    });
-    
-    $("#del").click(function(){
-      App.showConfirmDialog('确定要删除吗?', function(){
-        var del_url = edit_url + $("#id").val() + "/delete";  
-        $.get(del_url, function(data, status){
-          App.showSuccessDialog("操作成功", function() {
-            window.location.href = edit_url;
-          });
+      },    
+      unit_name: {
+        required: true
+      },
+      role: {
+        required: true
+      },    
+    },
+    messages: {
+      username: {
+        remote: "该用户名已在使用！"
+      }
+    },
+   
+    //display error alert on form submit  
+    invalidHandler: function(event, validator) {
+      App.showErrorDialog("输入有误", "请输入正确的值");
+    },
+
+    submitHandler: function (form) {
+        jQuery(form).ajaxSubmit({
+            success: function(res, status, xhr, form) {
+              App.showSuccessDialog("操作成功", function(){
+                  window.location.href = edit_url + res.id + "/edit";
+              });
+            },
+            error: function (res, status, xhr, form) {
+              App.showErrorDialog("操作失败", "请输入正确的值");
+            }
+        });
+    }
+  }); 
+  
+  $("#save").click(function() {
+      $("#form").submit();            
+  });
+  
+  $("#del").click(function(){
+    App.showConfirmDialog('确定要删除吗?', function(){
+      var del_url = edit_url + $("#id").val() + "/delete";  
+      $.get(del_url, function(data, status){
+        App.showSuccessDialog("操作成功", function() {
+          window.location.href = edit_url;
         });
       });
     });
+  });
 
-    $(".select-unit").click(function(){  //"select all" change
-        $('#tree_3').jstree(true).deselect_all();
-        var unit_id = $('#unit').val();
-        
-        $('#tree_3').jstree(true).select_node(unit_id);
-        $('#tree_dialog').modal('show');
-    });
-    
-    $("#tree_3").jstree({
-      'plugins': ["types"],
-      'core': {
-          'data' : {
-            'url' : function (node) {
-              return tree_url;
-            }
+  $(".select-unit").click(function(){  //"select all" change
+      $('#tree_3').jstree(true).deselect_all();
+      var unit_id = $('#unit').val();
+      
+      $('#tree_3').jstree(true).select_node(unit_id);
+      $('#tree_dialog').modal('show');
+  });
+  
+  $("#tree_3").jstree({
+    'plugins': ["types"],
+    'core': {
+        'data' : {
+          'url' : function (node) {
+            return tree_url;
           }
-      },
-      "types" : {
-          "default" : {
-              "icon" : "fa fa-folder m--font-warning"
-          },
-          "file" : {
-              "icon" : "fa fa-file  m--font-warning"
-          }
-      },
-    }).on('loaded.jstree', function() {
-        $(this).jstree("open_all");
-    });
+        }
+    },
+    "types" : {
+        "default" : {
+            "icon" : "fa fa-folder m--font-warning"
+        },
+        "file" : {
+            "icon" : "fa fa-file  m--font-warning"
+        }
+    },
+  }).on('loaded.jstree', function() {
+      $(this).jstree("open_all");
+  });
 
-    $('#save_unit').click(function(){
-    	var selected_node = $("#tree_3").jstree("get_selected",true);
-    	
-    	if (selected_node.length == 0) {
-    	  App.showErrorDialog("请选择一个部门");
-    	  return;
-    	}
-        var selected_unit_id = selected_node[0].id; 
-        var selected_unit_name = selected_node[0].text;
-        $('#unit').val(selected_unit_id);
-        $('#unit_name').val(selected_unit_name);
-        $('#tree_dialog').modal('hide');//modal_1 is the id 1
-     });
+  $('#save_unit').click(function(){
+      var selected_node = $("#tree_3").jstree("get_selected",true);
+      
+      if (selected_node.length == 0) {
+        App.showErrorDialog("请选择一个部门");
+        return;
+      }
+      var selected_unit_id = selected_node[0].id; 
+      var selected_unit_name = selected_node[0].text;
+      $('#unit').val(selected_unit_id);
+      $('#unit_name').val(selected_unit_name);
+      $('#tree_dialog').modal('hide');//modal_1 is the id 1
+   });
 
 });
 

@@ -40,6 +40,7 @@ import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.utility.AccountSearchItem;
 import com.srm.platform.vendor.utility.IGroupFunctionUnit;
+import com.srm.platform.vendor.utility.SearchItem;
 
 @Controller
 @RequestMapping(path = "/permission_group")
@@ -267,6 +268,15 @@ public class PermissionController extends CommonController {
 		permissionGroupRepository.delete(temp);
 
 		return true;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/search", produces = "application/json")
+	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
+
+		return permissionGroupRepository.findForSelect(search, request);
+
 	}
 
 }

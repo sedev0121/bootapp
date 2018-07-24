@@ -105,6 +105,11 @@ var edit_url = [[@{/quote/}]];
           return '<a href="' + url + '">' + data + '</a>';
         },
       }, {
+        data : 'type',
+        className: 'dt-center',
+        render:App.getInqueryTypeOfId,
+        title : '报价类型',
+      }, {
         data : 'vendorname',
         visible: !is_vendor,
         title : '供应商名称',
@@ -148,7 +153,7 @@ var edit_url = [[@{/quote/}]];
         render : $.fn.date_renderer
 
       } ],
-      order: [  [ 7, "desc" ] ]
+      order: [  [ 8, "desc" ] ]
     });
 
     $("#btn_search").click(function() {

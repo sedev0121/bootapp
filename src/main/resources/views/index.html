@@ -9,31 +9,25 @@
             <li class="active"><i class="fa fa-dashboard"></i> 首页</li>
           </ul>
           <div class="row" id="dashboard">
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR')">
               <div class="panel panel-default">
                 <div class="panel-heading">
                   <label>公告通知</label>
-                  <div class="pull-right"><a href="#">更多></a></div>
+                  <div class="pull-right"><a th:href="@{/notice}">更多></a></div>
                 </div>
-                <div class="panel-body">
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
+                <div class="panel-body" >
+                  <p th:each="notice : ${noticeList}"><span th:text="|${#dates.format(notice.create_date, 'yyyy-MM-dd HH:mm:ss')} |">aaa</span><a th:href="@{|/notice/${notice.id}/edit|}" th:text="${notice.title}">2018-6-11 9:29:09 采购管理平台</a></p>
                 </div>
               </div>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR')">
               <div class="panel panel-default">
                 <div class="panel-heading">
                     <label>预警信息</label>
-                    <div class="pull-right"><a href="#">更多></a></div>
+                    <div class="pull-right"><a th:href="@{/ship/view}">更多></a></div>
                 </div>
                 <div class="panel-body">
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
-                  <p>2018-6-11 9:29:09 采购管理平台</p>
+                  <p th:each="alert : ${alertList}"><span th:text="|${alert.vendorname}承诺在【${#dates.format(alert.confirmdate, 'yyyy-MM-dd')}】之前交货 |">aaa</span><a th:text="|${alert.remain_quantity}【${alert.unitname}】${alert.inventoryname}|">2018-6-11 9:29:09 采购管理平台</a></p>
                 </div>
               </div>
             </div>
@@ -41,13 +35,10 @@
               <div class="panel panel-default">
                 <div class="panel-heading">
                   <label>系统消息</label>
-                  <div class="pull-right"><a href="#">更多></a></div>
+                  <div class="pull-right"><a th:href="@{/message}">更多></a></div>
                 </div>
                 <div class="panel-body">
-                    <p>2018-6-11 9:29:09 采购管理平台</p>
-                    <p>2018-6-11 9:29:09 采购管理平台</p>
-                    <p>2018-6-11 9:29:09 采购管理平台</p>
-                    <p>2018-6-11 9:29:09 采购管理平台</p>
+                  <p th:each="message : ${messageList}"><span th:text="|${#dates.format(message.create_date, 'yyyy-MM-dd HH:mm:ss')} |">aaa</span><a th:href="@{|/message/${message.id}/edit|}" th:text="${message.title}">2018-6-11 9:29:09 采购管理平台</a></p>
                 </div>
               </div>
             </div>

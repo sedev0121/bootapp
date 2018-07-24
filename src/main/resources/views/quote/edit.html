@@ -8,7 +8,7 @@
         </li>
         <li>价格管理</li>
         <li><a th:href="@{/quote}" class="active">报价管理</a></li>
-        <li class="active">报价单</li>
+        <li class="active">报价单详细</li>
       </ul>
     <div class="btn-group-bar">
         <div class="text-right">
@@ -113,6 +113,7 @@
               </div>
             </div>
         </form>
+        </div>
     </div>
     </div>
   </body>
@@ -156,28 +157,49 @@ is_vendor = 1;
       //template: '#customForm',
       fields: [ {
           attr: {
-            type: "number"
+            type: "number",
           },
           name: "iunitprice"    
         },{
           attr: {
-            type: "number"
+            type: "number",
           },
           name: "itaxrate"             
         },{
           attr: {
-            type: "number"
+            type: "number",
           },
           name: "itaxunitprice"                
         }],
-    }).on( 'preSubmit', function (e, json, data, action) {
+    }).on( 'preSubmit', function (e, data, action) {
       if ( action !== 'remove' ) {
-        $.each(json.data, function(key, item){
-          if (item.itaxrate != undefined && item.iunitprice != undefined) {
-            value = (Number.parseFloat(item.itaxrate) + 100) * item.iunitprice/100;
-            item.itaxunitprice = Number.parseFloat(value).toFixed(2);  
-          }   
-        });
+        
+        var currentFieldName = e.currentTarget.s.includeFields[0];
+        var editingField = editor.field(currentFieldName);
+        if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val())<=0) {
+          editingField.input().addClass('error');
+          return false;
+        }else{
+          editingField.input().removeClass('error');
+        }
+        
+        if (currentFieldName == 'iunitprice' || currentFieldName == 'itaxrate') {
+          $.each(data.data, function(key, item){  
+            if (item.itaxrate != undefined && item.iunitprice != undefined) {
+              value = (Number.parseFloat(item.itaxrate) + 100) * item.iunitprice/100;
+              item.itaxunitprice =value?parseFloat(value).toFixed(2):'';   
+            }
+          });
+        }
+        
+        if (currentFieldName == 'itaxunitprice') {
+          $.each(data.data, function(key, item){  
+            if (item.itaxrate != undefined && item.itaxunitprice != undefined) {
+              value = item.itaxunitprice*100/(Number.parseFloat(item.itaxrate) + 100);     
+              item.iunitprice = value?parseFloat(value).toFixed(2):'';  
+            } 
+          });
+        }
       }
     });
     
@@ -196,6 +218,10 @@ is_vendor = 1;
         },
 
         columns : [ {
+          data : 'rowno',
+          className: 'dt-center',
+          title : '行号',
+        }, {          
           data : 'cinvcode',
           title : '商品编码',
         }, {
@@ -240,13 +266,8 @@ is_vendor = 1;
           data : 'ivalid',
           title : '是否有效',
           className: 'ivalid dt-center',
-          visible: state>2,
-          render: function ( data, type, row ) {
-              if ( type === 'display' ) {
-                  return '<input type="checkbox" value="1" class="editor-valid" readonly disabled>';
-              }
-              return data;
-          },
+          visible: state>2 && type==2,
+          render: App.valid_render,
         }, {
           data : 'cbodymemo',
           className: 'edit-cell',
@@ -266,52 +287,10 @@ is_vendor = 1;
       table.on( 'click', 'tbody td.edit-cell', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
-      App.addKeyDownEditor(editor, 6, 8);
+      App.addKeyDownEditor(editor, 7, 9);
     }
 
-    if (state == 2) {
-      $(editor.field('iunitprice').input()).on('keydown', function (e, d) {
-        if ( editor ) {
-          //**Reset Plant Manager Approval function
-          var price_field = editor.field('iunitprice');
-          var taxrate_field = editor.field('itaxrate');
-          var taxprice_field = editor.field('itaxunitprice');
-          
-          if (taxrate_field.val() != undefined && price_field.val() != undefined) {
-            value = (Number.parseFloat(taxrate_field.val()) + 100) * price_field.val()/100;
-            taxprice_field.val(Number.parseFloat(value).toFixed(2));  
-          } 
-        }
-      });
-      
-      $(editor.field('itaxrate').input()).on('keydown', function (e, d) {
-        if ( editor ) {
-          //**Reset Plant Manager Approval function
-          var price_field = editor.field('iunitprice');
-          var taxrate_field = editor.field('itaxrate');
-          var taxprice_field = editor.field('itaxunitprice');
-          
-          if (taxrate_field.val() != undefined && price_field.val() != undefined) {
-            value = (Number.parseFloat(taxrate_field.val()) + 100) * price_field.val()/100;
-            taxprice_field.val(Number.parseFloat(value).toFixed(2));  
-          } 
-        }
-      });
-      
-      $(editor.field('itaxunitprice').input()).on('keydown', function (e, d) {
-        if ( editor ) {
-          //**Reset Plant Manager Approval function
-          var price_field = editor.field('iunitprice');
-          var taxrate_field = editor.field('itaxrate');
-          var taxprice_field = editor.field('itaxunitprice');
-          
-          if (taxrate_field.val() != undefined && taxprice_field.val() != undefined) {
-            value = taxprice_field.val()*100/(Number.parseFloat(taxrate_field.val()) + 100);          
-            price_field.val(Number.parseFloat(value).toFixed(2));  
-          } 
-        }
-      });
-    }
+    
     
     if (state == 3) {
       $('#example').on( 'change', 'input.editor-valid', function () {
@@ -321,11 +300,33 @@ is_vendor = 1;
       });
     }
     
+    $.validator.addMethod("checkTable", function(value, element){
+      var exist_data = table.rows().data().toArray();
+      for(i=0; i<exist_data.length; i++) {
+        exist_row = exist_data[i];
+        
+        if (exist_row.iunitprice == undefined || exist_row.iunitprice == "" || exist_row.iunitprice <= 0) {
+          App.showErrorDialog("操作失败", "最新未税报价不能为空！");
+          return false;
+        }
+        if (exist_row.itaxrate == undefined || exist_row.itaxrate == "" || exist_row.itaxrate <= 0) {
+          App.showErrorDialog("操作失败", "税率不能为空！");
+          return false;
+        }
+        if (exist_row.itaxunitprice == undefined || exist_row.itaxunitprice == "" || exist_row.itaxunitprice <= 0) {
+          App.showErrorDialog("操作失败", "最新含税报价不能为空！");
+          return false;
+        }
+      }
+      return true;
+    }, "");
+    
     $("#form" ).validate({
       // define validation rules
       rules: {
           vendor: {
-              required: true
+              required: true,
+              checkTable: true
           }, 
           tax_rate: {
               required: true
@@ -360,6 +361,7 @@ is_vendor = 1;
     }); 
     
     $("#confirm").click(function() {
+      editor.submit();
       if ($('#type').val() == 1)
         $('#state').val(5);
       else
@@ -368,11 +370,13 @@ is_vendor = 1;
     });
     
     $("#cancel").click(function() {
+      editor.submit();
       $('#state').val(4);
       $("#form").submit();            
     });
     
     $("#pass").click(function() {
+      editor.submit();
       $('#state').val(5);
       $("#form").submit();            
     }); 

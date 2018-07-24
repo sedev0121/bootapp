@@ -40,10 +40,12 @@ public class PurchaseInDetailResult implements Serializable {
 
 	String closed_quantity;
 
+	String remain_quantity;
+
 	public PurchaseInDetailResult(String id, String code, String date, Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
 			String cmassunitname, String assitantunitname, String irate, String number, String state,
-			String closed_quantity) {
+			String closed_quantity, String remain_quantity) {
 
 		this.id = id;
 		this.code = code;
@@ -62,6 +64,7 @@ public class PurchaseInDetailResult implements Serializable {
 		this.number = number;
 		this.state = state;
 		this.closed_quantity = closed_quantity;
+		this.remain_quantity = remain_quantity;
 	}
 
 	public String getId() {

@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +19,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Unit;
+import com.srm.platform.vendor.model.Vendor;
+import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
+import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.UnitNode;
 
 @Controller
@@ -30,6 +36,12 @@ public class UnitController {
 
 	@Autowired
 	private UnitRepository unitRepository;
+
+	@Autowired
+	private VendorRepository vendorRepository;
+
+	@Autowired
+	private AccountRepository accountRepository;
 
 	// 组织架构管理
 	@GetMapping({ "/", "" })
@@ -64,15 +76,36 @@ public class UnitController {
 	// 组织架构管理->删除
 	@Transactional
 	@GetMapping("/{id}/delete")
-	public @ResponseBody Boolean delete_ajax(@PathVariable("id") Long id) {
+	public @ResponseBody GenericJsonResponse<Unit> delete_ajax(@PathVariable("id") Long id) {
 		Unit unit = unitRepository.findOneById(id);
 
 		String childrenUnitIds = unitRepository.findChildrenByGroupId(id);
+		List<String> childUnitList = new ArrayList<>();
+		if (childrenUnitIds != null) {
+			childUnitList.addAll(Arrays.asList(childrenUnitIds.split(",")));
+		}
+		childUnitList.add(String.valueOf(unit.getId()));
+
+		List<Account> accountList = accountRepository.findAccountsByUnitIdList(childUnitList);
+		if (accountList.size() > 0) {
+			GenericJsonResponse<Unit> response = new GenericJsonResponse<>(GenericJsonResponse.FAILED,
+					accountList.size() + "个用户在使用该组织或下属组织。", null);
+			return response;
+		}
+
+		List<Vendor> vendorList = vendorRepository.findVendorsByUnitIdList(childUnitList);
+		if (vendorList.size() > 0) {
+			GenericJsonResponse<Unit> response = new GenericJsonResponse<>(GenericJsonResponse.FAILED,
+					vendorList.size() + "个供应商被属于该组织。", null);
+			return response;
+		}
 
 		unitRepository.delete(unit);
-		unitRepository.deleteByChildIds(childrenUnitIds.split(","));
+		if (childrenUnitIds != null) {
+			unitRepository.deleteByChildIds(childrenUnitIds.split(","));
+		}
 
-		return true;
+		return new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
 	}
 
 	// 组织架构管理->改名

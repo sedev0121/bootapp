@@ -74,7 +74,7 @@ public class InqueryController extends CommonController {
 	}
 
 	// 新建
-	@PreAuthorize("hasAuthority('询价管理-新建/发布')")
+	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
 	@GetMapping({ "/add" })
 	public String add(Model model) {
 		VenPriceAdjustMain main = new VenPriceAdjustMain(accountRepository);
@@ -261,7 +261,7 @@ public class InqueryController extends CommonController {
 		venPriceAdjustMain.setIverifystate(form.getState());
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 
-		if (form.getState() <= Constants.STATE_SUBMIT && form.getTable() != null) {
+		if (form.getState() <= Constants.STATE_PASS && form.getTable() != null) {
 			venPriceAdjustDetailRepository
 					.deleteInBatch(venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode()));
 
@@ -270,7 +270,15 @@ public class InqueryController extends CommonController {
 				detail.setMain(venPriceAdjustMain);
 				detail.setInventory(inventoryRepository.findByCode(row.get("cinvcode")));
 				detail.setCbodymemo(row.get("cbodymemo"));
-				detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
+				if (row.get("iunitprice") != null && !row.get("iunitprice").isEmpty()) {
+					detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
+				}
+
+				if (row.get("ivalid") != null && !row.get("ivalid").isEmpty()) {
+					detail.setIvalid(Integer.parseInt(row.get("ivalid")));
+				} else {
+					detail.setIvalid(0);
+				}
 				String max = row.get("fmaxquantity");
 				String min = row.get("fminquantity");
 				if (max != null && !max.isEmpty())
@@ -284,11 +292,18 @@ public class InqueryController extends CommonController {
 
 				String startDateStr = row.get("dstartdate");
 				String endDateStr = row.get("denddate");
-				detail.setDstartdate(Utils.parseDate(startDateStr));
-				detail.setDenddate(Utils.getNextDate(endDateStr));
+				if (startDateStr != null && !startDateStr.isEmpty())
+					detail.setDstartdate(Utils.parseDate(startDateStr));
+				if (endDateStr != null && !endDateStr.isEmpty())
+					detail.setDenddate(Utils.getNextDate(endDateStr));
 
-				detail.setItaxrate(Float.parseFloat(row.get("itaxrate")));
-				detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
+				if (row.get("rowno") != null && !row.get("rowno").isEmpty())
+					detail.setRowno(Integer.parseInt(row.get("rowno")));
+
+				if (row.get("itaxrate") != null && !row.get("itaxrate").isEmpty())
+					detail.setItaxrate(Float.parseFloat(row.get("itaxrate")));
+				if (row.get("itaxunitprice") != null && !row.get("itaxunitprice").isEmpty())
+					detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
 
 				venPriceAdjustDetailRepository.save(detail);
 			}

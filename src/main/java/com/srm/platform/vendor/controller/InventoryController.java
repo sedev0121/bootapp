@@ -25,7 +25,7 @@ import com.srm.platform.vendor.utility.InventorySearchItem;
 //商品档案表
 @Controller
 @RequestMapping(path = "/inventory")
-@PreAuthorize("hasRole('ROLE_BUYER')")
+
 public class InventoryController extends CommonController {
 
 	@PersistenceContext
@@ -35,12 +35,14 @@ public class InventoryController extends CommonController {
 	private InventoryRepository inventoryRepository;
 
 	// 查询列表
+	@PreAuthorize("hasRole('ROLE_BUYER')")
 	@GetMapping({ "/", "" })
 	public String index() {
 		return "inventory/index";
 	}
 
 	// 详细
+	@PreAuthorize("hasRole('ROLE_BUYER')")
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
 		Inventory main = inventoryRepository.findByCode(code);
@@ -52,6 +54,7 @@ public class InventoryController extends CommonController {
 	}
 
 	// 查询列表API
+	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR')")
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<Inventory> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));

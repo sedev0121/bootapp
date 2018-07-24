@@ -116,13 +116,20 @@ var App = function() {
       else if (suffix < 100)
         suffix = '0' + suffix;
 
-      return $.datepicker.formatDate('yymmdd', new Date()) + hours + minutes + seconds + millisecs + suffix;
+      return $.datepicker.formatDate('yymmdd', new Date()) + hours + minutes + seconds + millisecs;
     },
     
     getSelect2Options: function(search_url) {
       return $.extend(true, {ajax:{url:search_url}}, select2_default_options);
     },
-  
+    getSelect2TagOptions: function(search_url) {
+      return $.extend(true, {
+        maximumSelectionLength: 5,
+        ajax:{
+          url:search_url
+        },  
+      }, select2_default_options);
+    }, 
     getInqueryStateData: function() {
       return inquery_state_data;
     },
@@ -179,7 +186,9 @@ var App = function() {
     getPurchaseInBredvouchOfId: function(id) {
       return getLabelOfId(purchase_in_bredvouch_data, id);
     },
-
+    getInqueryTypeOfId: function(id) {
+      return getLabelOfId(inquery_type, id);
+    },
     getInqueryTypeData: function() {
       return inquery_type;
     },
@@ -198,7 +207,7 @@ var App = function() {
       else if (data == 0)
         return '【否】';
       else
-        return "";
+        return "【否】";
     },
     blockUI : function(options) {
       options = $.extend(true, {}, options);
@@ -260,7 +269,7 @@ var App = function() {
         "type": "error"
       })
     },
-    showConfirmDialog: function(title, callback) {
+    showConfirmDialog: function(title, ok_callback,cancel_callback) {
       swal({
         title: title,
         type: 'warning',
@@ -269,7 +278,11 @@ var App = function() {
         cancelButtonText: '否'
       }).then((result) => {
         if (result.value) {
-          callback();
+          if (ok_callback)
+            ok_callback();
+        }else{
+          if (cancel_callback)
+            cancel_callback();
         }
       })
     },

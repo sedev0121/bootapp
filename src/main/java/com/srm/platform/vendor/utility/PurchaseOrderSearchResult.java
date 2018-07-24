@@ -29,13 +29,15 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	private Float money;
 
+	private Float prepaymoney;
+
 	private Integer srmstate;
 
 	private String purchase_type_name;
 
 	public PurchaseOrderSearchResult(String code, String state, String vendorname, String deployername,
 			String reviewername, Date deploydate, Date reviewdate, String maker, Date makedate, Float sum, Float money,
-			Integer srmstate, String purchase_type_name) {
+			Integer srmstate, String purchase_type_name, Float prepaymoney) {
 		this.code = code;
 		this.state = state;
 		this.vendorname = vendorname;
@@ -49,7 +51,20 @@ public class PurchaseOrderSearchResult implements Serializable {
 		this.money = money;
 		this.srmstate = srmstate;
 		this.purchase_type_name = purchase_type_name;
+		this.prepaymoney = prepaymoney;
 
+	}
+
+	public Float getPrepaymoney() {
+		return prepaymoney;
+	}
+
+	public void setPrepaymoney(Float prepaymoney) {
+		this.prepaymoney = prepaymoney;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
 	public String getCode() {

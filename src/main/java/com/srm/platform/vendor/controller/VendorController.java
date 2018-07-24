@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.thymeleaf.util.StringUtils;
 
+import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Vendor;
+import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.SearchItem;
@@ -32,6 +35,9 @@ public class VendorController extends CommonController {
 
 	@Autowired
 	private VendorRepository vendorRepository;
+
+	@Autowired
+	private AccountRepository accountRepository;
 
 	@Autowired
 	private UnitRepository unitRepository;
@@ -51,9 +57,13 @@ public class VendorController extends CommonController {
 		if (vendor == null)
 			show404();
 
-		checkVendor(vendor);
+		if (!isAdmin()) {
+			checkVendor(vendor);
+		}
 
+		List<Account> accountList = accountRepository.findAccountsByVendor(vendor.getCode());
 		model.addAttribute("data", vendor);
+		model.addAttribute("accounts", accountList);
 		return "vendor/edit";
 	}
 
@@ -116,5 +126,24 @@ public class VendorController extends CommonController {
 		vendorRepository.save(vendor);
 
 		return vendor;
+	}
+
+	// 修改
+	@Transactional
+	@PostMapping("/set_unit")
+	public @ResponseBody Integer setUnit(@RequestParam Map<String, String> requestParams) {
+		String vendorList = requestParams.get("vendor_list");
+
+		String unitId = requestParams.get("unit_id");
+
+		String[] vendorCodeList = StringUtils.split(vendorList, ",");
+
+		for (String vendorCode : vendorCodeList) {
+			Vendor vendor = vendorRepository.findOneByCode(vendorCode);
+			vendor.setUnit(unitRepository.findOneById(Long.parseLong(unitId)));
+			vendorRepository.save(vendor);
+		}
+
+		return 1;
 	}
 }

@@ -102,6 +102,10 @@ public class QuoteController extends CommonController {
 		if (main == null)
 			show404();
 
+		if (main.getIverifystate() <= Constants.STATE_NEW) {
+			show403();
+		}
+
 		checkVendor(main.getVendor());
 
 		model.addAttribute("main", main);

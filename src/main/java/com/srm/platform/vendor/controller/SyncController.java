@@ -80,10 +80,12 @@ public class SyncController {
 
 	@GetMapping({ "", "/", "/all" })
 	public boolean index() {
-		this.vendorUpdateAll();
-		this.inventory();
 		this.measurementunit();
 		this.inventoryClass();
+		this.inventory();
+		this.vendorUpdateAll();
+		this.purchaseinUpdateAll();
+		this.purchaseorderUpdateAll();
 
 		return true;
 	}

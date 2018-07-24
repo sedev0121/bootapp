@@ -30,4 +30,6 @@ public interface VenPriceDetailItem {
 
 	String getCbodymemo();
 
+	Integer getRowno();
+
 }

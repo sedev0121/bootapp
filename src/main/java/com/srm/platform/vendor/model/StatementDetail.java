@@ -28,6 +28,9 @@ public class StatementDetail {
 	@Column(name = "closed_tax_price")
 	private Float closedTaxPrice;
 
+	@Column(name = "tax_rate")
+	private Float taxRate;
+
 	@Column(name = "closed_tax_money")
 	private Float closedTaxMoney;
 
@@ -48,6 +51,14 @@ public class StatementDetail {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Float getTaxRate() {
+		return taxRate;
+	}
+
+	public void setTaxRate(Float taxRate) {
+		this.taxRate = taxRate;
 	}
 
 	public Float getClosedQuantity() {
