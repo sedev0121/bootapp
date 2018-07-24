@@ -25,7 +25,13 @@ import com.srm.platform.vendor.utility.NoticeSearchResult;
 				@ColumnResult(name = "content", type = String.class),
 				@ColumnResult(name = "create_date", type = Date.class),
 				@ColumnResult(name = "create_name", type = String.class),
-				@ColumnResult(name = "create_unitname", type = String.class) }) })
+				@ColumnResult(name = "create_unitname", type = String.class),
+				@ColumnResult(name = "verify_date", type = Date.class),
+				@ColumnResult(name = "verify_name", type = String.class),
+				@ColumnResult(name = "state", type = Integer.class),
+				@ColumnResult(name = "to_all_vendor", type = Integer.class),
+				@ColumnResult(name = "to_unit_account", type = Integer.class),
+				@ColumnResult(name = "attach_file_name", type = String.class) }) })
 
 public class Notice {
 
@@ -44,7 +50,18 @@ public class Notice {
 
 	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "create_account", referencedColumnName = "id")
-	private Account account;
+	private Account createAccount;
+
+	private Date verifyDate;
+	@OneToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumn(name = "verify_account", referencedColumnName = "id")
+	private Account verifyAccount;
+
+	private Integer type;
+	private Integer state;
+	private Integer toAllVendor;
+	private Integer toUnitAccount;
+	private String attachFileName;
 
 	public Notice() {
 		this.createDate = new Date();
@@ -90,12 +107,68 @@ public class Notice {
 		this.unit = unit;
 	}
 
-	public Account getAccount() {
-		return account;
+	public Account getCreateAccount() {
+		return createAccount;
 	}
 
-	public void setAccount(Account account) {
-		this.account = account;
+	public void setCreateAccount(Account createAccount) {
+		this.createAccount = createAccount;
+	}
+
+	public Date getVerifyDate() {
+		return verifyDate;
+	}
+
+	public void setVerifyDate(Date verifyDate) {
+		this.verifyDate = verifyDate;
+	}
+
+	public Account getVerifyAccount() {
+		return verifyAccount;
+	}
+
+	public void setVerifyAccount(Account verifyAccount) {
+		this.verifyAccount = verifyAccount;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
+	public Integer getToAllVendor() {
+		return toAllVendor;
+	}
+
+	public void setToAllVendor(Integer toAllVendor) {
+		this.toAllVendor = toAllVendor;
+	}
+
+	public Integer getToUnitAccount() {
+		return toUnitAccount;
+	}
+
+	public void setToUnitAccount(Integer toUnitAccount) {
+		this.toUnitAccount = toUnitAccount;
+	}
+
+	public String getAttachFileName() {
+		return attachFileName;
+	}
+
+	public void setAttachFileName(String attachFileName) {
+		this.attachFileName = attachFileName;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 
 }

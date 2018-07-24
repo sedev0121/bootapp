@@ -9,10 +9,28 @@
       </li>
       <li class="active">公告通知</li>
     </ul>
-    <div class="search-content form-inline">
-        <div class="search-cell width-18">
-          <label for="supplier_code">标题/内容：</label>
+    <div class="search-content">
+        <div class="search-cell width-4">
+          <label for="search">标题/内容：</label>
           <input type="text" id="search" class="form-control">
+        </div>
+        <div class="search-cell width-4">
+          <label for="start_date">发布时间：</label>
+          <input type="text" id="start_date" class="form-control datepicker">
+        </div>
+        <div class="search-cell width-4">
+          <label for="end_date">&nbsp;</label>
+          <input type="text" id="end_date" class="form-control datepicker">
+        </div>
+        <div class="search-cell width-4">
+          <label for="create_account">创建人：</label>
+          <input type="text" id="create_account" class="form-control">
+        </div>
+        <div class="search-cell width-3">
+          <label for="state">状态：</label>
+          <select type="text" id="state" class="form-control"></select>
+        </div>
+        <div style="vertical-align: bottom" class="search-cell width-10">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
           <a class="btn btn-primary" th:href="@{/notice/add}" sec:authorize="hasRole('ROLE_BUYER')"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
@@ -28,55 +46,99 @@
 </html>
 <script th:inline="javascript">
 $(document).ready(function() {
-    var table = $('#example').DataTable({
-      ordering: true,
-      ajax : {
-        url : /*[[@{/notice/list}]]*/'',
-        data : function(data) {
-          var filter = {
-            rows_per_page : data.length,
-            page_index : data.start / data.length + 1,
-            order: data.columns[data.order[0].column].data,
-            dir:data.order[0].dir,
-            search: $('#search').val()
-          }
-          return filter;
-        },
-        dataSrc : function(json) {
-          json.recordsTotal = json.totalElements;
-          json.recordsFiltered = json.totalElements;
-          return json.content;
-        },
-      },
-      order: [ [1, 'desc'] ],
-      columns : [ {
-        data : 'title',
-        title : '标题',
-        render: function (data, display, record) {
-          var edit_url = /*[[@{/notice/}]]*/'';
-          edit_url +=  record.id + '/edit';
-          return '<a href="' + edit_url + '">' + data  + '</a>';
-        },
-      }, {
-          data : 'create_date',
-          title : '发布日期',
-          render : $.fn.date_renderer
-      }, {
-          data : 'create_unitname',
-          title : '发布组织',
-      }, {    	  
-        data : 'create_name',
-        title : '发布人',
-      } ],
-    });
+  var table;
+  $("#state").select2({
+    data : App.getNoticeStateDataWithAll(),
+    minimumResultsForSearch : -1
+  });
 
-    $("#btn_search").click(function() {
+  $(".datepicker").datepicker({
+    onSelect: function(dateText) {
       table.draw();
-    });
-    
-    $('#search').keyup(function(e){
-        if(e.keyCode == 13)
-            table.draw();
-    });
+    }
+  });
+  
+  table = $('#example').DataTable({
+    ordering: true,
+    ajax : {
+      url : /*[[@{/notice/list}]]*/'',
+      data : function(data) {
+        var filter = {
+          rows_per_page : data.length,
+          page_index : data.start / data.length + 1,
+          order: data.columns[data.order[0].column].data,
+          dir:data.order[0].dir,
+          search: $('#search').val(),
+          start_date: $('#start_date').val(),
+          end_date: $('#end_date').val(),
+          state: $('#state').val(),
+          create_account: $('#create_account').val()
+        }
+        return filter;
+      },
+      dataSrc : function(json) {
+        json.recordsTotal = json.totalElements;
+        json.recordsFiltered = json.totalElements;
+        return json.content;
+      },
+    },
+    order: [ [2, 'desc'] ],
+    columns : [ {
+      data : 'title',
+      title : '标题',
+      render: function (data, display, record) {
+        var edit_url = /*[[@{/notice/}]]*/'';
+        edit_url +=  record.id + '/edit';
+        return '<a href="' + edit_url + '">' + data  + '</a>';
+      },
+    }, {        
+      data : 'create_name',
+      className: 'dt-center',
+      title : '创建人',        
+    }, {
+      data : 'create_date',
+      className: 'dt-center',
+      title : '创建时间',
+      render : $.fn.date_renderer
+    }, {        
+      data : 'verify_name',
+      className: 'dt-center',
+      title : '发布人',
+    }, {
+      data : 'verify_date',
+      title : '发布时间',
+      className: 'dt-center',
+      render : $.fn.date_renderer
+    }, {
+      data : 'to_all_vendor',
+      className: 'dt-center',
+      render: App.valid_render,
+      title : '全部供应商',
+    }, {
+      data : 'to_unit_account',
+      className: 'dt-center',
+      render: App.valid_render,
+      title : '内部人员',
+    }, {
+      data : 'state',
+      className: 'dt-center',
+      createdCell: App.getInqueryStateClass,
+      render : App.getNoticeStateOfId,
+      title : '状态',
+    } ],
+  });
+
+  $('#state').change(function() {
+    table.draw();
+  });
+  
+  $("#btn_search").click(function() {
+    table.draw();
+  });
+  
+  $('#search, #state_date, #end_date, #create_account').keyup(function(e){
+      if(e.keyCode == 13)
+          table.draw();
+  });
 });
     </script>
