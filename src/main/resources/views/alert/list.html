@@ -7,7 +7,7 @@
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li class="active">系统消息</li>
+      <li class="active">预警信息</li>
     </ul>
     <div class="search-content form-inline">
         <div class="form-group">
@@ -31,10 +31,13 @@
 </html>
 <script th:inline="javascript">
 $(document).ready(function() {
-  var table = $('#example').DataTable({
+  var table;
+  
+  
+  table = $('#example').DataTable({
     ordering: true,
     ajax : {
-      url : /*[[@{/message/list}]]*/'',
+      url : /*[[@{/alert/list}]]*/'',
       data : function(data) {
         var filter = {
           rows_per_page : data.length,
@@ -58,7 +61,7 @@ $(document).ready(function() {
       data : 'title',
       title : '标题',
       render: function (data, display, record) {
-        var edit_url = /*[[@{/message/}]]*/'';
+        var edit_url = /*[[@{/alert/}]]*/'';
         edit_url +=  record.id + '/edit';
         return '<a href="' + edit_url + '">' + data  + '</a>';
       },

@@ -108,12 +108,13 @@
             <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/report')} ? active : ''" >
               <a th:href="@{/report}">报表中心</a>
             </li>
-            <li class="dropdown" th:classappend="(${#strings.startsWith(#request.requestURI,'/notice')} or ${#strings.startsWith(#request.requestURI,'/message')})? active : ''" >   
+            <li class="dropdown" th:classappend="(${#strings.startsWith(#request.requestURI,'/notice')} or ${#strings.startsWith(#request.requestURI,'/message')} or ${#strings.startsWith(#request.requestURI,'/alert')})? active : ''" >   
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">公告通知 </a>
                 
               <ul class="dropdown-menu">
                 <li><a th:href="@{/notice}">公告通知</a></li>
                 <li><a th:href="@{/message}">系统消息</a></li>
+                <li><a th:href="@{/alert}">预警信息</a></li>
               </ul>
             </li>
           </ul>
@@ -134,8 +135,8 @@
             <li th:classappend="${#strings.startsWith(#request.requestURI,'/vendor')} ? active : ''" >
               <a th:href="@{/vendor}">供应商管理</a>
             </li>
-            <li th:classappend="${#strings.startsWith(#request.requestURI,'/message')} ? active : ''" >
-              <a th:href="@{/message}">系统消息</a>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/notice')} ? active : ''" >
+              <a th:href="@{/notice}">公告通知</a>
             </li>
           </ul>
         </div>
