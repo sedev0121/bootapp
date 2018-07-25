@@ -111,6 +111,17 @@ public class VendorController extends CommonController {
 
 	}
 
+	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR') or hasRole('ROLE_ADMIN')")
+	@ResponseBody
+	@RequestMapping(value = "/select", produces = "application/json")
+	public Page<SearchItem> select_ajax(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "b.name");
+
+		List<String> unitList = this.getDefaultUnitList();
+		return vendorRepository.findForNotice(unitList, search, request);
+
+	}
+
 	// 修改
 	@Transactional
 	@PostMapping("/update")
