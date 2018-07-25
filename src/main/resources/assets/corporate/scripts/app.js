@@ -13,6 +13,7 @@ var App = function() {
   var purchase_in_state_data = [{id:0, text:'未对账'}, {id:1, text:'已对账'}];
   var purchase_in_bredvouch_data = [{id:0, text:'蓝字'}, {id:1, text:'红字'}];
   var statement_state_data = [{id:1, text:"新建"}, {id:2, text:"发布"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"审核"}];
+  var notice_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"发布"}, {id:4, text:"退回"}];
     
   var getLabelOfId = function(store, id) {
     var title = "";
@@ -133,7 +134,35 @@ var App = function() {
     getInqueryStateData: function() {
       return inquery_state_data;
     },
-    
+    getNoticeStateData: function() {
+      return notice_state_data;
+    },
+    bs_input_file:function() {
+      $(".input-file").before(
+        function() {
+          if ( ! $(this).prev().hasClass('input-ghost') ) {
+            var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0'>");
+            element.attr("name",$(this).attr("name"));
+            element.change(function(){
+              element.next(element).find('input').val((element.val()).split('\\').pop());
+            });
+            $(this).find("button.btn-choose").click(function(){
+              element.click();
+            });
+            $(this).find("button.btn-reset").click(function(){
+              element.val(null);
+              $(this).parents(".input-file").find('input').val('');
+            });
+            $(this).find('input').css("cursor","pointer");
+            $(this).find('input').mousedown(function() {
+              $(this).parents('.input-file').prev().click();
+              return false;
+            });
+            return element;
+          }
+        }
+      );
+    },
     addKeyDownEditor: addKeyDownEditor,
     getPurchaseOrderStateData: function() {
       return purchase_order_state_data;
@@ -143,6 +172,9 @@ var App = function() {
     },
     getStatementStateData: function() {
       return statement_state_data;
+    },
+    getNoticeStateDataWithAll: function() {
+      return [{id:-1, text:"　"}, ...notice_state_data];
     },
     getStatementStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...statement_state_data];
@@ -173,6 +205,9 @@ var App = function() {
     },
     getInqueryStateOfId: function(id) {
       return getLabelOfId(inquery_state_data, id);
+    },
+    getNoticeStateOfId: function(id) {
+      return getLabelOfId(notice_state_data, id);
     },
     getStatementStateOfId: function(id) {
       return getLabelOfId(statement_state_data, id);

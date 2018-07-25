@@ -102,6 +102,21 @@ public class ApiClient {
 
 	}
 
+	public String getLinkU8BatchWeiwai(Map<String, String> requestParams) {
+
+		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
+		String page_index = requestParams.getOrDefault("page_index", "1");
+		String name = requestParams.getOrDefault("name", "");
+
+		logger.info("start getBatchProductIn api");
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getLinku8().getBatch_get_weiwai(), rows_per_page, page_index, name);
+		logger.info(String.format("url=>%s", url));
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+		return response;
+	}
+
 	public String getBatchVendor(Map<String, String> requestParams) {
 
 		checkToken();

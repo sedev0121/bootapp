@@ -13,36 +13,71 @@
     </ul>
     <div class="btn-group-bar">
       <div class="text-right">
-          <a class="btn btn-primary" id="save" sec:authorize="hasRole('ROLE_BUYER')"><i class="fa fa-save"></i> 保存</a>
-          <a class="btn btn-danger" id="del" th:if="${notice.id}" sec:authorize="hasRole('ROLE_BUYER')"><i class="fa fa-remove"></i> 删除</a>
-          <a class="btn btn-default" th:href="@{/notice}"><i class="fa fa-arrow-left"></i> 返回</a>
+        <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}" id="save"><i class="fa fa-save"></i> 保存</a>
+        <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}" id="submit"><i class="fa fa-share"></i> 提交</a>
+        <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')" th:if="${notice.createAccount?.id==session.account_id and notice.id !=null and (notice.state==1  || notice.state==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
+        <a class="btn btn-primary" sec:authorize="hasAuthority('公告通知-发布')" th:if="${notice.state==2}" id="verify"><i class="fa fa-check-square"></i> 发布</a>
+        <a class="btn btn-primary" sec:authorize="hasAuthority('公告通知-发布')" th:if="${notice.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+        <a class="btn btn-default" th:href="@{/notice}"><i class="fa fa-arrow-left"></i> 返回</a>
       </div>
     </div>
-    <form id="form" th:action="@{/notice/update}" method="post">  
+    
+    
+    <form id="form" th:action="@{/notice/update}" method="post" enctype="multipart/form-data">  
     <input type="hidden" id="id" name="id" th:value="${notice.id}">
     <div class="panel panel-default">
       <div class="panel-body form-body"> 
         <div class="row">
-          <div class="col-lg-6 col-md-6 form-group">
+          <div class="col-lg-10 col-md-10 form-group">
             <label for="title">标题: </label>
             <input type="text" name="title" id="title" class="form-control" th:value="${notice.title}">
           </div>
           <div class="col-lg-2 col-md-2 form-group">
-            <label for="title">发布组织: </label>
-            <input type="text" class="form-control" readonly th:value="${notice.unit.name}">
-          </div>
-          <div class="col-lg-2 col-md-2 form-group">
-            <label for="title">发布人: </label>
-            <input type="text" class="form-control" readonly th:value="${notice.account.realname}">
-          </div>
-          <div class="col-lg-2 col-md-2 form-group">
-            <label for="title">发布日期: </label>
-            <input type="text" class="form-control" readonly th:value="${#dates.format(notice.createDate, 'yyyy-MM-dd HH:mm:ss')}">
+            <label for="title">状态: </label>
+            <select type="text" id="state" name="state" class="form-control" readonly></select>
           </div>                    
+          
           <div class="col-lg-12 col-md-12 form-group">
             <label for="content">内容: </label>
-            <textarea name="content" id="content" class="form-control" rows=10 th:text="${notice.content}"></textarea>
+            <textarea name="content" id="content" class="form-control" rows=5 th:text="${notice.content}"></textarea>
           </div>
+          <div class="col-lg-12 col-md-12 form-group" id="file_select" th:if="${(notice.state==1 or notice.state == 4) and notice.attachFileName == null}">
+            <label for="content">附件: </label>
+            <div class="input-group input-file" name="attach">
+              <span class="input-group-btn">
+                <button class="btn btn-success btn-file btn-choose" type="button">选择附件</button>
+              </span>
+              <input type="text" class="form-control" placeholder='请选择附件' />
+              <span class="input-group-btn">
+                 <button class="btn btn-warning btn-file btn-reset" type="button">重置</button>
+              </span>
+            </div>
+          </div>
+          <div class="col-lg-12 col-md-12 form-group" id="file_show" th:if="${notice.attachFileName != null}">
+            <label for="content">附件: </label>
+            <div>
+              <a th:href="@{|/uploads/notice/${notice.attachFileName}|}" th:if="${notice.attachFileName}" th:text="${notice.attachOriginalName}"></a>
+              <span th:if="!${notice.attachFileName}">---</span>
+              
+              <a class="btn btn-danger" id="del_attach" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}">删除附件</a>
+            </div>
+          </div>
+          <div class="col-lg-2 col-md-2 form-group">
+            <label for="title">创建人: </label>
+            <input type="text" class="form-control" readonly th:value="${notice.createAccount?.realname}">
+          </div>
+          <div class="col-lg-2 col-md-2 form-group">
+            <label for="title">创建时间: </label>
+            <input type="text" class="form-control" readonly th:value="${#dates.format(notice.createDate, 'yyyy-MM-dd HH:mm:ss')}">
+          </div>                    
+          <div class="col-lg-2 col-md-2 form-group">
+            <label for="title">发布人: </label>
+            <input type="text" class="form-control" readonly th:value="${notice.verifyAccount?.realname}">
+          </div>
+          <div class="col-lg-2 col-md-2 form-group">
+            <label for="title">发布时间: </label>
+            <input type="text" class="form-control" readonly th:value="${#dates.format(notice.verifyDate, 'yyyy-MM-dd HH:mm:ss')}">
+          </div> 
         </div>
       </div>
     </div>
@@ -57,62 +92,104 @@ is_vendor = 1;
 
 <script th:inline="javascript">
 var edit_url = /*[[@{/notice/}]]*/'';
-
+var state = /*[[${notice.state}]]*/'';
+/*[+
+var isEditable = [[${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}?true:false]];
+var hasAttach = [[${notice.attachFileName != null}]];
++]*/ 
 
 jQuery(document).ready(function() {   
 
-    if (is_vendor){
-      $('#title').attr("readonly", true);
-      $("#content").attr("readonly", true);
-    }
-    
-    var is_add = $("#id").val().length==0;
-    $("#form" ).validate({
-        // define validation rules
-        rules: {
-        	title: {
-                required: true
-            }, 
-            content: {
-                required: true
-            },
-        },
-        
-        //display error alert on form submit  
-        invalidHandler: function(event, validator) {
-          App.showErrorDialog("输入有误", "请输入正确的值");
-        },
+  App.bs_input_file();
+  $("#state").select2({ data: App.getNoticeStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
   
-        submitHandler: function (form) {
-            jQuery(form).ajaxSubmit({
-                success: function(res, status, xhr, form) {
-                  App.showSuccessDialog("操作成功", function(){
-                      window.location.href = edit_url + res.id + "/edit";
-                  });
-                },
-                error: function (res, status, xhr, form) {
-                  App.showErrorDialog("操作失败", "请输入正确的值");
-                }
-            });
-        }
-      }); 
+  if (!isEditable){
+    $('#title').attr("readonly", true);
+    $("#content").attr("readonly", true);
     
-    $("#save").click(function() {
-        $("#form").submit();            
-    });
-    
-    $("#del").click(function(){
-      App.showConfirmDialog('确定要删除吗?', function(){
-        var del_url = edit_url + $("#id").val() + "/delete";  
-        $.get(del_url, function(data, status){
-          App.showSuccessDialog("操作成功", function() {
-            window.location.href = edit_url;
+  }else{
+    if (hasAttach){
+      $('#file_select').hide();
+      $('#file_show').show();
+    }else{
+      $('#file_select').show();
+      $('#file_show').hide();
+    }
+  }
+  
+  var is_add = $("#id").val().length==0;
+  $("#form" ).validate({
+      // define validation rules
+      rules: {
+          title: {
+              required: true
+          }, 
+          content: {
+              required: true
+          },
+      },
+      
+      //display error alert on form submit  
+      invalidHandler: function(event, validator) {
+        App.showErrorDialog("输入有误", "请输入正确的值");
+      },
+
+      submitHandler: function (form) {
+          jQuery(form).ajaxSubmit({
+              success: function(res, status, xhr, form) {
+                App.showSuccessDialog("操作成功", function(){
+                    window.location.href = edit_url + res.id + "/edit";
+                });
+              },
+              error: function (res, status, xhr, form) {
+                App.showErrorDialog("操作失败", "请输入正确的值");
+              }
           });
+      }
+    }); 
+  
+  $("#save").click(function() {
+    $('#state').val(1);
+    $("#form").submit();            
+  });
+  
+  $("#submit").click(function() {
+    $('#state').val(2);
+    $("#form").submit();            
+  });
+  
+  $("#verify").click(function() {
+    $('#state').val(3);
+    $("#form").submit();            
+  });
+
+  $("#cancel").click(function() {
+    $('#state').val(4);
+    $("#form").submit();            
+  });
+  
+  
+  $("#delete").click(function(){
+    App.showConfirmDialog('确定要删除吗?', function(){
+      var del_url = edit_url + $("#id").val() + "/delete";  
+      $.get(del_url, function(data, status){
+        App.showSuccessDialog("操作成功", function() {
+          window.location.href = edit_url;
         });
       });
     });
+  });
 
-    
+  $("#del_attach").click(function(){
+    App.showConfirmDialog('确定要删除吗?', function(){
+      var del_url = edit_url + $("#id").val() + "/deleteattach";  
+      $.get(del_url, function(data, status){
+        App.showSuccessDialog("操作成功", function() {
+          window.location.reload(true);
+        });
+      });
+    });
+  });
 
 });
 

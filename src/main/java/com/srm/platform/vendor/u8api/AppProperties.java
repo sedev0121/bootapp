@@ -21,6 +21,8 @@ public class AppProperties {
 	private PropertyInventoryClass inventoryClass;
 	private PropertyVenPriceAdjust venPriceAdjust;
 
+	private PropertyLinkU8 linku8;
+
 	public String getFrom_account() {
 		return from_account;
 	}
@@ -51,6 +53,14 @@ public class AppProperties {
 
 	public void setSystem(PropertySystem system) {
 		this.system = system;
+	}
+
+	public PropertyLinkU8 getLinku8() {
+		return linku8;
+	}
+
+	public void setLinku8(PropertyLinkU8 linku8) {
+		this.linku8 = linku8;
 	}
 
 	public PropertyVendor getVendor() {
@@ -135,6 +145,28 @@ public class AppProperties {
 
 		public void setGet(String get) {
 			this.get = get;
+		}
+
+	}
+
+	public static class PropertyLinkU8 {
+		private String batch_get;
+		private String batch_get_weiwai;
+
+		public String getBatch_get() {
+			return batch_get;
+		}
+
+		public void setBatch_get(String batch_get) {
+			this.batch_get = batch_get;
+		}
+
+		public String getBatch_get_weiwai() {
+			return batch_get_weiwai;
+		}
+
+		public void setBatch_get_weiwai(String batch_get_weiwai) {
+			this.batch_get_weiwai = batch_get_weiwai;
 		}
 
 	}

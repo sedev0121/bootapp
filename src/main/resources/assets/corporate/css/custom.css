@@ -19,7 +19,9 @@ body {
   padding:6px 12px;
 }
 
-
+.btn-file {
+    border-bottom:none;
+}
 input[type=file]:focus, input[type=checkbox]:focus, input[type=radio]:focus {
     outline: thin dotted;
     outline: 0px auto -webkit-focus-ring-color;

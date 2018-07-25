@@ -19,8 +19,21 @@ public class NoticeSearchResult implements Serializable {
 
 	String create_unitname;
 
+	Date verify_date;
+
+	String verify_name;
+
+	Integer state;
+
+	Integer to_all_vendor;
+
+	Integer to_unit_account;
+
+	String attach_file_name;
+
 	public NoticeSearchResult(String id, String title, String content, Date create_date, String create_name,
-			String create_unitname) {
+			String create_unitname, Date verify_date, String verify_name, Integer state, Integer to_all_vendor,
+			Integer to_unit_account, String attach_file_name) {
 
 		this.id = id;
 		this.title = title;
@@ -28,6 +41,12 @@ public class NoticeSearchResult implements Serializable {
 		this.create_date = create_date;
 		this.create_name = create_name;
 		this.create_unitname = create_unitname;
+		this.verify_date = verify_date;
+		this.verify_name = verify_name;
+		this.state = state;
+		this.to_all_vendor = to_all_vendor;
+		this.to_unit_account = to_unit_account;
+		this.attach_file_name = attach_file_name;
 	}
 
 	public String getId() {
@@ -76,6 +95,54 @@ public class NoticeSearchResult implements Serializable {
 
 	public void setCreate_unitname(String create_unitname) {
 		this.create_unitname = create_unitname;
+	}
+
+	public Date getVerify_date() {
+		return verify_date;
+	}
+
+	public void setVerify_date(Date verify_date) {
+		this.verify_date = verify_date;
+	}
+
+	public String getVerify_name() {
+		return verify_name;
+	}
+
+	public void setVerify_name(String verify_name) {
+		this.verify_name = verify_name;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
+	public Integer getTo_all_vendor() {
+		return to_all_vendor;
+	}
+
+	public void setTo_all_vendor(Integer to_all_vendor) {
+		this.to_all_vendor = to_all_vendor;
+	}
+
+	public Integer getTo_unit_account() {
+		return to_unit_account;
+	}
+
+	public void setTo_unit_account(Integer to_unit_account) {
+		this.to_unit_account = to_unit_account;
+	}
+
+	public String getAttach_file_name() {
+		return attach_file_name;
+	}
+
+	public void setAttach_file_name(String attach_file_name) {
+		this.attach_file_name = attach_file_name;
 	}
 
 }

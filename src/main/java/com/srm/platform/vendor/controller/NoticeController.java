@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Query;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +27,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.srm.platform.vendor.model.Notice;
-import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.NoticeSearchResult;
+import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
@@ -56,6 +60,8 @@ public class NoticeController extends CommonController {
 		String search = requestParams.getOrDefault("search", "");
 		String start_date = requestParams.getOrDefault("start_date", null);
 		String end_date = requestParams.getOrDefault("end_date", null);
+		String state = requestParams.getOrDefault("state", null);
+		String create_account = requestParams.getOrDefault("create_account", null);
 
 		Date startDate = Utils.parseDate(start_date);
 		Date endDate = Utils.getNextDate(end_date);
@@ -72,22 +78,32 @@ public class NoticeController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT a.*, b.realname create_name, c.name create_unitname ";
-		String countQuery = "select count(*) ";
+		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name ";
+		String countQuery = "select count(distinct a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id where 1=1 ";
+		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id "
+				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id where type=1 ";
 
 		List<String> unitList = this.getDefaultUnitList();
 		Map<String, Object> params = new HashMap<>();
 
-		if (isVendor()) {
-			Vendor vendor = this.getLoginAccount().getVendor();
-			String vendorStr = vendor == null ? "0" : vendor.getCode();
+		params.put("create_account", this.getLoginAccount().getId());
+		params.put("to_account", this.getLoginAccount().getId());
 
+		if (isVendor()) {
+			bodyQuery += " and e.to_account_id=:to_account and a.state=:state";
+			params.put("to_account", this.getLoginAccount().getId());
 		} else {
-			// bodyQuery += " and c.unit_id in :unitList";
-			// params.put("unitList", unitList);
+			if (this.hasAuthority("公告通知-发布")) {
+				bodyQuery += " and ((a.create_unit in :unitList and a.state=1) or create_account=:create_account or (e.to_account_id=:to_account and a.state=3))";
+				params.put("unitList", unitList);
+				params.put("to_account", this.getLoginAccount().getId());
+			} else {
+				bodyQuery += " and (create_account=:create_account or (e.to_account_id=:to_account and a.state=3))";
+				params.put("create_account", this.getLoginAccount().getId());
+				params.put("to_account", this.getLoginAccount().getId());
+			}
 		}
 
 		if (!search.trim().isEmpty()) {
@@ -96,12 +112,20 @@ public class NoticeController extends CommonController {
 		}
 
 		if (startDate != null) {
-			bodyQuery += " and a.create_date>=:startDate";
+			bodyQuery += " and a.verify_date>=:startDate";
 			params.put("startDate", startDate);
 		}
 		if (endDate != null) {
-			bodyQuery += " and a.create_date<:endDate";
+			bodyQuery += " and a.verify_date<:endDate";
 			params.put("endDate", endDate);
+		}
+		if (create_account != null) {
+			bodyQuery += " and b.realname like CONCAT('%',:createAccount, '%')";
+			params.put("createAccount", create_account);
+		}
+		if (state != null && !state.equals("-1")) {
+			bodyQuery += " and a.state=:state";
+			params.put("state", state);
 		}
 
 		countQuery += bodyQuery;
@@ -135,18 +159,18 @@ public class NoticeController extends CommonController {
 		return "notice/edit";
 	}
 
-	// 用户管理->新建
+	// 新建
 	@GetMapping("/add")
 	@PreAuthorize("hasAuthority('ROLE_BUYER')")
 	public String add(Model model) {
 		Notice notice = new Notice();
 		notice.setUnit(this.getLoginAccount().getUnit());
-		notice.setAccount(this.getLoginAccount());
+		notice.setCreateAccount(this.getLoginAccount());
 		model.addAttribute("notice", notice);
 		return "notice/edit";
 	}
 
-	// 用户管理->删除
+	// 删除
 	@GetMapping("/{id}/delete")
 	@PreAuthorize("hasAuthority('ROLE_BUYER')")
 	public @ResponseBody Boolean delete(@PathVariable("id") Long id, Model model) {
@@ -155,15 +179,42 @@ public class NoticeController extends CommonController {
 		return true;
 	}
 
+	@GetMapping("/{id}/deleteattach")
+	@PreAuthorize("hasAuthority('ROLE_BUYER')")
+	public @ResponseBody Boolean deleteAttach(@PathVariable("id") Long id, HttpServletRequest request) {
+		Notice notice = noticeRepository.findOneById(id);
+		String applicationPath = request.getServletContext().getRealPath("");
+		File attach = new File(applicationPath + File.separator + notice.getAttachFileName());
+		if (attach.exists())
+			attach.delete();
+		notice.setAttachFileName(null);
+		notice.setAttachOriginalName(null);
+		noticeRepository.save(notice);
+		return true;
+	}
+
 	// 用户修改
 	@Transactional
 	@PostMapping("/update")
 	@PreAuthorize("hasAuthority('ROLE_BUYER')")
-	public @ResponseBody Notice update_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Notice update_ajax(@RequestParam(value = "attach", required = false) MultipartFile attach,
+			HttpServletRequest request, @RequestParam Map<String, String> requestParams) {
+
+		String origianlFileName = null;
+		String savedFileName = null;
+		if (attach != null) {
+			origianlFileName = attach.getOriginalFilename();
+			File file = UploadFileHelper.simpleUpload(attach, request, true, Constants.PATH_UPLOADS_NOTICE);
+			logger.info(attach.getOriginalFilename());
+			if (file != null)
+				savedFileName = file.getName();
+		}
+
 		String id = requestParams.get("id");
 		String title = requestParams.get("title");
 		String content = requestParams.get("content");
-
+		String stateStr = requestParams.get("state");
+		Integer state = Integer.parseInt(stateStr);
 		Notice notice = new Notice();
 
 		if (id != null && !id.isEmpty()) {
@@ -171,12 +222,24 @@ public class NoticeController extends CommonController {
 
 		}
 
-		notice.setTitle(title);
-		notice.setContent(content);
-		notice.setCreateDate(new Date());
+		notice.setState(state);
 
-		notice.setUnit(this.getLoginAccount().getUnit());
-		notice.setAccount(this.getLoginAccount());
+		if (state <= 2) {
+			notice.setTitle(title);
+			notice.setType(Constants.NOTICE_TYPE_USER);
+			notice.setContent(content);
+			notice.setCreateDate(new Date());
+			if (savedFileName != null) {
+				notice.setAttachFileName(savedFileName);
+				notice.setAttachOriginalName(origianlFileName);
+			}
+
+			notice.setUnit(this.getLoginAccount().getUnit());
+			notice.setCreateAccount(this.getLoginAccount());
+		} else {
+			notice.setVerifyAccount(this.getLoginAccount());
+			notice.setVerifyDate(new Date());
+		}
 
 		notice = noticeRepository.save(notice);
 

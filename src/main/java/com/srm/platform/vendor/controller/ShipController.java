@@ -49,7 +49,6 @@ import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.utility.ExportShipForm;
@@ -69,9 +68,6 @@ public class ShipController extends CommonController {
 
 	@Autowired
 	private AccountRepository accountRepository;
-
-	@Autowired
-	private InventoryRepository inventoryRepository;
 
 	@Autowired
 	private PurchaseOrderMainRepository purchaseOrderMainRepository;
@@ -205,7 +201,7 @@ public class ShipController extends CommonController {
 
 		logger.info(exportData);
 		List<PurchaseOrderDetail> exportList = new ArrayList<>();
-		Account account = accountRepository.findOneByUsername(principal.getName());
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			ExportShipForm shipForm = objectMapper.readValue(exportData, new TypeReference<ExportShipForm>() {

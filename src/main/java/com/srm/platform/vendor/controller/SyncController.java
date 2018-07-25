@@ -777,4 +777,55 @@ public class SyncController {
 		return true;
 	}
 
+	@Transactional
+	@RequestMapping(value = "/purchaseweiwai")
+	public boolean purchaseWeiwai() {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		Map<String, String> requestParams;
+		int i = 0, total_page = 1;
+		List<LinkedHashMap<String, String>> tempList;
+
+		Map<String, Object> map = new HashMap<>();
+
+		try {
+			do {
+
+				map = new HashMap<>();
+
+				requestParams = new HashMap<>();
+
+				requestParams.put("rows_per_page", "10");
+				requestParams.put("page_index", Integer.toString(++i));
+
+				String response = apiClient.getLinkU8BatchWeiwai(requestParams);
+				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
+				});
+
+				int errorCode = Integer.parseInt((String) map.get("errcode"));
+
+				if (errorCode == appProperties.getError_code_success()) {
+					total_page = Integer.parseInt(String.valueOf(map.get("page_count")));
+					tempList = (List<LinkedHashMap<String, String>>) map.get("list");
+					for (LinkedHashMap<String, String> temp : tempList) {
+						logger.info(temp.get("CCode") + " " + temp.get("CCode"));
+
+					}
+				} else {
+					return false;
+				}
+
+			} while (i < total_page && i < 2);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+
+			logger.info(e.getMessage());
+			return false;
+		}
+
+		return true;
+	}
+
 }

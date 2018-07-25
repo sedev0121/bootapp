@@ -3168,6 +3168,14 @@ Styler Panel
 	width: 6%;
 }
 
+.width-3 {
+    width: 3%;
+}
+
+.width-4 {
+    width: 4%;
+}
+
 .paginate_input {
 	text-align: center;
 	width: 55px;
