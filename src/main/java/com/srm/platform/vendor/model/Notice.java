@@ -59,8 +59,8 @@ public class Notice {
 
 	private Integer type;
 	private Integer state = 1;
-	private Integer toAllVendor;
-	private Integer toUnitAccount;
+	private Integer toAllVendor = 1;
+	private Integer toUnitAccount = 1;
 	private String attachFileName;
 	private String attachOriginalName;
 	private String vendorCodeList;

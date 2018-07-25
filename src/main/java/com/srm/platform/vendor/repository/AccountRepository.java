@@ -20,7 +20,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	Account findOneById(Long id);
 
 	@Query(value = "SELECT t.*, u.name unitname FROM account t left join unit u on t.unit_id=u.id left join vendor v on t.vendor_code=v.code WHERE "
-			+ "u.name LIKE %?1% or t.username LIKE %?1% or t.realname LIKE %?1% or t.duty LIKE %?1% or t.email LIKE %?1%", nativeQuery = true)
+			+ "u.name LIKE %?1% or t.username LIKE %?1% or t.realname LIKE %?1% or t.duty LIKE %?1% or t.email LIKE %?1%", countQuery = "SELECT count(t.id) FROM account t left join unit u on t.unit_id=u.id left join vendor v on t.vendor_code=v.code WHERE "
+					+ "u.name LIKE %?1% or t.username LIKE %?1% or t.realname LIKE %?1% or t.duty LIKE %?1% or t.email LIKE %?1%", nativeQuery = true)
 	Page<Account> findBySearchTerm(String search, Pageable pageable);
 
 	@Query(value = "SELECT id, username, realname FROM account t WHERE "
@@ -35,4 +36,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	@Query(value = "SELECT * FROM account where unit_id in ?1", nativeQuery = true)
 	List<Account> findAccountsByUnitIdList(List<String> unitIdList);
+
+	@Query(value = "SELECT * FROM account where vendor_code in ?1", nativeQuery = true)
+	List<Account> findAccountsByVendorCodeList(List<String> vendorCodeList);
+
+	@Query(value = "SELECT * FROM account where role<>'ROLE_VENDOR'", nativeQuery = true)
+	List<Account> findAllExceptVendor();
 }

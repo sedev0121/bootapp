@@ -1,8 +1,14 @@
 package com.srm.platform.vendor.utility;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+import org.thymeleaf.util.StringUtils;
+
+import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
 
 public class Utils {
 
@@ -82,5 +88,32 @@ public class Utils {
 		id += String.format("%03d", rand);
 
 		return id;
+	}
+
+	public static List<String> getAllUnitsOfId(Long unitId,
+			PermissionGroupFunctionUnitRepository permissionGroupFunctionUnitRepository) {
+		String unitList = String.valueOf(unitId);
+		unitList = StringUtils.append(unitList, "," + searchChildren(unitList, permissionGroupFunctionUnitRepository));
+
+		return Arrays.asList(StringUtils.split(unitList, ","));
+	}
+
+	private static String searchChildren(String parentIdList,
+			PermissionGroupFunctionUnitRepository permissionGroupFunctionUnitRepository) {
+		String childList = "";
+		List<PermissionUnit> unitList = permissionGroupFunctionUnitRepository
+				.findChildrenByParentId(StringUtils.split(parentIdList, ","));
+		for (PermissionUnit unit : unitList) {
+			if (unit != null)
+				childList = StringUtils.append(childList, "," + unit.getUnits());
+		}
+
+		if (childList.isEmpty()) {
+			return childList;
+		} else {
+			childList = StringUtils.append(childList,
+					"," + searchChildren(childList, permissionGroupFunctionUnitRepository));
+			return childList;
+		}
 	}
 }

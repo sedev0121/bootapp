@@ -3,6 +3,7 @@ package com.srm.platform.vendor.controller;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +32,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
 
+import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Notice;
+import com.srm.platform.vendor.model.NoticeRead;
+import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.NoticeSearchResult;
@@ -49,7 +55,16 @@ public class NoticeController extends CommonController {
 	private NoticeRepository noticeRepository;
 
 	@Autowired
+	private NoticeReadRepository noticeReadRepository;
+
+	@Autowired
+	private AccountRepository accountRepository;
+
+	@Autowired
 	private VendorRepository vendorRepository;
+
+	@Autowired
+	private PermissionGroupFunctionUnitRepository permissionGroupFunctionUnitRepository;
 
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
@@ -184,6 +199,7 @@ public class NoticeController extends CommonController {
 		notice.setUnit(this.getLoginAccount().getUnit());
 		notice.setCreateAccount(this.getLoginAccount());
 		model.addAttribute("notice", notice);
+		model.addAttribute("vendorList", "");
 		return "notice/edit";
 	}
 
@@ -283,11 +299,36 @@ public class NoticeController extends CommonController {
 		} else {
 			notice.setVerifyAccount(this.getLoginAccount());
 			notice.setVerifyDate(new Date());
+
+			if (state == 3) {
+				List<Account> toAccountList = new ArrayList<>();
+				if (notice.getToAllVendor() == 1) {
+					List<String> unitIdList = Utils.getAllUnitsOfId(notice.getUnit().getId(),
+							permissionGroupFunctionUnitRepository);
+
+					toAccountList.addAll(accountRepository.findAccountsByUnitIdList(unitIdList));
+
+				} else {
+					if (notice.getVendorCodeList() != null) {
+						List<String> vendorCodeList = Arrays.asList(StringUtils.split(notice.getVendorCodeList(), ","));
+						toAccountList.addAll(accountRepository.findAccountsByVendorCodeList(vendorCodeList));
+					}
+				}
+
+				if (notice.getToUnitAccount() == 1) {
+					toAccountList.addAll(accountRepository.findAllExceptVendor());
+				}
+
+				for (Account account : toAccountList) {
+					NoticeRead noticeRead = new NoticeRead();
+					noticeRead.setNotice(notice);
+					noticeRead.setAccount(account);
+					noticeReadRepository.save(noticeRead);
+				}
+			}
 		}
 
 		notice = noticeRepository.save(notice);
-		if (state <= 2 && to_all_vendor == null && vendor_list != null) {
-		}
 
 		return notice;
 	}
