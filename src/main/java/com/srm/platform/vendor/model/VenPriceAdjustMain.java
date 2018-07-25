@@ -53,7 +53,7 @@ public class VenPriceAdjustMain {
 	Integer type;
 	Integer createtype;
 
-	Float itaxrate;
+	Float itaxrate = 16F;
 
 	Integer iverifystate;
 
@@ -89,7 +89,7 @@ public class VenPriceAdjustMain {
 		this.ccode = Utils.generateId();
 		this.isupplytype = 1;
 		this.type = 1;
-		this.itaxrate = (float) 17.0;
+		this.itaxrate = (float) 16.0;
 		this.iverifystate = 1;
 		this.dmakedate = new Date();
 		this.dstartdate = new Date();

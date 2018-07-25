@@ -29,8 +29,8 @@ import com.srm.platform.vendor.utility.NoticeSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
-@RequestMapping(path = "/message")
-public class MessageController extends CommonController {
+@RequestMapping(path = "/alert")
+public class AlertController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
@@ -39,7 +39,7 @@ public class MessageController extends CommonController {
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
 	public String index(Model model) {
-		return "message/list";
+		return "alert/list";
 	}
 
 	// 用户管理->修改
@@ -50,7 +50,7 @@ public class MessageController extends CommonController {
 			show404();
 
 		model.addAttribute("notice", notice);
-		return "message/edit";
+		return "alert/edit";
 	}
 
 	// 用户管理->列表
@@ -84,7 +84,7 @@ public class MessageController extends CommonController {
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id "
-				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id where type=2 ";
+				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id where type=3 ";
 
 		Map<String, Object> params = new HashMap<>();
 

@@ -29,13 +29,9 @@ import org.thymeleaf.util.StringUtils;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PasswordResetToken;
 import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.ActionRepository;
-import com.srm.platform.vendor.repository.FunctionActionRepository;
-import com.srm.platform.vendor.repository.FunctionRepository;
 import com.srm.platform.vendor.repository.PasswordResetTokenRepository;
 import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
-import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.PermissionItem;
 import com.srm.platform.vendor.utility.PermissionUnit;
@@ -57,18 +53,6 @@ public class AccountService implements UserDetailsService {
 
 	@Autowired
 	private PermissionGroupFunctionUnitRepository permissionGroupFunctionUnitRepository;
-
-	@Autowired
-	private FunctionRepository functionRepository;
-
-	@Autowired
-	private ActionRepository actionRepository;
-
-	@Autowired
-	private UnitRepository unitRepository;
-
-	@Autowired
-	private FunctionActionRepository functionActionRepository;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;

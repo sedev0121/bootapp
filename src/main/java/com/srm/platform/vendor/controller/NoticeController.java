@@ -2,6 +2,8 @@ package com.srm.platform.vendor.controller;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,11 +30,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.util.StringUtils;
 
+import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Notice;
+import com.srm.platform.vendor.model.NoticeRead;
+import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
+import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.NoticeSearchResult;
+import com.srm.platform.vendor.utility.SearchItem;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
@@ -43,6 +53,18 @@ public class NoticeController extends CommonController {
 
 	@Autowired
 	private NoticeRepository noticeRepository;
+
+	@Autowired
+	private NoticeReadRepository noticeReadRepository;
+
+	@Autowired
+	private AccountRepository accountRepository;
+
+	@Autowired
+	private VendorRepository vendorRepository;
+
+	@Autowired
+	private PermissionGroupFunctionUnitRepository permissionGroupFunctionUnitRepository;
 
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
@@ -88,16 +110,14 @@ public class NoticeController extends CommonController {
 		List<String> unitList = this.getDefaultUnitList();
 		Map<String, Object> params = new HashMap<>();
 
-		params.put("create_account", this.getLoginAccount().getId());
-		params.put("to_account", this.getLoginAccount().getId());
-
 		if (isVendor()) {
-			bodyQuery += " and e.to_account_id=:to_account and a.state=:state";
+			bodyQuery += " and e.to_account_id=:to_account and a.state=3";
 			params.put("to_account", this.getLoginAccount().getId());
 		} else {
 			if (this.hasAuthority("公告通知-发布")) {
 				bodyQuery += " and ((a.create_unit in :unitList and a.state=1) or create_account=:create_account or (e.to_account_id=:to_account and a.state=3))";
 				params.put("unitList", unitList);
+				params.put("create_account", this.getLoginAccount().getId());
 				params.put("to_account", this.getLoginAccount().getId());
 			} else {
 				bodyQuery += " and (create_account=:create_account or (e.to_account_id=:to_account and a.state=3))";
@@ -119,7 +139,7 @@ public class NoticeController extends CommonController {
 			bodyQuery += " and a.verify_date<:endDate";
 			params.put("endDate", endDate);
 		}
-		if (create_account != null) {
+		if (create_account != null && !create_account.isEmpty()) {
 			bodyQuery += " and b.realname like CONCAT('%',:createAccount, '%')";
 			params.put("createAccount", create_account);
 		}
@@ -156,6 +176,18 @@ public class NoticeController extends CommonController {
 			show404();
 
 		model.addAttribute("notice", notice);
+		if (notice.getVendorCodeList() != null) {
+			List<SearchItem> vendorList = vendorRepository
+					.findVendorsByCodeList(StringUtils.split(notice.getVendorCodeList(), ","));
+			List<String> vendors = new ArrayList<>();
+			for (SearchItem item : vendorList) {
+				vendors.add(item.getName() + "(" + item.getCode() + ")");
+			}
+			model.addAttribute("vendorList", StringUtils.join(vendors, ","));
+		} else {
+			model.addAttribute("vendorList", "");
+		}
+
 		return "notice/edit";
 	}
 
@@ -167,6 +199,7 @@ public class NoticeController extends CommonController {
 		notice.setUnit(this.getLoginAccount().getUnit());
 		notice.setCreateAccount(this.getLoginAccount());
 		model.addAttribute("notice", notice);
+		model.addAttribute("vendorList", "");
 		return "notice/edit";
 	}
 
@@ -214,6 +247,9 @@ public class NoticeController extends CommonController {
 		String title = requestParams.get("title");
 		String content = requestParams.get("content");
 		String stateStr = requestParams.get("state");
+		String to_all_vendor = requestParams.get("to_all_vendor");
+		String to_unit_account = requestParams.get("to_unit_account");
+		String vendor_list = requestParams.get("vendor_list");
 		Integer state = Integer.parseInt(stateStr);
 		Notice notice = new Notice();
 
@@ -236,9 +272,60 @@ public class NoticeController extends CommonController {
 
 			notice.setUnit(this.getLoginAccount().getUnit());
 			notice.setCreateAccount(this.getLoginAccount());
+			if (to_all_vendor != null) {
+				notice.setToAllVendor(1);
+			} else {
+				notice.setToAllVendor(0);
+				if (vendor_list != null) {
+					String[] vendorList = StringUtils.split(vendor_list, ",");
+					List<String> vendorCodeList = new ArrayList<>();
+					for (int i = 0; i < vendorList.length; i++) {
+						String item = vendorList[i];
+						if (item.lastIndexOf("(") >= 0 && item.lastIndexOf(")") >= 0) {
+							vendorCodeList.add(item.substring(item.lastIndexOf("(") + 1, item.lastIndexOf(")")));
+						}
+					}
+					notice.setVendorCodeList(StringUtils.join(vendorCodeList, ","));
+				} else {
+					notice.setVendorCodeList(null);
+				}
+			}
+			if (to_unit_account != null) {
+				notice.setToUnitAccount(1);
+			} else {
+				notice.setToUnitAccount(0);
+			}
+
 		} else {
 			notice.setVerifyAccount(this.getLoginAccount());
 			notice.setVerifyDate(new Date());
+
+			if (state == 3) {
+				List<Account> toAccountList = new ArrayList<>();
+				if (notice.getToAllVendor() == 1) {
+					List<String> unitIdList = Utils.getAllUnitsOfId(notice.getUnit().getId(),
+							permissionGroupFunctionUnitRepository);
+
+					toAccountList.addAll(accountRepository.findAccountsByUnitIdList(unitIdList));
+
+				} else {
+					if (notice.getVendorCodeList() != null) {
+						List<String> vendorCodeList = Arrays.asList(StringUtils.split(notice.getVendorCodeList(), ","));
+						toAccountList.addAll(accountRepository.findAccountsByVendorCodeList(vendorCodeList));
+					}
+				}
+
+				if (notice.getToUnitAccount() == 1) {
+					toAccountList.addAll(accountRepository.findAllExceptVendor());
+				}
+
+				for (Account account : toAccountList) {
+					NoticeRead noticeRead = new NoticeRead();
+					noticeRead.setNotice(notice);
+					noticeRead.setAccount(account);
+					noticeReadRepository.save(noticeRead);
+				}
+			}
 		}
 
 		notice = noticeRepository.save(notice);

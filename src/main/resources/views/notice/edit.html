@@ -41,8 +41,8 @@
             <label for="content">内容: </label>
             <textarea name="content" id="content" class="form-control" rows=5 th:text="${notice.content}"></textarea>
           </div>
-          <div class="col-lg-12 col-md-12 form-group" id="file_select" th:if="${(notice.state==1 or notice.state == 4) and notice.attachFileName == null}">
-            <label for="content">附件: </label>
+
+          <div class="col-lg-8 col-md-8 form-group" id="file_select" th:if="${(notice.state==1 or notice.state == 4) and notice.attachFileName == null}">
             <div class="input-group input-file" name="attach">
               <span class="input-group-btn">
                 <button class="btn btn-success btn-file btn-choose" type="button">选择附件</button>
@@ -53,28 +53,42 @@
               </span>
             </div>
           </div>
-          <div class="col-lg-12 col-md-12 form-group" id="file_show" th:if="${notice.attachFileName != null}">
-            <label for="content">附件: </label>
+          <div class="col-lg-8 col-md-8 form-group" id="file_show" th:if="!${(notice.state==1 or notice.state == 4) and notice.attachFileName == null}">
             <div>
               <a th:href="@{|/uploads/notice/${notice.attachFileName}|}" th:if="${notice.attachFileName}" th:text="${notice.attachOriginalName}"></a>
-              <span th:if="!${notice.attachFileName}">---</span>
-              
+              <span th:if="!${notice.attachFileName}"><b>附件：</b>---</span>              
               <a class="btn btn-danger" id="del_attach" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}">删除附件</a>
             </div>
           </div>
           <div class="col-lg-2 col-md-2 form-group">
+            <div class="ui toggle checkbox">
+              <input type="checkbox" name="to_all_vendor" id="to_all_vendor" value="1" th:checked="${notice.toAllVendor}">
+              <label>全部供应商</label>
+            </div>
+          </div>
+          <div class="col-lg-2 col-md-2 form-group">
+            <div class="ui toggle checkbox">
+              <input type="checkbox" name="to_unit_account" value="1" th:checked="${notice.toUnitAccount}">
+              <label>内部人员</label>
+            </div>
+          </div>
+          <div class="col-lg-12 col-md-12 form-group" id="vendor_div">
+            <label for="vendor_list">供应商列表: </label>
+            <textarea id="vendor_list" rows="5" name="vendor_list" th:text="${vendorList}" class="form-control"></textarea>
+          </div>
+          <div class="col-lg-3 col-md-3 form-group">
             <label for="title">创建人: </label>
             <input type="text" class="form-control" readonly th:value="${notice.createAccount?.realname}">
           </div>
-          <div class="col-lg-2 col-md-2 form-group">
+          <div class="col-lg-3 col-md-3 form-group">
             <label for="title">创建时间: </label>
             <input type="text" class="form-control" readonly th:value="${#dates.format(notice.createDate, 'yyyy-MM-dd HH:mm:ss')}">
           </div>                    
-          <div class="col-lg-2 col-md-2 form-group">
+          <div class="col-lg-3 col-md-3 form-group">
             <label for="title">发布人: </label>
             <input type="text" class="form-control" readonly th:value="${notice.verifyAccount?.realname}">
           </div>
-          <div class="col-lg-2 col-md-2 form-group">
+          <div class="col-lg-3 col-md-3 form-group">
             <label for="title">发布时间: </label>
             <input type="text" class="form-control" readonly th:value="${#dates.format(notice.verifyDate, 'yyyy-MM-dd HH:mm:ss')}">
           </div> 
@@ -93,9 +107,12 @@ is_vendor = 1;
 <script th:inline="javascript">
 var edit_url = /*[[@{/notice/}]]*/'';
 var state = /*[[${notice.state}]]*/'';
+var account_url = /*[[@{/vendor/select/}]]*/'';
+
 /*[+
 var isEditable = [[${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}?true:false]];
 var hasAttach = [[${notice.attachFileName != null}]];
+var is_to_all_vendor = [[${notice.toAllVendor}?true:false]];
 +]*/ 
 
 jQuery(document).ready(function() {   
@@ -106,6 +123,7 @@ jQuery(document).ready(function() {
   if (!isEditable){
     $('#title').attr("readonly", true);
     $("#content").attr("readonly", true);
+    $("input:checkbox").attr("disabled", true);
     
   }else{
     if (hasAttach){
@@ -117,36 +135,95 @@ jQuery(document).ready(function() {
     }
   }
   
+  if (is_to_all_vendor)
+    $("#vendor_div").hide();
+  else
+    $("#vendor_div").show();
+  
   var is_add = $("#id").val().length==0;
   $("#form" ).validate({
-      // define validation rules
-      rules: {
-          title: {
-              required: true
-          }, 
-          content: {
-              required: true
-          },
-      },
-      
-      //display error alert on form submit  
-      invalidHandler: function(event, validator) {
-        App.showErrorDialog("输入有误", "请输入正确的值");
-      },
+    // define validation rules
+    rules: {
+        title: {
+            required: true
+        }, 
+        content: {
+            required: true
+        },
+    },
+    
+    //display error alert on form submit  
+    invalidHandler: function(event, validator) {
+      App.showErrorDialog("输入有误", "请输入正确的值");
+    },
 
-      submitHandler: function (form) {
-          jQuery(form).ajaxSubmit({
-              success: function(res, status, xhr, form) {
-                App.showSuccessDialog("操作成功", function(){
-                    window.location.href = edit_url + res.id + "/edit";
-                });
-              },
-              error: function (res, status, xhr, form) {
-                App.showErrorDialog("操作失败", "请输入正确的值");
-              }
+    submitHandler: function (form) {
+        jQuery(form).ajaxSubmit({
+            success: function(res, status, xhr, form) {
+              App.showSuccessDialog("操作成功", function(){
+                  window.location.href = edit_url + res.id + "/edit";
+              });
+            },
+            error: function (res, status, xhr, form) {
+              App.showErrorDialog("操作失败", "请输入正确的值");
+            }
+        });
+    }
+  }); 
+  
+  $("#to_all_vendor").change(function(){  //"select all" change 
+    if($(this).prop("checked")){
+      $( "#vendor_div" ).hide();
+    }else{
+      $( "#vendor_div" ).show();
+    }    
+  });
+  
+  $( "#vendor_list" ).on( "keydown", function( event ) {
+    if ( event.keyCode === $.ui.keyCode.TAB &&
+        $( this ).autocomplete( "instance" ).menu.active ) {
+      event.preventDefault();
+    }
+  }).autocomplete({
+    source: function( request, response ) {
+      $.ajax({
+        url: account_url + "?q=" + extractLast( request.term ),
+        dataType: "json",
+        success: function( data ) {
+          var result =$.map(data.content, function (item) {
+              return {
+                  label: item.title + '(' + item.id + ')',
+                  value: item.title + '(' + item.id + ')'
+              };
           });
+          response(result);
+          
+        }
+      });
+    },
+    search: function() {
+      // custom minLength
+      var term = extractLast( this.value );
+      if ( term.length < 1 ) {
+        return false;
       }
-    }); 
+    },
+    focus: function() {
+      // prevent value inserted on focus
+      return false;
+    },
+    select: function( event, ui ) {
+      var terms = split( this.value );
+      // remove the current input
+      terms.pop();
+      // add the selected item
+      terms.push( ui.item.value );
+      // add placeholder to get the comma-and-space at the end
+      terms.push( "" );
+      this.value = terms.join( ", " );
+      return false;
+    }
+  });
   
   $("#save").click(function() {
     $('#state').val(1);
