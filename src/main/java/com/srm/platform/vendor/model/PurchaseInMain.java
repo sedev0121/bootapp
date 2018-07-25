@@ -18,53 +18,31 @@ import com.srm.platform.vendor.utility.PurchaseInSearchResult;
 
 @SqlResultSetMapping(name = "PurchaseInSearchResult", classes = {
 		@ConstructorResult(targetClass = PurchaseInSearchResult.class, columns = {
-				@ColumnResult(name = "code", type = String.class), @ColumnResult(name = "state", type = Integer.class),
-				@ColumnResult(name = "warehousename", type = String.class),
-				@ColumnResult(name = "maker", type = String.class), @ColumnResult(name = "date", type = Date.class),
-				@ColumnResult(name = "receivename", type = String.class),
-				@ColumnResult(name = "departmentname", type = String.class),
-				@ColumnResult(name = "purchasetypename", type = String.class),
-				@ColumnResult(name = "auditdate", type = Date.class),
-				@ColumnResult(name = "memory", type = String.class),
-				@ColumnResult(name = "handler", type = String.class),
+				@ColumnResult(name = "code", type = String.class),
+				@ColumnResult(name = "warehouse_name", type = String.class),
+				@ColumnResult(name = "date", type = Date.class), @ColumnResult(name = "type", type = String.class),
+				@ColumnResult(name = "memo", type = String.class),
 				@ColumnResult(name = "bredvouch", type = Integer.class),
 				@ColumnResult(name = "vendorname", type = String.class),
-				@ColumnResult(name = "vendorcode", type = String.class) }) })
+				@ColumnResult(name = "vendor_code", type = String.class) }) })
 
 @Table(name = "purchase_in_main")
 public class PurchaseInMain {
 	@Id
 	private String code;
 
-	private Date date;
-	private String maker;
-	private String warehousecode;
-	private String warehousename;
-	private String receivecode;
-	private String receivename;
-	private String departmentcode;
-	private String departmentname;
-	private String purchasetypecode;
-	private String purchasetypename;
-	private String memory;
-
-	private Date auditdate;
-	private String handler;
-	private Integer state;
+	private String type;
 
 	@OneToOne(cascade = { CascadeType.REFRESH })
-	@JoinColumn(name = "vendorcode", referencedColumnName = "code")
+	@JoinColumn(name = "vendor_code", referencedColumnName = "code")
 	Vendor vendor;
 
 	private Integer bredvouch;
+	private String warehouse_code;
+	private String warehouse_name;
+	private String memo;
 
-	public Integer getState() {
-		return state;
-	}
-
-	public void setState(Integer state) {
-		this.state = state;
-	}
+	private Date date;
 
 	public String getCode() {
 		return code;
@@ -74,108 +52,12 @@ public class PurchaseInMain {
 		this.code = code;
 	}
 
-	public Date getDate() {
-		return date;
+	public String getType() {
+		return type;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
-	public String getMaker() {
-		return maker;
-	}
-
-	public void setMaker(String maker) {
-		this.maker = maker;
-	}
-
-	public String getWarehousecode() {
-		return warehousecode;
-	}
-
-	public void setWarehousecode(String warehousecode) {
-		this.warehousecode = warehousecode;
-	}
-
-	public String getWarehousename() {
-		return warehousename;
-	}
-
-	public void setWarehousename(String warehousename) {
-		this.warehousename = warehousename;
-	}
-
-	public String getReceivecode() {
-		return receivecode;
-	}
-
-	public void setReceivecode(String receivecode) {
-		this.receivecode = receivecode;
-	}
-
-	public String getReceivename() {
-		return receivename;
-	}
-
-	public void setReceivename(String receivename) {
-		this.receivename = receivename;
-	}
-
-	public String getDepartmentcode() {
-		return departmentcode;
-	}
-
-	public void setDepartmentcode(String departmentcode) {
-		this.departmentcode = departmentcode;
-	}
-
-	public String getDepartmentname() {
-		return departmentname;
-	}
-
-	public void setDepartmentname(String departmentname) {
-		this.departmentname = departmentname;
-	}
-
-	public String getPurchasetypecode() {
-		return purchasetypecode;
-	}
-
-	public void setPurchasetypecode(String purchasetypecode) {
-		this.purchasetypecode = purchasetypecode;
-	}
-
-	public String getPurchasetypename() {
-		return purchasetypename;
-	}
-
-	public void setPurchasetypename(String purchasetypename) {
-		this.purchasetypename = purchasetypename;
-	}
-
-	public String getMemory() {
-		return memory;
-	}
-
-	public void setMemory(String memory) {
-		this.memory = memory;
-	}
-
-	public Date getAuditdate() {
-		return auditdate;
-	}
-
-	public void setAuditdate(Date auditdate) {
-		this.auditdate = auditdate;
-	}
-
-	public String getHandler() {
-		return handler;
-	}
-
-	public void setHandler(String handler) {
-		this.handler = handler;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public Vendor getVendor() {
@@ -192,6 +74,38 @@ public class PurchaseInMain {
 
 	public void setBredvouch(Integer bredvouch) {
 		this.bredvouch = bredvouch;
+	}
+
+	public String getWarehouse_code() {
+		return warehouse_code;
+	}
+
+	public void setWarehouse_code(String warehouse_code) {
+		this.warehouse_code = warehouse_code;
+	}
+
+	public String getWarehouse_name() {
+		return warehouse_name;
+	}
+
+	public void setWarehouse_name(String warehouse_name) {
+		this.warehouse_name = warehouse_name;
+	}
+
+	public String getMemo() {
+		return memo;
+	}
+
+	public void setMemo(String memo) {
+		this.memo = memo;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 }

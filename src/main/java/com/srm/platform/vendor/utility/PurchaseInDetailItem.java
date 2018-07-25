@@ -12,7 +12,7 @@ public interface PurchaseInDetailItem {
 
 	String getInventoryname();
 
-	String getInventorycode();
+	String getInventory_code();
 
 	String getSpecs();
 
@@ -24,16 +24,14 @@ public interface PurchaseInDetailItem {
 
 	String getCost();
 
-	String getCmassunitname();
-
-	String getAssitantunitname();
-
-	String getIrate();
-
-	String getNumber();
-
-	String getState();
-
 	String getClosed_quantity();
+
+	String getTax_price();
+
+	String getTax_rate();
+
+	String getTax_cost();
+
+	String getMemo();
 
 }

@@ -106,11 +106,44 @@ public class ApiClient {
 
 		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
 		String page_index = requestParams.getOrDefault("page_index", "1");
-		String name = requestParams.getOrDefault("name", "");
+		String vendorCode = requestParams.getOrDefault("vendor_code", null);
+		String startDate = requestParams.getOrDefault("start_date", null);
 
-		logger.info("start getBatchProductIn api");
 		RestClient client = new RestClient();
-		String url = String.format(appProperties.getLinku8().getBatch_get_weiwai(), rows_per_page, page_index, name);
+		String url = String.format(appProperties.getLinku8().getBatch_get_weiwai(), rows_per_page, page_index);
+
+		if (vendorCode != null) {
+			url += "&vendorcode=" + vendorCode;
+		}
+
+		if (startDate != null) {
+			url += "&cChangAuditTime_begin=" + startDate + "&auditdate_begin=" + startDate;
+		}
+
+		logger.info(String.format("url=>%s", url));
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+		return response;
+	}
+
+	public String getLinkU8BatchBasic(Map<String, String> requestParams) {
+
+		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
+		String page_index = requestParams.getOrDefault("page_index", "1");
+		String vendorCode = requestParams.getOrDefault("vendor_code", null);
+		String startDate = requestParams.getOrDefault("start_date", null);
+
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getLinku8().getBatch_get(), rows_per_page, page_index);
+
+		if (vendorCode != null) {
+			url += "&vendorcode=" + vendorCode;
+		}
+
+		if (startDate != null) {
+			url += "&cChangAuditTime_begin=" + startDate + "&auditdate_begin=" + startDate;
+		}
+
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));

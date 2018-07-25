@@ -18,7 +18,7 @@ public class Utils {
 	}
 
 	private static SimpleDateFormat getDateTimeFormat() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return dateFormat;
 	}
 
@@ -76,6 +76,13 @@ public class Utils {
 		if (date == null)
 			return "";
 		return getDateFormat().format(date);
+	}
+
+	public static String formatDateZeroTime(Date date) {
+		if (date == null)
+			return "";
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		return dateFormat.format(date);
 	}
 
 	public static String generateId() {

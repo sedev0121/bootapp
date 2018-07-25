@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -84,7 +85,6 @@ public class SyncController {
 		this.inventoryClass();
 		this.inventory();
 		this.vendorUpdateAll();
-		this.purchaseinUpdateAll();
 		this.purchaseorderUpdateAll();
 
 		return true;
@@ -610,176 +610,39 @@ public class SyncController {
 		return true;
 	}
 
-	@RequestMapping(value = "/purchasein/part")
-	public boolean purchaseinUpatePart() {
-		return purchaseIn(false);
+	@RequestMapping(value = { "/purchasein/init", "/purchasein", "/purchasein/" })
+	public boolean purchaseInInit() {
+		purchaseWeiwai(null, null, false);
+		purchaseWeiwai(null, null, true);
+		return true;
 	}
 
-	@RequestMapping({ "/purchasein/all", "/purchasein" })
-	public boolean purchaseinUpdateAll() {
-		return purchaseIn(true);
+	@RequestMapping(value = "/purchasein/daily")
+	public boolean purchaseInPart() {
+		purchaseWeiwai(new Date(), null, false);
+		purchaseWeiwai(new Date(), null, true);
+		return true;
+	}
+
+	@RequestMapping(value = "/purchasein/vendor/{vendorCode}")
+	public boolean purchaseInVendor(@PathVariable("vendorCode") String vendorCode) {
+		purchaseWeiwai(new Date(), vendorCode, false);
+		purchaseWeiwai(new Date(), vendorCode, true);
+		return true;
 	}
 
 	@Transactional
-	private boolean purchaseIn(boolean isAll) {
+	public boolean purchaseWeiwai(Date startDate, String vendorCode, boolean isWeiwai) {
 
-		ObjectMapper objectMapper = new ObjectMapper();
+		boolean initTable = false;
+		if (startDate == null) {
+			initTable = true;
+		}
 
-		Map<String, String> requestParams;
-		int i = 0, total_page = 1;
-		List<LinkedHashMap<String, String>> list;
-
-		Map<String, Object> map = new HashMap<>();
-
-		if (isAll) {
+		if (initTable) {
 			this.purchaseInDetailRepository.deleteAllInBatch();
 			this.purchaseInMainRepository.deleteAllInBatch();
 		}
-
-		try {
-			do {
-
-				map = new HashMap<>();
-
-				requestParams = new HashMap<>();
-
-				requestParams.put("rows_per_page", "10");
-				requestParams.put("page_index", Integer.toString(++i));
-
-				String response = apiClient.getBatchPurchaseIn(requestParams);
-				logger.info(response);
-				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
-				});
-
-				logger.info((String) map.get("errcode"));
-				int errorCode = Integer.parseInt((String) map.get("errcode"));
-
-				if (errorCode == appProperties.getError_code_success()) {
-					total_page = Integer.parseInt((String) map.get("page_count"));
-					list = (List<LinkedHashMap<String, String>>) map.get("purchaseinlist");
-					for (LinkedHashMap<String, String> temp : list) {
-						logger.info(temp.get("code") + " " + temp.get("name"));
-
-						PurchaseInMain main = new PurchaseInMain();
-						main.setCode(temp.get("code"));
-
-						String makeDateStr = temp.get("date");
-						String auditDateStr = temp.get("date");
-						Date makeDate = Utils.parseDate(makeDateStr);
-						Date auditDate = Utils.parseDate(auditDateStr);
-
-						if (!isAll && makeDate.before(new Date())) {
-							continue;
-						}
-
-						Example<PurchaseInMain> example = Example.of(main);
-						Optional<PurchaseInMain> result = purchaseInMainRepository.findOne(example);
-						if (result.isPresent())
-							main = result.get();
-
-						main.setWarehousecode(temp.get("warehousecode"));
-						main.setWarehousename(temp.get("warehousename"));
-						main.setReceivecode(temp.get("receivecode"));
-						main.setReceivename(temp.get("receivename"));
-						main.setDepartmentcode(temp.get("departmentcode"));
-						main.setDepartmentname(temp.get("departmentname"));
-						main.setPurchasetypecode(temp.get("purchasetypecode"));
-						main.setPurchasetypename(temp.get("purchasetypename"));
-						main.setMemory(temp.get("memory"));
-						main.setHandler(temp.get("handler"));
-						main.setBredvouch(Integer.parseInt(temp.get("bredvouch")));
-						main.setMaker(temp.get("maker"));
-						main.setDate(makeDate);
-						main.setAuditdate(auditDate);
-						main.setState(Constants.PURCHASE_IN_FINISH_STATE_NO);
-						Vendor vendor = vendorRepository.findOneByCode(temp.get("vendorcode"));
-						main.setVendor(vendor);
-
-						purchaseInMainRepository.save(main);
-
-						purchaseInDetail(main);
-					}
-				} else {
-					return false;
-				}
-
-			} while (i < total_page);
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.info(e.getMessage());
-			return false;
-		}
-
-		return true;
-	}
-
-	@Transactional
-	private boolean purchaseInDetail(PurchaseInMain main) {
-
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		List<LinkedHashMap<String, String>> entryList;
-
-		Map<String, Object> map = new HashMap<>();
-
-		try {
-
-			map = new HashMap<>();
-
-			String response = apiClient.getPurchaseIn(main.getCode());
-			logger.info(response);
-			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
-			});
-
-			logger.info((String) map.get("errcode"));
-			int errorCode = Integer.parseInt((String) map.get("errcode"));
-
-			if (errorCode == appProperties.getError_code_success()) {
-				LinkedHashMap<String, Object> order = (LinkedHashMap<String, Object>) map.get("purchasein");
-				entryList = (List<LinkedHashMap<String, String>>) order.get("entry");
-
-				for (LinkedHashMap<String, String> entryMap : entryList) {
-					PurchaseInDetail detail = new PurchaseInDetail();
-					detail.setMain(purchaseInMainRepository.findOneByCode(main.getCode()));
-					detail.setInventory(inventoryRepository.findByCode(entryMap.get("inventorycode")));
-
-					if (entryMap.get("quantity") != null && !entryMap.get("quantity").isEmpty())
-						detail.setQuantity(Float.parseFloat(entryMap.get("quantity")));
-					if (entryMap.get("price") != null && !entryMap.get("price").isEmpty())
-						detail.setPrice(Float.parseFloat(entryMap.get("price")));
-					if (entryMap.get("cost") != null && !entryMap.get("cost").isEmpty())
-						detail.setCost(Float.parseFloat(entryMap.get("cost")));
-					if (entryMap.get("irate") != null && !entryMap.get("irate").isEmpty())
-						detail.setIrate(Float.parseFloat(entryMap.get("irate")));
-					if (entryMap.get("rowno") != null && !entryMap.get("rowno").isEmpty())
-						detail.setRowno(Integer.parseInt(entryMap.get("rowno")));
-					if (entryMap.get("number") != null && !entryMap.get("number").isEmpty())
-						detail.setNumber(Float.parseFloat(entryMap.get("number")));
-					detail.setState(Constants.PURCHASE_IN_FINISH_STATE_NO);
-					detail.setAssitantunitname(entryMap.get("assitantunitname"));
-					detail.setCmassunitname(entryMap.get("cmassunitname"));
-					detail.setConfirmed_quantity(0F);
-
-					purchaseInDetailRepository.save(detail);
-				}
-
-			} else {
-				return false;
-			}
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.info(e.getMessage());
-			return false;
-		}
-
-		return true;
-	}
-
-	@Transactional
-	@RequestMapping(value = "/purchaseweiwai")
-	public boolean purchaseWeiwai() {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -799,7 +662,21 @@ public class SyncController {
 				requestParams.put("rows_per_page", "10");
 				requestParams.put("page_index", Integer.toString(++i));
 
-				String response = apiClient.getLinkU8BatchWeiwai(requestParams);
+				if (vendorCode != null) {
+					requestParams.put("vendor_code", vendorCode);
+				}
+
+				if (startDate != null) {
+					// requestParams.put("start_date", Utils.formatDateZeroTime(startDate));
+				}
+
+				String response;
+				if (isWeiwai) {
+					response = apiClient.getLinkU8BatchWeiwai(requestParams);
+				} else {
+					response = apiClient.getLinkU8BatchBasic(requestParams);
+				}
+
 				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 				});
 
@@ -809,14 +686,121 @@ public class SyncController {
 					total_page = Integer.parseInt(String.valueOf(map.get("page_count")));
 					tempList = (List<LinkedHashMap<String, String>>) map.get("list");
 					for (LinkedHashMap<String, String> temp : tempList) {
-						logger.info(temp.get("CCode") + " " + temp.get("CCode"));
+						String code = temp.get("CCode");
+						String type = temp.get("CBusType");
+						String vendor_code = temp.get("CVenCode");
+						String bredvouch = temp.get("bredvouch");
+						String warehouse_code = temp.get("CWhCode");
+						String warehouse_name = temp.get("CWhName");
+						String memo = temp.get("CMemo");
+						String date = temp.get("DVeriDate");
+						String rowno = String.valueOf(temp.get("irowno"));
 
+						logger.info(code + " " + rowno);
+						String inventory_code = temp.get("CInvCode");
+						Float quantity = Float.valueOf(String.valueOf(temp.get("IQuantity")));
+						Float price = Float.valueOf(String.valueOf(temp.get("IUnitCost")));
+						Float cost = Float.valueOf(String.valueOf(temp.get("IPrice")));
+						Float tax = Float.valueOf(String.valueOf(temp.get("ITaxPrice")));
+						Float tax_price = Float.valueOf(String.valueOf(temp.get("ITaxUnitCost")));
+						Float tax_rate = Float.valueOf(String.valueOf(temp.get("ITaxRate")));
+						Float tax_cost = Float.valueOf(String.valueOf(temp.get("ISum")));
+						String detailMemo = temp.get("cbMemo");
+						Float nat_price = Float.valueOf(String.valueOf(temp.get("INatUnitPrice")));
+						Float nat_cost = Float.valueOf(String.valueOf(temp.get("INatMoney")));
+						Float nat_tax_rate = Float.valueOf(String.valueOf(temp.get("IPerTaxRate")));
+						Float nat_tax = Float.valueOf(String.valueOf(temp.get("INatTax")));
+						Float nat_tax_price = Float.valueOf(String.valueOf(temp.get("INatTaxUnitCost")));
+
+						Float nat_tax_cost = Float.valueOf(String.valueOf(temp.get("INatSum")));
+						String material_code = temp.get("CInvCodeMat");
+						String material_name = temp.get("CInvNameMat");
+						String material_unitname = temp.get("ccomunitnameMat");
+
+						Float material_quantity = null;
+						if (temp.get("IQuantityMat") != null)
+							material_quantity = Float.valueOf(String.valueOf(temp.get("IQuantityMat")));
+
+						Float material_price = null;
+						if (temp.get("INatUnitPriceMat") != null)
+							material_price = Float.valueOf(String.valueOf(temp.get("INatUnitPriceMat")));
+
+						Float material_tax_price = null;
+						if (temp.get("INatTaxUnitPriceMat") != null)
+							material_tax_price = Float.valueOf(String.valueOf(temp.get("INatTaxUnitPriceMat")));
+
+						PurchaseInMain main = purchaseInMainRepository.findOneByCode(code);
+						if (main == null) {
+							main = new PurchaseInMain();
+							main.setCode(code);
+							if (bredvouch != null && !bredvouch.isEmpty())
+								main.setBredvouch(Integer.parseInt(bredvouch));
+							main.setWarehouse_code(warehouse_code);
+							main.setWarehouse_name(warehouse_name);
+							main.setMemo(memo);
+							main.setDate(Utils.parseDateTime(date));
+
+							main.setVendor(vendorRepository.findOneByCode(vendor_code));
+							main.setType(type);
+
+							main = purchaseInMainRepository.save(main);
+						}
+
+						PurchaseInDetail detail = purchaseInDetailRepository.findOneByCodeAndRowno(code,
+								Integer.parseInt(rowno));
+						if (detail != null) {
+							continue;
+						}
+						detail = new PurchaseInDetail();
+						detail.setMain(main);
+						detail.setInventory(inventoryRepository.findByCode(inventory_code));
+
+						detail.setQuantity(quantity);
+
+						detail.setPrice(price);
+						detail.setRowno(Integer.parseInt(rowno));
+
+						detail.setCost(cost);
+
+						detail.setTax(tax);
+
+						detail.setTaxPrice(tax_price);
+
+						detail.setTaxRate(tax_rate);
+
+						detail.setTaxCost(tax_cost);
+
+						detail.setMemo(detailMemo);
+
+						detail.setNatPrice(nat_price);
+
+						detail.setNatCost(nat_cost);
+
+						detail.setNatTaxRate(nat_tax_rate);
+
+						detail.setNatTax(nat_tax);
+
+						detail.setNatTaxPrice(nat_tax_price);
+
+						detail.setNatTaxCost(nat_tax_cost);
+
+						detail.setMaterialCode(material_code);
+						detail.setMaterialName(material_name);
+						detail.setMaterialUnitname(material_unitname);
+
+						detail.setMaterialQuantity(material_quantity);
+
+						detail.setMaterialPrice(material_price);
+
+						detail.setMaterialTaxPrice(material_tax_price);
+
+						purchaseInDetailRepository.save(detail);
 					}
 				} else {
 					return false;
 				}
 
-			} while (i < total_page && i < 2);
+			} while (i < total_page);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

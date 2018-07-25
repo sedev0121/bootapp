@@ -198,9 +198,10 @@ public class StatementController extends CommonController {
 
 	}
 
-	@RequestMapping(value = "/{code}/details", produces = "application/json")
-	public @ResponseBody List<StatementDetailItem> details_ajax(@PathVariable("code") String code) {
-		List<StatementDetailItem> list = statementDetailRepository.findDetailsByCode(code);
+	@RequestMapping(value = "/{code}/details/{purchasein_type}", produces = "application/json")
+	public @ResponseBody List<StatementDetailItem> details_ajax(@PathVariable("code") String code,
+			@PathVariable("purchasein_type") Integer purchaseInType) {
+		List<StatementDetailItem> list = statementDetailRepository.findDetailsByCode(code, purchaseInType);
 
 		return list;
 	}
@@ -243,6 +244,7 @@ public class StatementController extends CommonController {
 			for (Map<String, String> row : form.getTable()) {
 				StatementDetail detail = new StatementDetail();
 				detail.setCode(main.getCode());
+				detail.setPurchaseinType(Constants.STATEMENT_DETAIL_TYPE_BASIC);
 				detail.setPurchaseInDetailId(Long.parseLong(row.get("purchase_in_detail_id")));
 
 				String closedQuantity = row.get("closed_quantity");
@@ -250,7 +252,7 @@ public class StatementController extends CommonController {
 				String closedMoney = row.get("closed_money");
 				String closedTaxPrice = row.get("closed_tax_price");
 				String closedTaxMoney = row.get("closed_tax_money");
-				String taxRate = row.get("taxrate");
+				String taxRate = row.get("tax_rate");
 
 				if (closedQuantity != null && !closedQuantity.isEmpty())
 					detail.setClosedQuantity(Float.parseFloat(closedQuantity));
@@ -269,6 +271,35 @@ public class StatementController extends CommonController {
 
 				if (taxRate != null && !taxRate.isEmpty())
 					detail.setTaxRate(Float.parseFloat(taxRate));
+
+				detail = statementDetailRepository.save(detail);
+			}
+
+			for (Map<String, String> row : form.getWeiwai()) {
+				StatementDetail detail = new StatementDetail();
+				detail.setCode(main.getCode());
+				detail.setPurchaseinType(Constants.STATEMENT_DETAIL_TYPE_WEIWAI);
+				detail.setPurchaseInDetailId(Long.parseLong(row.get("purchase_in_detail_id")));
+
+				String real_quantity = row.get("real_quantity");
+				String yuanci = row.get("yuanci");
+				String yinci = row.get("yinci");
+				String unit_weight = row.get("unit_weight");
+				String memo = row.get("memo");
+
+				if (real_quantity != null && !real_quantity.isEmpty())
+					detail.setRealQuantity(Float.parseFloat(real_quantity));
+
+				if (yuanci != null && !yuanci.isEmpty())
+					detail.setYuanci(Float.parseFloat(yuanci));
+
+				if (yinci != null && !yinci.isEmpty())
+					detail.setYinci(Float.parseFloat(yinci));
+
+				if (unit_weight != null && !unit_weight.isEmpty())
+					detail.setUnitWeight(Float.parseFloat(unit_weight));
+
+				detail.setMemo(memo);
 
 				statementDetailRepository.save(detail);
 			}

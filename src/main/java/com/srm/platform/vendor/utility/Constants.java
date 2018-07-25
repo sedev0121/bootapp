@@ -30,6 +30,9 @@ public class Constants {
 	public static int NOTICE_TYPE_SYSTEM = 2;
 	public static int NOTICE_TYPE_ALERT = 3;
 
+	public static int STATEMENT_DETAIL_TYPE_BASIC = 1;
+	public static int STATEMENT_DETAIL_TYPE_WEIWAI = 2;
+
 	public static String KEY_DEFAULT_UNIT_LIST = "my_unit_list";
 
 	public static String PATH_UPLOADS = "uploads";
