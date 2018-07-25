@@ -199,8 +199,9 @@ is_readonly = 0;
     $("#type").on("select2:selecting", function (e) { 
       prev_type = $(this).val();
       var table_data = table.rows().data().toArray();
-      if (table_data.length == 0)
+      if (table_data.length == 0){        
         return;
+      }        
       
       App.showConfirmDialog('修改报价类型，将会改变表体数据规则，是否继续？', function(){
         for(i=0;i<table_data.length; i++){
@@ -221,6 +222,11 @@ is_readonly = 0;
         $('#type').select2("val", prev_type);
         return false;
       });
+    }).on("select2:select", function (e) { 
+      var table_data = table.rows().data().toArray();
+      if (table_data.length == 0){        
+        onChangeType();
+      } 
     });
 
     if ((state != 1 && state != 4) || is_readonly) {
@@ -343,11 +349,23 @@ is_readonly = 0;
         if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val())<=0) {
           editingField.input().addClass('error');
           return false;
-        }else{
-          editingField.input().removeClass('error');
         }
+        
+        for(var key in data.data){
+          item = data.data[key];  
+          if (currentFieldName == 'fmaxquantity' && item.fminquantity || currentFieldName == 'fminquantity' && item.fmaxquantity) {            
+            if (parseFloat(item.fmaxquantity)<=parseFloat(item.fminquantity)){
+              editingField.input().addClass('error');
+              return false;
+            }           
+          }
+        };
+
+        
+        editingField.input().removeClass('error');
       }
 
+      
       
       if (currentFieldName == 'iunitprice' || currentFieldName == 'itaxrate') {
         $.each(data.data, function(key, item){  
