@@ -3,6 +3,8 @@ package com.srm.platform.vendor.controller;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,15 +13,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.thymeleaf.util.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,6 +57,9 @@ public class SyncController {
 
 	@Autowired
 	private ApiClient apiClient;
+
+	@Autowired
+	private HttpSession httpSession;
 
 	@Autowired
 	private AppProperties appProperties;
@@ -85,7 +94,7 @@ public class SyncController {
 		this.inventoryClass();
 		this.inventory();
 		this.vendorUpdateAll();
-		this.purchaseorderUpdateAll();
+		this.purchaseorderInit();
 
 		return true;
 	}
@@ -446,18 +455,30 @@ public class SyncController {
 		return true;
 	}
 
-	@RequestMapping(value = "/purchaseorder/part")
-	public boolean purchaseorderUpatePart() {
-		return purchaseOrder(false);
+	@RequestMapping(value = { "/purchaseorder/init", "/purchaseorder", "/purchaseorder/" })
+	public boolean purchaseorderInit() {
+		purchaseOrder(null, null);
+		return true;
 	}
 
-	@RequestMapping({ "/purchaseorder/all", "/purchaseorder" })
-	public boolean purchaseorderUpdateAll() {
-		return purchaseOrder(true);
+	@RequestMapping(value = "/purchaseorder/daily")
+	public boolean purchaseorderPart() {
+		purchaseOrder(new Date(), null);
+		return true;
+	}
+
+	@RequestMapping(value = "/purchaseorder/vendor")
+	public boolean purchaseorderVendor() {
+		if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated())
+			return false;
+
+		String units = (String) httpSession.getAttribute(Constants.KEY_DEFAULT_UNIT_LIST);
+		purchaseOrder(new Date(), units);
+		return true;
 	}
 
 	@Transactional
-	private boolean purchaseOrder(boolean isAll) {
+	private boolean purchaseOrder(Date startDate, String unitList) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -467,9 +488,21 @@ public class SyncController {
 
 		Map<String, Object> map = new HashMap<>();
 
-		if (isAll) {
+		boolean initTable = false;
+		if (startDate == null) {
+			initTable = true;
+		}
+
+		if (initTable) {
 			this.purchaseOrderDetailRepository.deleteAllInBatch();
 			this.purchaseOrderMainRepository.deleteAllInBatch();
+		}
+
+		List<Vendor> vendorCodeList = new ArrayList<>();
+
+		if (unitList != null) {
+			vendorCodeList
+					.addAll(vendorRepository.findVendorsByUnitIdList(Arrays.asList(StringUtils.split(unitList, ","))));
 		}
 
 		try {
@@ -481,6 +514,10 @@ public class SyncController {
 
 				requestParams.put("rows_per_page", "10");
 				requestParams.put("page_index", Integer.toString(++i));
+
+				if (startDate != null) {
+					requestParams.put("date_begin", Utils.formatDate(startDate));
+				}
 
 				String response = apiClient.getBatchPurchaseOrder(requestParams);
 				logger.info(response);
@@ -502,8 +539,7 @@ public class SyncController {
 						Date makeDate = Utils.parseDate(temp.get("date"));
 						Vendor vendor = vendorRepository.findOneByCode(temp.get("vendorcode"));
 
-						if (makeDate == null || (!isAll && makeDate.before(new Date())) || temp.get("state") == "新建"
-								|| vendor == null) {
+						if (makeDate == null || temp.get("state") == "新建" || vendor == null) {
 							continue;
 						}
 
@@ -612,27 +648,27 @@ public class SyncController {
 
 	@RequestMapping(value = { "/purchasein/init", "/purchasein", "/purchasein/" })
 	public boolean purchaseInInit() {
-		purchaseWeiwai(null, null, false);
-		purchaseWeiwai(null, null, true);
+		purchaseIn(null, null, false);
+		purchaseIn(null, null, true);
 		return true;
 	}
 
 	@RequestMapping(value = "/purchasein/daily")
 	public boolean purchaseInPart() {
-		purchaseWeiwai(new Date(), null, false);
-		purchaseWeiwai(new Date(), null, true);
+		purchaseIn(new Date(), null, false);
+		purchaseIn(new Date(), null, true);
 		return true;
 	}
 
 	@RequestMapping(value = "/purchasein/vendor/{vendorCode}")
 	public boolean purchaseInVendor(@PathVariable("vendorCode") String vendorCode) {
-		purchaseWeiwai(new Date(), vendorCode, false);
-		purchaseWeiwai(new Date(), vendorCode, true);
+		purchaseIn(new Date(), vendorCode, false);
+		purchaseIn(new Date(), vendorCode, true);
 		return true;
 	}
 
 	@Transactional
-	public boolean purchaseWeiwai(Date startDate, String vendorCode, boolean isWeiwai) {
+	public boolean purchaseIn(Date startDate, String vendorCode, boolean isWeiwai) {
 
 		boolean initTable = false;
 		if (startDate == null) {

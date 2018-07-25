@@ -273,10 +273,14 @@ public class ApiClient {
 		logger.info("start getBatchPurchaseOrder api");
 		String rows_per_page = requestParams.getOrDefault("rows_per_page", "10");
 		String page_index = requestParams.getOrDefault("page_index", "1");
+		String date_begin = requestParams.getOrDefault("date_begin", null);
 
 		RestClient client = new RestClient();
 		String url = String.format(appProperties.getPurchaseOrder().getBatch_get(), token_id, rows_per_page,
 				page_index);
+		if (date_begin != null)
+			url += "&date_begin=" + date_begin;
+
 		logger.info(String.format("url=>%s", url));
 		String response = client.get(url);
 		logger.info(String.format("response=>%s", response));

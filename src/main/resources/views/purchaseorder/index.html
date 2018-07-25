@@ -35,6 +35,8 @@
           </div>
           <div style="vertical-align: bottom" class="search-cell width-15">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+            <button class="btn btn-success" id="sync" sec:authorize="hasAuthority('订单管理-新建/发布')"><i class="fa fa-download"></i> 同步U8订单</button>
+          
           </div>
       </div>
       <div class="row">
@@ -53,7 +55,7 @@ is_vendor = 1;
 
 <script th:inline="javascript">
 /*[+
-
+var sync_url = [[@{/sync/purchaseorder/vendor}]];
 var list_url = [[@{/purchaseorder/list}]];
 var edit_url = [[@{/purchaseorder/}]];
 +]*/ 
@@ -171,6 +173,28 @@ var edit_url = [[@{/purchaseorder/}]];
     $('#vendor, #code, #start_date, #end_date').keyup(function(e) {
       if (e.keyCode == 13)
         table.draw();
+    });
+    
+    $("#sync").click(function() {
+      App.showConfirmDialog('确定要同步吗?', function() {
+        $.ajax({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          }, 
+          url : sync_url,
+          success : function(data, res) {
+            if (data == true) {
+              App.showSuccessDialog("同步成功");
+            }else{
+              App.showSuccessDialog("同步失败");
+            }
+          }
+        });
+      });
+      
     });
   });
 </script>
