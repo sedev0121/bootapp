@@ -173,7 +173,7 @@ is_readonly = 0;
   var detail_url = [[@{|/inquery/${main.ccode}/details|}]];
   var inventory_search_url = [[@{/inventory/select}]];
   var edit_url = [[@{/inquery/}]];
-  var del_url = [[@{/${main.ccode}/delete}]];
+  var del_url = [[@{|/inquery/${main.ccode}/delete|}]];
   +]*/ 
   
   
@@ -371,7 +371,7 @@ is_readonly = 0;
         $.each(data.data, function(key, item){  
           if (item.itaxrate != undefined && item.iunitprice != undefined) {
             value = (Number.parseFloat(item.itaxrate) + 100) * item.iunitprice/100;
-            item.itaxunitprice =value?parseFloat(value).toFixed(2):'';   
+            item.itaxunitprice =value?parseFloat(value).toFixed(6):'';   
           }
         });
       }
@@ -380,7 +380,7 @@ is_readonly = 0;
         $.each(data.data, function(key, item){  
           if (item.itaxrate != undefined && item.itaxunitprice != undefined) {
             value = item.itaxunitprice*100/(Number.parseFloat(item.itaxrate) + 100);     
-            item.iunitprice = value?parseFloat(value).toFixed(2):'';  
+            item.iunitprice = value?parseFloat(value).toFixed(6):'';  
           } 
         });
       }
