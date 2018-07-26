@@ -563,6 +563,11 @@ is_readonly = 0;
           table.on( 'click', 'td.minquantity, td.maxquantity', function (e) {
             editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
           } );
+          if (is_vendor){
+            table.on( 'click', 'td.unitprice, td.taxunitprice', function (e) {
+              editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+            } );
+          }
           App.addKeyDownEditor(editor, 5, 13);
         }
       }

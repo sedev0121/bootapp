@@ -164,7 +164,16 @@ is_vendor = 1;
           attr: {
             type: "number",
           },
-          name: "itaxrate"             
+          name: "itaxrate"   
+        },{
+          label: "是否有效:",
+          type: "checkbox",
+          separator: "|",
+          options:   [
+              { label: '', value: 1 }
+          ],
+          id: "ivalid",
+          name: "ivalid"  
         },{
           attr: {
             type: "number",
@@ -293,11 +302,9 @@ is_vendor = 1;
     
     
     if (state == 3) {
-      $('#example').on( 'change', 'input.editor-valid', function () {
-          editor.edit( $(this).closest('tr'), false )
-              .set( 'ivalid', $(this).prop( 'checked' ) ? 1 : 0 )
-              .submit();
-      });
+      table.on( 'click', 'tbody td.ivalid', function (e) {
+        editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+      } );
     }
     
     $.validator.addMethod("checkTable", function(value, element){
