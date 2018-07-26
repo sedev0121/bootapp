@@ -8,8 +8,10 @@
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
       <li>价格管理</li>
-      <li><a th:href="@{/inquery}" class="active">询价管理</a></li>
-      <li class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建询价单':'询价单详细'">询价单</li>
+      <li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/inquery}" class="active">询价管理</a></li>
+      <li sec:authorize="hasRole('ROLE_BUYER')" class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建询价单':'询价单详细'">询价单</li>
+      <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/inquery}" class="active">报价管理</a></li>
+      <li sec:authorize="hasRole('ROLE_VENDOR')" class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建报价单':'报价单详细'">询价单</li>
     </ul>       
     <div class="btn-group-bar">
         <div class="text-right">

@@ -7,7 +7,8 @@
           <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
         <li><a href="#">价格管理</a></li>
-        <li class="active">报价管理</li>
+        <li class="active" sec:authorize="hasRole('ROLE_BUYER')">报价管理</li>
+        <li class="active" sec:authorize="hasRole('ROLE_VENDOR')">询价管理</li>
       </ul>
       <div class="search-content">
         <div class="search-cell width-10">

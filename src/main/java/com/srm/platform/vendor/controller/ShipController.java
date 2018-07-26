@@ -274,7 +274,7 @@ public class ShipController extends CommonController {
 					continue;
 
 				ArrayList<String> row = new ArrayList<>();
-				List<Integer> valueList = Arrays.asList(1, 2, 4, 8, 13);
+				List<Integer> valueList = Arrays.asList(1, 2, 3, 8, 13);
 				for (int column : valueList) {
 
 					Cell currentCell = currentRow.getCell(column);
