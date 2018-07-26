@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -329,8 +330,21 @@ public class ShipController extends CommonController {
 		return "redirect:/ship/index";
 	}
 
-	@RequestMapping("/change")
-	public @ResponseBody Boolean changeQuantity() {
+	@RequestMapping("/save")
+	@Transactional
+	public @ResponseBody Boolean save(@RequestParam Map<String, String> requestParams) {
+
+		for (Entry<String, String> entry : requestParams.entrySet()) {
+			if (entry.getKey().equals("_csrf"))
+				continue;
+			PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneById(Long.valueOf(entry.getKey()));
+			if (detail != null && entry.getValue() != null && !entry.getValue().isEmpty()) {
+				float quantity = detail.getShippedQuantity() == null ? 0 : detail.getShippedQuantity();
+				detail.setShippedQuantity(quantity + Long.valueOf(entry.getValue()));
+				purchaseOrderDetailRepository.save(detail);
+			}
+		}
+
 		return true;
 	}
 }

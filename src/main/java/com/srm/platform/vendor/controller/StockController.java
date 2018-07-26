@@ -1,18 +1,18 @@
 package com.srm.platform.vendor.controller;
-/*
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+// 库存报表
 @Controller
-@RequestMapping(path = "/report")
-@PreAuthorize("hasRole('ROLE_BUYER')")
-public class ReportController {
-	// 查询列表
-	@GetMapping({ "", "/" })
+@RequestMapping(path = "/stock")
+
+public class StockController extends CommonController {
+	@PreAuthorize("hasRole('ROLE_BUYER')")
+	@GetMapping({ "/", "" })
 	public String index() {
-		return "report/index";
+		return "report/stock";
 	}
 }
-*/
