@@ -233,7 +233,7 @@ public class InqueryController extends CommonController {
 
 		if ((venPriceAdjustMain.getIverifystate() == null
 				|| venPriceAdjustMain.getIverifystate() == Constants.STATE_NEW)
-				&& form.getState() <= Constants.STATE_SUBMIT) {
+				&& form.getState() <= Constants.STATE_CONFIRM) {
 			venPriceAdjustMain.setType(form.getType());
 			venPriceAdjustMain.setIsupplytype(form.getProvide_type());
 			venPriceAdjustMain.setItaxrate(form.getTax_rate());
