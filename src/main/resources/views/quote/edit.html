@@ -294,11 +294,13 @@ is_vendor = 1;
 
     var table = $('#example').DataTable(table_options);
 
-    if (state == 2) {
-      table.on( 'click', 'tbody td.edit-cell', function (e) {
-        editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
-      } );
-      App.addKeyDownEditor(editor, 7, 9);
+    if (state == 2){
+      if ($("#type").val()==2 ) {
+        table.on( 'click', 'tbody td.edit-cell', function (e) {
+          editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+        } );
+        App.addKeyDownEditor(editor, 7, 9);
+      }
     }
 
     

@@ -204,6 +204,10 @@ $(document).ready(function() {
   });
 
   $('#start_import').click(function(){
+    if (!$('#import_file').val()){
+      App.showErrorDialog("请选择Excel文档！");
+      return;
+    }
     $('#import_form').submit();
     $('#import_dialog').modal('hide');//modal_1 is the id 1
   });
