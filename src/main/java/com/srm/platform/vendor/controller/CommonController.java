@@ -109,6 +109,15 @@ public class CommonController {
 
 	}
 
+	public boolean isAuthorizedUnit(Long unitId) {
+		for (String unitIdStr : getDefaultUnitList()) {
+			if (Long.valueOf(unitIdStr) == unitId) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public Account getLoginAccount() {
 
 		Account account = (Account) httpSession.getAttribute("account");

@@ -3,16 +3,28 @@ package com.srm.platform.vendor.model;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
+
+import com.srm.platform.vendor.utility.NoticeReadSearchResult;
 
 @Entity
 @Table(name = "notice_read")
+
+@SqlResultSetMapping(name = "NoticeReadSearchResult", classes = {
+		@ConstructorResult(targetClass = NoticeReadSearchResult.class, columns = {
+				@ColumnResult(name = "realname", type = String.class),
+				@ColumnResult(name = "vendorname", type = String.class),
+				@ColumnResult(name = "unitname", type = String.class),
+				@ColumnResult(name = "read_date", type = Date.class) }) })
 
 public class NoticeRead {
 

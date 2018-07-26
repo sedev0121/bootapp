@@ -41,6 +41,7 @@ import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.NoticeReadSearchResult;
 import com.srm.platform.vendor.utility.NoticeSearchResult;
 import com.srm.platform.vendor.utility.SearchItem;
 import com.srm.platform.vendor.utility.UploadFileHelper;
@@ -174,6 +175,25 @@ public class NoticeController extends CommonController {
 		Notice notice = noticeRepository.findOneById(id);
 		if (notice == null)
 			show404();
+
+		boolean isVisible = false;
+
+		if (isAuthorizedUnit(notice.getCreateAccount().getUnit().getId()) && this.hasAuthority("公告通知-发布")) {
+			isVisible = true;
+		} else if (notice.getCreateAccount().getId() == this.getLoginAccount().getId()) {
+			isVisible = true;
+		} else {
+			List<NoticeRead> readList = noticeReadRepository.findAllByNoticeId(id);
+			for (NoticeRead read : readList) {
+				if (read.getAccount().getId() == this.getLoginAccount().getId()) {
+					isVisible = true;
+					break;
+				}
+			}
+		}
+
+		if (!isVisible)
+			show403();
 
 		model.addAttribute("notice", notice);
 		if (notice.getVendorCodeList() != null) {
@@ -331,6 +351,76 @@ public class NoticeController extends CommonController {
 		notice = noticeRepository.save(notice);
 
 		return notice;
+	}
+
+	@GetMapping("/readlist/{id}")
+	public @ResponseBody Page<NoticeReadSearchResult> readlist_ajax(@PathVariable("id") Long id,
+			@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "deploydate");
+		String dir = requestParams.getOrDefault("dir", "desc");
+		String search = requestParams.getOrDefault("search", "");
+		String start_date = requestParams.getOrDefault("start_date", null);
+		String end_date = requestParams.getOrDefault("end_date", null);
+
+		Date startDate = Utils.parseDate(start_date);
+		Date endDate = Utils.getNextDate(end_date);
+
+		switch (order) {
+		case "unitname":
+			order = "d.name";
+			break;
+		case "vendortname":
+			order = "c.name";
+			break;
+		}
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		String selectQuery = "select b.realname, c.name vendorname, d.name unitname, a.read_date  ";
+		String countQuery = "select count(b.realname) ";
+		String orderBy = " order by " + order + " " + dir;
+
+		String bodyQuery = "from notice_read a left join account b on a.to_account_id=b.id left join vendor c on b.vendor_code=c.code "
+				+ "left join unit d on b.unit_id=d.id where a.notice_id=:noticeId ";
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("noticeId", id);
+
+		if (!search.trim().isEmpty()) {
+			bodyQuery += " and (b.realname like CONCAT('%',:search, '%') or c.name like CONCAT('%',:search, '%') or d.name like CONCAT('%',:search, '%')) ";
+			params.put("search", search.trim());
+		}
+
+		if (startDate != null) {
+			bodyQuery += " and a.read_date>=:startDate";
+			params.put("startDate", startDate);
+		}
+		if (endDate != null) {
+			bodyQuery += " and a.read_date<:endDate";
+			params.put("endDate", endDate);
+		}
+
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "NoticeReadSearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		return new PageImpl<NoticeReadSearchResult>(list, request, totalCount.longValue());
 	}
 
 }

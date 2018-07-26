@@ -78,6 +78,13 @@ public class Utils {
 		return getDateFormat().format(date);
 	}
 
+	public static String formatDateTime(Date date) {
+		if (date == null)
+			return "";
+
+		return getDateTimeFormat().format(date);
+	}
+
 	public static String formatDateZeroTime(Date date) {
 		if (date == null)
 			return "";
