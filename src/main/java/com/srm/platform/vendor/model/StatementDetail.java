@@ -37,12 +37,70 @@ public class StatementDetail {
 	@Column(name = "purchase_in_detail_id")
 	Long purchaseInDetailId;
 
+	private String memo;
+
+	private Float unitWeight;
+
+	private Float yinci;
+
+	private Float yuanci;
+	private Float realQuantity;
+	private Integer purchaseinType;
+
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getMemo() {
+		return memo;
+	}
+
+	public void setMemo(String memo) {
+		this.memo = memo;
+	}
+
+	public float getUnitWeight() {
+		return unitWeight;
+	}
+
+	public void setUnitWeight(float unitWeight) {
+		this.unitWeight = unitWeight;
+	}
+
+	public float getYinci() {
+		return yinci;
+	}
+
+	public void setYinci(float yinci) {
+		this.yinci = yinci;
+	}
+
+	public float getYuanci() {
+		return yuanci;
+	}
+
+	public void setYuanci(float yuanci) {
+		this.yuanci = yuanci;
+	}
+
+	public float getRealQuantity() {
+		return realQuantity;
+	}
+
+	public void setRealQuantity(float realQuantity) {
+		this.realQuantity = realQuantity;
+	}
+
+	public Integer getPurchaseinType() {
+		return purchaseinType;
+	}
+
+	public void setPurchaseinType(Integer purchaseinType) {
+		this.purchaseinType = purchaseinType;
 	}
 
 	public String getCode() {

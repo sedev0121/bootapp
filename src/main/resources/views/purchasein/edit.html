@@ -24,60 +24,31 @@
                 <input type="text" id="code" class="form-control" th:value="${main.code}"  readonly/>
               </div>
               <div class="col-lg-2 col-md-2">
-                <label>订单类型: </label>
-                <input type="text" class="form-control" th:value="${main.purchasetypename}"  readonly/>
+                <label>入库类型: </label>
+                <input type="text" class="form-control" th:value="${main.type}"  readonly/>
               </div>
-              <div class="col-lg-2 col-md-2">
-                <label>收发类型: </label>
-                <input type="text" class="form-control" th:value="${main.receivename}"  readonly/>
-              </div>
-              <div class="col-lg-2 col-md-2">
+              <div class="col-lg-1 col-md-1">
                 <label for="bredvouch">红蓝标识:</label>
                 <select name="state" id="bredvouch" class="form-control" readonly>
                 </select>
               </div>
               <div class="col-lg-2 col-md-2">
                 <label>仓库名称: </label>
-                <input type="text" class="form-control" th:value="${main.warehousename}"  readonly/>
-              </div>
-              <div class="col-lg-2 col-md-2">
-                <label>仓库编码: </label>
-                <input type="text" class="form-control" th:value="${main.warehousecode}"  readonly/>
-              </div>
-              <div class="col-lg-2 col-md-2">
-                <label>部门: </label>
-                <input type="text" class="form-control" th:value="${main.departmentname}"  readonly/>
-              </div>
-              <div class="col-lg-2 col-md-2">
-                <label for="state">状态:</label>
-                <select name="state" id="state" class="form-control" readonly>
-                </select>
-              </div>              
-              <div class="col-lg-2 col-md-2">
-                <label>制单人: </label>
-                <input type="text" class="form-control" th:value="${main.maker}" readonly/>
+                <input type="text" class="form-control" th:value="${main.warehouse_name}"  readonly/>
               </div>
               <div class="col-lg-2 col-md-2">
                 <label>入库日期: </label>
                 <input type="text" class="form-control" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" readonly/>
               </div>
-              <div class="col-lg-2 col-md-2">
-                <label>审核人: </label>
-                <input type="text" class="form-control" th:value="${main.handler}" readonly/>
-              </div>
-              <div class="col-lg-2 col-md-2">
-                <label>审核日期: </label>
-                <input type="text" class="form-control" th:value="${#dates.format(main.auditdate, 'yyyy-MM-dd')}" readonly/>
-              </div>
 
-              <div class="col-lg-4 col-md-4">
+              <div class="col-lg-3 col-md-3">
                 <label>供应商: </label>
                 <input type="text" class="form-control" th:value="${main.vendor.name}" readonly/>
               </div>
               
-              <div class="col-lg-8 col-md-8">
+              <div class="col-lg-12 col-md-12">
                 <label>备注: </label>
-                <input type="text" class="form-control" th:value="${main.memory}" readonly/>
+                <input type="text" class="form-control" th:value="${main.memo}" readonly/>
               </div>
               
           </div>
@@ -98,14 +69,12 @@
   var editor;
   /*[+
   var detail_url = [[@{|/purchasein/${main.code}/details|}]];
-  var state = [[${main.state}]];
   var bredvouch = [[${main.bredvouch}]];
   +]*/ 
   
   $(document).ready(function() {
 
     $(".select2").select2();
-    $("#state").select2({ data: App.getPurchaseInStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
     $("#bredvouch").select2({ data: App.getPurchaseInBredvouchData(),minimumResultsForSearch: -1}).select2("val", bredvouch.toString());
 
     $('input').attr("readonly", true);
@@ -133,7 +102,7 @@
         data : 'inventoryname',
         title : '商品名称'
       }, {
-        data : 'inventorycode',
+        data : 'inventory_code',
         title : '商品编码'
       }, {
         data : 'specs',
@@ -143,25 +112,37 @@
         className: 'dt-center',
         title : '单位',
       }, {
-        data : 'price',
-        className: 'dt-right',
-        title : '入库单单价',
-      }, {
         data : 'quantity',
         className: 'dt-right',
         title : '入库数量',
       }, {
-        data : 'closed_quantity',
+        data : 'price',
         className: 'dt-right',
-        title : '已对账数量',
+        title : '单价',
       }, {
         data : 'cost',
         className: 'dt-right',
         title : '金额',
       }, {
-        data : 'number',
+        data : 'tax_rate',
         className: 'dt-right',
-        title : '件数',
+        title : '税率',
+      }, {
+        data : 'tax_price',
+        className: 'dt-right',
+        title : '含税单价',
+      }, {
+        data : 'tax_cost',
+        className: 'dt-right',
+        title : '含税金额',
+      }, {
+        data : 'memo',
+        title : '备注',
+      
+      }, {
+        data : 'closed_quantity',
+        className: 'dt-right',
+        title : '已对账数量',
       }, {
         data : 'state',
         className: 'dt-center',

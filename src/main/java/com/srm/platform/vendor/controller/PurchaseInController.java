@@ -102,7 +102,7 @@ public class PurchaseInController extends CommonController {
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM purchase_in_main a left join vendor b on a.vendorcode=b.code where 1=1 ";
+		String bodyQuery = "FROM purchase_in_main a left join vendor b on a.vendor_code=b.code where 1=1 ";
 
 		List<String> unitList = this.getDefaultUnitList();
 		Map<String, Object> params = new HashMap<>();
@@ -211,9 +211,9 @@ public class PurchaseInController extends CommonController {
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventorycode=c.code "
+		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventory_code=c.code "
 				+ "left join measurement_unit m on c.main_measure=m.code left join statement_detail d on d.purchase_in_detail_id=a.id "
-				+ "where d.closed_quantity is null and b.vendorcode=:vendor ";
+				+ "where d.closed_quantity is null and b.vendor_code=:vendor ";
 
 		Map<String, Object> params = new HashMap<>();
 

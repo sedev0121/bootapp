@@ -23,8 +23,8 @@ import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchResult;
 
 @SqlResultSetMapping(name = "PurchaseOrderDetailSearchResult", classes = {
 		@ConstructorResult(targetClass = PurchaseOrderDetailSearchResult.class, columns = {
-				@ColumnResult(name = "rowno", type = Integer.class), @ColumnResult(name = "code"),
-				@ColumnResult(name = "quantity", type = Float.class),
+				@ColumnResult(name = "id", type = Long.class), @ColumnResult(name = "rowno", type = Integer.class),
+				@ColumnResult(name = "code"), @ColumnResult(name = "quantity", type = Float.class),
 				@ColumnResult(name = "shipped_quantity", type = Float.class), @ColumnResult(name = "inventoryname"),
 				@ColumnResult(name = "inventorycode"), @ColumnResult(name = "vendorname"),
 				@ColumnResult(name = "vendorcode"), @ColumnResult(name = "specs"), @ColumnResult(name = "unitname"),

@@ -107,47 +107,24 @@ var edit_url = [[@{/purchasein/}]];
         data : 'vendorcode',
         title : '供应商编码'
       }, {
-        data : 'purchasetypename',
+        data : 'type',
         className: 'dt-center',
-        title : '采购类型'
-      }, {
-        data : 'receivename',
-        className: 'dt-center',
-        title : '收发类型'
+        title : '入库类型'
       }, {
         data : 'warehousename',
         title : '仓库'
-      }, {
-        data : 'state',
-        title : '状态',
-        className: 'dt-center',
-        createdCell: App.getInqueryStateClass,
-        render : App.getPurchaseInStateOfId
       }, {
         data : 'bredvouch',
         className: 'dt-center',
         render : App.getPurchaseInBredvouchOfId,
         title : '红蓝标识'
       }, {
-        data : 'maker',
-        className: 'dt-center',
-        title : '制单人'
-      }, {
         data : 'date',
         className: 'dt-center',
         title : '单据日期',
         render : $.fn.date_renderer
-      }, {
-        data : 'handler',
-        className: 'dt-center',
-        title : '审核人'
-      }, {
-        data : 'auditdate',
-        className: 'dt-center',
-        title : '审核日期',
-        render : $.fn.date_renderer
       } ],
-      order: [  [ 9, "desc" ] ]
+      order: [  [ 6, "desc" ] ]
 
       
     });

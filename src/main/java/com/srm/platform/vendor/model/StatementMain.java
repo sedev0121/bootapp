@@ -55,7 +55,7 @@ public class StatementMain {
 	private String invoiceCode;
 
 	@Column(name = "tax_rate")
-	private Float taxRate = 17F;
+	private Float taxRate = 16F;
 
 	private String remark;
 	private Integer state;

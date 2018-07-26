@@ -32,14 +32,14 @@ public class ExcelShipReportView extends AbstractXlsView {
 
 		Row header = sheet.createRow(0);
 		header.createCell(0).setCellValue("No");
-		header.createCell(1).setCellValue("订单编码");
+		header.createCell(1).setCellValue("订单号");
 		header.createCell(2).setCellValue("订单行号");
-		header.createCell(3).setCellValue("商品名称");
-		header.createCell(4).setCellValue("商品编码");
+		header.createCell(3).setCellValue("商品编码");
+		header.createCell(4).setCellValue("商品名称");
 		header.createCell(5).setCellValue("商品描述");
 		header.createCell(6).setCellValue("单位");
 		header.createCell(7).setCellValue("数量");
-		header.createCell(8).setCellValue("已发货数量");
+		header.createCell(8).setCellValue("累计预发货数量");
 		header.createCell(9).setCellValue("需求日期");
 		header.createCell(10).setCellValue("备注");
 		header.createCell(11).setCellValue("承诺交货日期");
@@ -52,8 +52,8 @@ public class ExcelShipReportView extends AbstractXlsView {
 			row.createCell(0).setCellValue(rowNum);
 			row.createCell(1).setCellValue(entry.getMain().getCode());
 			row.createCell(2).setCellValue(entry.getRowno());
-			row.createCell(3).setCellValue(entry.getInventory().getName());
-			row.createCell(4).setCellValue(entry.getInventory().getCode());
+			row.createCell(3).setCellValue(entry.getInventory().getCode());
+			row.createCell(4).setCellValue(entry.getInventory().getName());
 			row.createCell(5).setCellValue(entry.getInventory().getSpecs());
 			row.createCell(6).setCellValue(entry.getInventory().getMainMeasure().getName());
 			row.createCell(7).setCellValue(entry.getQuantity());

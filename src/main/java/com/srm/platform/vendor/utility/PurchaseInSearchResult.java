@@ -9,50 +9,31 @@ public class PurchaseInSearchResult implements Serializable {
 
 	String code;
 
-	Integer state;
-
-	String warehousename;
-
-	String maker;
+	String warehouse_name;
 
 	Date date;
 
-	String receivename;
+	String type;
 
-	String departmentname;
-
-	String purchasetypename;
-
-	Date auditdate;
-
-	String memory;
-
-	String handler;
+	String memo;
 
 	Integer bredvouch;
 
 	String vendorname;
 
-	String vendorcode;
+	String vendor_code;
 
-	public PurchaseInSearchResult(String code, Integer state, String warehousename, String maker, Date date,
-			String receivename, String departmentname, String purchasetypename, Date auditdate, String memory,
-			String handler, Integer bredvouch, String vendorname, String vendorcode) {
+	public PurchaseInSearchResult(String code, String warehouse_name, Date date, String type, String memo,
+			Integer bredvouch, String vendorname, String vendorcode) {
 
 		this.code = code;
-		this.state = state;
-		this.warehousename = warehousename;
-		this.maker = maker;
+		this.warehouse_name = warehouse_name;
 		this.date = date;
-		this.receivename = receivename;
-		this.departmentname = departmentname;
-		this.purchasetypename = purchasetypename;
-		this.auditdate = auditdate;
-		this.memory = memory;
-		this.handler = handler;
+		this.type = type;
+		this.memo = memo;
 		this.bredvouch = bredvouch;
 		this.vendorname = vendorname;
-		this.vendorcode = vendorcode;
+		this.vendor_code = vendorcode;
 	}
 
 	public String getCode() {
@@ -63,28 +44,12 @@ public class PurchaseInSearchResult implements Serializable {
 		this.code = code;
 	}
 
-	public Integer getState() {
-		return state;
-	}
-
-	public void setState(Integer state) {
-		this.state = state;
-	}
-
 	public String getWarehousename() {
-		return warehousename;
+		return warehouse_name;
 	}
 
-	public void setWarehousename(String warehousename) {
-		this.warehousename = warehousename;
-	}
-
-	public String getMaker() {
-		return maker;
-	}
-
-	public void setMaker(String maker) {
-		this.maker = maker;
+	public void setWarehousename(String warehouse_name) {
+		this.warehouse_name = warehouse_name;
 	}
 
 	public Date getDate() {
@@ -95,52 +60,20 @@ public class PurchaseInSearchResult implements Serializable {
 		this.date = date;
 	}
 
-	public String getReceivename() {
-		return receivename;
+	public String getType() {
+		return type;
 	}
 
-	public void setReceivename(String receivename) {
-		this.receivename = receivename;
+	public void setType(String type) {
+		this.type = type;
 	}
 
-	public String getDepartmentname() {
-		return departmentname;
+	public String getMemo() {
+		return memo;
 	}
 
-	public void setDepartmentname(String departmentname) {
-		this.departmentname = departmentname;
-	}
-
-	public String getPurchasetypename() {
-		return purchasetypename;
-	}
-
-	public void setPurchasetypename(String purchasetypename) {
-		this.purchasetypename = purchasetypename;
-	}
-
-	public Date getAuditdate() {
-		return auditdate;
-	}
-
-	public void setAuditdate(Date auditdate) {
-		this.auditdate = auditdate;
-	}
-
-	public String getMemory() {
-		return memory;
-	}
-
-	public void setMemory(String memory) {
-		this.memory = memory;
-	}
-
-	public String getHandler() {
-		return handler;
-	}
-
-	public void setHandler(String handler) {
-		this.handler = handler;
+	public void setMemo(String memo) {
+		this.memo = memo;
 	}
 
 	public Integer getBredvouch() {
@@ -160,11 +93,11 @@ public class PurchaseInSearchResult implements Serializable {
 	}
 
 	public String getVendorcode() {
-		return vendorcode;
+		return vendor_code;
 	}
 
 	public void setVendorcode(String vendorcode) {
-		this.vendorcode = vendorcode;
+		this.vendor_code = vendorcode;
 	}
 
 }

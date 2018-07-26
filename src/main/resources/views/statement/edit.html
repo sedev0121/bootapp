@@ -12,6 +12,7 @@
     </ul>       
     <div class="btn-group-bar">
         <div class="text-right">
+          <a class="btn btn-success" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.state==1  or main.state==4}" id="sync"><i class="fa fa-download"></i> 同步U8入库单</a>
           <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.state==1  or main.state==4}" id="save"><i class="fa fa-save"></i> 保存</a>
           <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.state==1  or main.state==4}" id="submit"><i class="fa fa-share"></i> 发布</a>
           <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-审核/退回')" th:if="${main.state==3}" id="review"><i class="fa fa-arrow-up"></i> 审核</a>
@@ -70,19 +71,19 @@
            
 
                 <div class="col-lg-3 col-md-3">
-                  <label for="invoice_code">税率: </label>
+                  <label for="tax_rate">税率: </label>
                   <input type="number" id="tax_rate" name="tax_rate" th:value="${main.taxRate}" class="form-control"/>
                 </div>                
                 <div class="col-lg-3 col-md-3">
-                  <label for="invoice_code">数量合计: </label>
-                  <input type="number" id="total_quantity" value="1" class="form-control" readonly/>
+                  <label for="total_quantity">数量合计: </label>
+                  <input type="total_quantity" id="total_quantity" value="1" class="form-control" readonly/>
                 </div>                
                 <div class="col-lg-3 col-md-3">
-                  <label for="invoice_code">结算未税合计: </label>
+                  <label for="total_money">结算未税合计: </label>
                   <input type="number" id="total_money" value="1" class="form-control" readonly/>
                 </div>                
                 <div class="col-lg-3 col-md-3">
-                  <label for="invoice_code">结算含税合计: </label>
+                  <label for="total_tax_money">结算含税合计: </label>
                   <input type="number" id="total_tax_money" value="1" class="form-control" readonly/>
                 </div>      
                 <div class="col-lg-6 col-md-6">
@@ -178,8 +179,9 @@ is_readonly = 0;
 <script th:inline="javascript">
 var editor, weiwai_editor;
 /*[+
-var detail_url = [[@{|/statement/${main.code}/details|}]];
-var detail_weiwai_url = [[@{|/statement/${main.code}/details|}]];
+var sync_url = [[@{/sync/purchasein/vendor/}]];
+var detail_url = [[@{|/statement/${main.code}/details/1|}]];
+var detail_weiwai_url = [[@{|/statement/${main.code}/details/2|}]];
 var edit_url = [[@{/statement/}]];
 var import_url = [[@{/purchasein/select}]];
 var del_url = [[@{|/statement/${main.code}/delete|}]];
@@ -190,7 +192,7 @@ var state = [[${main.state}]];
   
 $(document).ready(function() {
 
-  var basic_table, weiwai_table, import_table;
+  var basic_table, weiwai_table, import_table, current_tab;
       
 
   
@@ -257,32 +259,33 @@ $(document).ready(function() {
           className:'dt-center',
           title : '单位',
         }, {
-          data : 'price',
-          className:'dt-right',
-          title : '入库单单价',
-        }, {
           data : 'quantity',
           className:'dt-right',
           title : '入库数量',
         }, {
-          data : 'closed_quantity',
+          data : 'price',
           className:'dt-right',
-          title : '已对账数量',
+          title : '单价',
         }, {
           data : 'cost',
           className:'dt-right',
           title : '金额',
         }, {
-          data : 'number',
+          data : 'tax_rate',
           className:'dt-right',
-          title : '件数',
-/*
+          title : '税率',
         }, {
-          data : 'state',
-          title : '状态',
-          createdCell: App.getInqueryStateClass,
-          render : App.getPurchaseInStateOfId        
-*/
+          data : 'tax_price',
+          className:'dt-right',
+          title : '含税单价',
+        }, {
+          data : 'tax_cost',
+          className:'dt-right',
+          title : '含税金额',
+        }, {
+          data : 'closed_quantity',
+          className:'dt-right',
+          title : '已对账数量',
         } ],
         order: [  [ 1, "asc" ] ]
 
@@ -294,9 +297,10 @@ $(document).ready(function() {
 
   }
   
-  
+  current_tab = '#tab-1';
   $('#tabs').tabs({
     activate: function (event, ui) {
+      current_tab = ui.newPanel.selector;
       if (ui.newPanel.selector == '#tab-2')
         load_weiwai_table();
     }
@@ -335,8 +339,8 @@ $(document).ready(function() {
       attr: {
         type: "number",
       },
-      id: "taxrate",
-      name: "taxrate"            
+      id: "tax_rate",
+      name: "tax_rate"            
     },{
       attr: {
         type: "number",
@@ -394,11 +398,11 @@ $(document).ready(function() {
       editingField.input().removeClass('error');
     }
 
-    if (currentFieldName == 'taxrate') {
+    if (currentFieldName == 'tax_rate') {
       $.each(data.data, function(key, item){  
-        if (item.closed_price != undefined && item.taxrate != undefined) {
+        if (item.closed_price != undefined && item.tax_rate != undefined) {
           item.closed_price =parseFloat(item.closed_price).toFixed(2); 
-          value = (Number.parseFloat(item.taxrate) + 100) * item.closed_price/100;
+          value = (Number.parseFloat(item.tax_rate) + 100) * item.closed_price/100;
           item.closed_tax_price =value?parseFloat(value).toFixed(2):'';   
         }
         if (item.closed_price != undefined && item.closed_quantity != undefined) {
@@ -419,8 +423,8 @@ $(document).ready(function() {
           value = item.closed_price * item.closed_quantity;
           item.closed_money =value?parseFloat(value).toFixed(2):'';   
         }
-        if (item.closed_price != undefined && item.taxrate != undefined) {
-          value = (Number.parseFloat(item.taxrate) + 100) * item.closed_price/100;
+        if (item.closed_price != undefined && item.tax_rate != undefined) {
+          value = (Number.parseFloat(item.tax_rate) + 100) * item.closed_price/100;
           item.closed_tax_price =value?parseFloat(value).toFixed(2):'';   
         }
         if (item.closed_tax_price != undefined && item.closed_quantity != undefined) {
@@ -437,8 +441,8 @@ $(document).ready(function() {
           value = item.closed_money / item.closed_quantity;
           item.closed_price =value?parseFloat(value).toFixed(2):'';   
         }
-        if (item.closed_price != undefined && item.taxrate != undefined) {
-          value = (Number.parseFloat(item.taxrate) + 100) * item.closed_price/100;
+        if (item.closed_price != undefined && item.tax_rate != undefined) {
+          value = (Number.parseFloat(item.tax_rate) + 100) * item.closed_price/100;
           item.closed_tax_price =value?parseFloat(value).toFixed(2):'';   
         }
         if (item.closed_tax_price != undefined && item.closed_quantity != undefined) {
@@ -455,8 +459,8 @@ $(document).ready(function() {
           value = item.closed_tax_price * item.closed_quantity;
           item.closed_tax_money =value?parseFloat(value).toFixed(2):'';   
         }
-        if (item.closed_tax_price != undefined && item.taxrate != undefined) {
-          value = item.closed_tax_price*100/(Number.parseFloat(item.taxrate) + 100);    
+        if (item.closed_tax_price != undefined && item.tax_rate != undefined) {
+          value = item.closed_tax_price*100/(Number.parseFloat(item.tax_rate) + 100);    
           item.closed_price =value?parseFloat(value).toFixed(2):'';   
         }
         if (item.closed_price != undefined && item.closed_quantity != undefined) {
@@ -473,8 +477,8 @@ $(document).ready(function() {
           value = item.closed_tax_money / item.closed_quantity;
           item.closed_tax_price =value?parseFloat(value).toFixed(2):'';   
         }
-        if (item.closed_tax_price != undefined && item.taxrate != undefined) {
-          value = item.closed_tax_price*100/(Number.parseFloat(item.taxrate) + 100);    
+        if (item.closed_tax_price != undefined && item.tax_rate != undefined) {
+          value = item.closed_tax_price*100/(Number.parseFloat(item.tax_rate) + 100);    
           item.closed_price =value?parseFloat(value).toFixed(2):'';  
         }
         if (item.closed_price != undefined && item.closed_quantity != undefined) {
@@ -540,11 +544,11 @@ $(document).ready(function() {
                   inventorycode:null,
                   inventoryname:"扣款",                  
                   unitname:null,
-                  taxrate:$('#tax_rate').val(),
+                  tax_rate:$('#tax_rate').val(),
                   number:null,
                   price:null,
-                  taxprice:null,
-                  taxcost:null,
+                  tax_price:null,
+                  tax_cost:null,
                   purchase_in_code:null,
                   purchase_in_date:null,
                   quantity:null,
@@ -608,17 +612,13 @@ $(document).ready(function() {
         className:'dt-right',
         title : '未税金额',
       }, {
-        data : 'taxprice',
+        data : 'tax_price',
         className:'dt-right',
         title : '含税单价',
       }, {
-        data : 'taxcost',
+        data : 'tax_cost',
         className:'dt-right',
         title : '含税金额',
-      }, {
-        data : 'number',
-        className:'dt-right',
-        title : '件数',
       }, {
         data : 'quantity',
         title : '未对账数量',
@@ -642,7 +642,7 @@ $(document).ready(function() {
         className: 'edit-cell dt-right',
         title : '结算未税金额',
       }, {
-        data : 'taxrate',
+        data : 'tax_rate',
         className:' edit-cell dt-right',
         title : '税率',
       }, {
@@ -656,7 +656,7 @@ $(document).ready(function() {
 
       } ],
       columnDefs: [ {
-        "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
         "orderable": false
       } ],
       order: [  [ 0, "asc" ], [3, "asc"] ],
@@ -696,7 +696,7 @@ $(document).ready(function() {
     basic_table.on( 'click', 'tbody td.edit-cell', function (e) {
       editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
     } );
-    App.addKeyDownEditor(editor, 12, 16);    
+    App.addKeyDownEditor(editor, 11, 15);    
   }
 
   
@@ -708,8 +708,42 @@ $(document).ready(function() {
       attr: {
         type: "number",
       },
-      id: "inventoryname",
-      name: "inventoryname"            
+      name: "real_quantity"    
+    },{
+      attr: {
+        type: "number",
+      },
+      name: "quantity"  
+    },{
+      attr: {
+        type: "number",
+      },
+      name: "nat_tax_price" 
+    },{
+      attr: {
+        type: "number",
+      },
+      name: "material_quantity"  
+    },{
+      attr: {
+        type: "number",
+      },
+      name: "material_tax_price"            
+    },{
+      attr: {
+        type: "number",
+      },
+      name: "yuanci"    
+    },{
+      attr: {
+        type: "number",
+      },
+      name: "yinci"    
+    },{
+      attr: {
+        type: "number",
+      },
+      name: "unit_weight"    
           
     }],
     i18n: {
@@ -730,7 +764,7 @@ $(document).ready(function() {
     
     var currentFieldName = e.currentTarget.s.includeFields[0];
     
-    var editingField = editor.field(currentFieldName);
+    var editingField = weiwai_editor.field(currentFieldName);
     if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val())<=0) {
       editingField.input().addClass('error');
       return false;
@@ -738,7 +772,33 @@ $(document).ready(function() {
       editingField.input().removeClass('error');
     }
 
-    
+    $.each(data.data, function(key, item){  
+      item.yinci_standard = '';
+      item.yinci_chargeback = '';
+      item.material_less_quantity = '';
+      item.material_chargeback = '';
+      item.price = '';
+      
+      if (item.quantity != undefined) {
+        item.yinci_standard = Math.round(item.quantity*0.002);
+        
+        if (item.yinci != undefined) {
+          item.yinci_chargeback = (item.yinci-item.yinci_standard)<=0?0:(item.yinci-item.yinci_standard);
+          
+          if (item.material_quantity != undefined && item.real_quantity != undefined) {
+            item.material_less_quantity = parseFloat(item.material_quantity - item.real_quantity - item.yuanci - item.yinci + item.yinci_chargeback).toFixed(4);
+            
+            if (item.unit_weight != undefined && item.material_tax_price != undefined) {
+              item.material_chargeback = parseFloat(item.material_less_quantity * item.unit_weight * item.material_tax_price).toFixed(2);
+              
+              if (item.nat_tax_price != undefined) {
+                item.price = parseFloat(item.material_chargeback>=0?(item.real_quantity * item.nat_tax_price - item.material_chargeback):(item.real_quantity * item.nat_tax_price)).toFixed(6);
+              }
+            }
+          }
+        }
+      }
+    });
 
   });
     
@@ -769,9 +829,13 @@ $(document).ready(function() {
       ajax : {
         url : detail_weiwai_url,
         dataSrc : function(json) {
-          $.each(json, function(key, item){
-            item.dstartdate = $.fn.date_renderer(item.dstartdate);
-            item.denddate = $.fn.date_renderer(item.denddate);
+          $.each(json, function(key, item){            
+            item.yinci_standard = Math.round(item.quantity*0.002);
+            item.yinci_chargeback = (item.yinci-item.yinci_standard)<=0?0:(item.yinci-item.yinci_standard);
+            item.material_less_quantity = parseFloat(item.material_quantity - item.real_quantity - item.yuanci - item.yinci + item.yinci_chargeback).toFixed(4);
+
+            item.material_chargeback = parseFloat(item.material_less_quantity * item.unit_weight * item.material_tax_price).toFixed(2);
+            item.price = parseFloat(item.material_chargeback>=0?(item.real_quantity * item.nat_tax_price - item.material_chargeback):(item.real_quantity * item.nat_tax_price)).toFixed(6);
           });
           return json;
         },
@@ -800,51 +864,51 @@ $(document).ready(function() {
         className:'dt-center',
         title : '主计量',
       }, {
-        data : 'price',
+        data : 'quantity',
         className:'dt-right',
         title : '系统入库数量',
       }, {
-        data : 'price',
+        data : 'nat_tax_price',
         className:'dt-right',
         title : '含税加工单价',
       }, {
-        data : 'price',
+        data : 'material_quantity',
         className:'dt-right',
         title : '出库数量',
       }, {
-        data : 'price',
+        data : 'real_quantity',
         className:'dt-right edit-cell',
         title : '实收数量',
       }, {
-        data : 'price',
+        data : 'yuanci',
         className:'dt-right edit-cell',
         title : '原次',
       }, {
-        data : 'price',
+        data : 'yinci',
         className:'dt-right edit-cell',
         title : '印次',
       }, {
-        data : 'price',
-        className:'dt-right',
-        title : '印次标准',
-      }, {
-        data : 'price',
-        className:'dt-right',
-        title : '印次扣款量',
-      }, {
-        data : 'price',
-        className:'dt-right',
-        title : '基材少交数量',
-      }, {
-        data : 'price',
+        data : 'unit_weight',
         className:'dt-right edit-cell',
         title : '每片基材重量',
       }, {
-        data : 'price',
+        data : 'yinci_standard',
+        className:'dt-right',
+        title : '印次标准',
+      }, {
+        data : 'yinci_chargeback',
+        className:'dt-right',
+        title : '印次扣款量',
+      }, {
+        data : 'material_less_quantity',
+        className:'dt-right',
+        title : '基材少交数量',
+      }, {
+        data : 'material_tax_price',
         className:'dt-right',
         title : '基材单价',
       }, {
-        data : 'price',
+        data : 'material_chargeback',
         className:'dt-right',
         title : '基材扣款',
       }, {
@@ -852,7 +916,7 @@ $(document).ready(function() {
         className:'dt-right',
         title : '金额',
       }, {
-        data : 'price',
+        data : 'memo',
         className:'dt-right',
         title : '备注',
 
@@ -878,9 +942,9 @@ $(document).ready(function() {
 
     if (state == 1 && !is_readonly) {
       weiwai_table.on( 'click', 'tbody td.edit-cell', function (e) {
-        editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+        weiwai_editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
-      App.addKeyDownEditor(weiwai_editor, 12, 16);    
+      App.addKeyDownEditor(weiwai_editor, 9, 12);    
     }
     
     
@@ -910,8 +974,17 @@ $(document).ready(function() {
     submitHandler: function (form) {
       var data = basic_table.rows().data().toArray();
       var post_data = {};
-      if (!is_vendor)
+      if (!is_vendor){
         post_data.table = data;
+        post_data.weiwai = weiwai;
+      }        
+
+      if (weiwai_table){
+        var weiwai = weiwai_table.rows().data().toArray();
+        if (!is_vendor){
+          post_data.weiwai = weiwai;
+        }
+      }
       
       jQuery(form).ajaxSubmit({
           data: post_data,
@@ -953,22 +1026,24 @@ $(document).ready(function() {
         
         item.closed_tax_money = item.cost;
         item.closed_tax_price = item.price;
-        item.taxrate = $('#tax_rate').val();
-        if (item.taxrate == undefined || item.taxrate == ''){
-          item.taxrate = 17;
-        }
-        item.taxprice = item.price * (100 + parseFloat(item.taxrate)) /100 ;
-        item.taxcost = item.cost * (100 + parseFloat(item.taxrate)) /100 ;
+        item.taxprice = item.tax_price;
+        item.taxcost = item.tax_cost;
 
         
         item.closed_quantity = item.quantity;
-        basic_table.row.add(item);  
+        
+        if (current_tab == '#tab-1')
+          basic_table.row.add(item);
+        else
+          weiwai_table.row.add(item);
       }
     })
     
-    basic_table.draw();
-    
-    
+    if (current_tab == '#tab-1')
+      basic_table.draw();
+    else
+      weiwai_table.draw();
+        
   });
   
   $('#vendor, #code, #inventory, #date').keyup(function(e) {
@@ -978,12 +1053,14 @@ $(document).ready(function() {
   
   $("#save").click(function() {
     editor.submit();
+    weiwai_editor.submit();
     $('#state').val(1);
     $("#form").submit();            
   });
   
   $("#submit").click(function() {
     editor.submit();
+    weiwai_editor.submit();
     var data = basic_table.rows().data().toArray();
     if (data.length == 0) {
       App.showErrorDialog("操作失败", "没有要发布的商品");
@@ -995,12 +1072,14 @@ $(document).ready(function() {
   
   $("#verify").click(function() {
     editor.submit();
+    weiwai_editor.submit();
     $('#state').val(3);
     $("#form").submit();            
   });   
   
   $("#cancel").click(function() {
     editor.submit();
+    weiwai_editor.submit();
     $('#state').val(4);
     $("#form").submit();            
   });
@@ -1024,6 +1103,34 @@ $(document).ready(function() {
     $("#form").submit();            
   });   
   
+  $("#sync").click(function() {
+    if (!$("#vendor").val()) {
+      $('#vendor').focus();
+      App.showErrorDialog("请选择供应商！");
+      return false;
+    }
+    
+    App.showConfirmDialog('确定要同步吗?', function() {
+      var url = sync_url + $("#vendor").val();
+      $.ajax({
+        beforeSend: function(){
+          App.blockUI();
+        },
+        complete: function(){
+          App.unblockUI();
+        }, 
+        url : url,
+        success : function(data, res) {
+          if (data == true) {
+            App.showSuccessDialog("同步成功");
+          }else{
+            App.showSuccessDialog("同步失败");
+          }
+        }
+      });
+    });
+    
+  });
   
 });
 </script>

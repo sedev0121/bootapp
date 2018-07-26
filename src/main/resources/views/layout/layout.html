@@ -72,8 +72,10 @@
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">价格管理</a>
                 
               <ul class="dropdown-menu">
-                <li><a th:href="@{/inquery}">询价管理</a></li>
-                <li><a th:href="@{/quote}">报价管理</a></li>
+                <li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/inquery}" >询价管理</a></li>
+                <li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/quote}">报价管理</a></li>
+                <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/inquery}">报价管理</a></li>
+                <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/quote}">询价管理</a></li>
               </ul>
             </li>         
             <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/purchaseorder')} ? active : ''" >

@@ -214,5 +214,27 @@ $(document).ready(function() {
       if(e.keyCode == 13)
           table.draw();
   });
+  
+  $("#btn_sync_vendor").click(function() {
+    App.showConfirmDialog('确定要同步吗?', function() {
+      $.ajax({
+        beforeSend: function(){
+          App.blockUI();
+        },
+        complete: function(){
+          App.unblockUI();
+        }, 
+        url : sync_vendor_url,
+        success : function(data, res) {
+          if (data == true) {
+            App.showSuccessDialog("同步成功");
+          }else{
+            App.showSuccessDialog("同步失败");
+          }
+        }
+      });
+    });
+    
+  });
 });
 </script>

@@ -7,8 +7,6 @@ public interface StatementDetailItem {
 
 	Long getId();
 
-	String getState();
-
 	Float getClosed_quantity();
 
 	Float getRemain_quantity();
@@ -30,21 +28,13 @@ public interface StatementDetailItem {
 
 	String getCost();
 
-	String getTaxprice();
+	String getTax_price();
 
-	String getTaxcost();
+	String getTax_cost();
 
-	String getTaxrate();
+	String getTax_rate();
 
 	String getUnitname();
-
-	String getCmassunitname();
-
-	String getAssitantunitname();
-
-	String getIrate();
-
-	String getNumber();
 
 	Integer getRowno();
 
@@ -56,5 +46,21 @@ public interface StatementDetailItem {
 	String getInventorycode();
 
 	String getSpecs();
+
+	String getNat_tax_price();
+
+	String getMaterial_quantity();
+
+	String getMaterial_tax_price();
+
+	String getReal_quantity();
+
+	String getYuanci();
+
+	String getYinci();
+
+	String getUnit_weight();
+
+	String getMemo();
 
 }

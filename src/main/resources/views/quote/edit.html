@@ -7,8 +7,10 @@
           <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
         <li>价格管理</li>
-        <li><a th:href="@{/quote}" class="active">报价管理</a></li>
-        <li class="active">报价单详细</li>
+        <li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/quote}" class="active">报价管理</a></li>
+        <li sec:authorize="hasRole('ROLE_BUYER')" class="active">报价单详细</li>
+        <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/quote}" class="active">询价管理</a></li>
+        <li sec:authorize="hasRole('ROLE_VENDOR')" class="active">询价单详细</li>
       </ul>
     <div class="btn-group-bar">
         <div class="text-right">
@@ -164,7 +166,16 @@ is_vendor = 1;
           attr: {
             type: "number",
           },
-          name: "itaxrate"             
+          name: "itaxrate"   
+        },{
+          label: "是否有效:",
+          type: "checkbox",
+          separator: "|",
+          options:   [
+              { label: '', value: 1 }
+          ],
+          id: "ivalid",
+          name: "ivalid"  
         },{
           attr: {
             type: "number",
@@ -283,21 +294,21 @@ is_vendor = 1;
 
     var table = $('#example').DataTable(table_options);
 
-    if (state == 2) {
-      table.on( 'click', 'tbody td.edit-cell', function (e) {
-        editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
-      } );
-      App.addKeyDownEditor(editor, 7, 9);
+    if (state == 2){
+      if ($("#type").val()==2 ) {
+        table.on( 'click', 'tbody td.edit-cell', function (e) {
+          editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+        } );
+        App.addKeyDownEditor(editor, 7, 9);
+      }
     }
 
     
     
     if (state == 3) {
-      $('#example').on( 'change', 'input.editor-valid', function () {
-          editor.edit( $(this).closest('tr'), false )
-              .set( 'ivalid', $(this).prop( 'checked' ) ? 1 : 0 )
-              .submit();
-      });
+      table.on( 'click', 'tbody td.ivalid', function (e) {
+        editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+      } );
     }
     
     $.validator.addMethod("checkTable", function(value, element){
