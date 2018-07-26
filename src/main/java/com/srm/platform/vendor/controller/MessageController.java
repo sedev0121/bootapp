@@ -10,7 +10,6 @@ import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Notice;
-import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.NoticeSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
@@ -32,9 +31,6 @@ import com.srm.platform.vendor.utility.Utils;
 @RequestMapping(path = "/message")
 public class MessageController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-	@Autowired
-	private NoticeRepository noticeRepository;
 
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
@@ -46,9 +42,15 @@ public class MessageController extends CommonController {
 	@GetMapping("/{id}/edit")
 	public String edit(@PathVariable("id") Long id, Model model) {
 		Notice notice = noticeRepository.findOneById(id);
-		if (notice == null)
+		if (notice == null || notice.getType() != Constants.NOTICE_TYPE_SYSTEM
+				|| notice.getState() != Constants.NOTICE_STATE_PUBLISH)
 			show404();
 
+		if (!isVisibleNotice(id)) {
+			show403();
+		}
+
+		setReadDate(id);
 		model.addAttribute("notice", notice);
 		return "message/edit";
 	}

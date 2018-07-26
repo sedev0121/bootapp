@@ -173,7 +173,7 @@ public class NoticeController extends CommonController {
 	@GetMapping("/{id}/edit")
 	public String edit(@PathVariable("id") Long id, Model model) {
 		Notice notice = noticeRepository.findOneById(id);
-		if (notice == null)
+		if (notice == null || notice.getType() != Constants.NOTICE_TYPE_USER)
 			show404();
 
 		boolean isVisible = false;
@@ -182,19 +182,14 @@ public class NoticeController extends CommonController {
 			isVisible = true;
 		} else if (notice.getCreateAccount().getId() == this.getLoginAccount().getId()) {
 			isVisible = true;
-		} else {
-			List<NoticeRead> readList = noticeReadRepository.findAllByNoticeId(id);
-			for (NoticeRead read : readList) {
-				if (read.getAccount().getId() == this.getLoginAccount().getId()) {
-					isVisible = true;
-					break;
-				}
-			}
+		} else if (isVisibleNotice(id)) {
+			isVisible = true;
 		}
 
 		if (!isVisible)
 			show403();
 
+		setReadDate(id);
 		model.addAttribute("notice", notice);
 		if (notice.getVendorCodeList() != null) {
 			List<SearchItem> vendorList = vendorRepository
@@ -384,7 +379,7 @@ public class NoticeController extends CommonController {
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from notice_read a left join account b on a.to_account_id=b.id left join vendor c on b.vendor_code=c.code "
-				+ "left join unit d on b.unit_id=d.id where a.notice_id=:noticeId ";
+				+ "left join unit d on b.unit_id=d.id where b.realname is not null and a.notice_id=:noticeId ";
 
 		Map<String, Object> params = new HashMap<>();
 		params.put("noticeId", id);

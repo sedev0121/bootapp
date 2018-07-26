@@ -2,6 +2,7 @@ package com.srm.platform.vendor.controller;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -22,8 +23,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.NoticeReadRepository;
+import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.utility.Constants;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
@@ -42,10 +46,16 @@ public class CommonController {
 	public EntityManager em;
 
 	@Autowired
-	private AccountRepository accountRepository;
+	public NoticeRepository noticeRepository;
 
 	@Autowired
-	private HttpSession httpSession;
+	public NoticeReadRepository noticeReadRepository;
+
+	@Autowired
+	public AccountRepository accountRepository;
+
+	@Autowired
+	public HttpSession httpSession;
 
 	protected int currentPage;
 	protected int maxResults;
@@ -116,6 +126,28 @@ public class CommonController {
 			}
 		}
 		return false;
+	}
+
+	public boolean isVisibleNotice(Long noticeId) {
+		boolean isVisible = false;
+		List<NoticeRead> readList = noticeReadRepository.findListByNoticeId(noticeId);
+		for (NoticeRead read : readList) {
+			if (read.getAccount().getId() == this.getLoginAccount().getId()) {
+				isVisible = true;
+				break;
+			}
+		}
+
+		return isVisible;
+	}
+
+	public void setReadDate(Long noticeId) {
+		NoticeRead noticeRead = noticeReadRepository.findOneByNoticeAndAccount(noticeId,
+				this.getLoginAccount().getId());
+		if (noticeRead != null) {
+			noticeRead.setReadDate(new Date());
+			noticeReadRepository.save(noticeRead);
+		}
 	}
 
 	public Account getLoginAccount() {

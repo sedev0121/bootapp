@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.NoticeSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
@@ -46,9 +47,15 @@ public class AlertController extends CommonController {
 	@GetMapping("/{id}/edit")
 	public String edit(@PathVariable("id") Long id, Model model) {
 		Notice notice = noticeRepository.findOneById(id);
-		if (notice == null)
+		if (notice == null || notice.getType() != Constants.NOTICE_TYPE_ALERT
+				|| notice.getState() != Constants.NOTICE_STATE_PUBLISH)
 			show404();
 
+		if (!isVisibleNotice(id)) {
+			show403();
+		}
+
+		setReadDate(id);
 		model.addAttribute("notice", notice);
 		return "alert/edit";
 	}

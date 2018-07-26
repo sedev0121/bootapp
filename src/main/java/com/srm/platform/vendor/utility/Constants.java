@@ -30,6 +30,11 @@ public class Constants {
 	public static int NOTICE_TYPE_SYSTEM = 2;
 	public static int NOTICE_TYPE_ALERT = 3;
 
+	public static int NOTICE_STATE_NEW = 1;
+	public static int NOTICE_STATE_SUBMIT = 2;
+	public static int NOTICE_STATE_PUBLISH = 3;
+	public static int NOTICE_STATE_CANCEL = 4;
+
 	public static int STATEMENT_DETAIL_TYPE_BASIC = 1;
 	public static int STATEMENT_DETAIL_TYPE_WEIWAI = 2;
 

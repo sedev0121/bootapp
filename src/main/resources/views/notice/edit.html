@@ -92,7 +92,7 @@
             <label for="title">发布时间: </label>
             <input type="text" class="form-control" readonly th:value="${#dates.format(notice.verifyDate, 'yyyy-MM-dd HH:mm:ss')}">
           </div> 
-          <div class="col-lg-12 table-responsive" th:if="${notice.createAccount?.id==session.account_id}">
+          <div class="col-lg-12 table-responsive" th:if="${notice.createAccount?.id==session.account_id and notice.state==3}">
               <table id="table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
               </table>
           </div>
