@@ -4,6 +4,8 @@ import java.util.Date;
 
 public class PurchaseOrderDetailSearchResult {
 
+	Long id;
+
 	Integer rowno;
 
 	String code;
@@ -34,11 +36,12 @@ public class PurchaseOrderDetailSearchResult {
 
 	Float remain_quantity;
 
-	public PurchaseOrderDetailSearchResult(Integer rowno, String code, Float quantity, Float shipped_quantity,
+	public PurchaseOrderDetailSearchResult(Long id, Integer rowno, String code, Float quantity, Float shipped_quantity,
 			String inventoryname, String inventorycode, String vendorname, String vendorcode, String specs,
 			String unitname, Date arrivedate, Date confirmdate, String arrivenote, String confirmnote,
 			Float remain_quantity) {
 
+		this.id = id;
 		this.rowno = rowno;
 		this.code = code;
 		this.quantity = quantity;
@@ -54,6 +57,14 @@ public class PurchaseOrderDetailSearchResult {
 		this.arrivenote = arrivenote;
 		this.confirmnote = confirmnote;
 		this.remain_quantity = remain_quantity;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public Integer getRowno() {

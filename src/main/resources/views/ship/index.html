@@ -81,7 +81,7 @@ is_vendor = 1;
 var import_result = [[${#vars['message']}]];  
 var importUrl = [[@{/ship/import}]];  
 var editable = [[${#strings.startsWith(#request.requestURI,'/ship/index')?true:false}]];
-
+var change_quantity_url = [[@{/ship/change}]];
 var list_url = [[@{/ship/list}]];
 
 +]*/ 
@@ -101,9 +101,30 @@ $(document).ready(function() {
     App.showSuccessDialog(import_result);
   }
     
+  var editor = new $.fn.dataTable.Editor( {
+    ajax: {
+      type: 'get',
+      url: change_quantity_url,
+    },
+    table: "#example",  
+    idSrc: "id",
+    //template: '#customForm',
+    fields: [ {
+      name:"id",
+    },{
+      attr: {
+        type: "number"
+      },
+      name: "today_quantity"                
+    }],
+  }).on( 'preSubmit', function ( e, data, action ) {
+        
+  });
+  
   var table = $('#example').DataTable({
     ordering : true,
     select: editable,
+    buttons:[],
     ajax : {
         url : list_url,
         data : function(data) {
@@ -120,6 +141,9 @@ $(document).ready(function() {
           return filter;
         },
         dataSrc : function(json) {
+          $.each(json, function(key, item){
+            item.today_quantity = '';
+          });
           json.recordsTotal = json.totalElements;
           json.recordsFiltered = json.totalElements;
           return json.content;
@@ -127,6 +151,9 @@ $(document).ready(function() {
     },
     
     columns : [ {
+      data: 'id',
+      visible:false,
+    },{
       data : 'code',
       title : '订单号',
     }, {
@@ -161,7 +188,14 @@ $(document).ready(function() {
     }, {
       data : 'shipped_quantity',
       className: 'dt-right',
-      title : '累计预发货数量',      
+      title : '累计预发货数量',    
+    }, {
+      data : 'today_quantity',
+      className: 'dt-right edit-cell',
+      visible: editable && false,
+      orderable: false,
+      title : '本次预发货数量',
+      defaultContent: '',
     }, {
       data : 'remain_quantity',
       className: 'dt-right',
@@ -184,10 +218,10 @@ $(document).ready(function() {
       title : '供方备注',
     } ],
     columnDefs: [ {
-      "targets": 10,
+      "targets": 11,
       "orderable": false
     }],
-    order: [ [11, 'desc'] ],
+    order: [ [13, 'desc'] ],
     createdRow: function ( row, data, index ) {
       if ( (new Date(data.confirmdate)).getTime() < (new Date()).getTime() && data.remain_quantity>0) {
         $('td', row).eq(8).addClass('red');
@@ -195,6 +229,12 @@ $(document).ready(function() {
     }
   });
     
+  if (editable){
+    table.on( 'click', 'tbody td.edit-cell', function (e) {
+      editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+    } );
+  }
+  
   $("#btn_search").click(function() {
     table.draw();
   });

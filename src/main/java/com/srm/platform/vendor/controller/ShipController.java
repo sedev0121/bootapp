@@ -328,4 +328,9 @@ public class ShipController extends CommonController {
 		redirectAttributes.addFlashAttribute("message", "成功导入" + importCount + "行数据！");
 		return "redirect:/ship/index";
 	}
+
+	@RequestMapping("/change")
+	public @ResponseBody Boolean changeQuantity() {
+		return true;
+	}
 }

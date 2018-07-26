@@ -648,7 +648,7 @@ public class SyncController {
 
 	@RequestMapping(value = { "/purchasein/init", "/purchasein", "/purchasein/" })
 	public boolean purchaseInInit() {
-		purchaseIn(null, null, false);
+		// purchaseIn(null, null, false);
 		purchaseIn(null, null, true);
 		return true;
 	}
@@ -676,8 +676,8 @@ public class SyncController {
 		}
 
 		if (initTable) {
-			this.purchaseInDetailRepository.deleteAllInBatch();
-			this.purchaseInMainRepository.deleteAllInBatch();
+			// this.purchaseInDetailRepository.deleteAllInBatch();
+			// this.purchaseInMainRepository.deleteAllInBatch();
 		}
 
 		ObjectMapper objectMapper = new ObjectMapper();
