@@ -71,19 +71,19 @@
            
 
                 <div class="col-lg-3 col-md-3">
-                  <label for="invoice_code">税率: </label>
+                  <label for="tax_rate">税率: </label>
                   <input type="number" id="tax_rate" name="tax_rate" th:value="${main.taxRate}" class="form-control"/>
                 </div>                
                 <div class="col-lg-3 col-md-3">
-                  <label for="invoice_code">数量合计: </label>
-                  <input type="number" id="total_quantity" value="1" class="form-control" readonly/>
+                  <label for="total_quantity">数量合计: </label>
+                  <input type="total_quantity" id="total_quantity" value="1" class="form-control" readonly/>
                 </div>                
                 <div class="col-lg-3 col-md-3">
-                  <label for="invoice_code">结算未税合计: </label>
+                  <label for="total_money">结算未税合计: </label>
                   <input type="number" id="total_money" value="1" class="form-control" readonly/>
                 </div>                
                 <div class="col-lg-3 col-md-3">
-                  <label for="invoice_code">结算含税合计: </label>
+                  <label for="total_tax_money">结算含税合计: </label>
                   <input type="number" id="total_tax_money" value="1" class="form-control" readonly/>
                 </div>      
                 <div class="col-lg-6 col-md-6">
@@ -973,12 +973,18 @@ $(document).ready(function() {
 
     submitHandler: function (form) {
       var data = basic_table.rows().data().toArray();
-      var weiwai = weiwai_table.rows().data().toArray();
       var post_data = {};
       if (!is_vendor){
         post_data.table = data;
         post_data.weiwai = weiwai;
       }        
+
+      if (weiwai_table){
+        var weiwai = weiwai_table.rows().data().toArray();
+        if (!is_vendor){
+          post_data.weiwai = weiwai;
+        }
+      }
       
       jQuery(form).ajaxSubmit({
           data: post_data,

@@ -275,34 +275,37 @@ public class StatementController extends CommonController {
 				detail = statementDetailRepository.save(detail);
 			}
 
-			for (Map<String, String> row : form.getWeiwai()) {
-				StatementDetail detail = new StatementDetail();
-				detail.setCode(main.getCode());
-				detail.setPurchaseinType(Constants.STATEMENT_DETAIL_TYPE_WEIWAI);
-				detail.setPurchaseInDetailId(Long.parseLong(row.get("purchase_in_detail_id")));
+			if (form.getWeiwai() != null) {
+				for (Map<String, String> row : form.getWeiwai()) {
+					StatementDetail detail = new StatementDetail();
+					detail.setCode(main.getCode());
+					detail.setPurchaseinType(Constants.STATEMENT_DETAIL_TYPE_WEIWAI);
+					detail.setPurchaseInDetailId(Long.parseLong(row.get("purchase_in_detail_id")));
 
-				String real_quantity = row.get("real_quantity");
-				String yuanci = row.get("yuanci");
-				String yinci = row.get("yinci");
-				String unit_weight = row.get("unit_weight");
-				String memo = row.get("memo");
+					String real_quantity = row.get("real_quantity");
+					String yuanci = row.get("yuanci");
+					String yinci = row.get("yinci");
+					String unit_weight = row.get("unit_weight");
+					String memo = row.get("memo");
 
-				if (real_quantity != null && !real_quantity.isEmpty())
-					detail.setRealQuantity(Float.parseFloat(real_quantity));
+					if (real_quantity != null && !real_quantity.isEmpty())
+						detail.setRealQuantity(Float.parseFloat(real_quantity));
 
-				if (yuanci != null && !yuanci.isEmpty())
-					detail.setYuanci(Float.parseFloat(yuanci));
+					if (yuanci != null && !yuanci.isEmpty())
+						detail.setYuanci(Float.parseFloat(yuanci));
 
-				if (yinci != null && !yinci.isEmpty())
-					detail.setYinci(Float.parseFloat(yinci));
+					if (yinci != null && !yinci.isEmpty())
+						detail.setYinci(Float.parseFloat(yinci));
 
-				if (unit_weight != null && !unit_weight.isEmpty())
-					detail.setUnitWeight(Float.parseFloat(unit_weight));
+					if (unit_weight != null && !unit_weight.isEmpty())
+						detail.setUnitWeight(Float.parseFloat(unit_weight));
 
-				detail.setMemo(memo);
+					detail.setMemo(memo);
 
-				statementDetailRepository.save(detail);
+					statementDetailRepository.save(detail);
+				}
 			}
+
 		}
 
 		return main;
