@@ -16,7 +16,10 @@
                   <div class="pull-right"><a th:href="@{/notice}">更多></a></div>
                 </div>
                 <div class="panel-body" >
-                  <p th:each="notice : ${noticeList}"><span th:text="|${#dates.format(notice.verify_date, 'yyyy-MM-dd HH:mm:ss')} |">aaa</span><a th:href="@{|/notice/${notice.id}/edit|}" th:text="${notice.title}">2018-6-11 9:29:09 采购管理平台</a></p>
+                  <p th:each="notice : ${noticeList}">                    
+                    <span th:classappend="!${notice.read_date}?readed" th:text="|${#dates.format(notice.verify_date, 'yyyy-MM-dd HH:mm:ss')} |">aaa</span>
+                    <a th:classappend="!${notice.read_date}?readed" th:href="@{|/notice/${notice.id}/edit|}" th:utext="${notice.title}">2018-6-11 9:29:09 采购管理平台</a>
+                  </p>
                 </div>
               </div>
             </div>
@@ -27,7 +30,9 @@
                     <div class="pull-right"><a th:href="@{/alert}">更多></a></div>
                 </div>
                 <div class="panel-body">
-                  <p th:each="notice : ${alertList}"><span th:text="|${#dates.format(notice.create_date, 'yyyy-MM-dd HH:mm:ss')} |">aaa</span><a th:href="@{|/alert/${notice.id}/edit|}" th:text="${notice.title}">2018-6-11 9:29:09 采购管理平台</a></p>
+                  <p th:each="notice : ${alertList}">
+                  <span th:classappend="!${notice.read_date}?readed" th:text="|${#dates.format(notice.create_date, 'yyyy-MM-dd HH:mm:ss')} |">aaa</span>
+                  <a class="notice" th:classappend="!${notice.read_date}?readed" th:href="@{|/alert/${notice.id}/edit|}" th:utext="${notice.title}">2018-6-11 9:29:09 采购管理平台</a></p>
                 </div>
               </div>
             </div>
@@ -38,7 +43,9 @@
                   <div class="pull-right"><a th:href="@{/message}">更多></a></div>
                 </div>
                 <div class="panel-body">
-                  <p th:each="notice : ${messageList}"><span th:text="|${#dates.format(notice.create_date, 'yyyy-MM-dd HH:mm:ss')} |">aaa</span><a th:href="@{|/message/${notice.id}/edit|}" th:text="${notice.title}">2018-6-11 9:29:09 采购管理平台</a></p>
+                  <p th:each="notice : ${messageList}">
+                  <span th:classappend="!${notice.read_date}?readed" th:text="|${#dates.format(notice.create_date, 'yyyy-MM-dd HH:mm:ss')} |">aaa</span>
+                  <a class="notice" th:classappend="!${notice.read_date}?readed" th:href="@{|/message/${notice.id}/edit|}" th:utext="${notice.title}">2018-6-11 9:29:09 采购管理平台</a></p>
                 </div>
               </div>
             </div>

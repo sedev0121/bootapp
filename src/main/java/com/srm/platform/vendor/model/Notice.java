@@ -31,7 +31,8 @@ import com.srm.platform.vendor.utility.NoticeSearchResult;
 				@ColumnResult(name = "state", type = Integer.class),
 				@ColumnResult(name = "to_all_vendor", type = Integer.class),
 				@ColumnResult(name = "to_unit_account", type = Integer.class),
-				@ColumnResult(name = "attach_file_name", type = String.class) }) })
+				@ColumnResult(name = "attach_file_name", type = String.class),
+				@ColumnResult(name = "read_date", type = Date.class) }) })
 
 public class Notice {
 

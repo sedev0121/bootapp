@@ -31,9 +31,11 @@ public class NoticeSearchResult implements Serializable {
 
 	String attach_file_name;
 
+	Date read_date;
+
 	public NoticeSearchResult(String id, String title, String content, Date create_date, String create_name,
 			String create_unitname, Date verify_date, String verify_name, Integer state, Integer to_all_vendor,
-			Integer to_unit_account, String attach_file_name) {
+			Integer to_unit_account, String attach_file_name, Date read_date) {
 
 		this.id = id;
 		this.title = title;
@@ -47,6 +49,7 @@ public class NoticeSearchResult implements Serializable {
 		this.to_all_vendor = to_all_vendor;
 		this.to_unit_account = to_unit_account;
 		this.attach_file_name = attach_file_name;
+		this.read_date = read_date;
 	}
 
 	public String getId() {
@@ -55,6 +58,14 @@ public class NoticeSearchResult implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public Date getRead_date() {
+		return read_date;
+	}
+
+	public void setRead_date(Date read_date) {
+		this.read_date = read_date;
 	}
 
 	public String getTitle() {

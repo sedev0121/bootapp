@@ -15,6 +15,14 @@ body {
     border: 1px solid #ccc;
 }
 
+.readed {
+    font-weight:bold;    
+}
+
+.notice span {
+    color: red;
+}
+
 .datepicker {
   padding:6px 12px;
 }

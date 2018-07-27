@@ -38,7 +38,7 @@ public class DashboardController extends CommonController {
 
 	@SuppressWarnings("unchecked")
 	private List<NoticeSearchResult> getLastNotice() {
-		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id "
+		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name, e.read_date FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id "
 				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id where type=1 and a.state=3";
 
 		Map<String, Object> params = new HashMap<>();
@@ -56,7 +56,7 @@ public class DashboardController extends CommonController {
 
 	@SuppressWarnings("unchecked")
 	private List<NoticeSearchResult> getLastMessage() {
-		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id "
+		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name, e.read_date FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id "
 				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id where type=2 and a.state=3";
 
 		Map<String, Object> params = new HashMap<>();
@@ -74,7 +74,7 @@ public class DashboardController extends CommonController {
 
 	@SuppressWarnings("unchecked")
 	private List<NoticeSearchResult> getLastAlert() {
-		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id "
+		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name, e.read_date FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id "
 				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id where type=3 and a.state=3";
 
 		Map<String, Object> params = new HashMap<>();
