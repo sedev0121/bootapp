@@ -296,7 +296,7 @@ public class ShipController extends CommonController {
 			Account account = accountRepository.findOneByUsername(principal.getName());
 			Vendor vendor = account.getVendor();
 
-			if (vendor != null) {
+			if (vendor != null && importList != null) {
 
 				for (ArrayList<String> row : importList) {
 					logger.info("row=" + row.toString());
@@ -312,7 +312,14 @@ public class ShipController extends CommonController {
 								float quantity = detail.getShippedQuantity() == null ? 0 : detail.getShippedQuantity();
 
 								detail.setShippedQuantity(quantity + Float.parseFloat(row.get(3)));
-								purchaseOrderDetailRepository.save(detail);
+								detail = purchaseOrderDetailRepository.save(detail);
+
+								List<Account> toList = new ArrayList<>();
+								toList.add(main.getDeployer());
+								String title = String.format("订单【%s】已由【%s】订单出货，请及时查阅和处理！", main.getCode(),
+										account.getRealname());
+								this.sendmessage(title, toList);
+
 								importCount++;
 							}
 						}
@@ -342,6 +349,13 @@ public class ShipController extends CommonController {
 				float quantity = detail.getShippedQuantity() == null ? 0 : detail.getShippedQuantity();
 				detail.setShippedQuantity(quantity + Long.valueOf(entry.getValue()));
 				purchaseOrderDetailRepository.save(detail);
+
+				PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(detail.getMain().getCode());
+				List<Account> toList = new ArrayList<>();
+				toList.add(main.getDeployer());
+				String title = String.format("订单【%s】已由【%s】订单出货，请及时查阅和处理！", main.getCode(),
+						this.getLoginAccount().getRealname());
+				this.sendmessage(title, toList);
 			}
 		}
 
