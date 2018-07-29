@@ -2,6 +2,7 @@ package com.srm.platform.vendor.controller;
 
 import java.math.BigInteger;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -260,6 +261,45 @@ public class InqueryController extends CommonController {
 
 		venPriceAdjustMain.setIverifystate(form.getState());
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
+
+		String action = null;
+		List<Account> toList = new ArrayList<>();
+
+		switch (form.getState()) {
+		case Constants.STATE_SUBMIT:
+			action = "提交";
+			if (venPriceAdjustMain.getCreatetype() == Constants.CREATE_TYPE_VENDOR) {
+				List<String> idList = new ArrayList();
+				idList.add(String.valueOf(venPriceAdjustMain.getVendor().getUnit().getId()));
+				toList.addAll(accountRepository.findAccountsByUnitIdList(idList));
+			} else {
+				toList.addAll(accountRepository.findAccountsByVendor(venPriceAdjustMain.getVendor().getCode()));
+			}
+			break;
+		case Constants.STATE_CONFIRM:
+			toList.add(venPriceAdjustMain.getMaker());
+			action = "确认";
+			break;
+		case Constants.STATE_PASS:
+			toList.add(venPriceAdjustMain.getMaker());
+			action = "通过";
+			break;
+		case Constants.STATE_VERIFY:
+			toList.add(venPriceAdjustMain.getMaker());
+			action = "审核";
+			break;
+		case Constants.STATE_PUBLISH:
+			toList.add(venPriceAdjustMain.getMaker());
+			action = "归档";
+			break;
+		case Constants.STATE_CANCEL:
+			toList.add(venPriceAdjustMain.getMaker());
+			action = "退回";
+			break;
+		}
+		String title = String.format("询价单【%s】已由【%s】%s，请及时查阅和处理！", venPriceAdjustMain.getCcode(), account.getRealname(),
+				action);
+		this.sendmessage(title, toList);
 
 		if (form.getState() <= Constants.STATE_PASS && form.getTable() != null) {
 			venPriceAdjustDetailRepository
