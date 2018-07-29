@@ -1,7 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.math.BigInteger;
-import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +36,7 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.PurchaseOrderSearchResult;
 import com.srm.platform.vendor.utility.Utils;
@@ -184,14 +185,40 @@ public class PurchaseOrderController extends CommonController {
 
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody PurchaseOrderMain update_ajax(PurchaseOrderSaveForm form, Principal principal) {
+	public @ResponseBody PurchaseOrderMain update_ajax(PurchaseOrderSaveForm form) {
 
-		Account account = accountRepository.findOneByUsername(principal.getName());
+		Account account = this.getLoginAccount();
 		PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(form.getCode());
 		main.setSrmstate(form.getState());
-		main.setDeploydate(new Date());
-		main.setDeployer(account);
-		purchaseOrderMainRepository.save(main);
+		if (form.getState() == Constants.PURCHASE_ORDER_STATE_DEPLOY) {
+			main.setDeploydate(new Date());
+			main.setDeployer(account);
+		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_REVIEW
+				|| form.getState() == Constants.PURCHASE_ORDER_STATE_CANCEL) {
+			main.setReviewdate(new Date());
+			main.setReviewer(account);
+		}
+
+		main = purchaseOrderMainRepository.save(main);
+
+		String action = null;
+		List<Account> toList = new ArrayList<>();
+		toList.add(main.getDeployer());
+		switch (form.getState()) {
+		case Constants.PURCHASE_ORDER_STATE_DEPLOY:
+			action = "发布";
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			break;
+		case Constants.PURCHASE_ORDER_STATE_REVIEW:
+			action = "确认";
+			break;
+		case Constants.PURCHASE_ORDER_STATE_CANCEL:
+			action = "拒绝";
+			break;
+		}
+		String title = String.format("订单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
+
+		this.sendmessage(title, toList);
 
 		if (form.getTable() != null) {
 			for (Map<String, String> item : form.getTable()) {

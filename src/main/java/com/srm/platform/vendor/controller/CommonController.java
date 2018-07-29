@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
@@ -146,6 +147,23 @@ public class CommonController {
 				this.getLoginAccount().getId());
 		if (noticeRead != null) {
 			noticeRead.setReadDate(new Date());
+			noticeReadRepository.save(noticeRead);
+		}
+	}
+
+	public void sendmessage(String title, List<Account> toList) {
+		Notice notice = new Notice();
+		notice.setState(Constants.NOTICE_STATE_PUBLISH);
+		notice.setType(Constants.NOTICE_TYPE_SYSTEM);
+		notice.setTitle(title);
+		notice.setContent(title);
+		notice.setCreateDate(new Date());
+		notice = noticeRepository.save(notice);
+		
+		for (Account account : toList) {
+			NoticeRead noticeRead = new NoticeRead();
+			noticeRead.setNotice(notice);
+			noticeRead.setAccount(account);
 			noticeReadRepository.save(noticeRead);
 		}
 	}

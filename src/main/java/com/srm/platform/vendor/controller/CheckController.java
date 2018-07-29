@@ -72,7 +72,6 @@ public class CheckController {
 
 			String alertPattern = "订单【%s】【%s】交货已逾期%d天，请及时处理!";
 			String alert = String.format(alertPattern, item.getCode(), item.getInventoryname(), diff);
-			logger.info(alert);
 
 			Notice notice = new Notice();
 			notice.setState(Constants.NOTICE_STATE_PUBLISH);
@@ -84,7 +83,7 @@ public class CheckController {
 			notice = noticeRepository.save(notice);
 
 			PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(item.getCode());
-			logger.info("deployer=" + main.getDeployer().getId());
+
 			List<Account> toList = new ArrayList<>();
 			toList.add(main.getDeployer());
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
@@ -95,7 +94,6 @@ public class CheckController {
 				noticeRead.setAccount(account);
 				noticeReadRepository.save(noticeRead);
 
-				logger.info(notice.getId() + " => " + account.getId());
 			}
 
 		}
