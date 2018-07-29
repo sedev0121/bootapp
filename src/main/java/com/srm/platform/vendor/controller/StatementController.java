@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.Vendor;
@@ -230,6 +232,27 @@ public class StatementController extends CommonController {
 			main.setVerifier(this.getLoginAccount());
 			main.setVerifydate(new Date());
 		}
+
+		String action = null;
+		List<Account> toList = new ArrayList<>();
+		switch (form.getState()) {
+		case Constants.STATEMENT_STATE_SUBMIT:
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			action = "发布";
+			break;
+		case Constants.STATEMENT_STATE_CONFIRM:
+			toList.add(main.getMaker());
+			action = "确认";
+			break;
+		case Constants.STATEMENT_STATE_CANCEL:
+			toList.add(main.getMaker());
+			action = "退回";
+			break;
+		}
+		String title = String.format("对账单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), this.getLoginAccount().getRealname(),
+				action);
+
+		this.sendmessage(title, toList);
 
 		if (this.isVendor() && form.getInvoice_code() != null && !form.getInvoice_code().isEmpty()) {
 			main.setInvoiceCode(form.getInvoice_code());
