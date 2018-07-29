@@ -17,6 +17,7 @@ body {
 
 .readed {
     font-weight:bold;    
+    color:red;
 }
 
 .notice span {
