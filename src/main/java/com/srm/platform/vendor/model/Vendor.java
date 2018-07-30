@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.model;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
 
@@ -14,7 +15,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "vendor")
-public class Vendor {
+public class Vendor implements Serializable {
+	private static final long serialVersionUID = 5855332316773551036L;
+
 	@Id
 	private String code;
 

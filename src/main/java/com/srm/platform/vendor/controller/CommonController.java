@@ -29,6 +29,7 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.service.SessionCounter;
 import com.srm.platform.vendor.utility.Constants;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
@@ -57,6 +58,9 @@ public class CommonController {
 
 	@Autowired
 	public HttpSession httpSession;
+
+	@Autowired
+	public SessionCounter sessionCounter;
 
 	protected int currentPage;
 	protected int maxResults;
@@ -159,7 +163,7 @@ public class CommonController {
 		notice.setContent(title);
 		notice.setCreateDate(new Date());
 		notice = noticeRepository.save(notice);
-		
+
 		for (Account account : toList) {
 			NoticeRead noticeRead = new NoticeRead();
 			noticeRead.setNotice(notice);

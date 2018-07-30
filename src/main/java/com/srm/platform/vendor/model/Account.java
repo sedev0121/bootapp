@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.model;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
 
@@ -17,7 +18,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "account")
-public class Account {
+public class Account implements Serializable {
+
+	private static final long serialVersionUID = -2584865763834767175L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
