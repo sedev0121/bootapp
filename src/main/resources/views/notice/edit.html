@@ -13,9 +13,9 @@
     </ul>
     <div class="btn-group-bar">
       <div class="text-right">
-        <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}" id="save"><i class="fa fa-save"></i> 保存</a>
-        <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}" id="submit"><i class="fa fa-share"></i> 提交</a>
-        <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')" th:if="${notice.createAccount?.id==session.account_id and notice.id !=null and (notice.state==1  || notice.state==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
+        <a class="btn btn-primary" sec:authorize="hasAuthority('公告通知-新建') and (hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN'))" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}" id="save"><i class="fa fa-save"></i> 保存</a>
+        <a class="btn btn-primary" sec:authorize="hasAuthority('公告通知-新建') and (hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN'))" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}" id="submit"><i class="fa fa-share"></i> 提交</a>
+        <a class="btn btn-primary" sec:authorize="hasAuthority('公告通知-新建') and (hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN'))" th:if="${notice.createAccount?.id==session.account_id and notice.id !=null and (notice.state==1  || notice.state==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
         <a class="btn btn-primary" sec:authorize="hasAuthority('公告通知-发布')" th:if="${notice.state==2}" id="verify"><i class="fa fa-check-square"></i> 发布</a>
         <a class="btn btn-primary" sec:authorize="hasAuthority('公告通知-发布')" th:if="${notice.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
         <a class="btn btn-default" th:href="@{/notice}"><i class="fa fa-arrow-left"></i> 返回</a>

@@ -208,7 +208,7 @@ public class NoticeController extends CommonController {
 
 	// 新建
 	@GetMapping("/add")
-	@PreAuthorize("hasAuthority('ROLE_BUYER')")
+	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('公告通知-新建')")
 	public String add(Model model) {
 		Notice notice = new Notice();
 		notice.setUnit(this.getLoginAccount().getUnit());
@@ -220,7 +220,7 @@ public class NoticeController extends CommonController {
 
 	// 删除
 	@GetMapping("/{id}/delete")
-	@PreAuthorize("hasAuthority('ROLE_BUYER')")
+	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('公告通知-新建')")
 	public @ResponseBody Boolean delete(@PathVariable("id") Long id, Model model) {
 		Notice notice = noticeRepository.findOneById(id);
 		noticeRepository.delete(notice);
@@ -228,7 +228,7 @@ public class NoticeController extends CommonController {
 	}
 
 	@GetMapping("/{id}/deleteattach")
-	@PreAuthorize("hasAuthority('ROLE_BUYER')")
+	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('公告通知-新建')")
 	public @ResponseBody Boolean deleteAttach(@PathVariable("id") Long id, HttpServletRequest request) {
 		Notice notice = noticeRepository.findOneById(id);
 		String applicationPath = request.getServletContext().getRealPath("");
@@ -244,7 +244,7 @@ public class NoticeController extends CommonController {
 	// 用户修改
 	@Transactional
 	@PostMapping("/update")
-	@PreAuthorize("hasAuthority('ROLE_BUYER')")
+	@PreAuthorize("hasRole('ROLE_BUYER') and (hasAuthority('公告通知-新建') or hasAuthority('公告通知-发布'))")
 	public @ResponseBody Notice update_ajax(@RequestParam(value = "attach", required = false) MultipartFile attach,
 			HttpServletRequest request, @RequestParam Map<String, String> requestParams) {
 
@@ -270,7 +270,6 @@ public class NoticeController extends CommonController {
 
 		if (id != null && !id.isEmpty()) {
 			notice = noticeRepository.findOneById(Long.parseLong(id));
-
 		}
 
 		notice.setState(state);
@@ -321,7 +320,7 @@ public class NoticeController extends CommonController {
 					List<String> unitIdList = Utils.getAllUnitsOfId(notice.getUnit().getId(),
 							permissionGroupFunctionUnitRepository);
 
-					toAccountList.addAll(accountRepository.findAccountsByUnitIdList(unitIdList));
+					toAccountList.addAll(accountRepository.findAllVendorsByUnitIdList(unitIdList));
 
 				} else {
 					if (notice.getVendorCodeList() != null) {
