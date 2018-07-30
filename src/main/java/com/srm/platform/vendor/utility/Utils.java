@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import org.thymeleaf.util.StringUtils;
 
@@ -129,5 +130,16 @@ public class Utils {
 					"," + searchChildren(childList, permissionGroupFunctionUnitRepository));
 			return childList;
 		}
+	}
+
+	public static String generateResetPassword() {
+		int max = 1000000;
+		int min = 100000;
+		Random rand = new Random();
+
+		int n = rand.nextInt(max - min + 1) + min;
+
+		return String.valueOf(n);
+
 	}
 }

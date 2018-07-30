@@ -346,4 +346,18 @@ public class ApiClient {
 		}
 	}
 
+	public String sendSMS(String toPhoneNumber, String message) {
+		logger.info("===================== send sms");
+
+		String url = appProperties.getSystem().getSms();
+		url += "&phone=" + toPhoneNumber + "&msg=" + message;
+		logger.info("url=" + url);
+		RestClient client = new RestClient();
+		String response = client.get(url);
+		logger.info(String.format("response=>%s", response));
+
+		return response;
+
+	}
+
 }

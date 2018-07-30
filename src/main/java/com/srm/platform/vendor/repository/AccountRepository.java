@@ -17,6 +17,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	Account findOneByEmail(String email);
 
+	Account findOneByMobile(String mobile);
+
 	Account findOneById(Long id);
 
 	@Query(value = "SELECT t.*, u.name unitname FROM account t left join unit u on t.unit_id=u.id left join vendor v on t.vendor_code=v.code WHERE "

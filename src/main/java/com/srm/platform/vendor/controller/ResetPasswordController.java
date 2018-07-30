@@ -20,15 +20,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PasswordResetToken;
+import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PasswordResetTokenRepository;
 import com.srm.platform.vendor.service.AccountService;
 import com.srm.platform.vendor.service.EmailService;
+import com.srm.platform.vendor.u8api.ApiClient;
+import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 
 public class ResetPasswordController {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@Autowired
+	private AccountRepository accountRepository;
+
+	@Autowired
+	private ApiClient apiClient;
 
 	@Autowired
 	private EmailService emailService;
@@ -64,6 +73,36 @@ public class ResetPasswordController {
 		model.put("baseUrl", baseUrl);
 
 		emailService.sendEmail(message, model);
+
+		return "1";
+	}
+
+	@Transactional
+	@RequestMapping(value = "/resetpassword/phone")
+	public @ResponseBody String resetPasswordByPhone(HttpServletRequest request, @RequestParam("phone") String phone) {
+		Account account = accountRepository.findOneByMobile(phone);
+		if (account == null) {
+			return "0";
+		}
+
+		String newPassword = Utils.generateResetPassword();
+		account.setPassword(newPassword);
+		accountService.save(account);
+
+		String message = String.format("密码重置成功！请用新密码【%s】登陆。", newPassword);
+		logger.info(message);
+		// ObjectMapper objectMapper = new ObjectMapper();
+		// Map<String, Object> map = new HashMap<>();
+		// String response = apiClient.sendSMS(account.getMobile(), message);
+		// try {
+		// map = objectMapper.readValue(response, new TypeReference<Map<String,
+		// Object>>() {
+		// });
+		// logger.info((String) map.get("errcode"));
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// return "0";
+		// }
 
 		return "1";
 	}

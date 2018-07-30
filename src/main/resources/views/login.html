@@ -29,6 +29,23 @@
   <link href="assets/corporate/css/style-responsive.css" rel="stylesheet">
   <link th:href="@{/assets/corporate/css/custom.css}" rel="stylesheet">
   <!-- Theme styles END -->
+  
+  <style>
+  .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+      background: #337ab7;
+      color: #fff;
+      padding: 5px 15px 4px;
+  }
+  .tab-content {
+      background: none;
+      border: 1px solid transparent;
+      border-color: #337ab7;
+      border-top: 0px solid transparent;
+  }
+  .nav-tabs {
+      border-color: #337ab7;
+  }
+  </style>
 </head>
 <!-- Head END -->
 
@@ -72,21 +89,51 @@
               </div>
 
               <div class="login-form" id="forget-page" style="display:none">
-                    <div class="form-group text-center">
-                        <p>请输入账号邮箱，申请重置密码。</p>
-                    </div>
-                    <form id="mail_form" th:action="@{/resetpassword}" method="post">
-                        <div class="form-group">
-                            <div class="input-icon input-icon-lg">
-                                <i class="fa fa-envelope"></i>
-                                <input type="email" name="email" id="email" class="form-control" placeholder="email@163.com">
+                  <div class="detail-tabs margin-bottom-30">
+                      <div class="tab-style-1" id="tabs">
+                        <ul class="nav nav-tabs">
+                          <li class="active"><a data-toggle="tab" href="#tab-1">使用邮箱</a></li>
+                          <li><a data-toggle="tab" href="#tab-2">使用短信</a></li>
+                        </ul>
+                        <div class="tab-content">
+                          <div id="tab-1" class="tab-pane row-fluid fade in active">
+                            <div class="form-group text-center">
+                                <p>请输入账号邮箱，申请重置密码。</p>
                             </div>
+                            <form id="mail_form" th:action="@{/resetpassword}" method="post">
+                                <div class="form-group">
+                                    <div class="input-icon input-icon-lg">
+                                        <i class="fa fa-envelope"></i>
+                                        <input type="email" name="email" id="email" class="form-control" placeholder="email@163.com">
+                                    </div>
+                                </div>
+                                <div class="form-inline">
+                                    <a class="btn_back btn btn-success form-control">返回登陆</a>
+                                    <a id="btn_apply" class="btn btn-primary form-control" style="float:right">提交申请</a>
+                                </div>
+                            </form>
+                          </div>
+                          <div id="tab-2" class="tab-pane row-fluid fade in">
+                            <div class="form-group text-center">
+                                <p>请输入账号手机号码，申请新密码。</p>
+                            </div>
+                            <form id="phone_form" th:action="@{/resetpassword/phone}" method="post">
+                                <div class="form-group">
+                                    <div class="input-icon input-icon-lg">
+                                        <i class="fa fa-phone"></i>
+                                        <input type="number" style="text-align:left" name="phone" id="phone" class="form-control" placeholder="15940800000">
+                                    </div>
+                                </div>
+                                <div class="form-inline">
+                                    <a class="btn_back btn btn-success form-control">返回登陆</a>
+                                    <a id="btn_phone_apply" class="btn btn-primary form-control" style="float:right">提交申请</a>
+                                </div>
+                            </form>
+                          </div>
                         </div>
-                        <div class="form-inline">
-                            <a id="btn_back" class="btn btn-success form-control">返回登陆</a>
-                            <a id="btn_apply" class="btn btn-primary form-control" style="float:right">提交申请</a>
-                        </div>
-                    </form>
+                      </div>
+                    </div>  
+                        
                 </div>
           </div>
       </div>
@@ -118,9 +165,18 @@
 
 <script>
 $(document).ready(function() {
+  
   jQuery.extend(jQuery.validator.messages, {
     required: "不能为空",
     email: "无效的邮箱格式",
+    number: "请输入数值",
+    equalTo: "请再输入同样的值",
+    maxlength: jQuery.validator.format("长度不能大于{0}"),
+    minlength: jQuery.validator.format("长度不能小于{0}"),
+    rangelength: jQuery.validator.format("长度范围在 {0}-{1}"),
+    range: jQuery.validator.format("请输入{0}到{1}之间的值."),
+    max: jQuery.validator.format("请输入不大于 {0}的值."),
+    min: jQuery.validator.format("请输入不小于{0}的值.")
   });
   
   
@@ -128,7 +184,7 @@ $(document).ready(function() {
     $("#login-page").hide();
     $("#forget-page").show();
   });
-  $("#btn_back").click(function() {
+  $(".btn_back").click(function() {
     $("#login-page").show();
     $("#forget-page").hide();
   });
@@ -187,9 +243,53 @@ $(document).ready(function() {
     }
   }); 
   
+  $("#phone_form" ).validate({
+    // define validation rules
+    rules: {
+      phone: {
+        minlength:11,
+        maxlength:11,
+        required: true
+      },    
+    },
+    
+    submitHandler: function (form) {
+      jQuery(form).ajaxSubmit({
+        success: function(res, status, xhr, form) {
+          if (res == "1") {
+            swal({
+              "title": "操作成功",
+              "type": "success"
+            });
+            
+            $("#btn_back").trigger("click");
+            
+          }else{
+            swal({
+              "title": "无效的手机号",
+              "type": "error"
+            });
+            
+          }
+        },
+        error: function (res, status, xhr, form) {
+          swal({
+            "title": "操作失败",
+            "type": "error"
+          });
+        }
+      });
+    }
+  }); 
+  
   $("#btn_apply").click(function() {
     $('#mail_form').submit();
   });
+  
+  $("#btn_phone_apply").click(function() {
+    $('#phone_form').submit();
+  });
+  
 });
   
 </script>
