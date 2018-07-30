@@ -206,7 +206,7 @@ public class AccountController extends CommonController {
 
 		account.setUsername(accountSaveForm.getUsername());
 		account.setRealname(accountSaveForm.getRealname());
-		account.setSkype(accountSaveForm.getSkype());
+		account.setWeixin(accountSaveForm.getWeixin());
 		account.setQq(accountSaveForm.getQq());
 		account.setYahoo(accountSaveForm.getYahoo());
 		account.setWangwang(accountSaveForm.getWangwang());

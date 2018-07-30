@@ -89,42 +89,45 @@
             </fieldset>            
             <fieldset>
               <legend>联系信息</legend>
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">Skype: </label>
-                <input type="text" name="skype" class="form-control" th:value="${account.skype}">
+              <div class="row">
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="document_date">微信: </label>
+                  <input type="text" id="weixin" name="weixin" class="form-control" th:value="${account.weixin}">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="document_date">QQ: </label>
+                  <input type="text" name="qq" class="form-control" th:value="${account.qq}">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="document_date">雅虎通: </label>
+                  <input type="text" name="yahoo" class="form-control" th:value="${account.yahoo}">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="document_date">GTalk: </label>
+                  <input type="text" name="gtalk" class="form-control" th:value="${account.gtalk}">
+                </div>
+                <div class="col-lg-4 col-md-4 form-group">
+                  <label for="document_date">旺旺: </label>
+                  <input type="text" name="wangwang" class="form-control" th:value="${account.wangwang}">
+                </div>                                                
               </div>
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">QQ: </label>
-                <input type="text" name="qq" class="form-control" th:value="${account.qq}">
-              </div>
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">雅虎通: </label>
-                <input type="text" name="yahoo" class="form-control" th:value="${account.yahoo}">
-              </div>
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="document_date">GTalk: </label>
-                <input type="text" name="gtalk" class="form-control" th:value="${account.gtalk}">
-              </div>
-              <div class="col-lg-4 col-md-4 form-group">
-                <label for="document_date">旺旺: </label>
-                <input type="text" name="wangwang" class="form-control" th:value="${account.wangwang}">
-              </div>                                                
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="effective_date">手机:</label>
-                <input type="text" name="mobile" class="form-control" th:value="${account.mobile}">
-              </div>
-              
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="tax_rate">电话:</label>
-                <input type="text" name="tel" class="form-control" th:value="${account.tel}">
-              </div>
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="tax_rate">邮箱:</label>
-                <input type="text" name="email" class="form-control" th:value="${account.email}">
-              </div>
-              <div class="col-lg-6 col-md-6 form-group">
-                <label for="address">通讯地址:</label>
-                <input type="text" name="address" class="form-control" th:value="${account.address}">
+              <div class="row">
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="effective_date">手机:</label>
+                  <input type="text" id="mobile" name="mobile" class="form-control" th:value="${account.mobile}">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="tax_rate">电话:</label>
+                  <input type="text" name="tel" class="form-control" th:value="${account.tel}">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="tax_rate">邮箱:</label>
+                  <input type="text" id="email" name="email" class="form-control" th:value="${account.email}">
+                </div>
+                <div class="col-lg-6 col-md-6 form-group">
+                  <label for="address">通讯地址:</label>
+                  <input type="text" name="address" class="form-control" th:value="${account.address}">
+                </div>
               </div>
             </fieldset>
           </div>
@@ -163,6 +166,9 @@
 var edit_url = /*[[@{/account/}]]*/'';
 var tree_url = /*[[@{/unit/tree}]]*/'';
 var checkuser_url = /*[[@{/account/checkuser/}]]*/'';
+var checkemail_url = /*[[@{/profile/checkemail}]]*/'';
+var checkmobile_url = /*[[@{/profile/checkmobile}]]*/'';
+var checkweixin_url = /*[[@{/profile/checkweixin}]]*/'';
 var vendor_search_url = /*[[@{/vendor/search}]]*/'';
 var perm_search_url = /*[[@{/permission_group/search}]]*/'';
 
@@ -196,9 +202,19 @@ jQuery(document).ready(function() {
         $('#permission_div').removeClass('hidden');
         break;
     }
+    
+    if ($('#role').val() == 'ROLE_VENDOR'){
+      $('#form').validate().settings.rules.email.required = true;
+      $('#form').validate().settings.rules.mobile.required = true;
+      $('#form').validate().settings.rules.weixin.required = true;
+    }else{
+      $('#form').validate().settings.rules.email.required = false;
+      $('#form').validate().settings.rules.mobile.required = false;
+      $('#form').validate().settings.rules.weixin.required = false;
+    }
   });
   
-  $('#role').trigger('change');
+  
   
   var is_add = $("#id").val().length==0;
   $("#form" ).validate({
@@ -224,6 +240,49 @@ jQuery(document).ready(function() {
           }
         }
       },    
+      email: {
+        required: true,
+        email: true,
+        remote: {
+          url: checkemail_url,
+          data: {
+            email: function() {
+              return $( "#email" ).val();
+            },
+            id: function() {
+              return $("#id").val();
+            }
+          }
+        }
+      },  
+      weixin: {
+        required: true,
+        remote: {
+          url: checkweixin_url,
+          data: {
+            weixin: function() {
+              return $( "#weixin" ).val();
+            },
+            id: function() {
+              return $("#id").val();
+            }
+          }
+        }
+      },  
+      mobile: {
+        required: true,
+        remote: {
+          url: checkmobile_url,
+          data: {
+            mobile: function() {
+              return $( "#mobile" ).val();
+            },
+            id: function() {
+              return $("#id").val();
+            }
+          }
+        }
+      }, 
       unit_name: {
         required: true
       },
@@ -234,6 +293,15 @@ jQuery(document).ready(function() {
     messages: {
       username: {
         remote: "该用户名已在使用！"
+      },
+      email: {
+        remote: "该邮箱已在使用！"
+      },
+      mobile: {
+        remote: "该手机号已在使用！"
+      },
+      weixin: {
+        remote: "该微信号已在使用！"
       }
     },
    
@@ -301,19 +369,20 @@ jQuery(document).ready(function() {
   });
 
   $('#save_unit').click(function(){
-      var selected_node = $("#tree_3").jstree("get_selected",true);
-      
-      if (selected_node.length == 0) {
-        App.showErrorDialog("请选择一个部门");
-        return;
-      }
-      var selected_unit_id = selected_node[0].id; 
-      var selected_unit_name = selected_node[0].text;
-      $('#unit').val(selected_unit_id);
-      $('#unit_name').val(selected_unit_name);
-      $('#tree_dialog').modal('hide');//modal_1 is the id 1
-   });
+    var selected_node = $("#tree_3").jstree("get_selected",true);
+    
+    if (selected_node.length == 0) {
+      App.showErrorDialog("请选择一个部门");
+      return;
+    }
+    var selected_unit_id = selected_node[0].id; 
+    var selected_unit_name = selected_node[0].text;
+    $('#unit').val(selected_unit_id);
+    $('#unit_name').val(selected_unit_name);
+    $('#tree_dialog').modal('hide');//modal_1 is the id 1
+  });
 
+  $('#role').trigger('change');
 });
 
 

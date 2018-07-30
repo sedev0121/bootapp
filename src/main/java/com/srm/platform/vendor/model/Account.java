@@ -66,7 +66,7 @@ public class Account implements Serializable {
 	private String email;
 	private String tel;
 	private String qq;
-	private String skype;
+	private String weixin;
 	private String yahoo;
 	private String gtalk;
 	private String wangwang;
@@ -122,12 +122,12 @@ public class Account implements Serializable {
 		this.qq = qq;
 	}
 
-	public String getSkype() {
-		return skype;
+	public String getWeixin() {
+		return weixin;
 	}
 
-	public void setSkype(String skype) {
-		this.skype = skype;
+	public void setWeixin(String weixin) {
+		this.weixin = weixin;
 	}
 
 	public String getYahoo() {

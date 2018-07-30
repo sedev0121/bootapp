@@ -18,6 +18,7 @@
       </div>
     </div>
     <form id="form" th:action="@{/profile/update}" method="post">  
+    <input type="hidden" id="id" name="id" th:value="${account.id}">
     <div class="panel panel-default">
       <div class="panel-body"> 
         <div class="row">
@@ -65,42 +66,45 @@
             </fieldset>
             <fieldset>
               <legend>联系信息</legend>
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="skype">Skype: </label>
-                <input type="text" name="skype" class="form-control" th:value="${account.skype}">
+              <div class="row">
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="document_date">微信: </label>
+                  <input type="text" id="weixin" name="weixin" class="form-control" th:value="${account.weixin}">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="document_date">QQ: </label>
+                  <input type="text" name="qq" class="form-control" th:value="${account.qq}">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="document_date">雅虎通: </label>
+                  <input type="text" name="yahoo" class="form-control" th:value="${account.yahoo}">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="document_date">GTalk: </label>
+                  <input type="text" name="gtalk" class="form-control" th:value="${account.gtalk}">
+                </div>
+                <div class="col-lg-4 col-md-4 form-group">
+                  <label for="document_date">旺旺: </label>
+                  <input type="text" name="wangwang" class="form-control" th:value="${account.wangwang}">
+                </div>                                                
               </div>
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="qq">QQ: </label>
-                <input type="text" name="qq" class="form-control" th:value="${account.qq}">
-              </div>
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="yahoo">雅虎通: </label>
-                <input type="text" name="yahoo" class="form-control" th:value="${account.yahoo}">
-              </div>
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="gtalk">GTalk: </label>
-                <input type="text" name="gtalk" class="form-control" th:value="${account.gtalk}">
-              </div>
-              <div class="col-lg-4 col-md-4 form-group">
-                <label for="wangwang">旺旺: </label>
-                <input type="text" name="wangwang" class="form-control" th:value="${account.wangwang}">
-              </div>                                                
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="mobile">手机:</label>
-                <input type="text" name="mobile" class="form-control" th:value="${account.mobile}">
-              </div>
-              
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="tel">电话:</label>
-                <input type="text" name="tel" class="form-control" th:value="${account.tel}">
-              </div>
-              <div class="col-lg-2 col-md-2 form-group">
-                <label for="email">邮箱:</label>
-                <input type="text" name="email" class="form-control" th:value="${account.email}">
-              </div>
-              <div class="col-lg-6 col-md-6 form-group">
-                <label for="address">通讯地址:</label>
-                <input type="text" name="address" class="form-control datepicker" th:value="${account.address}">
+              <div class="row">
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="effective_date">手机:</label>
+                  <input type="text" id="mobile" name="mobile" class="form-control" th:value="${account.mobile}">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="tax_rate">电话:</label>
+                  <input type="text" name="tel" class="form-control" th:value="${account.tel}">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="tax_rate">邮箱:</label>
+                  <input type="text" id="email" name="email" class="form-control" th:value="${account.email}">
+                </div>
+                <div class="col-lg-6 col-md-6 form-group">
+                  <label for="address">通讯地址:</label>
+                  <input type="text" name="address" class="form-control" th:value="${account.address}">
+                </div>
               </div>
             </fieldset>
           </div>
@@ -150,6 +154,9 @@
 <script th:inline="javascript">
 var edit_url = /*[[@{/account/}]]*/'';
 var vendor_search_url = /*[[@{/vendor/search}]]*/'';
+var checkemail_url = /*[[@{/profile/checkemail}]]*/'';
+var checkmobile_url = /*[[@{/profile/checkmobile}]]*/'';
+var checkweixin_url = /*[[@{/profile/checkweixin}]]*/'';
 
 jQuery(document).ready(function() {   
 
@@ -170,26 +177,61 @@ jQuery(document).ready(function() {
     
     $("#form" ).validate({
       rules: {
-          realname: {
-              required: true
-          }, 
-          duty: {
-              required: true
-          },
-          username: {
-              required: true
-          },    
-          password: {
-              required: true
-          },    
-          unit_name: {
-              required: true
-          },
-          role: {
-              required: true
-          },    
+        email: {
+          required: $('#role').val() == 'ROLE_VENDOR',
+          email: true,
+          remote: {
+            url: checkemail_url,
+            data: {
+              email: function() {
+                return $( "#email" ).val();
+              },
+              id: function() {
+                return $("#id").val();
+              }
+            }
+          }
+        },  
+        weixin: {
+          required: $('#role').val() == 'ROLE_VENDOR',
+          remote: {
+            url: checkweixin_url,
+            data: {
+              weixin: function() {
+                return $( "#weixin" ).val();
+              },
+              id: function() {
+                return $("#id").val();
+              }
+            }
+          }
+        },  
+        mobile: {
+          required: $('#role').val() == 'ROLE_VENDOR',
+          remote: {
+            url: checkmobile_url,
+            data: {
+              mobile: function() {
+                return $( "#mobile" ).val();
+              },
+              id: function() {
+                return $("#id").val();
+              }
+            }
+          }
+        }, 
       },
-      
+      messages: {        
+        email: {
+          remote: "该邮箱已在使用！"
+        },
+        mobile: {
+          remote: "该手机号已在使用！"
+        },
+        weixin: {
+          remote: "该微信号已在使用！"
+        }
+      },
       //display error alert on form submit  
       invalidHandler: function(event, validator) {
         App.showErrorDialog("输入有误", "请输入正确的值");

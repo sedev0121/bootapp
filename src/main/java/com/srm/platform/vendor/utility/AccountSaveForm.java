@@ -7,7 +7,7 @@ public class AccountSaveForm {
 	private Long id;
 	private String username;
 	private String realname;
-	private String skype;
+	private String weixin;
 
 	private String qq;
 	private Long unit;
@@ -50,12 +50,12 @@ public class AccountSaveForm {
 		this.realname = realname;
 	}
 
-	public String getSkype() {
-		return skype;
+	public String getWeixin() {
+		return weixin;
 	}
 
-	public void setSkype(String skype) {
-		this.skype = skype;
+	public void setWeixin(String weixin) {
+		this.weixin = weixin;
 	}
 
 	public String getQq() {
