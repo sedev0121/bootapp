@@ -65,6 +65,7 @@ public class Notice {
 	private String attachFileName;
 	private String attachOriginalName;
 	private String vendorCodeList;
+	private String accountIdList;
 
 	public Notice() {
 		this.createDate = new Date();
@@ -76,6 +77,14 @@ public class Notice {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getAccountIdList() {
+		return accountIdList;
+	}
+
+	public void setAccountIdList(String accountIdList) {
+		this.accountIdList = accountIdList;
 	}
 
 	public String getVendorCodeList() {

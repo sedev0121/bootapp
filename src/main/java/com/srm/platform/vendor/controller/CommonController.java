@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -187,6 +188,26 @@ public class CommonController {
 		}
 
 		return account;
+	}
+
+	public List<Long> convertListStrToLongList(String listStr) {
+		List<Long> idList = new ArrayList<>();
+
+		if (listStr != null) {
+			List<String> accountList = Arrays.asList(StringUtils.split(listStr, ","));
+
+			if (accountList != null) {
+				for (String temp : accountList) {
+					if (temp != null)
+						idList.add(Long.valueOf(temp));
+				}
+			}
+
+		} else {
+			return new ArrayList<>();
+		}
+
+		return idList;
 	}
 
 }

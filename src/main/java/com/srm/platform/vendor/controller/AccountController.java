@@ -100,7 +100,6 @@ public class AccountController extends CommonController {
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<Account> result = accountRepository.findBySearchTerm(search, request);
 
 		String selectQuery = "SELECT t.*, u.name unitname, v.name vendorname ";
 		String countQuery = "select count(*) ";

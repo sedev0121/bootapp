@@ -49,4 +49,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	@Query(value = "SELECT * FROM account where role<>'ROLE_VENDOR'", nativeQuery = true)
 	List<Account> findAllExceptVendor();
+
+	@Query(value = "SELECT * FROM account where id in ?1", nativeQuery = true)
+	List<Account> findAllByIdList(List<Long> idList);
 }

@@ -416,13 +416,40 @@ $(document).ready(function() {
 		}else if (date_str.includes("T")) {
 		  splitter = "T";
 		}
-	    var temp = date_str.split(splitter);
-	    if (temp.length>0){
-	    	return temp[0]
-	    }else{
-	    	return '';
-	    }
+		
+		var temp = date_str.split(splitter);
+    if (temp.length>0){
+      return temp[0]
+    }else{
+      return '';
+    }
 	};
+	
+	$.fn.time_renderer = function (date_str) {
+    if (date_str == undefined) {
+      return '';
+    }
+
+    var splitter = " ";
+    if (date_str.includes(" ")) {
+      splitter = " ";
+    }else if (date_str.includes("T")) {
+      splitter = "T";
+    }
+    
+    var temp = date_str.split(splitter);
+    var result = '';
+    if (temp.length>0){
+      result = temp[0]
+      if (temp.length>1){
+        result += " " + temp[1].substring(0, 8);
+      }
+    }else{
+      result = '';
+    }
+    
+    return result;
+  };
 	
 	jQuery.extend(jQuery.validator.messages, {
 	    required: "不能为空",
