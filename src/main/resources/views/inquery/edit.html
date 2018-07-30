@@ -319,18 +319,18 @@ is_readonly = 0;
           name: "cbodymemo"                
         }],
       i18n: {
-          remove: {
-              button: "删除行",
-              title:  "删除",
-              submit: "是",
-              confirm: {
-                  _: "确定要删除%d行商品吗?",
-                  1: "确定要删除吗?"
-              }
-          },
-          error: {
-              system: "发生错误！"
+        remove: {
+          button: "删除行",
+          title:  "删除",
+          submit: "是",
+          confirm: {
+              _: "确定要删除%d行商品吗?",
+              1: "确定要删除吗?"
           }
+        },
+        error: {
+          system: "发生错误！"
+        }
       }
     }).on( 'preOpen', function ( e, mode, action ) {
       this.field('dstartdate').input().datepicker("option", "minDate", $('#start_date').datepicker("getDate"));

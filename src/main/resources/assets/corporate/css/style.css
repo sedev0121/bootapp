@@ -3155,6 +3155,10 @@ Styler Panel
 	display: table-cell;
 }
 
+.width-25 {
+    width: 25%;
+}
+
 .width-20 {
     width: 20%;
 }

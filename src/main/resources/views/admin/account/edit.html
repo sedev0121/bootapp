@@ -31,7 +31,7 @@
                 <input type="text" name="realname" class="form-control" th:value="${account.realname}">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="unit_name">所属部门: </label>
+                <label for="unit_name">所属组织: </label>
                 <input type="hidden" id="unit" name="unit" th:value="${account.unit==null?'':account.unit.id}">
                 <input type="text" id="unit_name" name="unit_name" class="form-control select-unit" th:value="${account.unit==null?'':account.unit.name}" readonly>
               </div>
@@ -141,7 +141,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">
-                                                    选择所属部门
+                                                    选择所属组织
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     </button>

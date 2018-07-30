@@ -218,6 +218,8 @@ public class AccountController extends CommonController {
 		account.setRole(accountSaveForm.getRole());
 		account.setDuty(accountSaveForm.getDuty());
 		account.setUnit(unitRepository.findOneById(accountSaveForm.getUnit()));
+		if (account.getVendor() != null)
+			account.getVendor().setUnit(account.getUnit());
 
 		if (accountSaveForm.getState() != null) {
 			account.setState(1);

@@ -2,10 +2,13 @@ package com.srm.platform.vendor.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +42,7 @@ import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.utility.AccountSearchItem;
+import com.srm.platform.vendor.utility.AccountSearchResult;
 import com.srm.platform.vendor.utility.IGroupFunctionUnit;
 import com.srm.platform.vendor.utility.SearchItem;
 
@@ -276,6 +280,25 @@ public class PermissionController extends CommonController {
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
 
 		return permissionGroupRepository.findForSelect(search, request);
+
+	}
+
+	@GetMapping("/{id}/account/list")
+	public @ResponseBody List<AccountSearchResult> accountList_ajax(@PathVariable("id") Long groupId) {
+
+		String selectQuery = "SELECT t.*, u.name unitname, v.name vendorname FROM account t left join unit u on t.unit_id=u.id "
+				+ "left join vendor v on t.vendor_code=v.code where t.id in (select account_id from permission_group_user where group_id=:groupId) ";
+
+		Map<String, Object> params = new HashMap<>();
+
+		params.put("groupId", groupId);
+
+		Query q = em.createNativeQuery(selectQuery, "AccountSearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		return q.getResultList();
 
 	}
 
