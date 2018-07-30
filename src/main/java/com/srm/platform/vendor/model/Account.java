@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,11 +14,25 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.srm.platform.vendor.utility.AccountSearchResult;
 
 @Entity
+
+@SqlResultSetMapping(name = "AccountSearchResult", classes = {
+		@ConstructorResult(targetClass = AccountSearchResult.class, columns = {
+				@ColumnResult(name = "id", type = String.class), @ColumnResult(name = "username", type = String.class),
+				@ColumnResult(name = "realname", type = String.class),
+				@ColumnResult(name = "unitname", type = String.class),
+				@ColumnResult(name = "duty", type = String.class), @ColumnResult(name = "role", type = String.class),
+				@ColumnResult(name = "vendorname", type = String.class),
+				@ColumnResult(name = "email", type = String.class), @ColumnResult(name = "tel", type = String.class),
+				@ColumnResult(name = "mobile", type = String.class),
+				@ColumnResult(name = "state", type = String.class) }) })
+
 @Table(name = "account")
 public class Account implements Serializable {
 

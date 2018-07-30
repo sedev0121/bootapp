@@ -39,4 +39,15 @@ public class SessionCounter implements HttpSessionListener, Serializable {
 		}
 		return sessions.size();
 	}
+
+	public List<Long> getActiveAccountList() {
+		List<Long> list = new ArrayList<>();
+		for (HttpSession session : sessions) {
+			if (session.getAttribute("account_id") != null) {
+				list.add((Long) session.getAttribute("account_id"));
+			}
+
+		}
+		return list;
+	}
 }

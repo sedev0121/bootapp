@@ -30,8 +30,6 @@ public class DashboardController extends CommonController {
 		List<NoticeSearchResult> alertList = getLastAlert();
 		List<NoticeSearchResult> messageList = getLastMessage();
 
-		logger.info("session count=" + this.sessionCounter.getActiveSessionNumber());
-
 		model.addAttribute("noticeList", noticeList);
 		model.addAttribute("alertList", alertList);
 		model.addAttribute("messageList", messageList);

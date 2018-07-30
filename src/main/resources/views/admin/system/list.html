@@ -7,7 +7,8 @@
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li class="active">用户管理</li>
+      <li>系统状态</li>
+      <li class="active">在线名单</li>
     </ul>
     <div class="search-content">
         <div class="search-cell width-20">
@@ -26,7 +27,6 @@
         </div>
         <div style="vertical-align: bottom" class="search-cell form-group">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-          <a class="btn btn-primary" th:href="@{/account/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
     </div>
     <div class="row">
@@ -47,7 +47,7 @@ $(document).ready(function() {
     var table = $('#example').DataTable({
       ordering: true,
       ajax : {
-        url : /*[[@{/account/list}]]*/'',
+        url : /*[[@{/system/list}]]*/'',
         data : function(data) {
           var filter = {
             rows_per_page : data.length,
