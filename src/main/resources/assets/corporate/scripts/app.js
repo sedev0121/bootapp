@@ -19,6 +19,7 @@ var App = function() {
   
   var role_data = [{id:"ROLE_BUYER", text:"采购员"}, {id:"ROLE_VENDOR", text:"供应商"}, {id:"ROLE_ADMIN", text:"管理员"}];
   var account_state_data = [{id:1, text:"启用"}, {id:0, text:"停用"}];
+  var statement_type_data = [{id:1, text:"采购对账"}, {id:2, text:"委外对账"}];
     
   var getLabelOfId = function(store, id) {
     var title = "";
@@ -142,6 +143,9 @@ var App = function() {
     getNoticeStateData: function() {
       return notice_state_data;
     },
+    getStatementTypeData: function() {
+      return statement_type_data;
+    },
     getRoleData: function() {
       return role_data;
     },
@@ -193,6 +197,9 @@ var App = function() {
     getNoticeStateDataWithAll: function() {
       return [{id:-1, text:"　"}, ...notice_state_data];
     },
+    getStatementTypeDataWithAll: function() {
+      return [{id:-1, text:"　"}, ...statement_type_data];
+    },
     getStatementStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...statement_state_data];
     },
@@ -232,6 +239,9 @@ var App = function() {
     getAccountStateOfId: function(id) {
       return getLabelOfId(account_state_data, id);
     },
+    getStatementTypeOfId: function(id) {
+      return getLabelOfId(statement_type_data, id);
+    },
     getStatementStateOfId: function(id) {
       return getLabelOfId(statement_state_data, id);
     },
@@ -266,6 +276,12 @@ var App = function() {
         return '【否】';
       else
         return "【否】";
+    },
+    purchaseInStateRender:function(data) {
+      if (data == 1)
+        return '【已对账】';
+      else 
+        return '【未对账】';
     },
     blockUI : function(options) {
       options = $.extend(true, {}, options);

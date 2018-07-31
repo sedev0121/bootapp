@@ -28,13 +28,11 @@ public class PurchaseInDetailResult implements Serializable {
 
 	String cost;
 
-	String closed_quantity;
-
-	String remain_quantity;
-
 	String tax_price;
 
 	String tax_rate;
+
+	String state;
 
 	String tax_cost;
 
@@ -46,10 +44,17 @@ public class PurchaseInDetailResult implements Serializable {
 
 	String material_tax_price;
 
+	String vendorcode;
+	String vendorname;
+	String type;
+	String bredvouch;
+	String mainmemo;
+
 	public PurchaseInDetailResult(String id, String code, String date, Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
-			String closed_quantity, String remain_quantity, String tax_price, String tax_rate, String tax_cost,
-			String memo, String nat_tax_price, String material_quantity, String material_tax_price) {
+			String tax_price, String tax_rate, String tax_cost, String memo, String nat_tax_price,
+			String material_quantity, String material_tax_price, String vendorname, String vendorcode, String type,
+			String bredvouch, String mainmemo, String state) {
 
 		this.id = id;
 		this.code = code;
@@ -62,9 +67,7 @@ public class PurchaseInDetailResult implements Serializable {
 		this.quantity = quantity;
 		this.price = price;
 		this.cost = cost;
-
-		this.closed_quantity = closed_quantity;
-		this.remain_quantity = remain_quantity;
+		this.memo = memo;
 
 		this.tax_price = tax_price;
 		this.tax_cost = tax_cost;
@@ -73,6 +76,13 @@ public class PurchaseInDetailResult implements Serializable {
 		this.nat_tax_price = nat_tax_price;
 		this.material_quantity = material_quantity;
 		this.material_tax_price = material_tax_price;
+
+		this.vendorcode = vendorcode;
+		this.vendorname = vendorname;
+		this.type = type;
+		this.bredvouch = bredvouch;
+		this.mainmemo = mainmemo;
+		this.state = state;
 	}
 
 	public String getId() {
@@ -81,6 +91,54 @@ public class PurchaseInDetailResult implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getMainmemo() {
+		return mainmemo;
+	}
+
+	public void setMainmemo(String mainmemo) {
+		this.mainmemo = mainmemo;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getBredvouch() {
+		return bredvouch;
+	}
+
+	public void setBredvouch(String bredvouch) {
+		this.bredvouch = bredvouch;
+	}
+
+	public String getVendorcode() {
+		return vendorcode;
+	}
+
+	public void setVendorcode(String vendorcode) {
+		this.vendorcode = vendorcode;
+	}
+
+	public String getVendorname() {
+		return vendorname;
+	}
+
+	public void setVendorname(String vendorname) {
+		this.vendorname = vendorname;
 	}
 
 	public String getCode() {
@@ -193,22 +251,6 @@ public class PurchaseInDetailResult implements Serializable {
 
 	public void setCost(String cost) {
 		this.cost = cost;
-	}
-
-	public String getClosed_quantity() {
-		return closed_quantity;
-	}
-
-	public void setClosed_quantity(String closed_quantity) {
-		this.closed_quantity = closed_quantity;
-	}
-
-	public String getRemain_quantity() {
-		return remain_quantity;
-	}
-
-	public void setRemain_quantity(String remain_quantity) {
-		this.remain_quantity = remain_quantity;
 	}
 
 	public String getTax_price() {

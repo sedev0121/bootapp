@@ -28,15 +28,19 @@ import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 				@ColumnResult(name = "unitname", type = String.class),
 				@ColumnResult(name = "quantity", type = String.class),
 				@ColumnResult(name = "price", type = String.class), @ColumnResult(name = "cost", type = String.class),
-				@ColumnResult(name = "closed_quantity", type = String.class),
-				@ColumnResult(name = "remain_quantity", type = String.class),
 				@ColumnResult(name = "tax_price", type = String.class),
 				@ColumnResult(name = "tax_rate", type = String.class),
 				@ColumnResult(name = "tax_cost", type = String.class),
 				@ColumnResult(name = "memo", type = String.class),
 				@ColumnResult(name = "nat_tax_price", type = String.class),
 				@ColumnResult(name = "material_quantity", type = String.class),
-				@ColumnResult(name = "material_tax_price", type = String.class) }) })
+				@ColumnResult(name = "material_tax_price", type = String.class),
+				@ColumnResult(name = "vendorname", type = String.class),
+				@ColumnResult(name = "vendorcode", type = String.class),
+				@ColumnResult(name = "type", type = String.class),
+				@ColumnResult(name = "bredvouch", type = String.class),
+				@ColumnResult(name = "mainmemo", type = String.class),
+				@ColumnResult(name = "state", type = String.class) }) })
 
 @Table(name = "purchase_in_detail")
 public class PurchaseInDetail {
@@ -80,8 +84,7 @@ public class PurchaseInDetail {
 	private Float materialPrice;
 	private Float materialTaxPrice;
 
-	private Float confirmedQuantity;
-	private Integer state;
+	private Integer state = 0;
 
 	public Long getId() {
 		return id;
@@ -273,14 +276,6 @@ public class PurchaseInDetail {
 
 	public void setMaterialTaxPrice(Float materialTaxPrice) {
 		this.materialTaxPrice = materialTaxPrice;
-	}
-
-	public Float getConfirmedQuantity() {
-		return confirmedQuantity;
-	}
-
-	public void setConfirmedQuantity(Float confirmedQuantity) {
-		this.confirmedQuantity = confirmedQuantity;
 	}
 
 	public Integer getState() {

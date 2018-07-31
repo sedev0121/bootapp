@@ -14,6 +14,7 @@ public class StatementSaveForm {
 	private Integer state;
 	private Long maker;
 	private Date make_date;
+	private Integer type;
 
 	private Long verifier;
 	private Date verify_date;
@@ -21,7 +22,6 @@ public class StatementSaveForm {
 	private Float tax_rate;
 
 	private List<Map<String, String>> table;
-	private List<Map<String, String>> weiwai;
 
 	public String getCode() {
 		return code;
@@ -29,6 +29,14 @@ public class StatementSaveForm {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 
 	public String getVendor() {
@@ -117,14 +125,6 @@ public class StatementSaveForm {
 
 	public void setTable(List<Map<String, String>> table) {
 		this.table = table;
-	}
-
-	public List<Map<String, String>> getWeiwai() {
-		return weiwai;
-	}
-
-	public void setWeiwai(List<Map<String, String>> weiwai) {
-		this.weiwai = weiwai;
 	}
 
 }

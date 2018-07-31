@@ -25,6 +25,7 @@ public class Constants {
 	public final static int STATEMENT_STATE_SUBMIT = 2;
 	public final static int STATEMENT_STATE_CONFIRM = 3;
 	public final static int STATEMENT_STATE_CANCEL = 4;
+	public final static int STATEMENT_STATE_VERIFY = 5;
 
 	public final static int NOTICE_TYPE_USER = 1;
 	public final static int NOTICE_TYPE_SYSTEM = 2;

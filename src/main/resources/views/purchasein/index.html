@@ -94,37 +94,83 @@ var edit_url = [[@{/purchasein/}]];
           $(row).addClass('');
       },
       columns : [ {
-        data : 'code',
-        title : '出入库单号',
-        render : function(data, display, record) {
-          url = edit_url + data + '/edit';
-          return '<a href="' + url + '">' + data + '</a>';
-        },
+        data : 'vendorcode',
+        title : '供应商编码'
       }, {
         data : 'vendorname',
         title : '供应商名称'
       }, {
-        data : 'vendorcode',
-        title : '供应商编码'
+        data : 'code',
+        title : '出入库单号'
+      }, {
+        data : 'date',
+        render : $.fn.date_renderer,
+        className:'dt-center',
+        title : '单据日期'
       }, {
         data : 'type',
-        className: 'dt-center',
-        title : '入库类型'
-      }, {
-        data : 'warehousename',
-        title : '仓库'
+        className:'dt-center',
+        title : '入库类型',
       }, {
         data : 'bredvouch',
         className: 'dt-center',
         render : App.getPurchaseInBredvouchOfId,
-        title : '红蓝标识'
+        title : '红蓝字'  
       }, {
-        data : 'date',
-        className: 'dt-center',
-        title : '单据日期',
-        render : $.fn.date_renderer
+        data : 'mainmemo',
+        title : '备注',        
+      }, {
+        data : 'rowno',
+        className:'dt-center',
+        title : '行号',
+      }, {
+        data : 'inventorycode',
+        title : '商品编码'
+      }, {
+        data : 'inventoryname',
+        title : '商品名称'
+      }, {
+        data : 'specs',
+        title : '规格型号',
+      }, {
+        data : 'unitname',
+        className:'dt-center',
+        title : '单位',
+      }, {
+        data : 'quantity',
+        className:'dt-right',
+        title : '入库数量',
+      }, {
+        data : 'price',
+        className:'dt-right',
+        title : '单价',
+      }, {
+        data : 'cost',
+        className:'dt-right',
+        title : '金额',
+      }, {
+        data : 'tax_rate',
+        className:'dt-right',
+        title : '税率',
+      }, {
+        data : 'tax_price',
+        className:'dt-right',
+        title : '含税单价',
+      }, {
+        data : 'tax_cost',
+        className:'dt-right',
+        title : '含税金额',
+      }, {
+        data : 'memo',
+        title : '行备注',
+      }, {
+        data : 'state',
+        className:'dt-right',
+        title : '对账状态',
+        render : App.purchaseInStateRender,
+
       } ],
-      order: [  [ 6, "desc" ] ]
+      order: [  [ 3, "desc" ] ]
 
       
     });

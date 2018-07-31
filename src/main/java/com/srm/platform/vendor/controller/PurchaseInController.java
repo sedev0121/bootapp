@@ -31,7 +31,6 @@ import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.utility.PurchaseInDetailItem;
 import com.srm.platform.vendor.utility.PurchaseInDetailResult;
-import com.srm.platform.vendor.utility.PurchaseInSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
@@ -68,70 +67,93 @@ public class PurchaseInController extends CommonController {
 	}
 
 	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody Page<PurchaseInSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<PurchaseInDetailResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
-		String order = requestParams.getOrDefault("order", "date");
-		String dir = requestParams.getOrDefault("dir", "desc");
-		String vendorStr = requestParams.getOrDefault("vendor", "");
-		String stateStr = requestParams.getOrDefault("state", "0");
+		String order = requestParams.getOrDefault("order", "code");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String vendor = requestParams.getOrDefault("vendor", "");
 		String code = requestParams.getOrDefault("code", "");
+		String inventory = requestParams.getOrDefault("inventory", "");
 		String start_date = requestParams.getOrDefault("start_date", null);
 		String end_date = requestParams.getOrDefault("end_date", null);
+		String stateStr = requestParams.getOrDefault("state", "-1");
 
-		Integer state = Integer.parseInt(stateStr);
 		Date startDate = Utils.parseDate(start_date);
 		Date endDate = Utils.getNextDate(end_date);
 
 		switch (order) {
+		case "date":
+			order = "b.date";
+			break;
 		case "vendorname":
-			order = "b.name";
+			order = "v.name";
 			break;
-		case "deployername":
-			order = "c.realname";
+		case "vendorcode":
+			order = "v.code";
 			break;
-		case "reviewername":
-			order = "d.realname";
+		case "inventorycode":
+			order = "c.code";
+			break;
+		case "inventoryname":
+			order = "c.name";
+			break;
+		case "specs":
+			order = "c.specs";
+			break;
+		case "unitname":
+			order = "m.name";
+			break;
+		case "mainmemo":
+			order = "b.memo";
 			break;
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
-				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "SELECT a.*, b.name vendorname  ";
-		String countQuery = "select count(*) ";
+		String selectQuery = "select distinct a.*, m.name unitname, b.date, c.name inventoryname,c.specs, v.name vendorname, v.code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
+		String countQuery = "select count(distinct a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM purchase_in_main a left join vendor b on a.vendor_code=b.code where 1=1 ";
+		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventory_code=c.code "
+				+ "left join measurement_unit m on c.main_measure=m.code left join vendor v on b.vendor_code=v.code "
+				+ "where v.unit_id in :unitList ";
 
-		List<String> unitList = this.getDefaultUnitList();
 		Map<String, Object> params = new HashMap<>();
 
-		bodyQuery += " and b.unit_id in :unitList";
+		List<String> unitList = this.getDefaultUnitList();
 		params.put("unitList", unitList);
 
-		if (!vendorStr.trim().isEmpty()) {
-			bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
-			params.put("vendor", vendorStr.trim());
+		if (!inventory.trim().isEmpty()) {
+			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
+			params.put("inventory", inventory.trim());
 		}
 
 		if (!code.trim().isEmpty()) {
-			bodyQuery += " and a.code like CONCAT('%',:code, '%') ";
-			params.put("code", code.trim());
+			bodyQuery += " and a.code like CONCAT('%',:code, '%')";
+			params.put("code", code);
 		}
 
-		// if (state > 0) {
-		// bodyQuery += " and a.state=:state";
-		// params.put("state", state);
-		// }
+		if (!vendor.trim().isEmpty()) {
+			bodyQuery += " and (v.code like CONCAT('%',:vendor, '%') or v.name like CONCAT('%',:vendor, '%'))";
+			params.put("vendor", vendor);
+		}
 
 		if (startDate != null) {
-			bodyQuery += " and a.date>=:startDate";
+			bodyQuery += " and b.date>=:startDate";
 			params.put("startDate", startDate);
 		}
+
 		if (endDate != null) {
-			bodyQuery += " and a.date<:endDate";
+			bodyQuery += " and b.date<:endDate";
 			params.put("endDate", endDate);
+		}
+
+		Long state = Long.valueOf(stateStr);
+		if (state >= 0) {
+			bodyQuery += " and a.state=:state";
+			params.put("state", state);
 		}
 
 		countQuery += bodyQuery;
@@ -144,14 +166,14 @@ public class PurchaseInController extends CommonController {
 		BigInteger totalCount = (BigInteger) q.getSingleResult();
 
 		selectQuery += bodyQuery + orderBy;
-		q = em.createNativeQuery(selectQuery, "PurchaseInSearchResult");
+		q = em.createNativeQuery(selectQuery, "PurchaseInDetailResult");
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			q.setParameter(entry.getKey(), entry.getValue());
 		}
 
 		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
 
-		return new PageImpl<PurchaseInSearchResult>(list, request, totalCount.longValue());
+		return new PageImpl<PurchaseInDetailResult>(list, request, totalCount.longValue());
 	}
 
 	@RequestMapping(value = "/{code}/details", produces = "application/json")
@@ -169,6 +191,7 @@ public class PurchaseInController extends CommonController {
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String vendor = requestParams.getOrDefault("vendor", "");
 		String code = requestParams.getOrDefault("code", "");
+		String type = requestParams.getOrDefault("type", "普通采购");
 		String dateStr = requestParams.getOrDefault("date", null);
 		String inventory = requestParams.getOrDefault("inventory", "");
 
@@ -184,12 +207,6 @@ public class PurchaseInController extends CommonController {
 		case "vendorname":
 			order = "b.name";
 			break;
-		case "deployername":
-			order = "c.realname";
-			break;
-		case "reviewername":
-			order = "d.realname";
-			break;
 		case "inventoryname":
 			order = "c.name";
 			break;
@@ -199,25 +216,23 @@ public class PurchaseInController extends CommonController {
 		case "unitname":
 			order = "m.name";
 			break;
-		case "closed_quantity":
-			order = "d.closed_quantity";
-			break;
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, m.name unitname, (a.quantity-ifnull(d.closed_quantity, 0)) remain_quantity, d.closed_quantity, b.date, c.name inventoryname,c.specs ";
+		String selectQuery = "select a.*, m.name unitname, b.date, c.name inventoryname,c.specs, null vendorname, vendor_code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventory_code=c.code "
-				+ "left join measurement_unit m on c.main_measure=m.code left join statement_detail d on d.purchase_in_detail_id=a.id "
-				+ "where d.closed_quantity is null and b.vendor_code=:vendor ";
+				+ "left join measurement_unit m on c.main_measure=m.code "
+				+ "where a.state=0 and type=:type and b.vendor_code=:vendor ";
 
 		Map<String, Object> params = new HashMap<>();
 
 		params.put("vendor", vendor);
+		params.put("type", type);
 
 		if (!inventory.trim().isEmpty()) {
 			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";

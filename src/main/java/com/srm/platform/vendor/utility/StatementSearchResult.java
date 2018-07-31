@@ -18,7 +18,13 @@ public class StatementSearchResult implements Serializable {
 
 	String verifydate;
 
+	String confirmer;
+
+	String confirmdate;
+
 	String remark;
+
+	String type;
 
 	String invoice_code;
 
@@ -27,7 +33,8 @@ public class StatementSearchResult implements Serializable {
 	String vendor_code;
 
 	public StatementSearchResult(String code, String state, String maker, String makedate, String verifier,
-			String verifydate, String remark, String invoice_code, String vendor_name, String vendor_code) {
+			String verifydate, String confirmer, String confirmdate, String remark, String invoice_code,
+			String vendor_name, String vendor_code, String type) {
 
 		this.code = code;
 		this.state = state;
@@ -35,10 +42,13 @@ public class StatementSearchResult implements Serializable {
 		this.makedate = makedate;
 		this.verifier = verifier;
 		this.verifydate = verifydate;
+		this.confirmdate = confirmdate;
+		this.confirmer = confirmer;
 		this.remark = remark;
 		this.invoice_code = invoice_code;
 		this.vendor_code = vendor_code;
 		this.vendor_name = vendor_name;
+		this.type = type;
 	}
 
 	public String getCode() {
@@ -47,6 +57,30 @@ public class StatementSearchResult implements Serializable {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public String getConfirmer() {
+		return confirmer;
+	}
+
+	public void setConfirmer(String confirmer) {
+		this.confirmer = confirmer;
+	}
+
+	public String getConfirmdate() {
+		return confirmdate;
+	}
+
+	public void setConfirmdate(String confirmdate) {
+		this.confirmdate = confirmdate;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getState() {
