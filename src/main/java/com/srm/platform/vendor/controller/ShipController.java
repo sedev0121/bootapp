@@ -309,6 +309,7 @@ public class ShipController extends CommonController {
 								float quantity = detail.getShippedQuantity() == null ? 0 : detail.getShippedQuantity();
 
 								detail.setShippedQuantity(quantity + Float.parseFloat(row.get(1)));
+								detail.setLastShipDate(new Date());
 								detail = purchaseOrderDetailRepository.save(detail);
 
 								List<Account> toList = new ArrayList<>();
