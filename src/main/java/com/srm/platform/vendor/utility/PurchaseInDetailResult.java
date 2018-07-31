@@ -40,10 +40,16 @@ public class PurchaseInDetailResult implements Serializable {
 
 	String memo;
 
+	String nat_tax_price;
+
+	String material_quantity;
+
+	String material_tax_price;
+
 	public PurchaseInDetailResult(String id, String code, String date, Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
 			String closed_quantity, String remain_quantity, String tax_price, String tax_rate, String tax_cost,
-			String memo) {
+			String memo, String nat_tax_price, String material_quantity, String material_tax_price) {
 
 		this.id = id;
 		this.code = code;
@@ -63,6 +69,10 @@ public class PurchaseInDetailResult implements Serializable {
 		this.tax_price = tax_price;
 		this.tax_cost = tax_cost;
 		this.tax_rate = tax_rate;
+
+		this.nat_tax_price = nat_tax_price;
+		this.material_quantity = material_quantity;
+		this.material_tax_price = material_tax_price;
 	}
 
 	public String getId() {
@@ -87,6 +97,38 @@ public class PurchaseInDetailResult implements Serializable {
 
 	public void setDate(String date) {
 		this.date = date;
+	}
+
+	public String getInventory_code() {
+		return inventory_code;
+	}
+
+	public void setInventory_code(String inventory_code) {
+		this.inventory_code = inventory_code;
+	}
+
+	public String getNat_tax_price() {
+		return nat_tax_price;
+	}
+
+	public void setNat_tax_price(String nat_tax_price) {
+		this.nat_tax_price = nat_tax_price;
+	}
+
+	public String getMaterial_quantity() {
+		return material_quantity;
+	}
+
+	public void setMaterial_quantity(String material_quantity) {
+		this.material_quantity = material_quantity;
+	}
+
+	public String getMaterial_tax_price() {
+		return material_tax_price;
+	}
+
+	public void setMaterial_tax_price(String material_tax_price) {
+		this.material_tax_price = material_tax_price;
 	}
 
 	public Integer getRowno() {

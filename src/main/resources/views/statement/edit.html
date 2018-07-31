@@ -1029,8 +1029,17 @@ $(document).ready(function() {
         item.taxprice = item.tax_price;
         item.taxcost = item.tax_cost;
 
+        item.real_quantity = null;
+        item.yuanci = null;
+        item.yinci = null;
+        item.unit_weight = null;
+        item.yinci_standard = null;
+        item.yinci_chargeback = null;
         
-        item.closed_quantity = item.quantity;
+        item.material_less_quantity = null;
+        item.material_chargeback = null;
+        item.memo = null;
+        
         
         if (current_tab == '#tab-1')
           basic_table.row.add(item);

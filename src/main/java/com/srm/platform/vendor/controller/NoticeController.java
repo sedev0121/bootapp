@@ -40,7 +40,9 @@ import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.utility.AccountSearchResult;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.NoticeReadSearchResult;
 import com.srm.platform.vendor.utility.NoticeSearchResult;
 import com.srm.platform.vendor.utility.SearchItem;
 import com.srm.platform.vendor.utility.UploadFileHelper;
@@ -100,7 +102,7 @@ public class NoticeController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name ";
+		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name, null read_date ";
 		String countQuery = "select count(distinct a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
@@ -115,7 +117,7 @@ public class NoticeController extends CommonController {
 			params.put("to_account", this.getLoginAccount().getId());
 		} else {
 			if (this.hasAuthority("公告通知-发布")) {
-				bodyQuery += " and ((a.create_unit in :unitList and a.state=1) or create_account=:create_account or (e.to_account_id=:to_account and a.state=3))";
+				bodyQuery += " and ((a.create_unit in :unitList and a.state=2) or create_account=:create_account or (e.to_account_id=:to_account and a.state=3))";
 				params.put("unitList", unitList);
 				params.put("create_account", this.getLoginAccount().getId());
 				params.put("to_account", this.getLoginAccount().getId());
@@ -172,9 +174,23 @@ public class NoticeController extends CommonController {
 	@GetMapping("/{id}/edit")
 	public String edit(@PathVariable("id") Long id, Model model) {
 		Notice notice = noticeRepository.findOneById(id);
-		if (notice == null)
+		if (notice == null || notice.getType() != Constants.NOTICE_TYPE_USER)
 			show404();
 
+		boolean isVisible = false;
+		logger.info(notice.getCreateAccount().getId() + " " + this.getLoginAccount().getId());
+		if (isAuthorizedUnit(notice.getCreateAccount().getUnit().getId()) && this.hasAuthority("公告通知-发布")) {
+			isVisible = true;
+		} else if (notice.getCreateAccount().getId() == this.getLoginAccount().getId()) {
+			isVisible = true;
+		} else if (isVisibleNotice(id)) {
+			isVisible = true;
+		}
+
+		if (!isVisible)
+			show403();
+
+		setReadDate(id);
 		model.addAttribute("notice", notice);
 		if (notice.getVendorCodeList() != null) {
 			List<SearchItem> vendorList = vendorRepository
@@ -193,7 +209,7 @@ public class NoticeController extends CommonController {
 
 	// 新建
 	@GetMapping("/add")
-	@PreAuthorize("hasAuthority('ROLE_BUYER')")
+	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('公告通知-新建')")
 	public String add(Model model) {
 		Notice notice = new Notice();
 		notice.setUnit(this.getLoginAccount().getUnit());
@@ -205,7 +221,7 @@ public class NoticeController extends CommonController {
 
 	// 删除
 	@GetMapping("/{id}/delete")
-	@PreAuthorize("hasAuthority('ROLE_BUYER')")
+	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('公告通知-新建')")
 	public @ResponseBody Boolean delete(@PathVariable("id") Long id, Model model) {
 		Notice notice = noticeRepository.findOneById(id);
 		noticeRepository.delete(notice);
@@ -213,7 +229,7 @@ public class NoticeController extends CommonController {
 	}
 
 	@GetMapping("/{id}/deleteattach")
-	@PreAuthorize("hasAuthority('ROLE_BUYER')")
+	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('公告通知-新建')")
 	public @ResponseBody Boolean deleteAttach(@PathVariable("id") Long id, HttpServletRequest request) {
 		Notice notice = noticeRepository.findOneById(id);
 		String applicationPath = request.getServletContext().getRealPath("");
@@ -229,7 +245,7 @@ public class NoticeController extends CommonController {
 	// 用户修改
 	@Transactional
 	@PostMapping("/update")
-	@PreAuthorize("hasAuthority('ROLE_BUYER')")
+	@PreAuthorize("hasRole('ROLE_BUYER') and (hasAuthority('公告通知-新建') or hasAuthority('公告通知-发布'))")
 	public @ResponseBody Notice update_ajax(@RequestParam(value = "attach", required = false) MultipartFile attach,
 			HttpServletRequest request, @RequestParam Map<String, String> requestParams) {
 
@@ -250,12 +266,12 @@ public class NoticeController extends CommonController {
 		String to_all_vendor = requestParams.get("to_all_vendor");
 		String to_unit_account = requestParams.get("to_unit_account");
 		String vendor_list = requestParams.get("vendor_list");
+		String account_list = requestParams.get("account_list");
 		Integer state = Integer.parseInt(stateStr);
 		Notice notice = new Notice();
 
 		if (id != null && !id.isEmpty()) {
 			notice = noticeRepository.findOneById(Long.parseLong(id));
-
 		}
 
 		notice.setState(state);
@@ -292,6 +308,7 @@ public class NoticeController extends CommonController {
 			}
 			if (to_unit_account != null) {
 				notice.setToUnitAccount(1);
+				notice.setAccountIdList(account_list);
 			} else {
 				notice.setToUnitAccount(0);
 			}
@@ -306,7 +323,7 @@ public class NoticeController extends CommonController {
 					List<String> unitIdList = Utils.getAllUnitsOfId(notice.getUnit().getId(),
 							permissionGroupFunctionUnitRepository);
 
-					toAccountList.addAll(accountRepository.findAccountsByUnitIdList(unitIdList));
+					toAccountList.addAll(accountRepository.findAllVendorsByUnitIdList(unitIdList));
 
 				} else {
 					if (notice.getVendorCodeList() != null) {
@@ -316,7 +333,8 @@ public class NoticeController extends CommonController {
 				}
 
 				if (notice.getToUnitAccount() == 1) {
-					toAccountList.addAll(accountRepository.findAllExceptVendor());
+					toAccountList.addAll(
+							accountRepository.findAllByIdList(convertListStrToLongList(notice.getAccountIdList())));
 				}
 
 				for (Account account : toAccountList) {
@@ -331,6 +349,176 @@ public class NoticeController extends CommonController {
 		notice = noticeRepository.save(notice);
 
 		return notice;
+	}
+
+	@GetMapping("/readlist/{id}")
+	public @ResponseBody Page<NoticeReadSearchResult> readlist_ajax(@PathVariable("id") Long id,
+			@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "deploydate");
+		String dir = requestParams.getOrDefault("dir", "desc");
+		String search = requestParams.getOrDefault("search", "");
+		String start_date = requestParams.getOrDefault("start_date", null);
+		String end_date = requestParams.getOrDefault("end_date", null);
+
+		Date startDate = Utils.parseDate(start_date);
+		Date endDate = Utils.getNextDate(end_date);
+
+		switch (order) {
+		case "unitname":
+			order = "d.name";
+			break;
+		case "vendortname":
+			order = "c.name";
+			break;
+		}
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		String selectQuery = "select b.realname, c.name vendorname, d.name unitname, a.read_date  ";
+		String countQuery = "select count(b.realname) ";
+		String orderBy = " order by " + order + " " + dir;
+
+		String bodyQuery = "from notice_read a left join account b on a.to_account_id=b.id left join vendor c on b.vendor_code=c.code "
+				+ "left join unit d on b.unit_id=d.id where b.realname is not null and a.notice_id=:noticeId ";
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("noticeId", id);
+
+		if (!search.trim().isEmpty()) {
+			bodyQuery += " and (b.realname like CONCAT('%',:search, '%') or c.name like CONCAT('%',:search, '%') or d.name like CONCAT('%',:search, '%')) ";
+			params.put("search", search.trim());
+		}
+
+		if (startDate != null) {
+			bodyQuery += " and a.read_date>=:startDate";
+			params.put("startDate", startDate);
+		}
+		if (endDate != null) {
+			bodyQuery += " and a.read_date<:endDate";
+			params.put("endDate", endDate);
+		}
+
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "NoticeReadSearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		return new PageImpl<NoticeReadSearchResult>(list, request, totalCount.longValue());
+	}
+
+	@GetMapping("/{id}/account/list")
+	public @ResponseBody List<AccountSearchResult> accountList_ajax(@PathVariable("id") String noticeId) {
+
+		if (noticeId == null || "null".equals(noticeId)) {
+			return new ArrayList<>();
+		}
+
+		Notice notice = noticeRepository.findOneById(Long.valueOf(noticeId));
+
+		List<Long> idList = new ArrayList<>();
+		String accountIdListStr = notice.getAccountIdList();
+		if (accountIdListStr != null) {
+			idList = convertListStrToLongList(accountIdListStr);
+		} else {
+			return new ArrayList<>();
+		}
+
+		logger.info(" " + idList.toString());
+		String selectQuery = "SELECT t.*, u.name unitname, v.name vendorname FROM account t left join unit u on t.unit_id=u.id "
+				+ "left join vendor v on t.vendor_code=v.code where t.id in :idList ";
+
+		Map<String, Object> params = new HashMap<>();
+
+		params.put("idList", idList);
+
+		Query q = em.createNativeQuery(selectQuery, "AccountSearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		return q.getResultList();
+
+	}
+
+	@GetMapping("/account/list")
+	public @ResponseBody Page<AccountSearchResult> accountListForSelect_ajax(
+			@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "name");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String search = requestParams.getOrDefault("search", "");
+		String stateStr = requestParams.getOrDefault("state", "");
+		String role = requestParams.getOrDefault("role", "");
+
+		Integer state = Integer.parseInt(stateStr);
+
+		if (order.equals("vendorname"))
+			order = "v.name";
+		if (order.equals("unitname"))
+			order = "u.name";
+
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		String selectQuery = "SELECT t.*, u.name unitname, v.name vendorname ";
+		String countQuery = "select count(*) ";
+		String orderBy = " order by " + order + " " + dir;
+
+		String bodyQuery = "FROM account t left join unit u on t.unit_id=u.id left join vendor v on t.vendor_code=v.code where role<>'ROLE_VENDOR' ";
+
+		Map<String, Object> params = new HashMap<>();
+
+		if (!search.trim().isEmpty()) {
+			bodyQuery += " and (u.name LIKE CONCAT('%',:search, '%') or t.username LIKE CONCAT('%',:search, '%') or t.realname LIKE CONCAT('%',:search, '%') or t.duty LIKE CONCAT('%',:search, '%') or t.email LIKE CONCAT('%',:search, '%')) ";
+			params.put("search", search.trim());
+		}
+
+		if (state >= 0) {
+			bodyQuery += " and state=:state";
+			params.put("state", state);
+		}
+
+		if (!role.trim().isEmpty()) {
+			bodyQuery += " and role=:role";
+			params.put("role", role);
+		}
+
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "AccountSearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		return new PageImpl<AccountSearchResult>(list, request, totalCount.longValue());
+
 	}
 
 }

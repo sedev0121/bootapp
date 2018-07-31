@@ -31,7 +31,8 @@ import com.srm.platform.vendor.utility.NoticeSearchResult;
 				@ColumnResult(name = "state", type = Integer.class),
 				@ColumnResult(name = "to_all_vendor", type = Integer.class),
 				@ColumnResult(name = "to_unit_account", type = Integer.class),
-				@ColumnResult(name = "attach_file_name", type = String.class) }) })
+				@ColumnResult(name = "attach_file_name", type = String.class),
+				@ColumnResult(name = "read_date", type = Date.class) }) })
 
 public class Notice {
 
@@ -64,6 +65,7 @@ public class Notice {
 	private String attachFileName;
 	private String attachOriginalName;
 	private String vendorCodeList;
+	private String accountIdList;
 
 	public Notice() {
 		this.createDate = new Date();
@@ -75,6 +77,14 @@ public class Notice {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getAccountIdList() {
+		return accountIdList;
+	}
+
+	public void setAccountIdList(String accountIdList) {
+		this.accountIdList = accountIdList;
 	}
 
 	public String getVendorCodeList() {

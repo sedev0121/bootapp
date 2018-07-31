@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -15,7 +16,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "unit")
-public class Unit {
+public class Unit implements Serializable {
+
+	private static final long serialVersionUID = 5097604486943401362L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

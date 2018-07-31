@@ -17,6 +17,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.UrlTemplateResolver;
 
+import com.srm.platform.vendor.service.SessionCounter;
 import com.srm.platform.vendor.u8api.ApiClient;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
@@ -47,6 +48,11 @@ public class MvcConfig implements WebMvcConfigurer {
 	@Bean
 	public ApiClient appProperties() {
 		return new ApiClient();
+	}
+
+	@Bean
+	public SessionCounter sessionCounter() {
+		return new SessionCounter();
 	}
 
 	@Bean

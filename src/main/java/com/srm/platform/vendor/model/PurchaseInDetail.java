@@ -33,7 +33,10 @@ import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 				@ColumnResult(name = "tax_price", type = String.class),
 				@ColumnResult(name = "tax_rate", type = String.class),
 				@ColumnResult(name = "tax_cost", type = String.class),
-				@ColumnResult(name = "memo", type = String.class) }) })
+				@ColumnResult(name = "memo", type = String.class),
+				@ColumnResult(name = "nat_tax_price", type = String.class),
+				@ColumnResult(name = "material_quantity", type = String.class),
+				@ColumnResult(name = "material_tax_price", type = String.class) }) })
 
 @Table(name = "purchase_in_detail")
 public class PurchaseInDetail {

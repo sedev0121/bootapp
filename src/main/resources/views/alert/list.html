@@ -33,6 +33,11 @@
 $(document).ready(function() {
   var table;
   
+  $(".datepicker").datepicker({
+    onSelect: function(dateText) {
+      table.draw();
+    }
+  });
   
   table = $('#example').DataTable({
     ordering: true,

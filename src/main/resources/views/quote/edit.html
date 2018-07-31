@@ -155,37 +155,59 @@ is_vendor = 1;
 
     editor = new $.fn.dataTable.Editor( {
       table: "#example",  
-      idSrc: "id",
+      idSrc: "rowno",
       //template: '#customForm',
       fields: [ {
-          attr: {
-            type: "number",
-          },
-          name: "iunitprice"    
-        },{
-          attr: {
-            type: "number",
-          },
-          name: "itaxrate"   
-        },{
-          label: "是否有效:",
-          type: "checkbox",
-          separator: "|",
-          options:   [
-              { label: '', value: 1 }
-          ],
-          id: "ivalid",
-          name: "ivalid"  
-        },{
-          attr: {
-            type: "number",
-          },
-          name: "itaxunitprice"                
-        }],
+        name: "cinvcode"                
+      },{
+        attr: {
+          type: "number",
+        },
+        name: "iunitprice"    
+      },{
+        attr: {
+          type: "number",
+        },
+        name: "itaxrate"   
+      },{
+        label: "是否有效:",
+        type: "checkbox",
+        separator: "|",
+        options:   [
+            { label: '', value: 1 }
+        ],
+        id: "ivalid",
+        name: "ivalid"  
+      },{
+        attr: {
+          type: "number",
+        },
+        name: "itaxunitprice"                
+      }],
     }).on( 'preSubmit', function (e, data, action) {
       if ( action !== 'remove' ) {
         
         var currentFieldName = e.currentTarget.s.includeFields[0];
+        
+        if (currentFieldName == "ivalid"){
+          if (editor.field(currentFieldName).val() == 1) {
+            var table_data = table.rows().data().toArray();
+            var id = 1;
+            $.each(data.data, function(rowno, editRow){  
+              $.each(table_data, function(key, item){
+                if (item.cinvcode == editRow.cinvcode){
+                  if (item.rowno != rowno){
+                    item.ivalid = 0;
+                  }
+                }
+              })
+            });
+            table.rows().invalidate();
+            
+          }
+          return true;
+        }
+        
         var editingField = editor.field(currentFieldName);
         if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val())<=0) {
           editingField.input().addClass('error');
@@ -294,7 +316,7 @@ is_vendor = 1;
 
     var table = $('#example').DataTable(table_options);
 
-    if (state == 2){
+    if (state == 2 && !is_vendor && !is_readonly){
       if ($("#type").val()==2 ) {
         table.on( 'click', 'tbody td.edit-cell', function (e) {
           editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
@@ -305,7 +327,7 @@ is_vendor = 1;
 
     
     
-    if (state == 3) {
+    if (state == 3 && !is_vendor && !is_readonly)
       table.on( 'click', 'tbody td.ivalid', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );

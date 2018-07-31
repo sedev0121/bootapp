@@ -107,8 +107,20 @@
                 <li><a th:href="@{/price}">商品价格查询</a></li>
               </ul>
             </li>
-            <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/report')} ? active : ''" >
-              <a th:href="@{/report}">报表中心</a>
+            <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/stock')} or
+            ${#strings.startsWith(#request.requestURI,'/incoming')} or 
+            ${#strings.startsWith(#request.requestURI,'/delivery')} or 
+            ${#strings.startsWith(#request.requestURI,'/pricechange')} or 
+            ${#strings.startsWith(#request.requestURI,'/orderlist')} ? active : ''" >
+              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">报表中心 </a>
+
+              <ul class="dropdown-menu">
+                <li><a th:href="@{/stock}">库存报表</a></li>
+                <li><a th:href="@{/incoming}">来料异常报表 </a></li>
+                <li><a th:href="@{/delivery}">准时交货率报表</a></li>
+                <li><a th:href="@{/pricechange}">价格变动报表</a></li>
+                <li><a th:href="@{/orderlist}">订单明细列表</a></li>
+              </ul>
             </li>
             <li class="dropdown" th:classappend="(${#strings.startsWith(#request.requestURI,'/notice')} or ${#strings.startsWith(#request.requestURI,'/message')} or ${#strings.startsWith(#request.requestURI,'/alert')})? active : ''" >   
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">公告通知 </a>
@@ -139,6 +151,9 @@
             </li>
             <li th:classappend="${#strings.startsWith(#request.requestURI,'/notice')} ? active : ''" >
               <a th:href="@{/notice}">公告通知</a>
+            </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/system')} ? active : ''" >
+              <a th:href="@{/system}">系统状态</a>
             </li>
           </ul>
         </div>
@@ -236,7 +251,7 @@
     <script src="https://cdn.datatables.net/keytable/2.4.0/js/dataTables.keyTable.min.js"></script>
     <script th:src="@{/assets/plugins/data-table/datatable-input.js}" type="text/javascript" ></script>
     <script th:src="@{/assets/plugins/data-table/dataTables.buttons.min.js}" type="text/javascript" ></script>
-    <script th:src="@{/assets/plugins/data-table/editor/js/dataTables.editor.js}" type="text/javascript" ></script>
+    <script th:src="@{/assets/plugins/data-table/editor/js/dataTables.editor.min.js}" type="text/javascript" ></script>
     
     
     <script th:src="@{/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js}"  type="text/javascript" ></script>

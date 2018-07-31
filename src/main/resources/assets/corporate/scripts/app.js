@@ -14,6 +14,9 @@ var App = function() {
   var purchase_in_bredvouch_data = [{id:0, text:'蓝字'}, {id:1, text:'红字'}];
   var statement_state_data = [{id:1, text:"新建"}, {id:2, text:"发布"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"审核"}];
   var notice_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"发布"}, {id:4, text:"退回"}];
+  
+  var role_data = [{id:"ROLE_BUYER", text:"采购员"}, {id:"ROLE_VENDOR", text:"供应商"}, {id:"ROLE_ADMIN", text:"管理员"}];
+  var account_state_data = [{id:1, text:"启用"}, {id:0, text:"停用"}];
     
   var getLabelOfId = function(store, id) {
     var title = "";
@@ -137,6 +140,12 @@ var App = function() {
     getNoticeStateData: function() {
       return notice_state_data;
     },
+    getRoleData: function() {
+      return role_data;
+    },
+    getAccountStateData: function() {
+      return account_state_data;
+    },
     bs_input_file:function() {
       $(".input-file").before(
         function() {
@@ -169,6 +178,12 @@ var App = function() {
     },
     getPurchaseOrderStateDataWithAll: function() {
       return [{id:-1, text:"　"}, ...purchase_order_state_data];
+    },
+    getRoleDataWithAll: function() {
+      return [{id:"", text:"　"}, ...role_data];
+    },
+    getAccountStateDataWithAll: function() {
+      return [{id:-1, text:"　"}, ...account_state_data];
     },
     getStatementStateData: function() {
       return statement_state_data;
@@ -208,6 +223,12 @@ var App = function() {
     },
     getNoticeStateOfId: function(id) {
       return getLabelOfId(notice_state_data, id);
+    },
+    getRoleOfId: function(id) {
+      return getLabelOfId(role_data, id);
+    },
+    getAccountStateOfId: function(id) {
+      return getLabelOfId(account_state_data, id);
     },
     getStatementStateOfId: function(id) {
       return getLabelOfId(statement_state_data, id);
@@ -395,13 +416,40 @@ $(document).ready(function() {
 		}else if (date_str.includes("T")) {
 		  splitter = "T";
 		}
-	    var temp = date_str.split(splitter);
-	    if (temp.length>0){
-	    	return temp[0]
-	    }else{
-	    	return '';
-	    }
+		
+		var temp = date_str.split(splitter);
+    if (temp.length>0){
+      return temp[0]
+    }else{
+      return '';
+    }
 	};
+	
+	$.fn.time_renderer = function (date_str) {
+    if (date_str == undefined) {
+      return '';
+    }
+
+    var splitter = " ";
+    if (date_str.includes(" ")) {
+      splitter = " ";
+    }else if (date_str.includes("T")) {
+      splitter = "T";
+    }
+    
+    var temp = date_str.split(splitter);
+    var result = '';
+    if (temp.length>0){
+      result = temp[0]
+      if (temp.length>1){
+        result += " " + temp[1].substring(0, 8);
+      }
+    }else{
+      result = '';
+    }
+    
+    return result;
+  };
 	
 	jQuery.extend(jQuery.validator.messages, {
 	    required: "不能为空",

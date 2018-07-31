@@ -16,7 +16,7 @@
 
       <div class="btn-group-bar">
         <div class="text-right">
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_ADMIN')" id="save"><i class="fa fa-save"></i> 保存</a>  
+          <a class="btn btn-primary hidden" sec:authorize="hasRole('ROLE_ADMIN')" id="save"><i class="fa fa-save"></i> 保存</a>  
           <a class="btn btn-default" th:href="@{/vendor}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
       </div>
@@ -197,8 +197,8 @@
                 <input type="text" class="form-control" readonly th:value="${account.email}">
               </div>
               <div class="col-lg-2 col-md-2">
-                <label for="document_date">Skype: </label>
-                <input type="text" class="form-control" readonly th:value="${account.skype}">
+                <label for="document_date">微信: </label>
+                <input type="text" class="form-control" readonly th:value="${account.weixin}">
               </div>
               <div class="col-lg-2 col-md-2">
                 <label for="document_date">QQ: </label>
@@ -229,7 +229,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">
-                                                        选择所属部门
+                                                        选择所属组织
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         </button>
@@ -268,6 +268,7 @@ $(document).ready(function() {
   if (!is_admin) {
     $('#unit_name').removeClass("select-unit");
   }
+  $('#unit_name').removeClass("select-unit");
   
   $(".select-unit").click(function(){  //"select all" change
     $('#tree_3').jstree(true).deselect_all();

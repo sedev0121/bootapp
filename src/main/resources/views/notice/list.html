@@ -32,7 +32,7 @@
         </div>
         <div style="vertical-align: bottom" class="search-cell width-10">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-          <a class="btn btn-primary" th:href="@{/notice/add}" sec:authorize="hasRole('ROLE_BUYER')"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+          <a class="btn btn-primary" th:href="@{/notice/add}" sec:authorize="hasRole('ROLE_BUYER') and hasAuthority('公告通知-新建')"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
     </div>
     <div class="row">
@@ -99,7 +99,7 @@ $(document).ready(function() {
       data : 'create_date',
       className: 'dt-center',
       title : '创建时间',
-      render : $.fn.date_renderer
+      render : $.fn.time_renderer
     }, {        
       data : 'verify_name',
       className: 'dt-center',
@@ -108,7 +108,7 @@ $(document).ready(function() {
       data : 'verify_date',
       title : '发布时间',
       className: 'dt-center',
-      render : $.fn.date_renderer
+      render : $.fn.time_renderer
     }, {
       data : 'to_all_vendor',
       className: 'dt-center',

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"
+  layout:decorate="~{layout/layout}">
+<body>
+  <div class="container" layout:fragment="content">
+    <ul class="breadcrumb">
+      <li>
+        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+      </li>
+      <li>系统状态</li>
+      <li class="active">在线名单</li>
+    </ul>
+    <div class="search-content">
+        <div class="search-cell width-20">
+          <label for="search">用户名/真实姓名/所属组织/职位/邮箱：</label>
+          <input type="text" id="search" class="form-control">
+        </div>
+        <div class="search-cell width-10 form-group">
+          <label for="role">角色：</label>
+          <select name="role" id="role" class="form-control">
+          </select>
+        </div>
+        <div class="search-cell width-10 form-group">
+          <label for="state">状态：</label>
+          <select name="state" id="state" class="form-control">
+          </select>
+        </div>
+        <div style="vertical-align: bottom" class="search-cell form-group">
+          <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+<script th:inline="javascript">
+$(document).ready(function() {
+
+  $('#role').select2({data: App.getRoleDataWithAll(), minimumResultsForSearch: -1});
+  $('#state').select2({data: App.getAccountStateDataWithAll(), minimumResultsForSearch: -1});
+  
+    var table = $('#example').DataTable({
+      ordering: true,
+      ajax : {
+        url : /*[[@{/system/list}]]*/'',
+        data : function(data) {
+          var filter = {
+            rows_per_page : data.length,
+            page_index : data.start / data.length + 1,
+            order: data.columns[data.order[0].column].data,
+            dir:data.order[0].dir,
+            search: $('#search').val(),
+            state:$('#state').val(),
+            role:$('#role').val()
+          }
+          return filter;
+        },
+        dataSrc : function(json) {
+          json.recordsTotal = json.totalElements;
+          json.recordsFiltered = json.totalElements;
+          return json.content;
+        },
+      },
+      order: [ [0, 'asc'] ],
+      columns : [ {
+        data : 'username',
+        title : '用户名',
+        render: function (data, display, record) {
+          var edit_url = /*[[@{/account/}]]*/'';
+          edit_url +=  record.id + '/edit';
+          return '<a href="' + edit_url + '">' + data  + '</a>';
+        },
+      }, {
+        data : 'realname',
+        title : '真实姓名',
+      }, {
+          data : 'unitname',
+          title : '所属部门',
+      }, {
+          data : 'duty',
+          title : '职位',
+      }, {    	  
+        data : 'role',
+        title : '角色',
+        render: App.getRoleOfId,
+      }, {        
+        data : 'state',
+        title : '状态',
+        render: App.getAccountStateOfId,
+      }, {
+        data : 'vendorname',
+        title : '供应商',
+      }, {
+        data : 'email',
+        title : '邮箱',
+      }, {
+        data : 'tel',
+        title : '电话',
+      }, {
+        data : 'mobile',
+        title : '手机',
+      } ],
+    });
+
+    $("#btn_search").click(function() {
+      table.draw();
+    });
+    
+    $('#state, #role').change(function() {
+      table.draw();
+    });
+    
+    $('#search').keyup(function(e){
+        if(e.keyCode == 13)
+            table.draw();
+    });
+});
+    </script>

@@ -9,10 +9,22 @@
       </li>
       <li class="active">用户管理</li>
     </ul>
-    <div class="search-content form-inline">
-        <div class="search-cell width-18">
-          <label for="supplier_code">用户名/真实姓名/所属部门/职位/邮箱：</label>
+    <div class="search-content">
+        <div class="search-cell width-20">
+          <label for="search">用户名/真实姓名/所属组织/职位/邮箱：</label>
           <input type="text" id="search" class="form-control">
+        </div>
+        <div class="search-cell width-10 form-group">
+          <label for="role">角色：</label>
+          <select name="role" id="role" class="form-control">
+          </select>
+        </div>
+        <div class="search-cell width-10 form-group">
+          <label for="state">状态：</label>
+          <select name="state" id="state" class="form-control">
+          </select>
+        </div>
+        <div style="vertical-align: bottom" class="search-cell form-group">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
           <a class="btn btn-primary" th:href="@{/account/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
@@ -29,6 +41,9 @@
 <script th:inline="javascript">
 $(document).ready(function() {
 
+  $('#role').select2({data: App.getRoleDataWithAll(), minimumResultsForSearch: -1});
+  $('#state').select2({data: App.getAccountStateDataWithAll(), minimumResultsForSearch: -1});
+  
     var table = $('#example').DataTable({
       ordering: true,
       ajax : {
@@ -39,7 +54,9 @@ $(document).ready(function() {
             page_index : data.start / data.length + 1,
             order: data.columns[data.order[0].column].data,
             dir:data.order[0].dir,
-            search: $('#search').val()
+            search: $('#search').val(),
+            state:$('#state').val(),
+            role:$('#role').val()
           }
           return filter;
         },
@@ -62,26 +79,22 @@ $(document).ready(function() {
         data : 'realname',
         title : '真实姓名',
       }, {
-          data : 'unit_id',
-          render: function (data, display, record) {
-            return record.unit.name;
-          },
-          title : '所属部门',
+          data : 'unitname',
+          title : '所属组织',
       }, {
           data : 'duty',
           title : '职位',
       }, {    	  
         data : 'role',
         title : '角色',
-        render: function (data, display, record) {
-          return record.rolename;
-        },
+        render: App.getRoleOfId,
+      }, {        
+        data : 'state',
+        title : '状态',
+        render: App.getAccountStateOfId,
       }, {
-        data : 'vendor',
+        data : 'vendorname',
         title : '供应商',
-        render: function (data, display, record) {
-          return record.vendor==null?'':record.vendor.name;
-        },
       }, {
         data : 'email',
         title : '邮箱',
@@ -89,12 +102,16 @@ $(document).ready(function() {
         data : 'tel',
         title : '电话',
       }, {
-          data : 'mobile',
-          title : '手机',
+        data : 'mobile',
+        title : '手机',
       } ],
     });
 
     $("#btn_search").click(function() {
+      table.draw();
+    });
+    
+    $('#state, #role').change(function() {
       table.draw();
     });
     

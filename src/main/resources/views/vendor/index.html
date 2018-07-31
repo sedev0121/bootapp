@@ -16,7 +16,7 @@
               <input type="text" id="product_name" class="form-control">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
             <button class="btn btn-success" id="btn_sync_vendor" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fa fa-download"></i> 同步U8供应商</button>
-            <button class="btn btn-warning" id="btn_set_unit" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fa fa-user-plus"></i> 设置采购组织</button>
+            <button class="btn btn-warning hidden" id="btn_set_unit" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fa fa-user-plus"></i> 设置采购组织</button>
           </div>
       </div>
       <div class="row">
@@ -34,7 +34,7 @@
               <div class="modal-content">
                   <div class="modal-header">
                       <h5 class="modal-title" id="exampleModalLabel">
-                                                      选择所属部门
+                                                      选择所属组织
                       </h5>
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       </button>
@@ -134,6 +134,7 @@ $(document).ready(function() {
   if (is_admin){
     table_options.select = true;
   }
+  table_options.select = false;
   
   var table = $('#example').DataTable(table_options);
   $("#btn_search").click(function() {

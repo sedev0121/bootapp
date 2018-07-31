@@ -648,7 +648,7 @@ public class SyncController {
 
 	@RequestMapping(value = { "/purchasein/init", "/purchasein", "/purchasein/" })
 	public boolean purchaseInInit() {
-		// purchaseIn(null, null, false);
+		purchaseIn(null, null, false);
 		purchaseIn(null, null, true);
 		return true;
 	}

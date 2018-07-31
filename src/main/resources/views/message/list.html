@@ -31,6 +31,7 @@
 </html>
 <script th:inline="javascript">
 $(document).ready(function() {
+  
   var table = $('#example').DataTable({
     ordering: true,
     ajax : {
@@ -70,6 +71,12 @@ $(document).ready(function() {
     } ],
   });
 
+  $(".datepicker").datepicker({
+    onSelect: function(dateText) {
+      table.draw();
+    }
+  });
+  
   $("#btn_search").click(function() {
     table.draw();
   });

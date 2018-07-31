@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -20,7 +21,7 @@ import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.repository.AccountRepository;
 
 @Controller
-
+@RequestMapping(path = "/profile")
 public class ProfileController extends CommonController {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -32,7 +33,7 @@ public class ProfileController extends CommonController {
 	private PasswordEncoder passwordEncoder;
 
 	@PreAuthorize("hasRole('ROLE_BUYER') OR hasRole('ROLE_VENDOR') OR hasRole('ROLE_ADMIN')")
-	@GetMapping("/profile")
+	@GetMapping({ "/", "" })
 	public String profile(Model model, Principal principal) {
 		Account account = accountRepository.findOneByUsername(principal.getName());
 
@@ -44,10 +45,10 @@ public class ProfileController extends CommonController {
 	}
 
 	@Transactional
-	@PostMapping("/profile/update")
+	@PostMapping("/update")
 	public @ResponseBody Account profile_update_ajax(@RequestParam Map<String, String> requestParams,
 			Principal principal) {
-		String skype = requestParams.get("skype");
+		String weixin = requestParams.get("weixin");
 		String qq = requestParams.get("qq");
 		String yahoo = requestParams.get("yahoo");
 		String wangwang = requestParams.get("wangwang");
@@ -59,7 +60,7 @@ public class ProfileController extends CommonController {
 
 		Account account = accountRepository.findOneByUsername(principal.getName());
 
-		account.setSkype(skype);
+		account.setWeixin(weixin);
 		account.setQq(qq);
 		account.setYahoo(yahoo);
 		account.setWangwang(wangwang);
@@ -74,7 +75,7 @@ public class ProfileController extends CommonController {
 	}
 
 	@Transactional
-	@PostMapping("/profile/changepwd")
+	@PostMapping("/changepwd")
 	public @ResponseBody String change_password_ajax(@RequestParam Map<String, String> requestParams,
 			Principal principal) {
 		String oldPassword = requestParams.get("old_pwd");
@@ -90,6 +91,40 @@ public class ProfileController extends CommonController {
 			return "旧密码有误！";
 		}
 
+	}
+
+	@GetMapping("/checkemail")
+	public @ResponseBody Boolean checkEmail_ajax(@RequestParam("id") Long id, @RequestParam("email") String email) {
+		Account account = accountRepository.findOneByEmail(email);
+		logger.info("email=" + email + " account=" + account);
+		if (account != null && account.getId() != id) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	@GetMapping("/checkmobile")
+	public @ResponseBody Boolean checkMobile_ajax(@RequestParam("id") Long id, @RequestParam("mobile") String mobile) {
+		Account account = accountRepository.findOneByMobile(mobile);
+
+		logger.info("mobile=" + mobile + " account=" + account);
+		if (account != null && account.getId() != id) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	@GetMapping("/checkweixin")
+	public @ResponseBody Boolean checkWeixin_ajax(@RequestParam("id") Long id, @RequestParam("weixin") String weixin) {
+		Account account = accountRepository.findOneByWeixin(weixin);
+		logger.info("weixin=" + weixin + " account=" + account);
+		if (account != null && account.getId() != id) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 }

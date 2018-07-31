@@ -208,6 +208,7 @@ public class AppProperties {
 
 	public static class PropertySystem {
 		private String token;
+		private String sms;
 
 		public String getToken() {
 			return token;
@@ -215,6 +216,14 @@ public class AppProperties {
 
 		public void setToken(String token) {
 			this.token = token;
+		}
+
+		public String getSms() {
+			return sms;
+		}
+
+		public void setSms(String sms) {
+			this.sms = sms;
 		}
 
 	}

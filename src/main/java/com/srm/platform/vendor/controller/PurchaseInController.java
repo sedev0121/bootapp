@@ -120,10 +120,10 @@ public class PurchaseInController extends CommonController {
 			params.put("code", code.trim());
 		}
 
-		if (state > 0) {
-			bodyQuery += " and state=:state";
-			params.put("state", state);
-		}
+		// if (state > 0) {
+		// bodyQuery += " and a.state=:state";
+		// params.put("state", state);
+		// }
 
 		if (startDate != null) {
 			bodyQuery += " and a.date>=:startDate";

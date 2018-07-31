@@ -33,6 +33,7 @@
           </div>
           <div style="vertical-align: bottom" class="search-cell width-15">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+            <button sec:authorize="hasRole('ROLE_VENDOR')" th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}" class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</button>
             <button sec:authorize="hasRole('ROLE_VENDOR')" th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}" class="btn btn-default" id="export"><i class="fa fa-level-down"></i> 导出</button>
             <button sec:authorize="hasRole('ROLE_VENDOR')" th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}" class="btn btn-default" id="import"><i class="fa fa-level-up"></i> 导入</button>
           </div>
@@ -45,6 +46,8 @@
       </div>
       <form id="export_form" th:action="@{/ship/export}" method="post">
         <input type="hidden" id="export_data" name="export_data"/>
+      </form> 
+      <form id="save_form" th:action="@{/ship/save}" method="post">        
       </form>     
       <div class="modal fade" id="import_dialog" tabindex="-1" role="dialog" aria-hidden="true">
           <div class="modal-dialog" role="document">
@@ -85,8 +88,12 @@ var change_quantity_url = [[@{/ship/change}]];
 var list_url = [[@{/ship/list}]];
 
 +]*/ 
+var changedRows = [];
 
 $(document).ready(function() {
+  
+  
+  
   $(".datepicker").datepicker({
     onSelect: function(dateText) {
       table.draw();
@@ -102,29 +109,29 @@ $(document).ready(function() {
   }
     
   var editor = new $.fn.dataTable.Editor( {
-    ajax: {
-      type: 'get',
-      url: change_quantity_url,
-    },
     table: "#example",  
     idSrc: "id",
     //template: '#customForm',
     fields: [ {
-      name:"id",
-    },{
       attr: {
         type: "number"
       },
-      name: "today_quantity"                
+      name: "today_quantity"     
+    },{      
+      attr: {
+        type: "number"
+      },
+      name: "remain_quantity"  
     }],
   }).on( 'preSubmit', function ( e, data, action ) {
-        
+  }).on( 'postEdit', function ( e, data, action ) {
+    changedRows.push(data.data[0]);
+  }).on( 'postSubmit', function ( e, json, data, action ) {
   });
   
   var table = $('#example').DataTable({
     ordering : true,
     select: editable,
-    buttons:[],
     ajax : {
         url : list_url,
         data : function(data) {
@@ -151,9 +158,6 @@ $(document).ready(function() {
     },
     
     columns : [ {
-      data: 'id',
-      visible:false,
-    },{
       data : 'code',
       title : '订单号',
     }, {
@@ -192,13 +196,13 @@ $(document).ready(function() {
     }, {
       data : 'today_quantity',
       className: 'dt-right edit-cell',
-      visible: editable && false,
+      visible: editable,
       orderable: false,
       title : '本次预发货数量',
       defaultContent: '',
     }, {
       data : 'remain_quantity',
-      className: 'dt-right',
+      className: 'dt-right edit-cell',
       title : '未交数量',               
     }, {
       data : 'arrivedate',
@@ -221,18 +225,19 @@ $(document).ready(function() {
       "targets": 11,
       "orderable": false
     }],
-    order: [ [13, 'desc'] ],
+    order: [ [12, 'desc'] ],
     createdRow: function ( row, data, index ) {
       if ( (new Date(data.confirmdate)).getTime() < (new Date()).getTime() && data.remain_quantity>0) {
-        $('td', row).eq(8).addClass('red');
+        $('td', row).eq(editable?9:8).addClass('red');
       }
     }
   });
     
   if (editable){
     table.on( 'click', 'tbody td.edit-cell', function (e) {
-      editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
+      editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true, drawType: 'none' });
     } );
+    App.addKeyDownEditor(editor, 8, 9);
   }
   
   $("#btn_search").click(function() {
@@ -252,6 +257,34 @@ $(document).ready(function() {
     $('#import_dialog').modal('hide');//modal_1 is the id 1
   });
 
+  $('#save').click(function() {
+    editor.submit();
+
+    if (changedRows.length == 0){
+      App.showErrorDialog("操作失败", "请输入本次预发货数量");
+      return;
+    }
+    
+    var post_data = {};
+    $.each(changedRows, function(key, item){
+      if (item.today_quantity){
+        post_data[item.id] = item.today_quantity;  
+      }      
+    });
+    $('#save_form').ajaxSubmit({
+      data:post_data,
+      success: function(res, status, xhr, form) {
+        changedRows = [];
+        App.showSuccessDialog("操作成功", function(){
+          window.location.reload(true);
+        });
+      },
+      error: function (res, status, xhr, form) {
+        App.showErrorDialog("操作失败", "请输入正确的值");
+      }
+    });
+  });
+  
   $("#export").click(function() {
     
     var order = table.order();

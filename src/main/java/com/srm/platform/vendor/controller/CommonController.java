@@ -1,7 +1,9 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -22,8 +24,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.Notice;
+import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.NoticeReadRepository;
+import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.service.SessionCounter;
 import com.srm.platform.vendor.utility.Constants;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
@@ -42,10 +49,19 @@ public class CommonController {
 	public EntityManager em;
 
 	@Autowired
-	private AccountRepository accountRepository;
+	public NoticeRepository noticeRepository;
 
 	@Autowired
-	private HttpSession httpSession;
+	public NoticeReadRepository noticeReadRepository;
+
+	@Autowired
+	public AccountRepository accountRepository;
+
+	@Autowired
+	public HttpSession httpSession;
+
+	@Autowired
+	public SessionCounter sessionCounter;
 
 	protected int currentPage;
 	protected int maxResults;
@@ -109,6 +125,54 @@ public class CommonController {
 
 	}
 
+	public boolean isAuthorizedUnit(Long unitId) {
+		for (String unitIdStr : getDefaultUnitList()) {
+			if (Long.valueOf(unitIdStr) == unitId) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isVisibleNotice(Long noticeId) {
+		boolean isVisible = false;
+		List<NoticeRead> readList = noticeReadRepository.findListByNoticeId(noticeId);
+		for (NoticeRead read : readList) {
+			if (read.getAccount().getId() == this.getLoginAccount().getId()) {
+				isVisible = true;
+				break;
+			}
+		}
+
+		return isVisible;
+	}
+
+	public void setReadDate(Long noticeId) {
+		NoticeRead noticeRead = noticeReadRepository.findOneByNoticeAndAccount(noticeId,
+				this.getLoginAccount().getId());
+		if (noticeRead != null) {
+			noticeRead.setReadDate(new Date());
+			noticeReadRepository.save(noticeRead);
+		}
+	}
+
+	public void sendmessage(String title, List<Account> toList) {
+		Notice notice = new Notice();
+		notice.setState(Constants.NOTICE_STATE_PUBLISH);
+		notice.setType(Constants.NOTICE_TYPE_SYSTEM);
+		notice.setTitle(title);
+		notice.setContent(title);
+		notice.setCreateDate(new Date());
+		notice = noticeRepository.save(notice);
+
+		for (Account account : toList) {
+			NoticeRead noticeRead = new NoticeRead();
+			noticeRead.setNotice(notice);
+			noticeRead.setAccount(account);
+			noticeReadRepository.save(noticeRead);
+		}
+	}
+
 	public Account getLoginAccount() {
 
 		Account account = (Account) httpSession.getAttribute("account");
@@ -124,6 +188,26 @@ public class CommonController {
 		}
 
 		return account;
+	}
+
+	public List<Long> convertListStrToLongList(String listStr) {
+		List<Long> idList = new ArrayList<>();
+
+		if (listStr != null) {
+			List<String> accountList = Arrays.asList(StringUtils.split(listStr, ","));
+
+			if (accountList != null) {
+				for (String temp : accountList) {
+					if (temp != null)
+						idList.add(Long.valueOf(temp));
+				}
+			}
+
+		} else {
+			return new ArrayList<>();
+		}
+
+		return idList;
 	}
 
 }

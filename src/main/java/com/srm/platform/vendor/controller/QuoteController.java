@@ -2,6 +2,7 @@ package com.srm.platform.vendor.controller;
 
 import java.math.BigInteger;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -248,6 +249,24 @@ public class QuoteController extends CommonController {
 		venPriceAdjustMain.setIverifystate(state);
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 
+		String action = null;
+		List<Account> toList = new ArrayList<>();
+
+		switch (form.getState()) {
+		case Constants.STATE_CONFIRM:
+		case Constants.STATE_PASS:
+			toList.add(venPriceAdjustMain.getMaker());
+			action = "确认";
+			break;
+		case Constants.STATE_CANCEL:
+			toList.add(venPriceAdjustMain.getMaker());
+			action = "退回";
+			break;
+		}
+		String title = String.format("询价单【%s】已由【%s】%s，请及时查阅和处理！", venPriceAdjustMain.getCcode(), account.getRealname(),
+				action);
+		this.sendmessage(title, toList);
+
 		if (state == Constants.STATE_PASS || state == Constants.STATE_CONFIRM || state == Constants.STATE_CANCEL) {
 			if (form.getTable() != null) {
 				for (Map<String, String> row : form.getTable()) {
@@ -258,6 +277,10 @@ public class QuoteController extends CommonController {
 						detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
 						detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
 						detail.setCbodymemo(row.get("cbodymemo"));
+
+						if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())
+							detail.setIvalid(Integer.parseInt(row.get("ivalid")));
+
 						venPriceAdjustDetailRepository.save(detail);
 					}
 
