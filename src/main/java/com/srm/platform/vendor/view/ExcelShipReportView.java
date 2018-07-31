@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.view;
 
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -39,12 +40,15 @@ public class ExcelShipReportView extends AbstractXlsView {
 		header.createCell(5).setCellValue("商品描述");
 		header.createCell(6).setCellValue("单位");
 		header.createCell(7).setCellValue("数量");
-		header.createCell(8).setCellValue("累计预发货数量");
-		header.createCell(9).setCellValue("需求日期");
-		header.createCell(10).setCellValue("备注");
-		header.createCell(11).setCellValue("承诺交货日期");
-		header.createCell(12).setCellValue("供方备注");
-		header.createCell(13).setCellValue("识别编码");
+		header.createCell(8).setCellValue("最新预发货日期");
+		header.createCell(9).setCellValue("最新预发货数量");
+		header.createCell(10).setCellValue("本次预发货日期");
+		header.createCell(11).setCellValue("本次预发货数量");
+		header.createCell(12).setCellValue("需求日期");
+		header.createCell(13).setCellValue("备注");
+		header.createCell(14).setCellValue("承诺交货日期");
+		header.createCell(15).setCellValue("供方备注");
+		header.createCell(16).setCellValue("识别编码");
 		int rowNum = 1;
 		for (PurchaseOrderDetail entry : list) {
 			// create the row data
@@ -57,13 +61,16 @@ public class ExcelShipReportView extends AbstractXlsView {
 			row.createCell(5).setCellValue(entry.getInventory().getSpecs());
 			row.createCell(6).setCellValue(entry.getInventory().getMainMeasure().getName());
 			row.createCell(7).setCellValue(entry.getQuantity());
+			row.createCell(8).setCellValue(Utils.formatDate(entry.getLastShipDate()));
 			if (entry.getShippedQuantity() != null)
-				row.createCell(8).setCellValue(entry.getShippedQuantity());
-			row.createCell(9).setCellValue(Utils.formatDate(entry.getArrivedate()));
-			row.createCell(10).setCellValue(entry.getArrivenote());
-			row.createCell(11).setCellValue(Utils.formatDate(entry.getConfirmdate()));
-			row.createCell(12).setCellValue(entry.getConfirmnote());
-			row.createCell(13).setCellValue(entry.getId());
+				row.createCell(9).setCellValue(entry.getShippedQuantity());
+			row.createCell(10).setCellValue(Utils.formatDate(new Date()));
+
+			row.createCell(12).setCellValue(Utils.formatDate(entry.getArrivedate()));
+			row.createCell(13).setCellValue(entry.getArrivenote());
+			row.createCell(14).setCellValue(Utils.formatDate(entry.getConfirmdate()));
+			row.createCell(15).setCellValue(entry.getConfirmnote());
+			row.createCell(16).setCellValue(entry.getId());
 			rowNum++;
 		}
 
