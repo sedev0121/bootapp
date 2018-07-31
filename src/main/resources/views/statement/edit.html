@@ -391,7 +391,7 @@ $(document).ready(function() {
     var currentFieldName = e.currentTarget.s.includeFields[0];
     
     var editingField = editor.field(currentFieldName);
-    if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val())<=0) {
+    if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val())<0) {
       editingField.input().addClass('error');
       return false;
     }else{
@@ -399,6 +399,13 @@ $(document).ready(function() {
     }
 
     if (currentFieldName == 'tax_rate') {
+      
+      if (parseFloat(editingField.val())> 100){
+        editingField.input().addClass('error');
+        return false;
+      }
+      editingField.input().removeClass('error');
+      
       $.each(data.data, function(key, item){  
         if (item.closed_price != undefined && item.tax_rate != undefined) {
           item.closed_price =parseFloat(item.closed_price).toFixed(2); 
@@ -765,7 +772,7 @@ $(document).ready(function() {
     var currentFieldName = e.currentTarget.s.includeFields[0];
     
     var editingField = weiwai_editor.field(currentFieldName);
-    if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val())<=0) {
+    if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val())<0) {
       editingField.input().addClass('error');
       return false;
     }else{

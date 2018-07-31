@@ -209,11 +209,16 @@ is_vendor = 1;
         }
         
         var editingField = editor.field(currentFieldName);
-        if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val())<=0) {
+        if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val())<0) {
           editingField.input().addClass('error');
           return false;
         }else{
           editingField.input().removeClass('error');
+        }
+        
+        if (currentFieldName == 'itaxrate' && parseFloat(editingField.val())> 100){
+          editingField.input().addClass('error');
+          return false;
         }
         
         if (currentFieldName == 'iunitprice' || currentFieldName == 'itaxrate') {
@@ -304,7 +309,7 @@ is_vendor = 1;
         }, {
           data : 'cbodymemo',
           className: 'edit-cell',
-          title : '备注',
+          title : '备注　　　　　　　',
 
         } ],
         rowCallback: function ( row, data ) {
