@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,15 @@ public class ProfileController extends CommonController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
+	@Value("${system.password.minlength}")
+	private int PASSWORD_MIN_LENGTH;
+
+	@Value("${system.password.no_special_char}")
+	private boolean PASSWORD_NO_SPEICAL_CHAR;
+
+	@Value("${system.password.must_include_char}")
+	private boolean PASSWORD_MUST_INCLUDE_CHAR;
+
 	@PreAuthorize("hasRole('ROLE_BUYER') OR hasRole('ROLE_VENDOR') OR hasRole('ROLE_ADMIN')")
 	@GetMapping({ "/", "" })
 	public String profile(Model model, Principal principal) {
@@ -40,6 +50,9 @@ public class ProfileController extends CommonController {
 		if (account == null)
 			show404();
 
+		model.addAttribute("password_min_length", PASSWORD_MIN_LENGTH);
+		model.addAttribute("password_no_special_char", PASSWORD_NO_SPEICAL_CHAR);
+		model.addAttribute("password_must_include_char", PASSWORD_MUST_INCLUDE_CHAR);
 		model.addAttribute("account", account);
 		return "home/profile";
 	}

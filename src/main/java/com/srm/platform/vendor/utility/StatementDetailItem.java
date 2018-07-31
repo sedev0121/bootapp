@@ -19,6 +19,8 @@ public interface StatementDetailItem {
 
 	Float getClosed_tax_money();
 
+	String getType();
+
 	// purchase_in_detail table info
 	String getPurchase_in_code();
 

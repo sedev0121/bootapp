@@ -23,12 +23,17 @@
           <input type="text" id="code" class="form-control">
         </div>
         <div class="search-cell width-10" id="vendor_div">
-          <label for="supplier_code">供应商编码/名称：</label>
-          <input type="text" id="vendor" class="form-control">
+          <label for="vendor">供应商编码/名称：</label>
+          <input type="text" id="vendor" name="vendor" class="form-control">
         </div>
         <div class="search-cell width-10">
-          <label for="date_range">状态:</label>
-          <select name="status" id="state" class="form-control">
+          <label for="state">状态:</label>
+          <select name="state" id="state" class="form-control">
+          </select>
+        </div>
+        <div class="search-cell width-10">
+          <label for="type">对账类型:</label>
+          <select name="type" id="type" class="form-control">
           </select>
         </div>
         <div style="vertical-align: bottom" class="search-cell width-15">
@@ -65,6 +70,11 @@ $(document).ready(function() {
     data : App.getStatementStateDataWithAll(),
     minimumResultsForSearch : -1
   });
+  
+  $("#type").select2({
+    data : App.getStatementTypeDataWithAll(),
+    minimumResultsForSearch : -1
+  });
 
   $(".datepicker").datepicker({
     onSelect: function(dateText) {
@@ -85,6 +95,7 @@ $(document).ready(function() {
           page_index : data.start / data.length + 1,
           vendor : $('#vendor').val(),
           state: $('#state').val(),
+          type: $('#type').val(),
           code : $('#code').val(),
           start_date : $('#start_date').val(),
           end_date : $('#end_date').val()
@@ -116,6 +127,11 @@ $(document).ready(function() {
       visible: !is_vendor,
       title : '供应商编码',
     }, {
+      data : 'type',
+      title : '对账类型',
+      className: 'dt-center',
+      render : App.getStatementTypeOfId
+    }, {
       data : 'state',
       title : '状态',
       className: 'dt-center',
@@ -134,6 +150,15 @@ $(document).ready(function() {
       title : '制单日期',
       render : $.fn.date_renderer
     }, {        
+      data : 'confirmer',
+      className: 'dt-center',
+      title : '确认人',
+    }, {
+      data : 'confirmdate',
+      className: 'dt-center',
+      title : '确认日期',
+      render : $.fn.date_renderer
+    }, {        
       data : 'verifier',
       className: 'dt-center',
       title : '审核人',
@@ -144,7 +169,7 @@ $(document).ready(function() {
       render : $.fn.date_renderer
 
     } ],
-    order: [  [ 6, "desc" ] ]
+    order: [  [ 7, "desc" ] ]
 
     
   });
@@ -153,7 +178,7 @@ $(document).ready(function() {
     table.draw();
   });
   
-  $('#state').change(function() {
+  $('#state, #type').change(function() {
     table.draw();
   });
   

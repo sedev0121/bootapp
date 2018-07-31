@@ -1,6 +1,5 @@
 package com.srm.platform.vendor.utility;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -13,7 +12,7 @@ public class ExportShipForm {
 	private String inventory;
 	private String order;
 	private String dir;
-	private List<ArrayList<String>> list;
+	private List<Long> list;
 
 	public String getCode() {
 		return code;
@@ -47,11 +46,11 @@ public class ExportShipForm {
 		this.dir = dir;
 	}
 
-	public List<ArrayList<String>> getList() {
+	public List<Long> getList() {
 		return list;
 	}
 
-	public void setList(List<ArrayList<String>> list) {
+	public void setList(List<Long> list) {
 		this.list = list;
 	}
 

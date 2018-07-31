@@ -119,6 +119,9 @@ public class ShipController extends CommonController {
 		case "inventoryname":
 			order = "c.name";
 			break;
+		case "lastshipdate":
+			order = "a.last_ship_date";
+			break;
 		case "specs":
 			order = "c.specs";
 			break;
@@ -208,19 +211,12 @@ public class ShipController extends CommonController {
 			ExportShipForm shipForm = objectMapper.readValue(exportData, new TypeReference<ExportShipForm>() {
 			});
 
-			String query = "select a.* from purchase_order_detail a left join purchase_order_main b on a.code = b.code ";
+			String query = "select a.*, d.code vendorcode, (a.quantity-ifnull(a.shipped_quantity,0)) remain_quantity, d.name vendorname, c.name inventoryname, c.specs, e.name unitname "
+					+ "from purchase_order_detail a left join purchase_order_main b on a.code = b.code "
+					+ "left join inventory c on a.inventorycode=c.code left join vendor d on b.vencode=d.code "
+					+ "left join measurement_unit e on c.main_measure=e.code where a.id in :idList ";
 
-			String subWhere = "";
-			for (List<String> row : shipForm.getList()) {
-				if (subWhere.length() != 0) {
-					subWhere += " or ";
-				}
-				subWhere += "(a.code='" + row.get(0) + "' and a.rowno=" + row.get(1) + " and a.inventorycode='"
-						+ row.get(2) + "') ";
-
-			}
-			String where = "where b.srmstate=2 and " + subWhere;
-			query += where;
+			List<Long> idList = shipForm.getList();
 
 			String order = "code";
 			switch (shipForm.getOrder()) {
@@ -237,6 +233,7 @@ public class ShipController extends CommonController {
 
 			query += "order by " + order + " " + shipForm.getDir();
 			Query q = em.createNativeQuery(query, PurchaseOrderDetail.class);
+			q.setParameter("idList", idList);
 
 			exportList = q.getResultList();
 
@@ -275,7 +272,7 @@ public class ShipController extends CommonController {
 					continue;
 
 				ArrayList<String> row = new ArrayList<>();
-				List<Integer> valueList = Arrays.asList(1, 2, 3, 8, 13);
+				List<Integer> valueList = Arrays.asList(1, 11, 16);
 				for (int column : valueList) {
 
 					Cell currentCell = currentRow.getCell(column);
@@ -304,14 +301,15 @@ public class ShipController extends CommonController {
 					if (main.getVendor().getCode().equals(vendor.getCode())) {
 
 						PurchaseOrderDetail detail = purchaseOrderDetailRepository
-								.findOneById((long) Float.parseFloat(row.get(4)));
+								.findOneById((long) Float.parseFloat(row.get(2)));
 						logger.info(detail.getMain().getCode() + " " + detail.getRowno() + " "
 								+ detail.getInventory().getCode());
 						if (detail != null) {
-							if (row.get(3) != null) {
+							if (row.get(1) != null) {
 								float quantity = detail.getShippedQuantity() == null ? 0 : detail.getShippedQuantity();
 
-								detail.setShippedQuantity(quantity + Float.parseFloat(row.get(3)));
+								detail.setShippedQuantity(quantity + Float.parseFloat(row.get(1)));
+								detail.setLastShipDate(new Date());
 								detail = purchaseOrderDetailRepository.save(detail);
 
 								List<Account> toList = new ArrayList<>();
@@ -348,6 +346,7 @@ public class ShipController extends CommonController {
 			if (detail != null && entry.getValue() != null && !entry.getValue().isEmpty()) {
 				float quantity = detail.getShippedQuantity() == null ? 0 : detail.getShippedQuantity();
 				detail.setShippedQuantity(quantity + Long.valueOf(entry.getValue()));
+				detail.setLastShipDate(new Date());
 				purchaseOrderDetailRepository.save(detail);
 
 				PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(detail.getMain().getCode());

@@ -5,6 +5,8 @@ function extractLast( term ) {
   return split( term ).pop();
 }
 
+var special_regex = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+
 var App = function() {
   var inquery_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"通过"}, {id:6, text:"审核"}, {id:7, text:"归档"}];
   var inquery_type = [{id:1, text:'常规报价'}, {id:2, text:'区间报价'}];
@@ -17,6 +19,7 @@ var App = function() {
   
   var role_data = [{id:"ROLE_BUYER", text:"采购员"}, {id:"ROLE_VENDOR", text:"供应商"}, {id:"ROLE_ADMIN", text:"管理员"}];
   var account_state_data = [{id:1, text:"启用"}, {id:0, text:"停用"}];
+  var statement_type_data = [{id:1, text:"采购对账"}, {id:2, text:"委外对账"}];
     
   var getLabelOfId = function(store, id) {
     var title = "";
@@ -140,6 +143,9 @@ var App = function() {
     getNoticeStateData: function() {
       return notice_state_data;
     },
+    getStatementTypeData: function() {
+      return statement_type_data;
+    },
     getRoleData: function() {
       return role_data;
     },
@@ -191,6 +197,9 @@ var App = function() {
     getNoticeStateDataWithAll: function() {
       return [{id:-1, text:"　"}, ...notice_state_data];
     },
+    getStatementTypeDataWithAll: function() {
+      return [{id:-1, text:"　"}, ...statement_type_data];
+    },
     getStatementStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...statement_state_data];
     },
@@ -230,6 +239,9 @@ var App = function() {
     getAccountStateOfId: function(id) {
       return getLabelOfId(account_state_data, id);
     },
+    getStatementTypeOfId: function(id) {
+      return getLabelOfId(statement_type_data, id);
+    },
     getStatementStateOfId: function(id) {
       return getLabelOfId(statement_state_data, id);
     },
@@ -264,6 +276,12 @@ var App = function() {
         return '【否】';
       else
         return "【否】";
+    },
+    purchaseInStateRender:function(data) {
+      if (data == 1)
+        return '【已对账】';
+      else 
+        return '【未对账】';
     },
     blockUI : function(options) {
       options = $.extend(true, {}, options);
@@ -347,6 +365,15 @@ var App = function() {
 
 
 $(document).ready(function() {
+  
+  $.validator.addMethod("no_special_char", function(value, element) {
+    return !(special_regex.test(value));
+  }, "不得出现特殊字符！");
+  
+  $.validator.addMethod("must_include_char", function(value, element) {
+    return /[a-zA-Z]+/.test(value);
+  }, "必须含有字母！");
+  
   $.datepicker.regional[ "zh-CN" ] = {
     closeText: "关闭",
     prevText: "&#x3C;上月",

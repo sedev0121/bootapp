@@ -29,6 +29,7 @@ import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchResult;
 				@ColumnResult(name = "inventorycode"), @ColumnResult(name = "vendorname"),
 				@ColumnResult(name = "vendorcode"), @ColumnResult(name = "specs"), @ColumnResult(name = "unitname"),
 				@ColumnResult(name = "arrivedate", type = Date.class),
+				@ColumnResult(name = "last_ship_date", type = Date.class),
 				@ColumnResult(name = "confirmdate", type = Date.class), @ColumnResult(name = "arrivenote"),
 				@ColumnResult(name = "confirmnote"), @ColumnResult(name = "remain_quantity", type = Float.class) }) })
 
@@ -67,6 +68,7 @@ public class PurchaseOrderDetail {
 	private String arrivenote;
 	private String confirmnote;
 	private Float confirmquantity;
+	private Date lastShipDate;
 
 	public PurchaseOrderDetail() {
 
@@ -78,6 +80,14 @@ public class PurchaseOrderDetail {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Date getLastShipDate() {
+		return lastShipDate;
+	}
+
+	public void setLastShipDate(Date lastShipDate) {
+		this.lastShipDate = lastShipDate;
 	}
 
 	public Float getConfirmquantity() {

@@ -29,10 +29,13 @@ import com.srm.platform.vendor.utility.Utils;
 				@ColumnResult(name = "makedate", type = String.class),
 				@ColumnResult(name = "verifier", type = String.class),
 				@ColumnResult(name = "verifydate", type = String.class),
+				@ColumnResult(name = "confirmer", type = String.class),
+				@ColumnResult(name = "confirmdate", type = String.class),
 				@ColumnResult(name = "remark", type = String.class),
 				@ColumnResult(name = "invoice_code", type = String.class),
 				@ColumnResult(name = "vendor_name", type = String.class),
-				@ColumnResult(name = "vendor_code", type = String.class) }) })
+				@ColumnResult(name = "vendor_code", type = String.class),
+				@ColumnResult(name = "type", type = String.class) }) })
 
 @Table(name = "statement_main")
 public class StatementMain {
@@ -44,6 +47,12 @@ public class StatementMain {
 	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "maker_id", referencedColumnName = "id")
 	Account maker;
+
+	private Date confirmdate;
+
+	@OneToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumn(name = "confirmer_id", referencedColumnName = "id")
+	Account confirmer;
 
 	private Date verifydate;
 
@@ -57,12 +66,16 @@ public class StatementMain {
 	@Column(name = "tax_rate")
 	private Float taxRate = 16F;
 
+	private Integer type = 1;
 	private String remark;
 	private Integer state;
 
 	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "vendor_code", referencedColumnName = "code")
 	Vendor vendor;
+
+	private String attachFileName;
+	private String attachOriginalName;
 
 	public StatementMain() {
 
@@ -74,6 +87,46 @@ public class StatementMain {
 		this.state = Constants.STATEMENT_STATE_NEW;
 		this.maker = accountRepository
 				.findOneByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+	}
+
+	public String getAttachFileName() {
+		return attachFileName;
+	}
+
+	public void setAttachFileName(String attachFileName) {
+		this.attachFileName = attachFileName;
+	}
+
+	public String getAttachOriginalName() {
+		return attachOriginalName;
+	}
+
+	public void setAttachOriginalName(String attachOriginalName) {
+		this.attachOriginalName = attachOriginalName;
+	}
+
+	public Date getConfirmdate() {
+		return confirmdate;
+	}
+
+	public void setConfirmdate(Date confirmdate) {
+		this.confirmdate = confirmdate;
+	}
+
+	public Account getConfirmer() {
+		return confirmer;
+	}
+
+	public void setConfirmer(Account confirmer) {
+		this.confirmer = confirmer;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 
 	public String getCode() {

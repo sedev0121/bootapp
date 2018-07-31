@@ -1,21 +1,21 @@
 package com.srm.platform.vendor.controller;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,12 +30,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
@@ -43,6 +46,7 @@ import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.StatementDetailItem;
 import com.srm.platform.vendor.utility.StatementSaveForm;
 import com.srm.platform.vendor.utility.StatementSearchResult;
+import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
@@ -65,6 +69,9 @@ public class StatementController extends CommonController {
 
 	@Autowired
 	private StatementDetailRepository statementDetailRepository;
+
+	@Autowired
+	private PurchaseInDetailRepository purchaseInDetailRepository;
 
 	// 查询列表
 	@GetMapping({ "", "/" })
@@ -99,6 +106,20 @@ public class StatementController extends CommonController {
 		return true;
 	}
 
+	@GetMapping("/{code}/deleteattach")
+	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
+	public @ResponseBody Boolean deleteAttach(@PathVariable("code") String code, HttpServletRequest request) {
+		StatementMain main = statementMainRepository.findOneByCode(code);
+		String applicationPath = request.getServletContext().getRealPath("");
+		File attach = new File(applicationPath + File.separator + main.getAttachFileName());
+		if (attach.exists())
+			attach.delete();
+		main.setAttachFileName(null);
+		main.setAttachOriginalName(null);
+		statementMainRepository.save(main);
+		return true;
+	}
+
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<StatementSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
@@ -107,11 +128,13 @@ public class StatementController extends CommonController {
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String vendorStr = requestParams.getOrDefault("vendor", "");
 		String stateStr = requestParams.getOrDefault("state", "0");
+		String typeStr = requestParams.getOrDefault("type", "0");
 		String code = requestParams.getOrDefault("code", "");
 		String start_date = requestParams.getOrDefault("start_date", null);
 		String end_date = requestParams.getOrDefault("end_date", null);
 
 		Integer state = Integer.parseInt(stateStr);
+		Integer type = Integer.parseInt(typeStr);
 		Date startDate = Utils.parseDate(start_date);
 		Date endDate = Utils.getNextDate(end_date);
 
@@ -133,12 +156,12 @@ public class StatementController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "select a.*, b.name vendor_name, c.realname maker, d.realname verifier ";
+		String selectQuery = "select a.*, b.name vendor_name, c.realname maker, d.realname verifier, e.realname confirmer ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from statement_main a left join vendor b on a.vendor_code=b.code left join account c on a.maker_id=c.id "
-				+ "left join account d on a.verifier_id=d.id where 1=1 ";
+				+ "left join account d on a.verifier_id=d.id left join account e on a.confirmer_id=e.id where 1=1 ";
 
 		List<String> unitList = this.getDefaultUnitList();
 		Map<String, Object> params = new HashMap<>();
@@ -168,6 +191,11 @@ public class StatementController extends CommonController {
 		if (state > 0) {
 			bodyQuery += " and a.state=:state";
 			params.put("state", state);
+		}
+
+		if (type > 0) {
+			bodyQuery += " and a.type=:type";
+			params.put("type", type);
 		}
 
 		if (startDate != null) {
@@ -200,37 +228,60 @@ public class StatementController extends CommonController {
 
 	}
 
-	@RequestMapping(value = "/{code}/details/{purchasein_type}", produces = "application/json")
-	public @ResponseBody List<StatementDetailItem> details_ajax(@PathVariable("code") String code,
-			@PathVariable("purchasein_type") Integer purchaseInType) {
-		List<StatementDetailItem> list = statementDetailRepository.findDetailsByCode(code, purchaseInType);
+	@RequestMapping(value = "/{code}/details", produces = "application/json")
+	public @ResponseBody List<StatementDetailItem> details_ajax(@PathVariable("code") String code) {
+		List<StatementDetailItem> list = statementDetailRepository.findDetailsByCode(code);
 
 		return list;
 	}
 
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody StatementMain update_ajax(StatementSaveForm form) {
-		StatementMain main = new StatementMain();
-		main.setCode(form.getCode());
+	public @ResponseBody StatementMain update_ajax(StatementSaveForm form, HttpServletRequest request) {
+		StatementMain main = statementMainRepository.findOneByCode(form.getCode());
 
-		Example<StatementMain> example = Example.of(main);
-		Optional<StatementMain> result = statementMainRepository.findOne(example);
-		if (result.isPresent())
-			main = result.get();
+		if (main == null) {
+			main = new StatementMain();
+			main.setCode(form.getCode());
+		}
 
-		if ((main.getState() == null || main.getState() == Constants.STATEMENT_STATE_NEW)
-				&& form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
+		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
 
 			main.setMakedate(new Date());
 			main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
 			main.setMaker(accountRepository.findOneById(form.getMaker()));
 			main.setRemark(form.getRemark());
+			main.setType(form.getType());
 			main.setTaxRate(form.getTax_rate());
-		} else if (form.getState() >= Constants.STATEMENT_STATE_CONFIRM) {
 
-			main.setVerifier(this.getLoginAccount());
-			main.setVerifydate(new Date());
+			String origianlFileName = null;
+			String savedFileName = null;
+			MultipartFile attach = form.getAttach();
+			if (attach != null) {
+				origianlFileName = attach.getOriginalFilename();
+				File file = UploadFileHelper.simpleUpload(attach, request, true, Constants.PATH_UPLOADS_STATEMENT);
+				logger.info(attach.getOriginalFilename());
+				if (file != null)
+					savedFileName = file.getName();
+			}
+
+			if (savedFileName != null) {
+				main.setAttachFileName(savedFileName);
+				main.setAttachOriginalName(origianlFileName);
+			}
+
+		} else if (form.getState() == Constants.STATEMENT_STATE_CONFIRM
+				|| (main.getState() == Constants.STATEMENT_STATE_SUBMIT
+						&& form.getState() == Constants.STATEMENT_STATE_CANCEL)) {
+			main.setConfirmer(this.getLoginAccount());
+			main.setConfirmdate(new Date());
+		} else if (form.getState() == Constants.STATEMENT_STATE_VERIFY
+				|| (main.getState() == Constants.STATEMENT_STATE_CONFIRM
+						&& form.getState() == Constants.STATEMENT_STATE_CANCEL)) {
+			if (form.getInvoice_code() == null) {
+				main.setVerifier(this.getLoginAccount());
+				main.setVerifydate(new Date());
+			}
 		}
 
 		String action = null;
@@ -244,8 +295,14 @@ public class StatementController extends CommonController {
 			toList.add(main.getMaker());
 			action = "确认";
 			break;
+		case Constants.STATEMENT_STATE_VERIFY:
+			toList.add(main.getMaker());
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			action = "审核";
+			break;
 		case Constants.STATEMENT_STATE_CANCEL:
 			toList.add(main.getMaker());
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			action = "退回";
 			break;
 		}
@@ -261,7 +318,7 @@ public class StatementController extends CommonController {
 		main.setState(form.getState());
 		main = statementMainRepository.save(main);
 
-		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT && form.getTable() != null) {
+		if (form.getState() <= Constants.STATEMENT_STATE_CONFIRM && form.getTable() != null) {
 			statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
 
 			for (Map<String, String> row : form.getTable()) {
@@ -276,6 +333,12 @@ public class StatementController extends CommonController {
 				String closedTaxPrice = row.get("closed_tax_price");
 				String closedTaxMoney = row.get("closed_tax_money");
 				String taxRate = row.get("tax_rate");
+
+				String real_quantity = row.get("real_quantity");
+				String yuanci = row.get("yuanci");
+				String yinci = row.get("yinci");
+				String unit_weight = row.get("unit_weight");
+				String memo = row.get("memo");
 
 				if (closedQuantity != null && !closedQuantity.isEmpty())
 					detail.setClosedQuantity(Float.parseFloat(closedQuantity));
@@ -295,40 +358,34 @@ public class StatementController extends CommonController {
 				if (taxRate != null && !taxRate.isEmpty())
 					detail.setTaxRate(Float.parseFloat(taxRate));
 
+				if (real_quantity != null && !real_quantity.isEmpty())
+					detail.setRealQuantity(Float.parseFloat(real_quantity));
+
+				if (yuanci != null && !yuanci.isEmpty())
+					detail.setYuanci(Float.parseFloat(yuanci));
+
+				if (yinci != null && !yinci.isEmpty())
+					detail.setYinci(Float.parseFloat(yinci));
+
+				if (unit_weight != null && !unit_weight.isEmpty())
+					detail.setUnitWeight(Float.parseFloat(unit_weight));
+
+				detail.setMemo(memo);
+
 				detail = statementDetailRepository.save(detail);
 			}
 
-			if (form.getWeiwai() != null) {
-				for (Map<String, String> row : form.getWeiwai()) {
-					StatementDetail detail = new StatementDetail();
-					detail.setCode(main.getCode());
-					detail.setPurchaseinType(Constants.STATEMENT_DETAIL_TYPE_WEIWAI);
-					detail.setPurchaseInDetailId(Long.parseLong(row.get("purchase_in_detail_id")));
+		}
 
-					String real_quantity = row.get("real_quantity");
-					String yuanci = row.get("yuanci");
-					String yinci = row.get("yinci");
-					String unit_weight = row.get("unit_weight");
-					String memo = row.get("memo");
+		if (main.getState() == Constants.STATEMENT_STATE_VERIFY) {
+			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
+			for (StatementDetail detail : detailList) {
+				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
+						.findOneById(detail.getPurchaseInDetailId());
 
-					if (real_quantity != null && !real_quantity.isEmpty())
-						detail.setRealQuantity(Float.parseFloat(real_quantity));
-
-					if (yuanci != null && !yuanci.isEmpty())
-						detail.setYuanci(Float.parseFloat(yuanci));
-
-					if (yinci != null && !yinci.isEmpty())
-						detail.setYinci(Float.parseFloat(yinci));
-
-					if (unit_weight != null && !unit_weight.isEmpty())
-						detail.setUnitWeight(Float.parseFloat(unit_weight));
-
-					detail.setMemo(memo);
-
-					statementDetailRepository.save(detail);
-				}
+				purchaseInDetail.setState(Constants.PURCHASE_IN_FINISH_STATE_YES);
+				purchaseInDetailRepository.save(purchaseInDetail);
 			}
-
 		}
 
 		return main;

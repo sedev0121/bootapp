@@ -36,10 +36,12 @@ public class PurchaseOrderDetailSearchResult {
 
 	Float remain_quantity;
 
+	Date lastshipdate;
+
 	public PurchaseOrderDetailSearchResult(Long id, Integer rowno, String code, Float quantity, Float shipped_quantity,
 			String inventoryname, String inventorycode, String vendorname, String vendorcode, String specs,
-			String unitname, Date arrivedate, Date confirmdate, String arrivenote, String confirmnote,
-			Float remain_quantity) {
+			String unitname, Date arrivedate, Date lastshipdate, Date confirmdate, String arrivenote,
+			String confirmnote, Float remain_quantity) {
 
 		this.id = id;
 		this.rowno = rowno;
@@ -53,6 +55,7 @@ public class PurchaseOrderDetailSearchResult {
 		this.specs = specs;
 		this.unitname = unitname;
 		this.arrivedate = arrivedate;
+		this.lastshipdate = lastshipdate;
 		this.confirmdate = confirmdate;
 		this.arrivenote = arrivenote;
 		this.confirmnote = confirmnote;
@@ -65,6 +68,14 @@ public class PurchaseOrderDetailSearchResult {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Date getLastshipdate() {
+		return lastshipdate;
+	}
+
+	public void setLastshipdate(Date lastshipdate) {
+		this.lastshipdate = lastshipdate;
 	}
 
 	public Integer getRowno() {
