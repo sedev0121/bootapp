@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class StatementSaveForm {
 
 	private String code;
@@ -21,6 +23,8 @@ public class StatementSaveForm {
 
 	private Float tax_rate;
 
+	private MultipartFile attach;
+
 	private List<Map<String, String>> table;
 
 	public String getCode() {
@@ -29,6 +33,14 @@ public class StatementSaveForm {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public MultipartFile getAttach() {
+		return attach;
+	}
+
+	public void setAttach(MultipartFile attach) {
+		this.attach = attach;
 	}
 
 	public Integer getType() {

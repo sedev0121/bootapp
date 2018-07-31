@@ -27,7 +27,7 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-body"> 
-        <form id="form" th:action="@{/statement/update}" method="post">
+        <form id="form" th:action="@{/statement/update}" method="post" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-lg-4 col-md-4">
                   <label for="code">单号: </label>
@@ -100,10 +100,32 @@
                   <label for="invoice_code">发票号: </label>
                   <input type="text" id="invoice_code" name="invoice_code" th:value="${main.invoiceCode}" class="form-control" disabled/>
                 </div>     
-                <div class="col-lg-12 col-md-12">
+                <div class="col-lg-6 col-md-6">
                   <label for="remark">摘要: </label>
                   <input type="text" id="remark" name="remark" th:value="${main.remark}" class="form-control" />
-                </div>                
+                </div>       
+                <div class="col-lg-6 col-md-6 form-group" sec:authorize="hasAuthority('对账单管理-新建/发布')" id="file_select" th:if="${(main.state==1 or main.state == 4) and main.attachFileName == null}">
+                  <label for="remark">　</label>
+                  <div class="input-group input-file" name="attach">
+                      <span class="input-group-btn">
+                        <button class="btn btn-success btn-file btn-choose" type="button">选择附件</button>
+                      </span>
+                      <input type="text" class="form-control" placeholder='请选择附件' />
+                      <span class="input-group-btn">
+                         <button class="btn btn-warning btn-file btn-reset" type="button">重置</button>
+                      </span>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 form-group" id="file_show">
+                  <label for="remark">　</label>
+                  <div style="margin-top:7px;">
+                    <span><b>附件：</b></span>
+                    <a th:href="@{|/uploads/statement/${main.attachFileName}|}" th:if="${main.attachFileName!=null}" th:text="${main.attachOriginalName}"></a>
+                    <span th:if="${main.attachFileName == null}">---</span>              
+                    <a class="btn btn-danger" id="del_attach" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.attachOriginalName!=null and (main.state==1  || main.state==4)}">删除附件</a>
+                  </div>
+                </div>
+                         
             </div>
             <div class="row margin-top-10">
               <div class="col-lg-12">
@@ -181,10 +203,13 @@ var del_url = [[@{|/statement/${main.code}/delete|}]];
 var vendor_search_url = [[@{/vendor/search}]];
 var state = [[${main.state}]];
 var type = [[${main.type}]];
+var hasAttach = [[${main.attachFileName != null}]];
 +]*/ 
   
 $(document).ready(function() {
 
+  App.bs_input_file();
+  
   $('.modal').on('shown.bs.modal', function () {
     load_import_table();
   });
@@ -314,6 +339,19 @@ $(document).ready(function() {
   if (state == 5 && is_vendor) {
     $('#invoice_code').removeAttr("disabled");
     $('#invoice_code').removeAttr("readonly");
+  }
+  
+  if ((state == 1 || state == 4) && !is_readonly){
+    if (hasAttach){
+      $('#file_select').hide();
+      $('#file_show').show();
+    }else{
+      $('#file_select').show();
+      $('#file_show').hide();
+    }
+  }else{
+    $('#file_select').hide();
+    $('#file_show').show();
   }
   
   $('#type').change(function() {
@@ -1204,6 +1242,17 @@ $(document).ready(function() {
         });
       });
     });          
+  });
+  
+  $("#del_attach").click(function(){
+    App.showConfirmDialog('确定要删除吗?', function(){
+      var del_url = edit_url + $("#code").val() + "/deleteattach";  
+      $.get(del_url, function(data, status){
+        App.showSuccessDialog("操作成功", function() {
+          window.location.reload(true);
+        });
+      });
+    });
   });
   
   $("#invoice").click(function() {

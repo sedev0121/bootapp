@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PurchaseInDetail;
@@ -43,6 +46,7 @@ import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.StatementDetailItem;
 import com.srm.platform.vendor.utility.StatementSaveForm;
 import com.srm.platform.vendor.utility.StatementSearchResult;
+import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
@@ -99,6 +103,20 @@ public class StatementController extends CommonController {
 		StatementMain main = statementMainRepository.findOneByCode(code);
 		if (main != null)
 			statementMainRepository.delete(main);
+		return true;
+	}
+
+	@GetMapping("/{code}/deleteattach")
+	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
+	public @ResponseBody Boolean deleteAttach(@PathVariable("code") String code, HttpServletRequest request) {
+		StatementMain main = statementMainRepository.findOneByCode(code);
+		String applicationPath = request.getServletContext().getRealPath("");
+		File attach = new File(applicationPath + File.separator + main.getAttachFileName());
+		if (attach.exists())
+			attach.delete();
+		main.setAttachFileName(null);
+		main.setAttachOriginalName(null);
+		statementMainRepository.save(main);
 		return true;
 	}
 
@@ -219,7 +237,7 @@ public class StatementController extends CommonController {
 
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody StatementMain update_ajax(StatementSaveForm form) {
+	public @ResponseBody StatementMain update_ajax(StatementSaveForm form, HttpServletRequest request) {
 		StatementMain main = statementMainRepository.findOneByCode(form.getCode());
 
 		if (main == null) {
@@ -235,6 +253,23 @@ public class StatementController extends CommonController {
 			main.setRemark(form.getRemark());
 			main.setType(form.getType());
 			main.setTaxRate(form.getTax_rate());
+
+			String origianlFileName = null;
+			String savedFileName = null;
+			MultipartFile attach = form.getAttach();
+			if (attach != null) {
+				origianlFileName = attach.getOriginalFilename();
+				File file = UploadFileHelper.simpleUpload(attach, request, true, Constants.PATH_UPLOADS_STATEMENT);
+				logger.info(attach.getOriginalFilename());
+				if (file != null)
+					savedFileName = file.getName();
+			}
+
+			if (savedFileName != null) {
+				main.setAttachFileName(savedFileName);
+				main.setAttachOriginalName(origianlFileName);
+			}
+
 		} else if (form.getState() == Constants.STATEMENT_STATE_CONFIRM
 				|| (main.getState() == Constants.STATEMENT_STATE_SUBMIT
 						&& form.getState() == Constants.STATEMENT_STATE_CANCEL)) {

@@ -74,6 +74,9 @@ public class StatementMain {
 	@JoinColumn(name = "vendor_code", referencedColumnName = "code")
 	Vendor vendor;
 
+	private String attachFileName;
+	private String attachOriginalName;
+
 	public StatementMain() {
 
 	}
@@ -84,6 +87,22 @@ public class StatementMain {
 		this.state = Constants.STATEMENT_STATE_NEW;
 		this.maker = accountRepository
 				.findOneByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+	}
+
+	public String getAttachFileName() {
+		return attachFileName;
+	}
+
+	public void setAttachFileName(String attachFileName) {
+		this.attachFileName = attachFileName;
+	}
+
+	public String getAttachOriginalName() {
+		return attachOriginalName;
+	}
+
+	public void setAttachOriginalName(String attachOriginalName) {
+		this.attachOriginalName = attachOriginalName;
 	}
 
 	public Date getConfirmdate() {
