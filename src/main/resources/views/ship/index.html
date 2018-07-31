@@ -236,7 +236,7 @@ $(document).ready(function() {
     order: [ [14, 'desc'] ],
     createdRow: function ( row, data, index ) {
       if ( (new Date(data.confirmdate)).getTime() < (new Date()).getTime() && data.remain_quantity>0) {
-        $('td', row).eq(editable?11:9).addClass('red');
+        $('td', row).eq(editable?11:(is_vendor?9:11)).addClass('red');
       }
     }
   });
