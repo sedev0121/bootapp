@@ -64,7 +64,6 @@ public class ResetPasswordController {
 		message.setSubject("重置密码");
 		message.setText("");
 		message.setTo(account.getEmail());
-		message.setFrom("no-reply@memorynotfound.com");
 
 		Map<String, Object> model = new HashMap<>();
 		model.put("token", token);

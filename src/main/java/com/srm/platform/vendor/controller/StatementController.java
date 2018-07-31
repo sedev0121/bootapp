@@ -166,7 +166,7 @@ public class StatementController extends CommonController {
 		}
 
 		if (state > 0) {
-			bodyQuery += " and state=:state";
+			bodyQuery += " and a.state=:state";
 			params.put("state", state);
 		}
 
