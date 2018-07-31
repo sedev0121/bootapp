@@ -150,13 +150,18 @@
 </body>
 </html>
 
-
 <script th:inline="javascript">
 var edit_url = /*[[@{/account/}]]*/'';
 var vendor_search_url = /*[[@{/vendor/search}]]*/'';
 var checkemail_url = /*[[@{/profile/checkemail}]]*/'';
 var checkmobile_url = /*[[@{/profile/checkmobile}]]*/'';
 var checkweixin_url = /*[[@{/profile/checkweixin}]]*/'';
+
+/*[+
+var password_min_length = [[${password_min_length}]];
+var password_no_special_char = [[${password_no_special_char}?true:false]];
+var password_must_include_char = [[${password_must_include_char}?true:false]];
++]*/ 
 
 jQuery(document).ready(function() {   
 
@@ -254,14 +259,14 @@ jQuery(document).ready(function() {
     $("#pwdform" ).validate({
       rules: {
           old_pwd: {
-              required: true
+            required: true
           }, 
           new_pwd: {
-              required: true
+            required: true
           },
           confirm_pwd: {
-              required: true,
-              equalTo: '#new_pwd'
+            required: true,
+            equalTo: '#new_pwd'
           },    
       },
       
@@ -287,6 +292,17 @@ jQuery(document).ready(function() {
         });
       }
     }); 
+    
+    if (password_min_length>0){
+      $('#pwdform').validate().settings.rules.new_pwd.minlength = password_min_length;
+    }
+    if (password_no_special_char){
+      $('#pwdform').validate().settings.rules.new_pwd.no_special_char = true;
+    }
+    if (password_must_include_char){
+      $('#pwdform').validate().settings.rules.new_pwd.must_include_char = true;
+    }
+
     
     $("#save").click(function() {
       $("#form").submit();            

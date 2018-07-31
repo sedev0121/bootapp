@@ -327,7 +327,7 @@ is_vendor = 1;
 
     
     
-    if (state == 3 && !is_vendor && !is_readonly)
+    if (state == 3 && !is_vendor && !is_readonly){
       table.on( 'click', 'tbody td.ivalid', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );

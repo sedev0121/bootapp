@@ -5,6 +5,8 @@ function extractLast( term ) {
   return split( term ).pop();
 }
 
+var special_regex = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+
 var App = function() {
   var inquery_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"通过"}, {id:6, text:"审核"}, {id:7, text:"归档"}];
   var inquery_type = [{id:1, text:'常规报价'}, {id:2, text:'区间报价'}];
@@ -347,6 +349,15 @@ var App = function() {
 
 
 $(document).ready(function() {
+  
+  $.validator.addMethod("no_special_char", function(value, element) {
+    return !(special_regex.test(value));
+  }, "不得出现特殊字符！");
+  
+  $.validator.addMethod("must_include_char", function(value, element) {
+    return /[a-zA-Z]+/.test(value);
+  }, "必须含有字母！");
+  
   $.datepicker.regional[ "zh-CN" ] = {
     closeText: "关闭",
     prevText: "&#x3C;上月",

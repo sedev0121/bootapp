@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,6 +48,15 @@ public class ResetPasswordController {
 
 	@Autowired
 	private PasswordResetTokenRepository passwordTokenRepository;
+
+	@Value("${system.password.minlength}")
+	private int PASSWORD_MIN_LENGTH;
+
+	@Value("${system.password.no_special_char}")
+	private boolean PASSWORD_NO_SPEICAL_CHAR;
+
+	@Value("${system.password.must_include_char}")
+	private boolean PASSWORD_MUST_INCLUDE_CHAR;
 
 	@Transactional
 	@RequestMapping(value = "/resetpassword")
@@ -112,6 +122,9 @@ public class ResetPasswordController {
 		String result = accountService.validatePasswordResetToken(id, token);
 		model.addAttribute("token", token);
 		model.addAttribute("error", result);
+		model.addAttribute("password_min_length", PASSWORD_MIN_LENGTH);
+		model.addAttribute("password_no_special_char", PASSWORD_NO_SPEICAL_CHAR);
+		model.addAttribute("password_must_include_char", PASSWORD_MUST_INCLUDE_CHAR);
 		return "change_password";
 	}
 
