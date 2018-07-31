@@ -249,6 +249,8 @@ is_readonly = 0;
       idSrc: "rowno",
       //template: '#customForm',
       fields: [ {
+          name: "cinvcode"                
+        },{
           label: "最小数量:",
           attr: {
             type: "number"
@@ -344,6 +346,25 @@ is_readonly = 0;
       }
       
       var currentFieldName = e.currentTarget.s.includeFields[0];
+      
+      if (currentFieldName == "ivalid"){
+        if (editor.field(currentFieldName).val() == 1) {
+          var table_data = table.rows().data().toArray();
+          var id = 1;
+          $.each(data.data, function(rowno, editRow){  
+            $.each(table_data, function(key, item){
+              if (item.cinvcode == editRow.cinvcode){
+                if (item.rowno != rowno){
+                  item.ivalid = 0;
+                }
+              }
+            })
+          });
+          table.rows().invalidate();
+          
+        }
+        return true;
+      }
       
       var checkList = ['iunitprice', 'itaxrate', 'itaxunitprice', 'fmaxquantity', 'fminquantity'];
       if (checkList.indexOf(currentFieldName) >= 0){
@@ -541,7 +562,7 @@ is_readonly = 0;
       }   
     });
     
-    if (state == 3) {
+    if (state == 3 && !is_vendor && !is_readonly) {
       table.on( 'click', 'tbody td.ivalid', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );

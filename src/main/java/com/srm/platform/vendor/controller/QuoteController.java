@@ -277,6 +277,10 @@ public class QuoteController extends CommonController {
 						detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
 						detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
 						detail.setCbodymemo(row.get("cbodymemo"));
+
+						if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())
+							detail.setIvalid(Integer.parseInt(row.get("ivalid")));
+
 						venPriceAdjustDetailRepository.save(detail);
 					}
 

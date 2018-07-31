@@ -7,12 +7,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -221,16 +219,13 @@ public class InqueryController extends CommonController {
 	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody VenPriceAdjustMain update_ajax(VenPriceSaveForm form, Principal principal) {
-		VenPriceAdjustMain venPriceAdjustMain = new VenPriceAdjustMain();
+		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(form.getCcode());
 
-		venPriceAdjustMain.setCreatetype(isVendor() ? Constants.CREATE_TYPE_VENDOR : Constants.CREATE_TYPE_BUYER);
-
-		venPriceAdjustMain.setCcode(form.getCcode());
-
-		Example<VenPriceAdjustMain> example = Example.of(venPriceAdjustMain);
-		Optional<VenPriceAdjustMain> result = venPriceAdjustMainRepository.findOne(example);
-		if (result.isPresent())
-			venPriceAdjustMain = result.get();
+		if (venPriceAdjustMain == null) {
+			venPriceAdjustMain = new VenPriceAdjustMain();
+			venPriceAdjustMain.setCreatetype(isVendor() ? Constants.CREATE_TYPE_VENDOR : Constants.CREATE_TYPE_BUYER);
+			venPriceAdjustMain.setCcode(form.getCcode());
+		}
 
 		if ((venPriceAdjustMain.getIverifystate() == null
 				|| venPriceAdjustMain.getIverifystate() == Constants.STATE_NEW)
@@ -297,6 +292,7 @@ public class InqueryController extends CommonController {
 			action = "退回";
 			break;
 		}
+		logger.info(toList.toString());
 		String title = String.format("询价单【%s】已由【%s】%s，请及时查阅和处理！", venPriceAdjustMain.getCcode(), account.getRealname(),
 				action);
 		this.sendmessage(title, toList);
