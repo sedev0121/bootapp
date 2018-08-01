@@ -676,8 +676,8 @@ public class SyncController {
 		}
 
 		if (initTable) {
-			// this.purchaseInDetailRepository.deleteAllInBatch();
-			// this.purchaseInMainRepository.deleteAllInBatch();
+			this.purchaseInDetailRepository.deleteAllInBatch();
+			this.purchaseInMainRepository.deleteAllInBatch();
 		}
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -703,7 +703,7 @@ public class SyncController {
 				}
 
 				if (startDate != null) {
-					// requestParams.put("start_date", Utils.formatDateZeroTime(startDate));
+					requestParams.put("start_date", Utils.formatDateZeroTime(startDate));
 				}
 
 				String response;
@@ -786,8 +786,10 @@ public class SyncController {
 								Integer.parseInt(rowno));
 						if (detail != null) {
 							continue;
+						} else {
+							detail = new PurchaseInDetail();
 						}
-						detail = new PurchaseInDetail();
+
 						detail.setMain(main);
 						detail.setInventory(inventoryRepository.findByCode(inventory_code));
 
