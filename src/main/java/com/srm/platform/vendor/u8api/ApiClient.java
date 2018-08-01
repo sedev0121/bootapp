@@ -150,6 +150,20 @@ public class ApiClient {
 		return response;
 	}
 
+	public String generatePurchaseInvoice(String json) {
+
+		checkToken();
+
+		RestClient client = new RestClient();
+		String url = String.format(appProperties.getPurInvoice().getAdd(), token_id);
+
+		logger.info(String.format("url=>%s", url));
+		logger.info(String.format("post=>%s", json));
+		String response = client.post(url, json);
+		logger.info(String.format("response=>%s", response));
+		return response;
+	}
+
 	public String getBatchVendor(Map<String, String> requestParams) {
 
 		checkToken();

@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +34,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.StatementDetail;
@@ -43,10 +47,15 @@ import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.u8api.ApiClient;
+import com.srm.platform.vendor.u8api.AppProperties;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.StatementDetailItem;
 import com.srm.platform.vendor.utility.StatementSaveForm;
 import com.srm.platform.vendor.utility.StatementSearchResult;
+import com.srm.platform.vendor.utility.U8InvoicePostData;
+import com.srm.platform.vendor.utility.U8InvoicePostEntry;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
@@ -58,6 +67,12 @@ public class StatementController extends CommonController {
 
 	@PersistenceContext
 	private EntityManager em;
+
+	@Autowired
+	private ApiClient apiClient;
+
+	@Autowired
+	private AppProperties appProperties;
 
 	@Autowired
 	private VendorRepository vendorRepository;
@@ -260,8 +275,8 @@ public class StatementController extends CommonController {
 
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody StatementMain update_ajax(StatementSaveForm form, BindingResult bindingResult,
-			HttpServletRequest request) {
+	public @ResponseBody GenericJsonResponse<StatementMain> update_ajax(StatementSaveForm form,
+			BindingResult bindingResult, HttpServletRequest request) {
 		StatementMain main = statementMainRepository.findOneByCode(form.getCode());
 
 		if (main == null) {
@@ -308,9 +323,14 @@ public class StatementController extends CommonController {
 			main.setInvoicenummaker(this.getLoginAccount());
 			main.setInvoicenumdate(new Date());
 		} else if (form.getState() == Constants.STATEMENT_STATE_INVOICE_PUBLISH) {
-			main.setU8invoicemaker(this.getLoginAccount());
-			main.setU8invoicedate(new Date());
-			main.setInvoiceType(form.getInvoice_type());
+			GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
+			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
+				main.setU8invoicemaker(this.getLoginAccount());
+				main.setU8invoicedate(new Date());
+				main.setInvoiceType(form.getInvoice_type());
+			} else {
+				return u8Response;
+			}
 		}
 
 		String action = null;
@@ -353,6 +373,9 @@ public class StatementController extends CommonController {
 
 		main.setState(form.getState());
 		main = statementMainRepository.save(main);
+
+		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
+				main);
 
 		if (form.getState() <= Constants.STATEMENT_STATE_CONFIRM && form.getTable() != null) {
 			statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
@@ -435,7 +458,83 @@ public class StatementController extends CommonController {
 			}
 		}
 
-		return main;
+		return jsonResponse;
 	}
 
+	private GenericJsonResponse<StatementMain> u8invoice(StatementMain main) {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		Map<String, Object> map = new HashMap<>();
+
+		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
+				main);
+		try {
+
+			map = new HashMap<>();
+
+			String postJson = createJsonString(main);
+			String response = apiClient.generatePurchaseInvoice(postJson);
+
+			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
+			});
+
+			int errorCode = Integer.parseInt((String) map.get("errcode"));
+			String errmsg = String.valueOf(map.get("errmsg"));
+
+			if (errorCode == appProperties.getError_code_success()) {
+				String id = String.valueOf(map.get("id"));
+				main.setU8invoiceid(id);
+				statementMainRepository.save(main);
+			} else {
+				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
+			}
+
+		} catch (IOException e) {
+			logger.info(e.getMessage());
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "服务器错误！", main);
+		}
+
+		return jsonResponse;
+	}
+
+	private String createJsonString(StatementMain main) {
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonString = "";
+
+		U8InvoicePostData post = new U8InvoicePostData();
+		post.setInvoicecode(main.getInvoiceCode());
+		post.setDelegatecode(main.getVendor().getCode());
+		post.setVendorcode(main.getVendor().getCode());
+		post.setDate(Utils.formatDate(main.getMakedate()));
+		post.setInvoicetype(main.getInvoiceType() == 1 ? "01" : "02");
+		post.setPurchasecode(main.getType() == 1 ? "01" : "05");
+		post.setMaker(this.getLoginAccount().getRealname());
+
+		List<U8InvoicePostEntry> entryList = new ArrayList<>();
+
+		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
+		for (StatementDetail detail : detailList) {
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
+
+			U8InvoicePostEntry entry = new U8InvoicePostEntry();
+			entry.setQuantity(detail.getClosedQuantity());
+			entry.setTaxrate(detail.getTaxRate());
+			entry.setOriginalmoney(detail.getClosedMoney());
+			entry.setInventorycode(purchaseInDetail.getInventory().getCode());
+			entryList.add(entry);
+		}
+
+		post.setEntry(entryList);
+
+		try {
+			Map<String, U8InvoicePostData> map = new HashMap<>();
+			map.put("purchaseinvoice", post);
+			jsonString = mapper.writeValueAsString(map);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return jsonString;
+	}
 }

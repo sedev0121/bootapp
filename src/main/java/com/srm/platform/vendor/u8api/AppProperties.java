@@ -195,6 +195,15 @@ public class AppProperties {
 
 	public static class PropertyPurInvoice {
 		private String batch_get;
+		private String add;
+
+		public String getAdd() {
+			return add;
+		}
+
+		public void setAdd(String add) {
+			this.add = add;
+		}
 
 		public String getBatch_get() {
 			return batch_get;
