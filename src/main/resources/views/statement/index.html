@@ -167,7 +167,24 @@ $(document).ready(function() {
       className: 'dt-center',
       title : '审核日期',
       render : $.fn.date_renderer
-
+    }, {        
+      data : 'invoicenummaker',
+      className: 'dt-center',
+      title : '填发票号人',
+    }, {
+      data : 'invoicenumdate',
+      className: 'dt-center',
+      title : '填发票号日期',
+      render : $.fn.date_renderer
+    }, {        
+      data : 'u8invoicemaker',
+      className: 'dt-center',
+      title : '生成U8采购发票人',
+    }, {
+      data : 'u8invoicedate',
+      className: 'dt-center',
+      title : '生成U8采购发票日期',
+      render : $.fn.date_renderer
     } ],
     order: [  [ 7, "desc" ] ]
 

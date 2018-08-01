@@ -31,11 +31,16 @@ import com.srm.platform.vendor.utility.Utils;
 				@ColumnResult(name = "verifydate", type = String.class),
 				@ColumnResult(name = "confirmer", type = String.class),
 				@ColumnResult(name = "confirmdate", type = String.class),
+				@ColumnResult(name = "invoicenummaker", type = String.class),
+				@ColumnResult(name = "invoicenumdate", type = String.class),
+				@ColumnResult(name = "u8invoicemaker", type = String.class),
+				@ColumnResult(name = "u8invoicedate", type = String.class),
 				@ColumnResult(name = "remark", type = String.class),
 				@ColumnResult(name = "invoice_code", type = String.class),
 				@ColumnResult(name = "vendor_name", type = String.class),
 				@ColumnResult(name = "vendor_code", type = String.class),
-				@ColumnResult(name = "type", type = String.class) }) })
+				@ColumnResult(name = "type", type = String.class),
+				@ColumnResult(name = "invoice_type", type = String.class) }) })
 
 @Table(name = "statement_main")
 public class StatementMain {
@@ -60,6 +65,18 @@ public class StatementMain {
 	@JoinColumn(name = "verifier_id", referencedColumnName = "id")
 	Account verifier;
 
+	private Date invoicenumdate;
+
+	@OneToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumn(name = "invoicenummaker_id", referencedColumnName = "id")
+	Account invoicenummaker;
+
+	private Date u8invoicedate;
+
+	@OneToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumn(name = "u8invoicemaker_id", referencedColumnName = "id")
+	Account u8invoicemaker;
+
 	@Column(name = "invoice_code")
 	private String invoiceCode;
 
@@ -67,8 +84,10 @@ public class StatementMain {
 	private Float taxRate = 16F;
 
 	private Integer type = 1;
+	private Integer invoiceType = 1;
 	private String remark;
 	private Integer state;
+	private String u8invoiceid;
 
 	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "vendor_code", referencedColumnName = "code")
@@ -87,6 +106,54 @@ public class StatementMain {
 		this.state = Constants.STATEMENT_STATE_NEW;
 		this.maker = accountRepository
 				.findOneByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+	}
+
+	public String getU8invoiceid() {
+		return u8invoiceid;
+	}
+
+	public void setU8invoiceid(String u8invoiceid) {
+		this.u8invoiceid = u8invoiceid;
+	}
+
+	public Integer getInvoiceType() {
+		return invoiceType;
+	}
+
+	public void setInvoiceType(Integer invoiceType) {
+		this.invoiceType = invoiceType;
+	}
+
+	public Date getInvoicenumdate() {
+		return invoicenumdate;
+	}
+
+	public void setInvoicenumdate(Date invoicenumdate) {
+		this.invoicenumdate = invoicenumdate;
+	}
+
+	public Account getInvoicenummaker() {
+		return invoicenummaker;
+	}
+
+	public void setInvoicenummaker(Account invoicenummaker) {
+		this.invoicenummaker = invoicenummaker;
+	}
+
+	public Date getU8invoicedate() {
+		return u8invoicedate;
+	}
+
+	public void setU8invoicedate(Date u8invoicedate) {
+		this.u8invoicedate = u8invoicedate;
+	}
+
+	public Account getU8invoicemaker() {
+		return u8invoicemaker;
+	}
+
+	public void setU8invoicemaker(Account u8invoicemaker) {
+		this.u8invoicemaker = u8invoicemaker;
 	}
 
 	public String getAttachFileName() {

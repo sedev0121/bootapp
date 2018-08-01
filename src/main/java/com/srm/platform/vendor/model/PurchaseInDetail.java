@@ -14,6 +14,7 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 
 @Entity
@@ -84,7 +85,7 @@ public class PurchaseInDetail {
 	private Float materialPrice;
 	private Float materialTaxPrice;
 
-	private Integer state = 0;
+	private Integer state = Constants.PURCHASE_IN_STATE_WAIT;
 
 	public Long getId() {
 		return id;

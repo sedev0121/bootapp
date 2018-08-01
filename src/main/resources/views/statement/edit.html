@@ -17,11 +17,12 @@
           <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.state==1  or main.state==4}" id="submit"><i class="fa fa-share"></i> 发布</a>
           <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-审核/退回')" th:if="${main.state==3}" id="review"><i class="fa fa-arrow-up"></i> 审核</a>
           <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-审核/退回')" th:if="${main.state==3}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+          <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.state==6}" id="u8invoice"><i class="fa fa-check-square"></i> 生成U8采购发票</a>
           <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-删除')" th:if="${!#strings.contains(#request.requestURI,'add') and (main.state==1  or main.state==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
 
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==2}" id="verify"><i class="fa fa-check-square"></i> 确认</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==5}" id="invoice"><i class="fa fa-check-square"></i> 填发票号</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==5 or main.state==6}" id="invoicenum"><i class="fa fa-check-square"></i> 填发票号</a>
           <a class="btn btn-default" th:href="@{/statement}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
     </div>
@@ -78,6 +79,26 @@
                   <label>审核日期: </label>
                   <input type="text" th:value="${#dates.format(main.verifydate, 'yyyy-MM-dd')}" class="form-control" readonly>
                 </div>
+                <div class="col-lg-2 col-md-2">
+                  <label>填发票号人:</label>
+                  <select class="form-control select2" readonly>
+                    <option th:value="${main.verifier?.id}" th:text="${main.invoicenummaker?.realname}" selected="selected"></option>
+                  </select>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                  <label>填发票号日期: </label>
+                  <input type="text" th:value="${#dates.format(main.invoicenumdate, 'yyyy-MM-dd')}" class="form-control" readonly>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                  <label>生成U8发票人:</label>
+                  <select class="form-control select2" readonly>
+                    <option th:value="${main.verifier?.id}" th:text="${main.u8invoicemaker?.realname}" selected="selected"></option>
+                  </select>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                  <label>生成U8发票日期: </label>
+                  <input type="text" th:value="${#dates.format(main.u8invoicedate, 'yyyy-MM-dd')}" class="form-control" readonly>
+                </div>
            
 
                 <div class="col-lg-2 col-md-2">
@@ -100,6 +121,14 @@
                   <label for="invoice_code">发票号: </label>
                   <input type="text" id="invoice_code" name="invoice_code" th:value="${main.invoiceCode}" class="form-control" disabled/>
                 </div>     
+                <div class="col-lg-2 col-md-2" id="invoice_type_div">
+                  <label for="invoice_type">U8发票类型: </label>
+                  <select name="invoice_type" id="invoice_type" class="form-control" readonly></select>
+                </div>
+                <div class="col-lg-2 col-md-2" id="u8_invoice_id_div">
+                  <label for="u8_invoice_id">U8发票单号: </label>
+                  <input type="text" id="u8_invoice_id" name="u8_invoice_id" th:value="${main.u8invoiceid}" class="form-control" readonly/>
+                </div>
                 <div class="col-lg-6 col-md-6">
                   <label for="remark">摘要: </label>
                   <input type="text" id="remark" name="remark" th:value="${main.remark}" class="form-control" />
@@ -118,11 +147,14 @@
                 </div>
                 <div class="col-lg-6 col-md-6 form-group" id="file_show">
                   <label for="remark">　</label>
-                  <div style="margin-top:7px;">
+                  <div th:if="${main.attachFileName!=null}" >
                     <span><b>附件：</b></span>
-                    <a th:href="@{|/uploads/statement/${main.attachFileName}|}" th:if="${main.attachFileName!=null}" th:text="${main.attachOriginalName}"></a>
-                    <span th:if="${main.attachFileName == null}">---</span>              
+                    <a th:href="@{|/uploads/statement/${main.attachFileName}|}" th:text="${main.attachOriginalName}"></a><a class="btn" style="visibility: hidden;">　</a> 
                     <a class="btn btn-danger" id="del_attach" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.attachOriginalName!=null and (main.state==1  || main.state==4)}">删除附件</a>
+                  </div>
+                  <div th:if="${main.attachFileName==null}" >
+                    <span><b>附件：</b></span>
+                    <span>---</span><a class="btn" style="visibility: hidden;">　</a>             
                   </div>
                 </div>
                          
@@ -203,6 +235,7 @@ var del_url = [[@{|/statement/${main.code}/delete|}]];
 var vendor_search_url = [[@{/vendor/search}]];
 var state = [[${main.state}]];
 var type = [[${main.type}]];
+var invoice_type = [[${main.invoiceType}]];
 var hasAttach = [[${main.attachFileName != null}]];
 +]*/ 
   
@@ -329,6 +362,7 @@ $(document).ready(function() {
   $(".select2").select2();
   $("#state").select2({ data: App.getStatementStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
   $("#type").select2({ data: App.getStatementTypeData(),minimumResultsForSearch: -1}).select2("val", type.toString());
+  $("#invoice_type").select2({ data: App.getInvoiceTypeData(),minimumResultsForSearch: -1}).select2("val", invoice_type.toString());
   $("#vendor").select2(App.getSelect2Options(vendor_search_url));
   
   if ((state != 1 && state != 4) || is_readonly) {
@@ -336,10 +370,26 @@ $(document).ready(function() {
     $('select').attr("readonly", true);
   }
 
-  if (state == 5 && is_vendor) {
+  if ((state == 5 || state == 6) && is_vendor) {
     $('#invoice_code').removeAttr("disabled");
     $('#invoice_code').removeAttr("readonly");
   }
+  
+  if (state == 7){
+    $('#invoice_type_div').removeClass("hidden");
+    $('#u8_invoice_id_div').removeClass("hidden");
+    
+  }else{
+    $('#invoice_type_div').addClass("hidden");
+    $('#u8_invoice_id_div').addClass("hidden");
+  }
+
+  if (state == 6 && !is_readonly && !is_vendor) {
+    $('#invoice_type').removeAttr("readonly");
+    $('#invoice_type_div').removeClass("hidden");
+    $('#u8_invoice_id_div').removeClass("hidden");
+  }
+  
   
   if ((state == 1 || state == 4) && !is_readonly){
     if (hasAttach){
@@ -1046,7 +1096,7 @@ $(document).ready(function() {
           required: true,
         },
         invoice_code: {
-          required: state==5
+          required: state>=5
         }, 
     },
     
@@ -1255,7 +1305,13 @@ $(document).ready(function() {
     });
   });
   
-  $("#invoice").click(function() {
+  $("#invoicenum").click(function() {
+    $('#state').val(6);
+    $("#form").submit();            
+  });   
+
+  $("#u8invoice").click(function() {
+    $('#state').val(7);
     $("#form").submit();            
   });   
   

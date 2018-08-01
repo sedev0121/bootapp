@@ -17,6 +17,7 @@ public class StatementSaveForm {
 	private Long maker;
 	private Date make_date;
 	private Integer type;
+	private Integer invoice_type;
 
 	private Long verifier;
 	private Date verify_date;
@@ -33,6 +34,14 @@ public class StatementSaveForm {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getInvoice_type() {
+		return invoice_type;
+	}
+
+	public void setInvoice_type(Integer invoice_type) {
+		this.invoice_type = invoice_type;
 	}
 
 	public MultipartFile getAttach() {
