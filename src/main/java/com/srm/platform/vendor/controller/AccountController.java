@@ -160,9 +160,12 @@ public class AccountController extends CommonController {
 
 		List<PermissionGroup> groupList = new ArrayList<>();
 		for (PermissionGroupUser group : resultList) {
-			groupList.add(permissionGroupRepository.findOneById(group.getGroupId()));
+			PermissionGroup item = permissionGroupRepository.findOneById(group.getGroupId());
+			if (item != null)
+				groupList.add(item);
 		}
 
+		logger.info(groupList.toString());
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonGroupString = "";
 		try {

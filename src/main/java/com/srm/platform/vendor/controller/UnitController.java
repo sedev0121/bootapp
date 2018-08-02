@@ -9,8 +9,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -140,21 +138,27 @@ public class UnitController {
 	@ResponseBody
 	@RequestMapping(value = "/tree", produces = "application/json")
 	public UnitNode tree() {
-		List<Unit> units = unitRepository.findAll(Sort.by(Direction.ASC, "id"));
+		Unit rootUnit = unitRepository.findOneById(1L);
 
-		UnitNode root = null, tempNode;
-		Unit temp;
-		for (int i = 0; i < units.size(); i++) {
-			temp = units.get(i);
-			tempNode = new UnitNode(temp.getId(), temp.getName(), temp.getParentId());
-			if (i == 0) {
-				root = tempNode;
-			} else {
-				root.addNode(tempNode);
+		UnitNode rootNode = new UnitNode(rootUnit.getId(), rootUnit.getName(), rootUnit.getParentId());
+
+		rootNode = this.setChildNode(rootNode);
+
+		return rootNode;
+	}
+
+	private UnitNode setChildNode(UnitNode node) {
+		List<Unit> units = unitRepository.findByParentId(node.getId());
+
+		if (!units.isEmpty()) {
+			for (Unit unit : units) {
+				UnitNode tempNode = new UnitNode(unit.getId(), unit.getName(), unit.getParentId());
+				node.addNode(tempNode);
+				this.setChildNode(tempNode);
 			}
 		}
+		return node;
 
-		return root;
 	}
 
 }
