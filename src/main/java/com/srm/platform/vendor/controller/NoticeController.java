@@ -439,6 +439,10 @@ public class NoticeController extends CommonController {
 		}
 
 		logger.info(" " + idList.toString());
+
+		if (idList.isEmpty())
+			return new ArrayList<>();
+
 		String selectQuery = "SELECT t.*, u.name unitname, v.name vendorname FROM account t left join unit u on t.unit_id=u.id "
 				+ "left join vendor v on t.vendor_code=v.code where t.id in :idList ";
 

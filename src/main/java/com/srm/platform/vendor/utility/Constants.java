@@ -13,19 +13,25 @@ public class Constants {
 	public final static int CREATE_TYPE_BUYER = 0;
 	public final static int CREATE_TYPE_VENDOR = 1;
 
+	public final static int INQUERY_TYPE_NORMAL = 1;
+	public final static int INQUERY_TYPE_RANGE = 2;
+
 	public final static int PURCHASE_ORDER_STATE_START = 0;
 	public final static int PURCHASE_ORDER_STATE_DEPLOY = 1;
 	public final static int PURCHASE_ORDER_STATE_REVIEW = 2;
 	public final static int PURCHASE_ORDER_STATE_CANCEL = 3;
 
-	public final static int PURCHASE_IN_FINISH_STATE_NO = 0;
-	public final static int PURCHASE_IN_FINISH_STATE_YES = 1;
+	public final static int PURCHASE_IN_STATE_WAIT = 0;
+	public final static int PURCHASE_IN_STATE_START = 1;
+	public final static int PURCHASE_IN_STATE_FINISH = 2;
 
 	public final static int STATEMENT_STATE_NEW = 1;
 	public final static int STATEMENT_STATE_SUBMIT = 2;
 	public final static int STATEMENT_STATE_CONFIRM = 3;
 	public final static int STATEMENT_STATE_CANCEL = 4;
 	public final static int STATEMENT_STATE_VERIFY = 5;
+	public final static int STATEMENT_STATE_INVOICE_NUM = 6;
+	public final static int STATEMENT_STATE_INVOICE_PUBLISH = 7;
 
 	public final static int NOTICE_TYPE_USER = 1;
 	public final static int NOTICE_TYPE_SYSTEM = 2;

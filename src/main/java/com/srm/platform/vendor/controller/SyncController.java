@@ -648,6 +648,10 @@ public class SyncController {
 
 	@RequestMapping(value = { "/purchasein/init", "/purchasein", "/purchasein/" })
 	public boolean purchaseInInit() {
+
+		this.purchaseInDetailRepository.deleteAllInBatch();
+		this.purchaseInMainRepository.deleteAllInBatch();
+
 		purchaseIn(null, null, false);
 		purchaseIn(null, null, true);
 		return true;
@@ -669,16 +673,6 @@ public class SyncController {
 
 	@Transactional
 	public boolean purchaseIn(Date startDate, String vendorCode, boolean isWeiwai) {
-
-		boolean initTable = false;
-		if (startDate == null) {
-			initTable = true;
-		}
-
-		if (initTable) {
-			// this.purchaseInDetailRepository.deleteAllInBatch();
-			// this.purchaseInMainRepository.deleteAllInBatch();
-		}
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -703,7 +697,7 @@ public class SyncController {
 				}
 
 				if (startDate != null) {
-					// requestParams.put("start_date", Utils.formatDateZeroTime(startDate));
+					requestParams.put("start_date", Utils.formatDateZeroTime(startDate));
 				}
 
 				String response;
@@ -786,8 +780,10 @@ public class SyncController {
 								Integer.parseInt(rowno));
 						if (detail != null) {
 							continue;
+						} else {
+							detail = new PurchaseInDetail();
 						}
-						detail = new PurchaseInDetail();
+
 						detail.setMain(main);
 						detail.setInventory(inventoryRepository.findByCode(inventory_code));
 

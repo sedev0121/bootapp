@@ -284,7 +284,7 @@ public class PermissionController extends CommonController {
 	}
 
 	@GetMapping("/{id}/account/list")
-	public @ResponseBody List<AccountSearchResult> accountList_ajax(@PathVariable("id") Long groupId) {
+	public @ResponseBody List<AccountSearchResult> accountList_ajax(@PathVariable("id") String groupId) {
 
 		String selectQuery = "SELECT t.*, u.name unitname, v.name vendorname FROM account t left join unit u on t.unit_id=u.id "
 				+ "left join vendor v on t.vendor_code=v.code where t.id in (select account_id from permission_group_user where group_id=:groupId) ";

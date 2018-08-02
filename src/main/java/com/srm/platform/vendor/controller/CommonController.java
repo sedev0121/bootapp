@@ -1,10 +1,13 @@
 package com.srm.platform.vendor.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,15 +26,30 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.thymeleaf.util.StringUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
+import com.srm.platform.vendor.model.Price;
+import com.srm.platform.vendor.model.VenPriceAdjustDetail;
+import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.repository.PriceRepository;
+import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
+import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.service.SessionCounter;
+import com.srm.platform.vendor.u8api.ApiClient;
+import com.srm.platform.vendor.u8api.AppProperties;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
+import com.srm.platform.vendor.utility.U8VenpriceadjustPostData;
+import com.srm.platform.vendor.utility.U8VenpriceadjustPostEntry;
+import com.srm.platform.vendor.utility.Utils;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 class ResourceNotFoundException extends RuntimeException {
@@ -44,6 +62,12 @@ class ResourceNotFoundException extends RuntimeException {
 @PreAuthorize("isAuthenticated()")
 public class CommonController {
 	public final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@Autowired
+	public ApiClient apiClient;
+
+	@Autowired
+	public AppProperties appProperties;
 
 	@PersistenceContext
 	public EntityManager em;
@@ -62,6 +86,15 @@ public class CommonController {
 
 	@Autowired
 	public SessionCounter sessionCounter;
+
+	@Autowired
+	public VenPriceAdjustMainRepository venPriceAdjustMainRepository;
+
+	@Autowired
+	public VenPriceAdjustDetailRepository venPriceAdjustDetailRepository;
+
+	@Autowired
+	public PriceRepository priceRepository;
 
 	protected int currentPage;
 	protected int maxResults;
@@ -208,6 +241,103 @@ public class CommonController {
 		}
 
 		return idList;
+	}
+
+	protected GenericJsonResponse<VenPriceAdjustMain> u8VenPriceAdjust(VenPriceAdjustMain main) {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		Map<String, Object> map = new HashMap<>();
+
+		GenericJsonResponse<VenPriceAdjustMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS,
+				null, main);
+		try {
+
+			map = new HashMap<>();
+
+			String postJson = createJsonString(main);
+			String response = apiClient.generateVenpriceadjust(postJson, main.getCcode());
+
+			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
+			});
+
+			int errorCode = Integer.parseInt((String) map.get("errcode"));
+			String errmsg = String.valueOf(map.get("errmsg"));
+
+			if (errorCode != appProperties.getError_code_success()) {
+				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
+			}
+
+		} catch (IOException e) {
+			logger.info(e.getMessage());
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "服务器错误！", main);
+		}
+
+		return jsonResponse;
+	}
+
+	// 更新价格表
+	protected void updatePriceTable(VenPriceAdjustMain venPriceAdjustMain) {
+
+		List<VenPriceAdjustDetail> list = venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode());
+		for (VenPriceAdjustDetail item : list) {
+			Price price = new Price();
+			price.setVendor(venPriceAdjustMain.getVendor());
+			price.setInventory(item.getInventory());
+			price.setCreateby(venPriceAdjustMain.getMaker().getId());
+			price.setCreatedate(venPriceAdjustMain.getDmakedate());
+			price.setFavdate(venPriceAdjustMain.getDstartdate());
+			price.setFcanceldate(venPriceAdjustMain.getDenddate());
+			price.setFnote(item.getCbodymemo());
+			price.setFprice(item.getIunitprice());
+			price.setFtax((float) item.getItaxrate());
+			price.setFtaxprice(item.getItaxunitprice());
+			price.setFisoutside(false);
+			price.setFcheckdate(new Date());
+			price.setDescription(item.getInventory().getSpecs());
+			price.setFauxunit(item.getInventory().getPuunitName());
+			priceRepository.save(price);
+		}
+
+	}
+
+	protected String createJsonString(VenPriceAdjustMain main) {
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonString = "";
+
+		U8VenpriceadjustPostData post = new U8VenpriceadjustPostData();
+		post.setCcode(main.getCcode());
+		post.setMaker(this.getLoginAccount().getRealname());
+
+		List<U8VenpriceadjustPostEntry> entryList = new ArrayList<>();
+
+		List<VenPriceAdjustDetail> detailList = venPriceAdjustDetailRepository.findByMainId(main.getCcode());
+		for (VenPriceAdjustDetail detail : detailList) {
+			if (main.getType() == Constants.INQUERY_TYPE_RANGE && detail.getIvalid() == 0)
+				continue;
+
+			U8VenpriceadjustPostEntry entry = new U8VenpriceadjustPostEntry();
+			entry.setCinvcode(detail.getInventory().getCode());
+			entry.setCvencode(main.getVendor().getCode());
+			entry.setDstartdate(Utils.formatDate(detail.getDstartdate()));
+			entry.setItaxrate(detail.getItaxrate());
+			entry.setItaxunitprice(detail.getItaxunitprice());
+			entry.setIunitprice(detail.getIunitprice());
+
+			entryList.add(entry);
+		}
+
+		post.setEntry(entryList);
+
+		try {
+			Map<String, U8VenpriceadjustPostData> map = new HashMap<>();
+			map.put("venpriceadjust", post);
+			jsonString = mapper.writeValueAsString(map);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return jsonString;
 	}
 
 }

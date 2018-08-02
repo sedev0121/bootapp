@@ -12,14 +12,15 @@ var App = function() {
   var inquery_type = [{id:1, text:'常规报价'}, {id:2, text:'区间报价'}];
   var inquery_provide_type = [{id:1, text:'采购'}, {id:2, text:'委外'}];
   var purchase_order_state_data = [{id:0, text:'审核'}, {id:1, text:'发布'}, {id:2, text:'确认'}, {id:3, text:'拒绝'}];
-  var purchase_in_state_data = [{id:0, text:'未对账'}, {id:1, text:'已对账'}];
+  var purchase_in_state_data = [{id:0, text:'未对账'}, {id:1, text:'对账中'}, {id:2, text:'已对账'}];
   var purchase_in_bredvouch_data = [{id:0, text:'蓝字'}, {id:1, text:'红字'}];
-  var statement_state_data = [{id:1, text:"新建"}, {id:2, text:"发布"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"审核"}];
+  var statement_state_data = [{id:1, text:"新建"}, {id:2, text:"发布"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"审核"}, {id:6, text:"已填发票号"}, {id:7, text:"已生成U8发票"}];
   var notice_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"发布"}, {id:4, text:"退回"}];
   
   var role_data = [{id:"ROLE_BUYER", text:"采购员"}, {id:"ROLE_VENDOR", text:"供应商"}, {id:"ROLE_ADMIN", text:"管理员"}];
   var account_state_data = [{id:1, text:"启用"}, {id:0, text:"停用"}];
   var statement_type_data = [{id:1, text:"采购对账"}, {id:2, text:"委外对账"}];
+  var invoice_type_data = [{id:1, text:"专用发票"}, {id:2, text:"普通发票"}];
     
   var getLabelOfId = function(store, id) {
     var title = "";
@@ -146,6 +147,9 @@ var App = function() {
     getStatementTypeData: function() {
       return statement_type_data;
     },
+    getInvoiceTypeData: function() {
+      return invoice_type_data;
+    },
     getRoleData: function() {
       return role_data;
     },
@@ -232,6 +236,9 @@ var App = function() {
     },
     getNoticeStateOfId: function(id) {
       return getLabelOfId(notice_state_data, id);
+    },
+    getInvoiceTypeOfId: function(id) {
+      return getLabelOfId(invoice_type_data, id);
     },
     getRoleOfId: function(id) {
       return getLabelOfId(role_data, id);

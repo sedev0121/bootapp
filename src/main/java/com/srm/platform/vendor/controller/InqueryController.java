@@ -27,17 +27,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Account;
-import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
-import com.srm.platform.vendor.repository.PriceRepository;
-import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
-import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.InquerySearchResult;
 import com.srm.platform.vendor.utility.Utils;
 import com.srm.platform.vendor.utility.VenPriceDetailItem;
@@ -55,16 +52,7 @@ public class InqueryController extends CommonController {
 	private InventoryRepository inventoryRepository;
 
 	@Autowired
-	private PriceRepository priceRepository;
-
-	@Autowired
 	private AccountRepository accountRepository;
-
-	@Autowired
-	private VenPriceAdjustMainRepository venPriceAdjustMainRepository;
-
-	@Autowired
-	private VenPriceAdjustDetailRepository venPriceAdjustDetailRepository;
 
 	// 查询列表
 	@GetMapping({ "", "/" })
@@ -218,7 +206,8 @@ public class InqueryController extends CommonController {
 	// 更新API
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody VenPriceAdjustMain update_ajax(VenPriceSaveForm form, Principal principal) {
+	public @ResponseBody GenericJsonResponse<VenPriceAdjustMain> update_ajax(VenPriceSaveForm form,
+			Principal principal) {
 		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(form.getCcode());
 
 		if (venPriceAdjustMain == null) {
@@ -250,12 +239,21 @@ public class InqueryController extends CommonController {
 			venPriceAdjustMain.setDverifydate(new Date());
 		}
 		if (form.getState() == Constants.STATE_PUBLISH) {
-			venPriceAdjustMain.setPublisher(account);
-			venPriceAdjustMain.setDpublishdate(new Date());
+			GenericJsonResponse<VenPriceAdjustMain> u8Response = this.u8VenPriceAdjust(venPriceAdjustMain);
+			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
+				venPriceAdjustMain.setPublisher(account);
+				venPriceAdjustMain.setDpublishdate(new Date());
+			} else {
+				return u8Response;
+			}
+
 		}
 
 		venPriceAdjustMain.setIverifystate(form.getState());
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
+
+		GenericJsonResponse<VenPriceAdjustMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS,
+				null, venPriceAdjustMain);
 
 		String action = null;
 		List<Account> toList = new ArrayList<>();
@@ -349,31 +347,7 @@ public class InqueryController extends CommonController {
 			updatePriceTable(venPriceAdjustMain);
 		}
 
-		return venPriceAdjustMain;
+		return jsonResponse;
 	}
 
-	// 更新价格表
-	private void updatePriceTable(VenPriceAdjustMain venPriceAdjustMain) {
-
-		List<VenPriceAdjustDetail> list = venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode());
-		for (VenPriceAdjustDetail item : list) {
-			Price price = new Price();
-			price.setVendor(venPriceAdjustMain.getVendor());
-			price.setInventory(item.getInventory());
-			price.setCreateby(venPriceAdjustMain.getMaker().getId());
-			price.setCreatedate(venPriceAdjustMain.getDmakedate());
-			price.setFavdate(venPriceAdjustMain.getDstartdate());
-			price.setFcanceldate(venPriceAdjustMain.getDenddate());
-			price.setFnote(item.getCbodymemo());
-			price.setFprice(item.getIunitprice());
-			price.setFtax((float) item.getItaxrate());
-			price.setFtaxprice(item.getItaxunitprice());
-			price.setFisoutside(false);
-			price.setFcheckdate(new Date());
-			price.setDescription(item.getInventory().getSpecs());
-			price.setFauxunit(item.getInventory().getPuunitName());
-			priceRepository.save(price);
-		}
-
-	}
 }

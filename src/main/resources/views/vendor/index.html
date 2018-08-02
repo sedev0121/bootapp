@@ -144,6 +144,12 @@ $(document).ready(function() {
   $("#form" ).validate({
     submitHandler: function (form) {
       jQuery(form).ajaxSubmit({
+        beforeSend: function(){
+          App.blockUI();
+        },
+        complete: function(){
+          App.unblockUI();
+        },
         success: function(res, status, xhr, form) {
           App.showSuccessDialog("操作成功");
           table.draw();
