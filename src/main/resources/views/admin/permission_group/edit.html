@@ -128,6 +128,12 @@ jQuery(document).ready(function() {
         });
         $('#accounts').val(value);
         jQuery(form).ajaxSubmit({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          },
           success: function(res, status, xhr, form) {
             App.showSuccessDialog("操作成功", function() {
               window.location.href = edit_url + res.id + "/edit";

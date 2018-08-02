@@ -124,6 +124,10 @@
 is_vendor = 1;
 </script>
 
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')">
+is_readonly = 0;
+</script>
+
 <script th:inline="javascript">
   var editor;
   /*[+    
@@ -321,7 +325,7 @@ is_vendor = 1;
 
     var table = $('#example').DataTable(table_options);
 
-    if (state == 2 && !is_vendor && !is_readonly){
+    if (state == 2 && (is_vendor || !is_readonly)){
       if ($("#type").val()==2 ) {
         table.on( 'click', 'tbody td.edit-cell', function (e) {
           editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
@@ -385,15 +389,25 @@ is_vendor = 1;
       submitHandler: function (form) {
         var data = table.rows().data().toArray();
           jQuery(form).ajaxSubmit({
-              data: {table:data},
-              success: function(res, status, xhr, form) {
+            beforeSend: function(){
+              App.blockUI();
+            },
+            complete: function(){
+              App.unblockUI();
+            }, 
+            data: {table:data},
+            success: function(res, status, xhr, form) {
+              if (res.success == 1){
                 App.showSuccessDialog("操作成功", function(){
-                  window.location.href = edit_url + res.ccode + "/edit";
+                  window.location.href = edit_url + res.data.ccode + "/edit";
                 });
-              },
-              error: function (res, status, xhr, form) {
-                App.showErrorDialog("操作失败", "请输入正确的值");
+              }else{
+                App.showErrorDialog("操作失败", res.errmsg);
               }
+            },
+            error: function (res, status, xhr, form) {
+              App.showErrorDialog("操作失败", "请输入正确的值");
+            }
           });
       }
     }); 

@@ -1114,19 +1114,25 @@ $(document).ready(function() {
       }        
 
       jQuery(form).ajaxSubmit({
-          data: post_data,
-          success: function(res, status, xhr, form) {
-            if (res.success == 1){
-              App.showSuccessDialog("操作成功", function(){
-                window.location.href = edit_url + res.data.code + "/edit";
-              });
-            }else{
-              App.showErrorDialog("操作失败", res.errmsg);
-            }
-          },
-          error: function (res, status, xhr, form) {
-            App.showErrorDialog("操作失败", "请输入正确的值");
+        beforeSend: function(){
+          App.blockUI();
+        },
+        complete: function(){
+          App.unblockUI();
+        }, 
+        data: post_data,
+        success: function(res, status, xhr, form) {
+          if (res.success == 1){
+            App.showSuccessDialog("操作成功", function(){
+              window.location.href = edit_url + res.data.code + "/edit";
+            });
+          }else{
+            App.showErrorDialog("操作失败", res.errmsg);
           }
+        },
+        error: function (res, status, xhr, form) {
+          App.showErrorDialog("操作失败", "请输入正确的值");
+        }
       });
     }
   }); 

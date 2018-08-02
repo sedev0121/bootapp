@@ -77,14 +77,20 @@ $(function () {
   Layout.initUniform();
   
     $("#save").click(function() {
-    	jQuery(form).ajaxSubmit({
-            success: function(res, status, xhr, form) {
-              App.showSuccessDialog("操作成功");
-            },
-            error: function (res, status, xhr, form) {
-              App.showErrorDialog("操作失败", "请输入正确的值");
-            }
-        });        
+      jQuery(form).ajaxSubmit({
+        beforeSend: function(){
+          App.blockUI();
+        },
+        complete: function(){
+          App.unblockUI();
+        }, 
+        success: function(res, status, xhr, form) {
+          App.showSuccessDialog("操作成功");
+        },
+        error: function (res, status, xhr, form) {
+          App.showErrorDialog("操作失败", "请输入正确的值");
+        }
+      });        
     });
     
 	$(".select-all").change(function(){  //"select all" change 

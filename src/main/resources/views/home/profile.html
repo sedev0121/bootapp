@@ -244,14 +244,20 @@ jQuery(document).ready(function() {
 
       submitHandler: function (form) {
           jQuery(form).ajaxSubmit({
-              success: function(res, status, xhr, form) {
-                App.showSuccessDialog("操作成功", function(){
-                    window.location.reload(true);
-                });
-              },
-              error: function (res, status, xhr, form) {
-                App.showErrorDialog("操作失败", "请输入正确的值");
-              }
+            beforeSend: function(){
+              App.blockUI();
+            },
+            complete: function(){
+              App.unblockUI();
+            },
+            success: function(res, status, xhr, form) {
+              App.showSuccessDialog("操作成功", function(){
+                  window.location.reload(true);
+              });
+            },
+            error: function (res, status, xhr, form) {
+              App.showErrorDialog("操作失败", "请输入正确的值");
+            }
           });
       }
     }); 
@@ -277,6 +283,12 @@ jQuery(document).ready(function() {
 
       submitHandler: function (form) {
         jQuery(form).ajaxSubmit({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          },
           success: function(res, status, xhr, form) {
             if (res == 1) {
               $('#pwd_dialog').modal('hide'); 
