@@ -1,24 +1,19 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -88,54 +83,45 @@ public class SyncController {
 	@Autowired
 	private InventoryClassRepository inventoryClassRepository;
 
-	@GetMapping({ "", "/", "/all" })
+	@GetMapping({ "", "/", "/daily" })
 	public boolean index() {
 		this.measurementunit();
 		this.inventoryClass();
-		this.inventory();
-		this.vendorUpdateAll();
+		this.inventoryDaily();
+		this.vendorDaily();
+		this.purchaseInDaily();
+		this.purchaseorderDaily();
+
+		return true;
+	}
+
+	@GetMapping({ "/init", "/init/" })
+	public boolean initAll() {
+		this.measurementunit();
+		this.inventoryClass();
+		this.inventoryInit();
+		this.vendorInit();
+		this.purchaseInInit();
 		this.purchaseorderInit();
 
 		return true;
 	}
 
-	@RequestMapping(value = "/vendor/part")
-	public boolean vendorUpatePart() {
-		return vendor(false);
+	@RequestMapping({ "/vendor/init", "/vendor", "/vendor/" })
+	public boolean vendorInit() {
+		vendorRepository.deleteAll();
+
+		return vendor(null);
 	}
 
-	@RequestMapping({ "/vendor/all", "/vendor" })
-	public boolean vendorUpdateAll() {
-		return vendor(true);
+	@RequestMapping(value = "/vendor/daily")
+	public boolean vendorDaily() {
+		return vendor(new Date());
 	}
 
-	private Long getLastSyncTime() {
-
-		Date today = new Date();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-		return cal.getTime().getTime();
-	}
-
-	private Long getTime(String time) {
-		Long result = 0L;
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		try {
-			result = dateFormat.parse(time).getTime();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
-		}
-
-		return result;
-	}
-
+	@SuppressWarnings("unchecked")
 	@Transactional
-	private boolean vendor(boolean isAll) {
+	private boolean vendor(Date beginDate) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -144,9 +130,6 @@ public class SyncController {
 		List<LinkedHashMap<String, String>> vendorList;
 
 		Map<String, Object> map = new HashMap<>();
-
-		if (isAll)
-			vendorRepository.deleteAll();
 
 		try {
 			do {
@@ -158,26 +141,24 @@ public class SyncController {
 				requestParams.put("rows_per_page", "10");
 				requestParams.put("page_index", Integer.toString(++i));
 
+				if (beginDate != null)
+					requestParams.put("timestamp_begin", String.valueOf(beginDate.getTime()));
+
 				String response = apiClient.getBatchVendor(requestParams);
 				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 				});
 
-				logger.info((String) map.get("errcode"));
 				int errorCode = Integer.parseInt((String) map.get("errcode"));
 
 				if (errorCode == appProperties.getError_code_success()) {
 					total_page = Integer.parseInt((String) map.get("page_count"));
 					vendorList = (List<LinkedHashMap<String, String>>) map.get("vendor");
 					for (LinkedHashMap<String, String> temp : vendorList) {
-						logger.info(temp.get("code") + " " + temp.get("name"));
 
-						Vendor vendor = new Vendor();
-						vendor.setCode(temp.get("code"));
-						if (this.getTime(temp.get("timeStamp")) >= getLastSyncTime()) {
-							Example<Vendor> example = Example.of(vendor);
-							Optional<Vendor> result = vendorRepository.findOne(example);
-							if (result.isPresent())
-								vendor = result.get();
+						Vendor vendor = vendorRepository.findOneByCode(temp.get("code"));
+						if (vendor == null) {
+							vendor = new Vendor();
+							vendor.setCode(temp.get("code"));
 						}
 
 						vendor.setAbbrname(temp.get("abbrname"));
@@ -216,9 +197,23 @@ public class SyncController {
 		return true;
 	}
 
+	@RequestMapping(value = { "/inventory/init", "/inventory", "/inventory/" })
+	public boolean inventoryInit() {
+
+		inventoryRepository.deleteAllInBatch();
+		inventory(null);
+		return true;
+	}
+
+	@RequestMapping(value = "/inventory/daily")
+	public boolean inventoryDaily() {
+		inventory(new Date());
+		return true;
+	}
+
+	@SuppressWarnings("unchecked")
 	@Transactional
-	@RequestMapping(value = "/inventory")
-	public boolean inventory() {
+	private boolean inventory(Date beginDate) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -227,8 +222,6 @@ public class SyncController {
 		List<LinkedHashMap<String, String>> tempList;
 
 		Map<String, Object> map = new HashMap<>();
-
-		inventoryRepository.deleteAllInBatch();
 
 		try {
 			do {
@@ -240,6 +233,9 @@ public class SyncController {
 				requestParams.put("rows_per_page", "10");
 				requestParams.put("page_index", Integer.toString(++i));
 
+				if (beginDate != null)
+					requestParams.put("modifydate_begin", Utils.formatDate(beginDate));
+
 				String response = apiClient.getBatchInventory(requestParams);
 				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 				});
@@ -250,7 +246,7 @@ public class SyncController {
 					total_page = Integer.parseInt((String) map.get("page_count"));
 					tempList = (List<LinkedHashMap<String, String>>) map.get("inventory");
 					for (LinkedHashMap<String, String> temp : tempList) {
-						logger.info(temp.get("code") + " " + temp.get("name"));
+
 						Inventory inventory = new Inventory();
 						String tempValue = temp.get("bottom_sale_price");
 						if (tempValue != null)
@@ -337,8 +333,9 @@ public class SyncController {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Transactional
-	@RequestMapping(value = "/measurementunit")
+	@RequestMapping(value = { "/measurementunit/init", "/measurementunit", "/measurementunit/" })
 	public boolean measurementunit() {
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -371,13 +368,11 @@ public class SyncController {
 					total_page = Integer.parseInt((String) map.get("page_count"));
 					tempList = (List<LinkedHashMap<String, String>>) map.get("unit");
 					for (LinkedHashMap<String, String> temp : tempList) {
-						logger.info(temp.get("code") + " " + temp.get("name"));
+
 						MeasurementUnit unit = new MeasurementUnit();
 						unit.setCode(temp.get("code"));
 						unit.setGroupCode(temp.get("group_code"));
 						unit.setName(temp.get("name"));
-						// if (temp.get("changerate") != null && !temp.get("changerate").isEmpty())
-						// unit.setChangerate(Integer.parseInt(temp.get("changerate")));
 						unit.setMainFlag(Boolean.parseBoolean(temp.get("main_flag")));
 						measurementUnitRepository.save(unit);
 					}
@@ -397,8 +392,9 @@ public class SyncController {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Transactional
-	@RequestMapping(value = "/inventory_class")
+	@RequestMapping(value = { "/inventory_class/init", "/inventory_class", "/inventory_class/" })
 	public boolean inventoryClass() {
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -431,7 +427,7 @@ public class SyncController {
 					total_page = Integer.parseInt((String) map.get("page_count"));
 					tempList = (List<LinkedHashMap<String, String>>) map.get("inventory");
 					for (LinkedHashMap<String, String> temp : tempList) {
-						logger.info(temp.get("code") + " " + temp.get("name"));
+
 						InventoryClass inventoryClass = new InventoryClass();
 						inventoryClass.setCode(temp.get("code"));
 						inventoryClass.setName(temp.get("name"));
@@ -462,23 +458,29 @@ public class SyncController {
 	}
 
 	@RequestMapping(value = "/purchaseorder/daily")
-	public boolean purchaseorderPart() {
+	public boolean purchaseorderDaily() {
 		purchaseOrder(new Date(), null);
 		return true;
 	}
 
 	@RequestMapping(value = "/purchaseorder/vendor")
-	public boolean purchaseorderVendor() {
+	public boolean purchaseorderForVendor() {
 		if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated())
 			return false;
 
 		String units = (String) httpSession.getAttribute(Constants.KEY_DEFAULT_UNIT_LIST);
-		purchaseOrder(new Date(), units);
+		List<Vendor> vendorList = vendorRepository
+				.findVendorsByUnitIdList(Arrays.asList(StringUtils.split(units, ",")));
+		for (Vendor vendor : vendorList) {
+			purchaseOrder(new Date(), vendor.getCode());
+		}
+
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Transactional
-	private boolean purchaseOrder(Date startDate, String unitList) {
+	private boolean purchaseOrder(Date startDate, String vendorCode) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -498,13 +500,6 @@ public class SyncController {
 			this.purchaseOrderMainRepository.deleteAllInBatch();
 		}
 
-		List<Vendor> vendorCodeList = new ArrayList<>();
-
-		if (unitList != null) {
-			vendorCodeList
-					.addAll(vendorRepository.findVendorsByUnitIdList(Arrays.asList(StringUtils.split(unitList, ","))));
-		}
-
 		try {
 			do {
 
@@ -519,34 +514,35 @@ public class SyncController {
 					requestParams.put("date_begin", Utils.formatDate(startDate));
 				}
 
+				if (vendorCode != null) {
+					requestParams.put("vendorcode", vendorCode);
+				}
+
 				String response = apiClient.getBatchPurchaseOrder(requestParams);
-				logger.info(response);
+
 				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 				});
 
-				logger.info((String) map.get("errcode"));
 				int errorCode = Integer.parseInt((String) map.get("errcode"));
 
 				if (errorCode == appProperties.getError_code_success()) {
 					total_page = Integer.parseInt((String) map.get("page_count"));
 					list = (List<LinkedHashMap<String, String>>) map.get("purchaseorderlist");
 					for (LinkedHashMap<String, String> temp : list) {
-						logger.info(temp.get("code") + " " + temp.get("name"));
 
-						PurchaseOrderMain main = new PurchaseOrderMain();
-						main.setCode(temp.get("code"));
+						PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(temp.get("code"));
+						if (main == null) {
+							main = new PurchaseOrderMain();
+							main.setCode(temp.get("code"));
+						}
 
 						Date makeDate = Utils.parseDate(temp.get("date"));
 						Vendor vendor = vendorRepository.findOneByCode(temp.get("vendorcode"));
 
-						if (makeDate == null || temp.get("state") == "新建" || vendor == null) {
+						if (temp.get("state") == "新建" || vendor == null) {
 							continue;
 						}
 
-						Example<PurchaseOrderMain> example = Example.of(main);
-						Optional<PurchaseOrderMain> result = purchaseOrderMainRepository.findOne(example);
-						if (result.isPresent())
-							main = result.get();
 						main.setSrmstate(Constants.PURCHASE_ORDER_STATE_START);
 						main.setVendor(vendorRepository.findOneByCode(temp.get("vendorcode")));
 						main.setMakedate(makeDate);
@@ -584,6 +580,7 @@ public class SyncController {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean purchaseOrderDetail(PurchaseOrderMain main) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -596,12 +593,15 @@ public class SyncController {
 
 			map = new HashMap<>();
 
-			String response = apiClient.getPurchaseOrder(main.getCode());
-			logger.info(response);
+			Map<String, String> requestParams = new HashMap<>();
+
+			requestParams.put("id", main.getCode());
+
+			String response = apiClient.getPurchaseOrder(requestParams);
+
 			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 			});
 
-			logger.info((String) map.get("errcode"));
 			int errorCode = Integer.parseInt((String) map.get("errcode"));
 
 			if (errorCode == appProperties.getError_code_success()) {
@@ -658,19 +658,20 @@ public class SyncController {
 	}
 
 	@RequestMapping(value = "/purchasein/daily")
-	public boolean purchaseInPart() {
+	public boolean purchaseInDaily() {
 		purchaseIn(new Date(), null, false);
 		purchaseIn(new Date(), null, true);
 		return true;
 	}
 
 	@RequestMapping(value = "/purchasein/vendor/{vendorCode}")
-	public boolean purchaseInVendor(@PathVariable("vendorCode") String vendorCode) {
+	public boolean purchaseInForVendor(@PathVariable("vendorCode") String vendorCode) {
 		purchaseIn(new Date(), vendorCode, false);
 		purchaseIn(new Date(), vendorCode, true);
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Transactional
 	public boolean purchaseIn(Date startDate, String vendorCode, boolean isWeiwai) {
 
@@ -693,11 +694,11 @@ public class SyncController {
 				requestParams.put("page_index", Integer.toString(++i));
 
 				if (vendorCode != null) {
-					requestParams.put("vendor_code", vendorCode);
+					requestParams.put("vendorcode", vendorCode);
 				}
 
 				if (startDate != null) {
-					requestParams.put("start_date", Utils.formatDateZeroTime(startDate));
+					requestParams.put("cChangAuditTime_begin", Utils.formatDateZeroTime(startDate));
 				}
 
 				String response;
@@ -726,7 +727,6 @@ public class SyncController {
 						String date = temp.get("DVeriDate");
 						String rowno = String.valueOf(temp.get("irowno"));
 
-						logger.info(code + " " + rowno);
 						String inventory_code = temp.get("CInvCode");
 						Float quantity = Float.valueOf(String.valueOf(temp.get("IQuantity")));
 						Float price = Float.valueOf(String.valueOf(temp.get("IUnitCost")));

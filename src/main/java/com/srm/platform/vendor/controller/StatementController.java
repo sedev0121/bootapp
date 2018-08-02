@@ -17,10 +17,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -291,7 +293,7 @@ public class StatementController extends CommonController {
 			if (attach != null) {
 				origianlFileName = attach.getOriginalFilename();
 				File file = UploadFileHelper.simpleUpload(attach, request, true, Constants.PATH_UPLOADS_STATEMENT);
-				logger.info(attach.getOriginalFilename());
+
 				if (file != null)
 					savedFileName = file.getName();
 			}
@@ -315,11 +317,12 @@ public class StatementController extends CommonController {
 			main.setInvoicenummaker(this.getLoginAccount());
 			main.setInvoicenumdate(new Date());
 		} else if (form.getState() == Constants.STATEMENT_STATE_INVOICE_PUBLISH) {
+			main.setInvoiceType(form.getInvoice_type());
 			GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
 			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
 				main.setU8invoicemaker(this.getLoginAccount());
 				main.setU8invoicedate(new Date());
-				main.setInvoiceType(form.getInvoice_type());
+
 			} else {
 				return u8Response;
 			}
@@ -466,7 +469,12 @@ public class StatementController extends CommonController {
 			map = new HashMap<>();
 
 			String postJson = createJsonString(main);
-			String response = apiClient.generatePurchaseInvoice(postJson);
+			Map<String, String> getParams = new HashMap<>();
+
+			getParams.put("biz_id", main.getCode());
+			getParams.put("sync", "1");
+
+			String response = apiClient.generatePurchaseInvoice(getParams, postJson);
 
 			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 			});
@@ -509,10 +517,12 @@ public class StatementController extends CommonController {
 		for (StatementDetail detail : detailList) {
 			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
 
+			if (purchaseInDetail == null)
+				continue;
 			U8InvoicePostEntry entry = new U8InvoicePostEntry();
 			entry.setQuantity(detail.getClosedQuantity());
 			entry.setTaxrate(detail.getTaxRate());
-			entry.setOriginalmoney(detail.getClosedMoney());
+			entry.setOritaxcost(detail.getClosedTaxPrice());
 			entry.setInventorycode(purchaseInDetail.getInventory().getCode());
 			entryList.add(entry);
 		}
@@ -528,5 +538,15 @@ public class StatementController extends CommonController {
 			e.printStackTrace();
 		}
 		return jsonString;
+	}
+
+	@GetMapping("/{code}/download")
+	public ResponseEntity<Resource> download(@PathVariable("code") String code) {
+		StatementMain main = this.statementMainRepository.findOneByCode(code);
+		if (main == null)
+			show404();
+
+		return download(Constants.PATH_UPLOADS_STATEMENT + File.separator + main.getAttachFileName(),
+				main.getAttachOriginalName());
 	}
 }

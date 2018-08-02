@@ -70,12 +70,6 @@ public class AccountController extends CommonController {
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
 	public String index(Model model) {
-
-		PageRequest request = PageRequest.of(0, 2);
-		Page<Account> result = accountRepository.findAll(request);
-		result.getTotalElements();
-		logger.info(result.toString());
-		model.addAttribute("accounts", result.getContent());
 		return "admin/account/list";
 	}
 
@@ -160,7 +154,9 @@ public class AccountController extends CommonController {
 
 		List<PermissionGroup> groupList = new ArrayList<>();
 		for (PermissionGroupUser group : resultList) {
-			groupList.add(permissionGroupRepository.findOneById(group.getGroupId()));
+			PermissionGroup item = permissionGroupRepository.findOneById(group.getGroupId());
+			if (item != null)
+				groupList.add(item);
 		}
 
 		ObjectMapper mapper = new ObjectMapper();

@@ -38,7 +38,6 @@ public class SystemController extends CommonController {
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
 	public String index(Model model) {
-		logger.info("session count=" + this.sessionCounter.getActiveSessionNumber());
 		return "admin/system/list";
 	}
 

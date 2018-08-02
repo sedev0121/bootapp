@@ -55,10 +55,9 @@ public class HomeController {
 		test.put("url", "test");
 
 		Context context = new Context();
-		// context.setVariable("url", "/test");
+
 		context.setVariables(test);
 		String html = templateEngine.process("email/resetpassword", context);
-		logger.info(html);
 
 		return "email/resetpassword";
 	}

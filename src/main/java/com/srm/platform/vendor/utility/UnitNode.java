@@ -10,6 +10,8 @@ public class UnitNode {
 	private Long id;
 	private String text;
 	private Long parentId;
+	private boolean addSuccess;
+
 	private List<UnitNode> children = new ArrayList<>();
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -20,6 +22,14 @@ public class UnitNode {
 
 	public void setParentId(Long parentId) {
 		this.parentId = parentId;
+	}
+
+	public boolean isAddSuccess() {
+		return addSuccess;
+	}
+
+	public void setAddSuccess(boolean addSuccess) {
+		this.addSuccess = addSuccess;
 	}
 
 	public List<UnitNode> getChildren() {
@@ -50,6 +60,7 @@ public class UnitNode {
 		this.id = id;
 		this.text = text;
 		this.parentId = parentId;
+
 	}
 
 	private UnitNode findParent(UnitNode node) {
@@ -67,10 +78,13 @@ public class UnitNode {
 		return parentNode;
 	}
 
-	public void addNode(UnitNode node) {
+	public boolean addNode(UnitNode node) {
 		UnitNode parent = findParent(node);
 		if (parent != null) {
 			parent.children.add(node);
+			return true;
+		} else {
+			return false;
 		}
 	}
 }

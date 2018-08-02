@@ -110,7 +110,6 @@ public class PermissionController extends CommonController {
 		List<String> accountList = new ArrayList<>();
 		for (int i = 0; i < accounts.size(); i++) {
 			AccountSearchItem item = accounts.get(i);
-			logger.info(item.toString());
 			accountList.add(item.getRealname() + "(" + item.getUsername() + ")");
 		}
 		model.addAttribute("accounts", StringUtils.join(accountList, ","));
@@ -210,8 +209,6 @@ public class PermissionController extends CommonController {
 
 		List<AccountSearchItem> accountItems = accountRepository.findAccountsByUsernames(usernameList);
 
-		logger.info(StringUtils.join(usernameList, ","));
-		logger.info(accountItems.toString());
 		permissionGroupUserReopsitory.deleteByGroupId(group.getId());
 		for (int i = 0; i < accountItems.size(); i++) {
 			permissionGroupUserReopsitory.save(new PermissionGroupUser(group.getId(), accountItems.get(i).getId()));
@@ -227,15 +224,11 @@ public class PermissionController extends CommonController {
 			@RequestParam(value = "functions[]", required = false) Long[] functions,
 			@RequestParam Map<String, String> units) {
 
-		logger.info(StringUtils.join(functions, ","));
-
 		permissionGroupFunctionActionRepository.deleteByGroupId(groupId);
 		PermissionGroup group = permissionGroupRepository.findOneById(groupId);
 		if (functions != null) {
 			List<FunctionAction> list = functionActionRepository.findAllById(Arrays.asList(functions));
-			logger.info(list.toString());
 			group.setFunctionActions(list);
-
 			group = permissionGroupRepository.save(group);
 		}
 

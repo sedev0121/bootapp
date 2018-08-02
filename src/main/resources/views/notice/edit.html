@@ -56,7 +56,7 @@
           </div>
           <div class="col-lg-8 col-md-8 form-group" id="file_show" th:if="!${(notice.state==1 or notice.state == 4) and notice.attachFileName == null}">
             <div>
-              <a th:href="@{|/uploads/notice/${notice.attachFileName}|}" th:if="${notice.attachFileName}" th:text="${notice.attachOriginalName}"></a>
+              <a th:href="@{|/notice/${notice.id}/download|}" th:if="${notice.attachFileName}" th:text="${notice.attachOriginalName}"></a>
               <span th:if="!${notice.attachFileName}"><b>附件：</b>---</span>              
               <a class="btn btn-danger" id="del_attach" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}">删除附件</a>
             </div>

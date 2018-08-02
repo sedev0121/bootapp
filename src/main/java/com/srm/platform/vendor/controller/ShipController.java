@@ -203,7 +203,6 @@ public class ShipController extends CommonController {
 	@PostMapping("/export")
 	public ModelAndView export_file(@RequestParam(value = "export_data") String exportData, Principal principal) {
 
-		logger.info(exportData);
 		List<PurchaseOrderDetail> exportList = new ArrayList<>();
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -237,7 +236,6 @@ public class ShipController extends CommonController {
 
 			exportList = q.getResultList();
 
-			logger.info(shipForm.getList().toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -252,7 +250,7 @@ public class ShipController extends CommonController {
 	public String import_file(@RequestParam("import_file") MultipartFile excelFile, HttpServletRequest request,
 			RedirectAttributes redirectAttributes, Principal principal) {
 		File file = UploadFileHelper.simpleUpload(excelFile, request, true, "uploads");
-		logger.info(file.getAbsolutePath());
+
 		List<ArrayList<String>> importList = new ArrayList<>();
 
 		int importCount = 0;
@@ -296,14 +294,13 @@ public class ShipController extends CommonController {
 			if (vendor != null && importList != null) {
 
 				for (ArrayList<String> row : importList) {
-					logger.info("row=" + row.toString());
+
 					PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(row.get(0));
 					if (main.getVendor().getCode().equals(vendor.getCode())) {
 
 						PurchaseOrderDetail detail = purchaseOrderDetailRepository
 								.findOneById((long) Float.parseFloat(row.get(2)));
-						logger.info(detail.getMain().getCode() + " " + detail.getRowno() + " "
-								+ detail.getInventory().getCode());
+
 						if (detail != null) {
 							if (row.get(1) != null) {
 								float quantity = detail.getShippedQuantity() == null ? 0 : detail.getShippedQuantity();

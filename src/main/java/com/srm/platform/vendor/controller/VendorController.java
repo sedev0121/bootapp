@@ -78,7 +78,6 @@ public class VendorController extends CommonController {
 		String search = requestParams.getOrDefault("search", "");
 
 		List<String> unitList = this.getDefaultUnitList();
-		logger.info(unitList.toString());
 
 		if (order.equals("unitname")) {
 			order = "b.name";
