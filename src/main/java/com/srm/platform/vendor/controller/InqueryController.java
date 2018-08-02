@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -26,6 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
@@ -38,7 +42,10 @@ import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.InquerySearchResult;
+import com.srm.platform.vendor.utility.U8VenpriceadjustPostData;
+import com.srm.platform.vendor.utility.U8VenpriceadjustPostEntry;
 import com.srm.platform.vendor.utility.Utils;
 import com.srm.platform.vendor.utility.VenPriceDetailItem;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
@@ -218,7 +225,8 @@ public class InqueryController extends CommonController {
 	// 更新API
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody VenPriceAdjustMain update_ajax(VenPriceSaveForm form, Principal principal) {
+	public @ResponseBody GenericJsonResponse<VenPriceAdjustMain> update_ajax(VenPriceSaveForm form,
+			Principal principal) {
 		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(form.getCcode());
 
 		if (venPriceAdjustMain == null) {
@@ -250,12 +258,21 @@ public class InqueryController extends CommonController {
 			venPriceAdjustMain.setDverifydate(new Date());
 		}
 		if (form.getState() == Constants.STATE_PUBLISH) {
-			venPriceAdjustMain.setPublisher(account);
-			venPriceAdjustMain.setDpublishdate(new Date());
+			GenericJsonResponse<VenPriceAdjustMain> u8Response = this.u8VenPriceAdjust(venPriceAdjustMain);
+			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
+				venPriceAdjustMain.setPublisher(account);
+				venPriceAdjustMain.setDpublishdate(new Date());
+			} else {
+				return u8Response;
+			}
+
 		}
 
 		venPriceAdjustMain.setIverifystate(form.getState());
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
+
+		GenericJsonResponse<VenPriceAdjustMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS,
+				null, venPriceAdjustMain);
 
 		String action = null;
 		List<Account> toList = new ArrayList<>();
@@ -349,7 +366,7 @@ public class InqueryController extends CommonController {
 			updatePriceTable(venPriceAdjustMain);
 		}
 
-		return venPriceAdjustMain;
+		return jsonResponse;
 	}
 
 	// 更新价格表
@@ -375,5 +392,77 @@ public class InqueryController extends CommonController {
 			priceRepository.save(price);
 		}
 
+	}
+
+	private GenericJsonResponse<VenPriceAdjustMain> u8VenPriceAdjust(VenPriceAdjustMain main) {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		Map<String, Object> map = new HashMap<>();
+
+		GenericJsonResponse<VenPriceAdjustMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS,
+				null, main);
+		try {
+
+			map = new HashMap<>();
+
+			String postJson = createJsonString(main);
+			String response = apiClient.generateVenpriceadjust(postJson, main.getCcode());
+
+			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
+			});
+
+			int errorCode = Integer.parseInt((String) map.get("errcode"));
+			String errmsg = String.valueOf(map.get("errmsg"));
+
+			if (errorCode != appProperties.getError_code_success()) {
+				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
+			}
+
+		} catch (IOException e) {
+			logger.info(e.getMessage());
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "服务器错误！", main);
+		}
+
+		return jsonResponse;
+	}
+
+	private String createJsonString(VenPriceAdjustMain main) {
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonString = "";
+
+		U8VenpriceadjustPostData post = new U8VenpriceadjustPostData();
+		post.setCcode(main.getCcode());
+		post.setMaker(this.getLoginAccount().getRealname());
+
+		List<U8VenpriceadjustPostEntry> entryList = new ArrayList<>();
+
+		List<VenPriceAdjustDetail> detailList = venPriceAdjustDetailRepository.findByMainId(main.getCcode());
+		for (VenPriceAdjustDetail detail : detailList) {
+			if (detail.getIvalid() == 0)
+				continue;
+
+			U8VenpriceadjustPostEntry entry = new U8VenpriceadjustPostEntry();
+			entry.setCinvcode(detail.getInventory().getCode());
+			entry.setCvencode(main.getVendor().getCode());
+			entry.setDstartdate(Utils.formatDate(detail.getDstartdate()));
+			entry.setItaxrate(detail.getItaxrate());
+			entry.setItaxunitprice(detail.getItaxunitprice());
+			entry.setIunitprice(detail.getIunitprice());
+
+			entryList.add(entry);
+		}
+
+		post.setEntry(entryList);
+
+		try {
+			Map<String, U8VenpriceadjustPostData> map = new HashMap<>();
+			map.put("venpriceadjust", post);
+			jsonString = mapper.writeValueAsString(map);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return jsonString;
 	}
 }

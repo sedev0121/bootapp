@@ -31,6 +31,8 @@ import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.service.SessionCounter;
+import com.srm.platform.vendor.u8api.ApiClient;
+import com.srm.platform.vendor.u8api.AppProperties;
 import com.srm.platform.vendor.utility.Constants;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
@@ -44,6 +46,12 @@ class ResourceNotFoundException extends RuntimeException {
 @PreAuthorize("isAuthenticated()")
 public class CommonController {
 	public final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@Autowired
+	public ApiClient apiClient;
+
+	@Autowired
+	public AppProperties appProperties;
 
 	@PersistenceContext
 	public EntityManager em;

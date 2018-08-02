@@ -47,8 +47,6 @@ import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
-import com.srm.platform.vendor.u8api.ApiClient;
-import com.srm.platform.vendor.u8api.AppProperties;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.StatementDetailItem;
@@ -67,12 +65,6 @@ public class StatementController extends CommonController {
 
 	@PersistenceContext
 	private EntityManager em;
-
-	@Autowired
-	private ApiClient apiClient;
-
-	@Autowired
-	private AppProperties appProperties;
 
 	@Autowired
 	private VendorRepository vendorRepository;
