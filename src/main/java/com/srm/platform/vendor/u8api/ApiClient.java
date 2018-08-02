@@ -150,12 +150,13 @@ public class ApiClient {
 		return response;
 	}
 
-	public String generatePurchaseInvoice(String json) {
+	public String generatePurchaseInvoice(String json, String bizId) {
 
 		checkToken();
 
 		RestClient client = new RestClient();
 		String url = String.format(appProperties.getPurInvoice().getAdd(), token_id);
+		url += "&biz_id=" + bizId + "&sync=1";
 
 		logger.info(String.format("url=>%s", url));
 		logger.info(String.format("post=>%s", json));

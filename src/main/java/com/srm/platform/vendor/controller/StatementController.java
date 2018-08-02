@@ -466,7 +466,7 @@ public class StatementController extends CommonController {
 			map = new HashMap<>();
 
 			String postJson = createJsonString(main);
-			String response = apiClient.generatePurchaseInvoice(postJson);
+			String response = apiClient.generatePurchaseInvoice(postJson, main.getCode());
 
 			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 			});
