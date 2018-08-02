@@ -317,11 +317,12 @@ public class StatementController extends CommonController {
 			main.setInvoicenummaker(this.getLoginAccount());
 			main.setInvoicenumdate(new Date());
 		} else if (form.getState() == Constants.STATEMENT_STATE_INVOICE_PUBLISH) {
+			main.setInvoiceType(form.getInvoice_type());
 			GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
 			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
 				main.setU8invoicemaker(this.getLoginAccount());
 				main.setU8invoicedate(new Date());
-				main.setInvoiceType(form.getInvoice_type());
+
 			} else {
 				return u8Response;
 			}
@@ -511,6 +512,8 @@ public class StatementController extends CommonController {
 		for (StatementDetail detail : detailList) {
 			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
 
+			if (purchaseInDetail == null)
+				continue;
 			U8InvoicePostEntry entry = new U8InvoicePostEntry();
 			entry.setQuantity(detail.getClosedQuantity());
 			entry.setTaxrate(detail.getTaxRate());
