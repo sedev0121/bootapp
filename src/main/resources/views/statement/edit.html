@@ -149,7 +149,7 @@
                   <label for="remark">　</label>
                   <div th:if="${main.attachFileName!=null}" >
                     <span><b>附件：</b></span>
-                    <a th:href="@{|/uploads/statement/${main.attachFileName}|}" th:text="${main.attachOriginalName}"></a><a class="btn" style="visibility: hidden;">　</a> 
+                    <a th:href="@{|/statement/${main.code}/download|}" th:text="${main.attachOriginalName}"></a><a class="btn" style="visibility: hidden;">　</a> 
                     <a class="btn btn-danger" id="del_attach" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.attachOriginalName!=null and (main.state==1  || main.state==4)}">删除附件</a>
                   </div>
                   <div th:if="${main.attachFileName==null}" >
@@ -837,7 +837,12 @@ $(document).ready(function() {
         attr: {
           type: "number",
         },
-        name: "nat_tax_price" 
+        name: "tax_rate"  
+      },{
+        attr: {
+          type: "number",
+        },
+        name: "closed_tax_price" 
       },{
         attr: {
           type: "number",
@@ -912,8 +917,9 @@ $(document).ready(function() {
               if (item.unit_weight != undefined && item.material_tax_price != undefined) {
                 item.material_chargeback = parseFloat(item.material_less_quantity * item.unit_weight * item.material_tax_price).toFixed(2);
                 
-                if (item.nat_tax_price != undefined) {
-                  item.price = parseFloat(item.material_chargeback>=0?(item.real_quantity * item.nat_tax_price - item.material_chargeback):(item.real_quantity * item.nat_tax_price)).toFixed(6);
+                if (item.closed_tax_price != undefined) {
+                  item.closed_tax_money = parseFloat(item.material_chargeback>=0?(item.real_quantity * item.closed_tax_price - item.material_chargeback):(item.real_quantity * item.closed_tax_price)).toFixed(6);
+                  item.closed_money = parseFloat(item.closed_tax_money * 100 / (100 + parseFloat(item.tax_rate))).toFixed(6);
                 }
               }
             }
@@ -956,7 +962,8 @@ $(document).ready(function() {
                 item.material_less_quantity = parseFloat(item.material_quantity - item.real_quantity - item.yuanci - item.yinci + item.yinci_chargeback).toFixed(4);
 
                 item.material_chargeback = parseFloat(item.material_less_quantity * item.unit_weight * item.material_tax_price).toFixed(2);
-                item.price = parseFloat(item.material_chargeback>=0?(item.real_quantity * item.nat_tax_price - item.material_chargeback):(item.real_quantity * item.nat_tax_price)).toFixed(6);
+                //item.closed_tax_money = parseFloat(item.material_chargeback>=0?(item.real_quantity * item.closed_tax_price - item.material_chargeback):(item.real_quantity * item.closed_tax_price)).toFixed(6);
+                
                 result.push(item);
               }
               
@@ -992,29 +999,41 @@ $(document).ready(function() {
           className:'dt-right',
           title : '系统入库数量',
         }, {
-          data : 'nat_tax_price',
+          data : 'closed_quantity',
+          className: 'dt-right',
+          title : '对账数量',
+        }, {
+          data : 'closed_tax_price',
           className:'dt-right',
           title : '含税加工单价',
+        }, {
+          data : 'closed_price',
+          className:'dt-right',
+          title : '未税加工单价',
         }, {
           data : 'material_quantity',
           className:'dt-right',
           title : '出库数量',
         }, {
+          data : 'tax_rate',
+          className:' edit-cell dt-right',
+          title : '　　税率',
+        }, {
           data : 'real_quantity',
           className:'dt-right edit-cell',
-          title : '实收数量',
+          title : '　实收数量',
         }, {
           data : 'yuanci',
           className:'dt-right edit-cell',
-          title : '原次',
+          title : '　　原次',
         }, {
           data : 'yinci',
           className:'dt-right edit-cell',
-          title : '印次',
+          title : '　　印次',
         }, {
           data : 'unit_weight',
           className:'dt-right edit-cell',
-          title : '每片基材重量',
+          title : '　每片基材重量',
         }, {
           data : 'yinci_standard',
           className:'dt-right',
@@ -1036,13 +1055,13 @@ $(document).ready(function() {
           className:'dt-right',
           title : '基材扣款',
         }, {
-          data : 'price',
+          data : 'closed_tax_money',
           className:'dt-right',
-          title : '金额',
+          title : '结算含税金额',
         }, {
-          data : 'closed_quantity',
-          className: 'dt-right',
-          title : '对账数量',
+          data : 'closed_money',
+          className:'dt-right',
+          title : '结算未税金额',
         }, {
           data : 'memo',
           className:'vendor',
@@ -1073,7 +1092,7 @@ $(document).ready(function() {
       table.on( 'click', 'tbody td.edit-cell', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
-      App.addKeyDownEditor(editor, 9, 12);    
+      App.addKeyDownEditor(editor, 9, 13);    
     } 
     
     if (state == 2 && !is_readonly) {
@@ -1158,14 +1177,17 @@ $(document).ready(function() {
         item.purchase_in_detail_id = item.id;
         item.purchase_in_code = item.code;
         item.purchase_in_date = item.date;
-        item.closed_money = item.cost;
-        item.closed_price = item.price;
         
-        item.closed_tax_money = item.cost;
-        item.closed_tax_price = item.price;
         item.taxprice = item.tax_price;
         item.taxcost = item.tax_cost;
-
+        
+        item.closed_money = item.cost;
+        item.closed_price = item.price;
+        item.closed_tax_money = item.tax_cost;
+        item.closed_tax_price = item.tax_price;
+        
+        item.closed_quantity = item.quantity;
+        
         item.real_quantity = null;
         item.yuanci = null;
         item.yinci = null;
@@ -1176,8 +1198,11 @@ $(document).ready(function() {
         item.material_less_quantity = null;
         item.material_chargeback = null;
         item.memo = null;
-        item.closed_quantity = item.quantity;
         
+        if ($('#type').val() == 2){
+          item.closed_tax_price = item.nat_tax_price;
+          item.closed_price = item.closed_tax_price * 100 /(100 + parseFloat(item.tax_rate));          
+        }
         
         table.row.add(item);
       }

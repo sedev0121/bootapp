@@ -7,7 +7,7 @@ public class U8InvoicePostEntry {
 
 	private String inventorycode;
 	private Float quantity;
-	private Float originalmoney;
+	private Float oritaxcost;
 	private Float taxrate;
 
 	public String getInventorycode() {
@@ -26,12 +26,12 @@ public class U8InvoicePostEntry {
 		this.quantity = quantity;
 	}
 
-	public Float getOriginalmoney() {
-		return originalmoney;
+	public Float getOritaxcost() {
+		return oritaxcost;
 	}
 
-	public void setOriginalmoney(Float originalmoney) {
-		this.originalmoney = originalmoney;
+	public void setOritaxcost(Float oritaxcost) {
+		this.oritaxcost = oritaxcost;
 	}
 
 	public Float getTaxrate() {

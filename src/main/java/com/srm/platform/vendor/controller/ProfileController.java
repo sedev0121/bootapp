@@ -33,13 +33,13 @@ public class ProfileController extends CommonController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	@Value("${system.password.minlength}")
+	@Value("${srm.password.minlength}")
 	private int PASSWORD_MIN_LENGTH;
 
-	@Value("${system.password.no_special_char}")
+	@Value("${srm.password.no_special_char}")
 	private boolean PASSWORD_NO_SPEICAL_CHAR;
 
-	@Value("${system.password.must_include_char}")
+	@Value("${srm.password.must_include_char}")
 	private boolean PASSWORD_MUST_INCLUDE_CHAR;
 
 	@PreAuthorize("hasRole('ROLE_BUYER') OR hasRole('ROLE_VENDOR') OR hasRole('ROLE_ADMIN')")

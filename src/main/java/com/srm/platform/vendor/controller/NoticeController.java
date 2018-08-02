@@ -15,10 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -174,21 +176,7 @@ public class NoticeController extends CommonController {
 	@GetMapping("/{id}/edit")
 	public String edit(@PathVariable("id") Long id, Model model) {
 		Notice notice = noticeRepository.findOneById(id);
-		if (notice == null || notice.getType() != Constants.NOTICE_TYPE_USER)
-			show404();
-
-		boolean isVisible = false;
-		logger.info(notice.getCreateAccount().getId() + " " + this.getLoginAccount().getId());
-		if (isAuthorizedUnit(notice.getCreateAccount().getUnit().getId()) && this.hasAuthority("公告通知-发布")) {
-			isVisible = true;
-		} else if (notice.getCreateAccount().getId() == this.getLoginAccount().getId()) {
-			isVisible = true;
-		} else if (isVisibleNotice(id)) {
-			isVisible = true;
-		}
-
-		if (!isVisible)
-			show403();
+		checkPermission(notice);
 
 		setReadDate(id);
 		model.addAttribute("notice", notice);
@@ -255,6 +243,7 @@ public class NoticeController extends CommonController {
 			origianlFileName = attach.getOriginalFilename();
 			File file = UploadFileHelper.simpleUpload(attach, request, true, Constants.PATH_UPLOADS_NOTICE);
 			logger.info(attach.getOriginalFilename());
+			logger.info(file.getAbsolutePath());
 			if (file != null)
 				savedFileName = file.getName();
 		}
@@ -522,6 +511,34 @@ public class NoticeController extends CommonController {
 		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
 
 		return new PageImpl<AccountSearchResult>(list, request, totalCount.longValue());
+
+	}
+
+	@GetMapping("/{id}/download")
+	public ResponseEntity<Resource> download(@PathVariable("id") Long id) {
+		Notice notice = noticeRepository.findOneById(id);
+		checkPermission(notice);
+
+		return download(Constants.PATH_UPLOADS_NOTICE + File.separator + notice.getAttachFileName(),
+				notice.getAttachOriginalName());
+	}
+
+	private void checkPermission(Notice notice) {
+		if (notice == null || notice.getType() != Constants.NOTICE_TYPE_USER)
+			show404();
+
+		boolean isVisible = false;
+		logger.info(notice.getCreateAccount().getId() + " " + this.getLoginAccount().getId());
+		if (isAuthorizedUnit(notice.getCreateAccount().getUnit().getId()) && this.hasAuthority("公告通知-发布")) {
+			isVisible = true;
+		} else if (notice.getCreateAccount().getId() == this.getLoginAccount().getId()) {
+			isVisible = true;
+		} else if (isVisibleNotice(notice.getId())) {
+			isVisible = true;
+		}
+
+		if (!isVisible)
+			show403();
 
 	}
 

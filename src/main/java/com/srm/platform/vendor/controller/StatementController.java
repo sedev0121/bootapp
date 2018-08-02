@@ -17,10 +17,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -512,7 +514,7 @@ public class StatementController extends CommonController {
 			U8InvoicePostEntry entry = new U8InvoicePostEntry();
 			entry.setQuantity(detail.getClosedQuantity());
 			entry.setTaxrate(detail.getTaxRate());
-			entry.setOriginalmoney(detail.getClosedMoney());
+			entry.setOritaxcost(detail.getClosedTaxPrice());
 			entry.setInventorycode(purchaseInDetail.getInventory().getCode());
 			entryList.add(entry);
 		}
@@ -528,5 +530,15 @@ public class StatementController extends CommonController {
 			e.printStackTrace();
 		}
 		return jsonString;
+	}
+
+	@GetMapping("/{code}/download")
+	public ResponseEntity<Resource> download(@PathVariable("code") String code) {
+		StatementMain main = this.statementMainRepository.findOneByCode(code);
+		if (main == null)
+			show404();
+
+		return download(Constants.PATH_UPLOADS_STATEMENT + File.separator + main.getAttachFileName(),
+				main.getAttachOriginalName());
 	}
 }

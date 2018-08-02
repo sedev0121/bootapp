@@ -1,6 +1,8 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,7 +18,10 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -49,6 +54,7 @@ import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.U8VenpriceadjustPostData;
 import com.srm.platform.vendor.utility.U8VenpriceadjustPostEntry;
+import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
@@ -338,6 +344,25 @@ public class CommonController {
 			e.printStackTrace();
 		}
 		return jsonString;
+	}
+
+	public ResponseEntity<Resource> download(String filePath, String downloadFileName) {
+
+		Resource file = UploadFileHelper.getResource(filePath);
+
+		if (file == null) {
+			show404();
+		}
+
+		try {
+			downloadFileName = URLEncoder.encode(downloadFileName, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileName + "\"")
+				.body(file);
 	}
 
 }
