@@ -292,6 +292,9 @@ public class CommonController {
 
 		List<VenPriceAdjustDetail> list = venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode());
 		for (VenPriceAdjustDetail item : list) {
+			if (venPriceAdjustMain.getType() == Constants.INQUERY_TYPE_RANGE && item.getIvalid() == 0)
+				continue;
+
 			Price price = new Price();
 			price.setVendor(venPriceAdjustMain.getVendor());
 			price.setInventory(item.getInventory());
