@@ -19,24 +19,16 @@ public class SessionCounter implements HttpSessionListener, Serializable {
 	@Override
 	public void sessionCreated(HttpSessionEvent event) {
 		HttpSession session = event.getSession();
-		System.out
-				.println("SessionCounter.sessionCreated=" + session.getId() + " " + session.getAttribute("account_id"));
 		sessions.add(session);
 	}
 
 	@Override
 	public void sessionDestroyed(HttpSessionEvent event) {
 		HttpSession session = event.getSession();
-		System.out.println(
-				"SessionCounter.sessionDestroyed=" + session.getId() + " " + session.getAttribute("account_id"));
 		sessions.remove(session);
 	}
 
 	public int getActiveSessionNumber() {
-		for (HttpSession session : sessions) {
-			System.out.println("sessions=" + session.getId() + " " + session.getAttribute("account_id"));
-
-		}
 		return sessions.size();
 	}
 

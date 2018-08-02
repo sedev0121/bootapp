@@ -1,5 +1,7 @@
 package com.srm.platform.vendor.u8api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -9,6 +11,8 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 public class RestClient {
+
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private RestTemplate rest;
 	private HttpHeaders headers;
@@ -28,6 +32,8 @@ public class RestClient {
 		HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
 		ResponseEntity<String> responseEntity = rest.exchange(url, HttpMethod.GET, requestEntity, String.class);
 		this.setStatus(responseEntity.getStatusCode());
+		logger.info(String.format("url=>%s", url));
+		logger.info(String.format("response=>%s", responseEntity.getBody()));
 		return responseEntity.getBody();
 	}
 
@@ -35,6 +41,11 @@ public class RestClient {
 		HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
 		ResponseEntity<String> responseEntity = rest.exchange(url, HttpMethod.POST, requestEntity, String.class);
 		this.setStatus(responseEntity.getStatusCode());
+
+		logger.info(String.format("url=>%s", url));
+		logger.info(String.format("post=>%s", json));
+		logger.info(String.format("response=>%s", responseEntity.getBody()));
+
 		return responseEntity.getBody();
 	}
 

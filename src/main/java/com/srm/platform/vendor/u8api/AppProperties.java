@@ -15,7 +15,7 @@ public class AppProperties {
 	private PropertyVendor vendor;
 	private PropertyPurchaseOrder purchaseOrder;
 	private PropertyPurInvoice purInvoice;
-	private PropertyPurchaseIn purchaseIn;
+
 	private PropertyInventory inventory;
 	private PropertyMeasurementUnit measurementUnit;
 	private PropertyInventoryClass inventoryClass;
@@ -87,14 +87,6 @@ public class AppProperties {
 		this.purInvoice = purInvoice;
 	}
 
-	public PropertyPurchaseIn getPurchaseIn() {
-		return purchaseIn;
-	}
-
-	public void setPurchaseIn(PropertyPurchaseIn purchaseIn) {
-		this.purchaseIn = purchaseIn;
-	}
-
 	public PropertyInventory getInventory() {
 		return inventory;
 	}
@@ -129,7 +121,6 @@ public class AppProperties {
 
 	public static class PropertyVendor {
 		private String batch_get;
-		private String get;
 
 		public String getBatch_get() {
 			return batch_get;
@@ -137,14 +128,6 @@ public class AppProperties {
 
 		public void setBatch_get(String batch_get) {
 			this.batch_get = batch_get;
-		}
-
-		public String getGet() {
-			return get;
-		}
-
-		public void setGet(String get) {
-			this.get = get;
 		}
 
 	}
@@ -194,7 +177,6 @@ public class AppProperties {
 	}
 
 	public static class PropertyPurInvoice {
-		private String batch_get;
 		private String add;
 
 		public String getAdd() {
@@ -203,14 +185,6 @@ public class AppProperties {
 
 		public void setAdd(String add) {
 			this.add = add;
-		}
-
-		public String getBatch_get() {
-			return batch_get;
-		}
-
-		public void setBatch_get(String batch_get) {
-			this.batch_get = batch_get;
 		}
 
 	}
@@ -233,28 +207,6 @@ public class AppProperties {
 
 		public void setSms(String sms) {
 			this.sms = sms;
-		}
-
-	}
-
-	public static class PropertyPurchaseIn {
-		private String batch_get;
-		private String get;
-
-		public String getBatch_get() {
-			return batch_get;
-		}
-
-		public void setBatch_get(String batch_get) {
-			this.batch_get = batch_get;
-		}
-
-		public String getGet() {
-			return get;
-		}
-
-		public void setGet(String get) {
-			this.get = get;
 		}
 
 	}
@@ -296,8 +248,7 @@ public class AppProperties {
 	}
 
 	public static class PropertyVenPriceAdjust {
-		private String batch_get;
-		private String get;
+
 		private String add;
 
 		public String getAdd() {
@@ -306,22 +257,6 @@ public class AppProperties {
 
 		public void setAdd(String add) {
 			this.add = add;
-		}
-
-		public String getBatch_get() {
-			return batch_get;
-		}
-
-		public void setBatch_get(String batch_get) {
-			this.batch_get = batch_get;
-		}
-
-		public String getGet() {
-			return get;
-		}
-
-		public void setGet(String get) {
-			this.get = get;
 		}
 
 	}

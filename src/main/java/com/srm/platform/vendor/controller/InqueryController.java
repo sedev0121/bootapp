@@ -290,7 +290,7 @@ public class InqueryController extends CommonController {
 			action = "退回";
 			break;
 		}
-		logger.info(toList.toString());
+
 		String title = String.format("询价单【%s】已由【%s】%s，请及时查阅和处理！", venPriceAdjustMain.getCcode(), account.getRealname(),
 				action);
 		this.sendmessage(title, toList);

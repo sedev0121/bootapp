@@ -109,7 +109,6 @@ public class ProfileController extends CommonController {
 	@GetMapping("/checkemail")
 	public @ResponseBody Boolean checkEmail_ajax(@RequestParam("id") Long id, @RequestParam("email") String email) {
 		Account account = accountRepository.findOneByEmail(email);
-		logger.info("email=" + email + " account=" + account);
 		if (account != null && account.getId() != id) {
 			return false;
 		} else {
@@ -121,7 +120,6 @@ public class ProfileController extends CommonController {
 	public @ResponseBody Boolean checkMobile_ajax(@RequestParam("id") Long id, @RequestParam("mobile") String mobile) {
 		Account account = accountRepository.findOneByMobile(mobile);
 
-		logger.info("mobile=" + mobile + " account=" + account);
 		if (account != null && account.getId() != id) {
 			return false;
 		} else {
@@ -132,7 +130,6 @@ public class ProfileController extends CommonController {
 	@GetMapping("/checkweixin")
 	public @ResponseBody Boolean checkWeixin_ajax(@RequestParam("id") Long id, @RequestParam("weixin") String weixin) {
 		Account account = accountRepository.findOneByWeixin(weixin);
-		logger.info("weixin=" + weixin + " account=" + account);
 		if (account != null && account.getId() != id) {
 			return false;
 		} else {

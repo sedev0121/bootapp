@@ -58,7 +58,6 @@ public class UploadFileHelper {
 
 			{
 				String applicationPath = FILE_UPLOAD_PATH;
-				System.out.println("upload_path=" + applicationPath);
 				if (encrypt_file_name) {
 					String currentFileName = file.getOriginalFilename();
 					String extention = currentFileName.substring(currentFileName.lastIndexOf("."),
@@ -116,7 +115,7 @@ public class UploadFileHelper {
 					File serverFile = new File(dir.getAbsolutePath() + File.separator + filename);
 					stream = new BufferedOutputStream(new FileOutputStream(serverFile));
 					stream.write(bytes);
-					System.out.println(filename);
+
 					filenames.add(filename);
 				}
 				stream.close();

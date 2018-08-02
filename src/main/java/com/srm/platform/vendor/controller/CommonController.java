@@ -262,7 +262,12 @@ public class CommonController {
 			map = new HashMap<>();
 
 			String postJson = createJsonString(main);
-			String response = apiClient.generateVenpriceadjust(postJson, main.getCcode());
+			Map<String, String> getParams = new HashMap<>();
+
+			getParams.put("biz_id", main.getCcode());
+			getParams.put("sync", "1");
+
+			String response = apiClient.generateVenpriceadjust(getParams, postJson);
 
 			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 			});

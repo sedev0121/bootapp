@@ -293,7 +293,7 @@ public class StatementController extends CommonController {
 			if (attach != null) {
 				origianlFileName = attach.getOriginalFilename();
 				File file = UploadFileHelper.simpleUpload(attach, request, true, Constants.PATH_UPLOADS_STATEMENT);
-				logger.info(attach.getOriginalFilename());
+
 				if (file != null)
 					savedFileName = file.getName();
 			}
@@ -469,7 +469,12 @@ public class StatementController extends CommonController {
 			map = new HashMap<>();
 
 			String postJson = createJsonString(main);
-			String response = apiClient.generatePurchaseInvoice(postJson, main.getCode());
+			Map<String, String> getParams = new HashMap<>();
+
+			getParams.put("biz_id", main.getCode());
+			getParams.put("sync", "1");
+
+			String response = apiClient.generatePurchaseInvoice(getParams, postJson);
 
 			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 			});

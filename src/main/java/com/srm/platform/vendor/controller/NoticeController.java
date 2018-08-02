@@ -242,8 +242,7 @@ public class NoticeController extends CommonController {
 		if (attach != null) {
 			origianlFileName = attach.getOriginalFilename();
 			File file = UploadFileHelper.simpleUpload(attach, request, true, Constants.PATH_UPLOADS_NOTICE);
-			logger.info(attach.getOriginalFilename());
-			logger.info(file.getAbsolutePath());
+
 			if (file != null)
 				savedFileName = file.getName();
 		}
@@ -427,8 +426,6 @@ public class NoticeController extends CommonController {
 			return new ArrayList<>();
 		}
 
-		logger.info(" " + idList.toString());
-
 		if (idList.isEmpty())
 			return new ArrayList<>();
 
@@ -528,7 +525,7 @@ public class NoticeController extends CommonController {
 			show404();
 
 		boolean isVisible = false;
-		logger.info(notice.getCreateAccount().getId() + " " + this.getLoginAccount().getId());
+
 		if (isAuthorizedUnit(notice.getCreateAccount().getUnit().getId()) && this.hasAuthority("公告通知-发布")) {
 			isVisible = true;
 		} else if (notice.getCreateAccount().getId() == this.getLoginAccount().getId()) {
