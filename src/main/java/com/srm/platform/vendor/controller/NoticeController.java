@@ -104,12 +104,12 @@ public class NoticeController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name, null read_date ";
+		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name, e.read_date read_date ";
 		String countQuery = "select count(distinct a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id "
-				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id where type=1 ";
+				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id and e.to_account_id=:to_account where type=1 ";
 
 		List<String> unitList = this.getDefaultUnitList();
 		Map<String, Object> params = new HashMap<>();

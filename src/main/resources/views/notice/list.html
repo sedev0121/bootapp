@@ -85,6 +85,7 @@ $(document).ready(function() {
     order: [ [2, 'desc'] ],
     columns : [ {
       data : 'title',
+      createdCell: App.getNoticeReadStateClass,
       title : '标题',
       render: function (data, display, record) {
         var edit_url = /*[[@{/notice/}]]*/'';
@@ -125,6 +126,11 @@ $(document).ready(function() {
       createdCell: App.getInqueryStateClass,
       render : App.getNoticeStateOfId,
       title : '状态',
+    }, {
+      data : 'read_date',
+      className: 'dt-center',
+      title : '查阅时间',
+      render : $.fn.time_renderer
     } ],
   });
 

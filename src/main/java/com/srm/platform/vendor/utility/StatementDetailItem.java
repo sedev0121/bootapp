@@ -65,4 +65,12 @@ public interface StatementDetailItem {
 
 	String getMemo();
 
+	String getPo_code();
+
+	String getPo_price();
+
+	String getPo_tax_price();
+
+	String getPo_tax_rate();
+
 }

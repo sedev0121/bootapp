@@ -125,10 +125,10 @@ var edit_url = [[@{/purchasein/}]];
         title : '行号',
       }, {
         data : 'inventorycode',
-        title : '商品编码'
+        title : '物料编码'
       }, {
         data : 'inventoryname',
-        title : '商品名称'
+        title : '物料名称'
       }, {
         data : 'specs',
         title : '规格型号',
@@ -167,7 +167,7 @@ var edit_url = [[@{/purchasein/}]];
         data : 'state',
         className:'dt-right',
         title : '对账状态',
-        render : App.purchaseInStateRender,
+        render : App.getPurchaseInStateOfId,
 
       } ],
       order: [  [ 3, "desc" ] ]

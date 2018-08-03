@@ -265,10 +265,10 @@ is_readonly = 0;
           title : '行号',
         }, {          
           data : 'cinvcode',
-          title : '商品编码',
+          title : '物料编码',
         }, {
           data : 'name',
-          title : '商品名称'
+          title : '物料名称'
         }, {
           data : 'specs',
           title : '规格型号',
@@ -289,13 +289,13 @@ is_readonly = 0;
           className: 'dt-right edit-cell',
           title : '最新未税价格',
         }, {
-          data : 'itaxrate',
-          className: 'dt-center edit-cell',
-          title : '税率',
-        }, {
           data : 'itaxunitprice',
           className: 'dt-right edit-cell',
           title : '最新含税报价',
+        }, {
+          data : 'itaxrate',
+          className: 'dt-center edit-cell',
+          title : '税率',
         }, {
           data : 'dstartdate',
           className: 'dt-center',
@@ -319,22 +319,20 @@ is_readonly = 0;
         rowCallback: function ( row, data ) {
             // Set the checked state of the checkbox in the table
             $('input.editor-valid', row).prop( 'checked', data.ivalid == 1 );
-        }
+        },
       };    
 
 
     var table = $('#example').DataTable(table_options);
 
     if (state == 2 && (is_vendor || !is_readonly)){
-      if ($("#type").val()==2 ) {
+      if ($("#type").val()>=2 ) {
         table.on( 'click', 'tbody td.edit-cell', function (e) {
           editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
         } );
         App.addKeyDownEditor(editor, 7, 9);
       }
     }
-
-    
     
     if (state == 3 && !is_vendor && !is_readonly){
       table.on( 'click', 'tbody td.ivalid', function (e) {

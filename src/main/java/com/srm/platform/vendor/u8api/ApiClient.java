@@ -146,6 +146,10 @@ public class ApiClient {
 		token_id = (String) httpSession.getAttribute("token_id");
 
 		logger.info("session expire=" + tokenExpireTime + " token_id=" + token_id);
+
+		if (tokenExpireTime != null)
+			logger.info("session remain seconds=" + (tokenExpireTime - System.currentTimeMillis()) / 1000);
+
 		if (tokenExpireTime == null || token_id == null || System.currentTimeMillis() >= tokenExpireTime) {
 			Token token = getToken();
 
@@ -193,6 +197,7 @@ public class ApiClient {
 	}
 
 	private String get(String url) {
+		httpSession.setMaxInactiveInterval(0);
 		RestClient client = new RestClient();
 		String response = client.get(url);
 		return response;

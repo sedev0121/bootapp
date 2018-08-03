@@ -609,8 +609,14 @@ public class SyncController {
 				entryList = (List<LinkedHashMap<String, String>>) order.get("entry");
 
 				for (LinkedHashMap<String, String> entryMap : entryList) {
-					PurchaseOrderDetail detail = new PurchaseOrderDetail();
-					detail.setMain(purchaseOrderMainRepository.findOneByCode(main.getCode()));
+					PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByCodeAndRowno(main.getCode(),
+							entryMap.get("rowno"));
+
+					if (detail == null) {
+						detail = new PurchaseOrderDetail();
+						detail.setMain(purchaseOrderMainRepository.findOneByCode(main.getCode()));
+					}
+
 					detail.setInventory(inventoryRepository.findByCode(entryMap.get("inventorycode")));
 					if (entryMap.get("quantity") != null && !entryMap.get("quantity").isEmpty())
 						detail.setQuantity(Float.parseFloat(entryMap.get("quantity")));

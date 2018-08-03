@@ -58,6 +58,7 @@ $(document).ready(function() {
     columns : [ {
       data : 'title',
       title : '标题',
+      createdCell: App.getNoticeReadStateClass,
       render: function (data, display, record) {
         var edit_url = /*[[@{/message/}]]*/'';
         edit_url +=  record.id + '/edit';
@@ -67,7 +68,12 @@ $(document).ready(function() {
       data : 'create_date',
       className: 'dt-center',
       title : '创建时间',
-      render : $.fn.date_renderer
+      render : $.fn.time_renderer
+    }, {
+      data : 'read_date',
+      className: 'dt-center',
+      title : '查阅时间',
+      render : $.fn.time_renderer
     } ],
   });
 

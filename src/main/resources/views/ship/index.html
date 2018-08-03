@@ -20,7 +20,7 @@
             <input type="text" id="vendor" class="form-control">
           </div>          
           <div class="search-cell width-10">
-            <label for="inventory">商品编码/名称：</label>
+            <label for="inventory">物料编码/名称：</label>
             <input type="text" id="inventory" class="form-control">
           </div>
           <div class="search-cell width-10">
@@ -131,7 +131,7 @@ $(document).ready(function() {
   
   var table = $('#example').DataTable({
     ordering : true,
-    select: editable,
+    select: editable?{style: 'multi'}:false,
     ajax : {
         url : list_url,
         data : function(data) {
@@ -174,13 +174,13 @@ $(document).ready(function() {
       title : '供应商编码',
     }, {
       data : 'inventorycode',
-      title : '商品编码',              
+      title : '物料编码',              
     }, {
       data : 'inventoryname',
-      title : '商品名称',
+      title : '物料名称',
     }, {
       data : 'specs',
-      title : '商品描述',
+      title : '物料描述',
     }, {
       data : 'unitname',
       className: 'dt-center',

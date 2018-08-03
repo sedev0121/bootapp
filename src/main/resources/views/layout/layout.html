@@ -59,6 +59,11 @@
 <!-- Body BEGIN -->
 <body class="corporate">
     <!-- BEGIN HEADER -->
+    <div class="top-header" sec:authorize="hasRole('ROLE_VENDOR')" >
+      <div class="container">
+                    欢迎来到SRM系统！<span class="active" th:text="${session.account.vendor.abbrname}"> 【上海全力文体用品公司】</span>
+      </div>
+    </div>
     <div class="header">
       <div class="container">
         <a class="site-logo" th:href="@{/}"><img th:src="@{/assets/corporate/img/logo.png}" alt="采购管理平台"></a>
@@ -103,8 +108,8 @@
                 
               <ul class="dropdown-menu">
                 <li><a th:href="@{/vendor}">供应商档案表</a></li>
-                <li><a th:href="@{/inventory}">商品档案表</a></li>
-                <li><a th:href="@{/price}">商品价格查询</a></li>
+                <li><a th:href="@{/inventory}">物料档案表</a></li>
+                <li><a th:href="@{/price}">物料价格查询</a></li>
               </ul>
             </li>
             <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/stock')} or
