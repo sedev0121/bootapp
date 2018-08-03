@@ -50,11 +50,17 @@ public class PurchaseInDetailResult implements Serializable {
 	String bredvouch;
 	String mainmemo;
 
+	String poCode;
+	String poPrice;
+	String poTaxPrice;
+	String poTaxRate;
+
 	public PurchaseInDetailResult(String id, String code, String date, Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
 			String tax_price, String tax_rate, String tax_cost, String memo, String nat_tax_price,
 			String material_quantity, String material_tax_price, String vendorname, String vendorcode, String type,
-			String bredvouch, String mainmemo, String state) {
+			String bredvouch, String mainmemo, String state, String poCode, String poPrice, String poTaxPrice,
+			String poTaxRate) {
 
 		this.id = id;
 		this.code = code;
@@ -83,6 +89,11 @@ public class PurchaseInDetailResult implements Serializable {
 		this.bredvouch = bredvouch;
 		this.mainmemo = mainmemo;
 		this.state = state;
+
+		this.poCode = poCode;
+		this.poPrice = poPrice;
+		this.poTaxPrice = poTaxPrice;
+		this.poTaxRate = poTaxRate;
 	}
 
 	public String getId() {
@@ -91,6 +102,38 @@ public class PurchaseInDetailResult implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getPo_code() {
+		return poCode;
+	}
+
+	public void setPoCode(String poCode) {
+		this.poCode = poCode;
+	}
+
+	public String getPo_price() {
+		return poPrice;
+	}
+
+	public void setPoPrice(String poPrice) {
+		this.poPrice = poPrice;
+	}
+
+	public String getPo_tax_price() {
+		return poTaxPrice;
+	}
+
+	public void setPoTaxPrice(String poTaxPrice) {
+		this.poTaxPrice = poTaxPrice;
+	}
+
+	public String getPo_tax_rate() {
+		return poTaxRate;
+	}
+
+	public void setPoTaxRate(String poTaxRate) {
+		this.poTaxRate = poTaxRate;
 	}
 
 	public String getState() {

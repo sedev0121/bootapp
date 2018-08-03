@@ -325,12 +325,6 @@ var App = function() {
       else
         return "【否】";
     },
-    purchaseInStateRender:function(data) {
-      if (data == 1)
-        return '【已对账】';
-      else 
-        return '【未对账】';
-    },
     blockUI : function(options) {
       options = $.extend(true, {}, options);
       if (options.message == undefined)

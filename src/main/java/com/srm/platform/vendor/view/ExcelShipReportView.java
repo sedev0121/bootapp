@@ -35,9 +35,9 @@ public class ExcelShipReportView extends AbstractXlsView {
 		header.createCell(0).setCellValue("No");
 		header.createCell(1).setCellValue("订单号");
 		header.createCell(2).setCellValue("订单行号");
-		header.createCell(3).setCellValue("商品编码");
-		header.createCell(4).setCellValue("商品名称");
-		header.createCell(5).setCellValue("商品描述");
+		header.createCell(3).setCellValue("物料编码");
+		header.createCell(4).setCellValue("物料名称");
+		header.createCell(5).setCellValue("物料描述");
 		header.createCell(6).setCellValue("单位");
 		header.createCell(7).setCellValue("数量");
 		header.createCell(8).setCellValue("最新预发货日期");

@@ -124,7 +124,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">
-                                                    选择商品
+                                                    选择物料
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     </button>
@@ -133,7 +133,7 @@
 
                   <div class="search-content form-inline">
                       <div class="search-cell width-6">
-                        <label for="search_inventory">商品编码/名称：</label>
+                        <label for="search_inventory">物料编码/名称：</label>
                         <input type="text" id="search_inventory" class="form-control">
                       </div>
                       <div style="vertical-align: bottom" class="search-cell width-15">
@@ -326,7 +326,7 @@ is_readonly = 0;
           title:  "删除",
           submit: "是",
           confirm: {
-              _: "确定要删除%d行商品吗?",
+              _: "确定要删除%d行物料吗?",
               1: "确定要删除吗?"
           }
         },
@@ -435,7 +435,7 @@ is_readonly = 0;
         select: (state == 1 && !is_readonly),
         buttons: [
           { 
-            text: "添加商品", 
+            text: "添加物料", 
             action: function( e, dt, node, config) {
               
               if (!$("#vendor").val()) {
@@ -476,10 +476,10 @@ is_readonly = 0;
           title : '行号',
         }, {
           data : 'cinvcode',
-          title : '商品编码',
+          title : '物料编码',
         }, {
           data : 'name',
-          title : '商品名称'
+          title : '物料名称'
         }, {
           data : 'specs',
           title : '规格型号',
@@ -644,10 +644,10 @@ is_readonly = 0;
 
           columns : [ {
             data : 'code',
-            title : '商品编码',
+            title : '物料编码',
           }, {
             data : 'name',
-            title : '商品名称',        
+            title : '物料名称',        
           }, {
             data : 'specs',
             title : '规格型号',

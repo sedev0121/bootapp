@@ -415,11 +415,11 @@ $(document).ready(function() {
       var error_msg = 0;
       $.each(data, function(key, item){
         if (item.confirmdate != item.arrivedate){
-          error_msg = "第" + item.rowno + "行商品承诺交货日期不一致！";
+          error_msg = "第" + item.rowno + "行物料承诺交货日期不一致！";
           return;
         }
         if (item.confirmquantity != item.quantity){
-          error_msg = "第" + item.rowno + "行商品承诺交货数量不一致！";
+          error_msg = "第" + item.rowno + "行物料承诺交货数量不一致！";
           return;
         }
       });
@@ -438,11 +438,11 @@ $(document).ready(function() {
       var error_msg = 0;
       $.each(data, function(key, item){
         if (item.confirmdate != item.arrivedate){
-          error_msg = "第" + item.rowno + "行商品承诺交货日期不一致！";
+          error_msg = "第" + item.rowno + "行物料承诺交货日期不一致！";
           return;
         }
         if (item.confirmquantity != item.quantity){
-          error_msg = "第" + item.rowno + "行商品承诺交货数量不一致！";
+          error_msg = "第" + item.rowno + "行物料承诺交货数量不一致！";
           return;
         }
       });
@@ -450,7 +450,7 @@ $(document).ready(function() {
       if (error_msg){
         submit(3);  
       }else{
-        App.showErrorDialog("没有商品承诺交货数量和承诺交货日期与需求不一致！");
+        App.showErrorDialog("没有物料承诺交货数量和承诺交货日期与需求不一致！");
       }
     });
     

@@ -17,4 +17,7 @@ public interface PurchaseOrderDetailRepository extends JpaRepository<PurchaseOrd
 	@Query(value = "select * from purchase_order_detail where code= :code order by rowno", nativeQuery = true)
 	List<PurchaseOrderDetail> findDetailsByCode(String code);
 
+	@Query(value = "select * from purchase_order_detail where code= :code and rowno=:rowno limit 1", nativeQuery = true)
+	PurchaseOrderDetail findOneByCodeAndRowno(String code, String rowno);
+
 }

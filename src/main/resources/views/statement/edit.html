@@ -99,36 +99,18 @@
                   <label>生成U8发票日期: </label>
                   <input type="text" th:value="${#dates.format(main.u8invoicedate, 'yyyy-MM-dd')}" class="form-control" readonly>
                 </div>
-           
-
-                <div class="col-lg-2 col-md-2">
-                  <label for="tax_rate">税率: </label>
-                  <input type="number" id="tax_rate" name="tax_rate" th:value="${main.taxRate}" class="form-control"/>
-                </div>                
-                <div class="col-lg-2 col-md-2">
-                  <label for="total_quantity">数量合计: </label>
-                  <input type="total_quantity" id="total_quantity" value="1" class="form-control" readonly/>
-                </div>                
-                <div class="col-lg-2 col-md-2">
-                  <label for="total_money">结算未税合计: </label>
-                  <input type="number" id="total_money" value="1" class="form-control" readonly/>
-                </div>                
-                <div class="col-lg-2 col-md-2">
-                  <label for="total_tax_money">结算含税合计: </label>
-                  <input type="number" id="total_tax_money" value="1" class="form-control" readonly/>
-                </div>      
-                <div class="col-lg-4 col-md-4">
-                  <label for="invoice_code">发票号:(35679/80/81 表示35679、35680、35681三张发票) </label>
-                  <input type="text" id="invoice_code" name="invoice_code" th:value="${main.invoiceCode}" class="form-control" disabled/>
-                </div>     
                 <div class="col-lg-2 col-md-2" id="invoice_type_div">
                   <label for="invoice_type">U8发票类型: </label>
                   <select name="invoice_type" id="invoice_type" class="form-control" readonly></select>
                 </div>
-                <div class="col-lg-2 col-md-2" id="u8_invoice_id_div">
-                  <label for="u8_invoice_id">U8发票单号: </label>
-                  <input type="text" id="u8_invoice_id" name="u8_invoice_id" th:value="${main.u8invoiceid}" class="form-control" readonly/>
-                </div>
+                <div class="col-lg-2 col-md-2">
+                  <label for="tax_rate">税率: </label>
+                  <input type="number" id="tax_rate" name="tax_rate" th:value="${main.taxRate}" class="form-control"/>
+                </div>                
+                <div class="col-lg-6 col-md-6">
+                  <label for="invoice_code">发票号:(335679/80/81 表示335679、335680、335681三张发票) </label>
+                  <input type="text" id="invoice_code" name="invoice_code" th:value="${main.invoiceCode}" class="form-control" disabled/>
+                </div>     
                 <div class="col-lg-6 col-md-6">
                   <label for="remark">摘要: </label>
                   <input type="text" id="remark" name="remark" th:value="${main.remark}" class="form-control" />
@@ -171,7 +153,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">
-                                                        选择要对账的商品
+                                                        选择要对账的物料
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         </button>
@@ -188,7 +170,7 @@
                             <input type="text" id="search_code" class="form-control">
                           </div>
                           <div class="search-cell width-10">
-                            <label for="search_inventory">商品编码/名称：</label>
+                            <label for="search_inventory">物料编码/名称：</label>
                             <input type="text" id="search_inventory" class="form-control">
                           </div>
                           <div style="vertical-align: bottom" class="search-cell width-15">
@@ -290,15 +272,18 @@ $(document).ready(function() {
           data : 'code',
           title : '出入库单号'
         }, {
+          data : 'po_code',
+          title : '订单号'
+        }, {
           data : 'rowno',
           className:'dt-center',
           title : '行号',
         }, {
           data : 'inventoryname',
-          title : '商品名称'
+          title : '物料名称'
         }, {
           data : 'inventorycode',
-          title : '商品编码'
+          title : '物料编码'
         }, {
           data : 'specs',
           title : '规格型号',
@@ -310,6 +295,14 @@ $(document).ready(function() {
           data : 'quantity',
           className:'dt-right',
           title : '入库数量',
+        }, {
+          data : 'po_price',
+          className:'dt-right',
+          title : '订单未税单价',
+        }, {
+          data : 'po_tax_price',
+          className:'dt-right',
+          title : '订单含税单价',
         }, {
           data : 'price',
           className:'dt-right',
@@ -334,14 +327,12 @@ $(document).ready(function() {
           data : 'state',
           className:'dt-center',
           title : '状态',
-          render : App.purchaseInStateRender,
+          render : App.getPurchaseInStateOfId,
         } ],
-        order: [  [ 1, "asc" ] ]
-
+        order: [  [ 1, "asc" ] ],
         
       });
     }
-        
     $('#btn_search').trigger('click');
 
   }
@@ -408,7 +399,7 @@ $(document).ready(function() {
     onChangeType();
   });
   
-  $('#type').trigger('change');
+  
   
   function onChangeType() {
     var type = $('#type').val();
@@ -418,6 +409,8 @@ $(document).ready(function() {
       loadWeiwaiTable();
     }
   }
+  
+  $('#type').trigger('change');
   
   function loadNormalTable(){
     editor = new $.fn.dataTable.Editor( {
@@ -674,24 +667,23 @@ $(document).ready(function() {
           },
         },
         columns : [ {
-          data : 'purchase_in_detail_id',
-          title : 'id',
-          visible: false,
+          data : 'po_code',
+          sortable: false,
+          title : '订单号'
         }, {
           data : 'purchase_in_code',
+          sortable: false,
           title : '入库单编码',
         }, {
           data : 'purchase_in_date',
           render : $.fn.date_renderer,
+          sortable: false,
           className:'dt-center',
           title : '入库日期',        
         }, {
-          data : 'rowno',
-          visible:false,
-          title : '入库单行号'
-        }, {
           data : 'inventoryname',
-          title : '商品名称',
+          title : '物料名称',
+          sortable: false,
           render: function(data, type, row) {
             if (row.purchase_in_detail_id == 0){
               return "扣款";
@@ -701,29 +693,46 @@ $(document).ready(function() {
           },
         }, {
           data : 'inventorycode',
-          title : '商品编码',
+          sortable: false,
+          title : '物料编码',
         }, {
           data : 'unitname',
+          sortable: false,
           className:'dt-center',
           title : '单位',
         }, {
+          data : 'po_price',
+          sortable: false,
+          className:'dt-right',
+          title : '订单未税单价',
+        }, {
+          data : 'po_tax_price',
+          sortable: false,
+          className:'dt-right',
+          title : '订单含税单价',
+        }, {
           data : 'price',
+          sortable: false,
           className:'dt-right',
           title : '未税单价',
         }, {
-          data : 'cost',
-          className:'dt-right',
-          title : '未税金额',
-        }, {
           data : 'tax_price',
+          sortable: false,
           className:'dt-right',
           title : '含税单价',
         }, {
+          data : 'cost',
+          sortable: false,
+          className:'dt-right',
+          title : '未税金额',
+        }, {
           data : 'tax_cost',
+          sortable: false,
           className:'dt-right',
           title : '含税金额',
         }, {
           data : 'quantity',
+          sortable: false,
           title : '未对账数量',
           className:'dt-right',
           render:function(data, type, record) {
@@ -735,51 +744,45 @@ $(document).ready(function() {
         }, {
           data : 'closed_quantity',
           className: 'dt-right',
+          sortable: false,
           title : '对账数量',
         }, {
-          data : 'closed_price',
-          className: 'edit-cell dt-right',
-          title : '结算未税单价',
-        }, {
-          data : 'closed_money',
-          className: 'edit-cell dt-right',
-          title : '结算未税金额',
-        }, {
           data : 'tax_rate',
+          sortable: false,
           className:' edit-cell dt-right',
           title : '税率',
         }, {
+          data : 'closed_price',
+          className: 'edit-cell dt-right',
+          sortable: false,
+          title : '结算未税单价',
+        }, {
           data : 'closed_tax_price',
           className: 'edit-cell dt-right',
+          sortable: false,
           title : '结算含税单价',
+        }, {
+          data : 'closed_money',
+          sortable: false,
+          className: 'edit-cell dt-right',
+          title : '结算未税金额',
         }, {
           data : 'closed_tax_money',
           className: 'edit-cell dt-right',
+          sortable: false,
           title : '结算含税金额',
         }, {
           data : 'memo',
+          sortable: false,
           className:'vendor',
           title : '备注　　　　　　　',
         } ],
-        columnDefs: [ {
-          "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-          "orderable": false
-        } ],
         order: [  [ 0, "asc" ], [3, "asc"] ],
+        footerCallback: function ( row, data, start, end, display ) {
+          App.footerCallback(this.api(), [ [10, "cost"], [11, "cost"], [12, "quantity"], [13, "quantity"], [17, "cost"], [18, "cost"]]);
+        },
         drawCallback: function( settings ) {
           var data_list = this.api().rows().data().toArray()
-          var total_quantity=0, total_money=0, total_tax_money=0;
-          $.each(data_list, function(key, item){
-            item.dstartdate = $.fn.date_renderer(item.dstartdate);
-            item.denddate = $.fn.date_renderer(item.denddate);
-            total_quantity += parseFloat(item.closed_quantity||0);
-            total_money += parseFloat(item.closed_money||0);
-            total_tax_money += parseFloat(item.closed_tax_money||0);
-          });
-          $('#total_quantity').val(total_quantity);
-          $('#total_money').val(total_money.toFixed(2));
-          $('#total_tax_money').val(total_tax_money.toFixed(2));
-          
           if (data_list.length > 0)
             $('#vendor').attr("readonly", true);
           else
@@ -801,6 +804,17 @@ $(document).ready(function() {
       $('#detail_table').empty();
     }
       
+    var footer = $("<tfoot></tfoot>").appendTo("#detail_table");
+    var footertr = $("<tr></tr>").appendTo(footer);
+     
+    //Add footer cells
+    for (var i = 0; i < 11; i++) {
+      if (i==0){
+        $("<th colspan='10' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
+      }else{
+        $("<th></th>").appendTo(footertr);
+      }
+    }
     
     table = $('#detail_table').DataTable(table_options);
 
@@ -906,20 +920,20 @@ $(document).ready(function() {
         item.price = '';
         
         if (item.quantity != undefined) {
-          item.yinci_standard = Math.round(item.quantity*0.002);
+          item.yinci_standard = App.quantityNumber(Math.round(item.quantity*0.002));
           
           if (item.yinci != undefined) {
-            item.yinci_chargeback = (item.yinci-item.yinci_standard)<=0?0:(item.yinci-item.yinci_standard);
+            item.yinci_chargeback = App.quantityNumber((item.yinci-item.yinci_standard)<=0?0:(item.yinci-item.yinci_standard));
             
             if (item.material_quantity != undefined && item.real_quantity != undefined) {
-              item.material_less_quantity = parseFloat(item.material_quantity - item.real_quantity - item.yuanci - item.yinci + item.yinci_chargeback).toFixed(4);
+              item.material_less_quantity = App.quantityNumber(item.material_quantity - item.real_quantity - item.yuanci - item.yinci + item.yinci_chargeback);
               
               if (item.unit_weight != undefined && item.material_tax_price != undefined) {
-                item.material_chargeback = parseFloat(item.material_less_quantity * item.unit_weight * item.material_tax_price).toFixed(2);
+                item.material_chargeback = App.costNumber(item.material_less_quantity * item.unit_weight * item.material_tax_price);
                 
                 if (item.closed_tax_price != undefined) {
-                  item.closed_tax_money = parseFloat(item.material_chargeback>=0?(item.real_quantity * item.closed_tax_price - item.material_chargeback):(item.real_quantity * item.closed_tax_price)).toFixed(6);
-                  item.closed_money = parseFloat(item.closed_tax_money * 100 / (100 + parseFloat(item.tax_rate))).toFixed(6);
+                  item.closed_tax_money = App.costNumber(item.material_chargeback>=0?(item.real_quantity * item.closed_tax_price - item.material_chargeback):(item.real_quantity * item.closed_tax_price));
+                  item.closed_money = App.costNumber(item.closed_tax_money * 100 / (100 + parseFloat(item.tax_rate)));
                 }
               }
             }
@@ -957,12 +971,12 @@ $(document).ready(function() {
             var result = [];
             $.each(json, function(key, item){  
               if (item.type == '委外加工') {
-                item.yinci_standard = Math.round(item.quantity*0.002);
-                item.yinci_chargeback = (item.yinci-item.yinci_standard)<=0?0:(item.yinci-item.yinci_standard);
-                item.material_less_quantity = parseFloat(item.material_quantity - item.real_quantity - item.yuanci - item.yinci + item.yinci_chargeback).toFixed(4);
+                item.yinci_standard = App.quantityNumber(Math.round(item.quantity*0.002));
+                item.yinci_chargeback = App.quantityNumber((item.yinci-item.yinci_standard)<=0?0:(item.yinci-item.yinci_standard));
+                item.material_less_quantity = App.quantityNumber(item.material_quantity - item.real_quantity - item.yuanci - item.yinci + item.yinci_chargeback);
 
-                item.material_chargeback = parseFloat(item.material_less_quantity * item.unit_weight * item.material_tax_price).toFixed(2);
-                //item.closed_tax_money = parseFloat(item.material_chargeback>=0?(item.real_quantity * item.closed_tax_price - item.material_chargeback):(item.real_quantity * item.closed_tax_price)).toFixed(6);
+                item.material_chargeback = App.quantityNumber(item.material_less_quantity * item.unit_weight * item.material_tax_price);
+                item.closed_tax_money = App.quantityNumber(item.material_chargeback>=0?(item.real_quantity * item.closed_tax_price - item.material_chargeback):(item.real_quantity * item.closed_tax_price));
                 
                 result.push(item);
               }
@@ -972,107 +986,151 @@ $(document).ready(function() {
           },
         },
         columns : [ {
-          data : 'purchase_in_detail_id',
-          title : 'id',
-          visible: false,
-        }, {
           data : 'purchase_in_code',
+          sortable:false,
           title : '订单号',
         }, {
           data : 'purchase_in_code',
+          sortable:false,
           title : '入库单号',
         }, {
           data : 'inventoryname',
+          sortable:false,
           title : '存货名称',
         }, {
           data : 'inventorycode',
+          sortable:false,
           title : '存货编码',
         }, {
           data : 'inventorycode',
+          sortable:false,
           title : '规格',
         }, {
           data : 'unitname',
           className:'dt-center',
+          sortable:false,
           title : '主计量',
         }, {
           data : 'quantity',
+          sortable:false,
           className:'dt-right',
           title : '系统入库数量',
         }, {
           data : 'closed_quantity',
+          sortable:false,
           className: 'dt-right',
           title : '对账数量',
         }, {
+          data : 'po_price',
+          sortable: false,
+          className:'dt-right',
+          title : '订单未税单价',
+        }, {
+          data : 'po_tax_price',
+          sortable: false,
+          className:'dt-right',
+          title : '订单含税单价',
+        }, {
           data : 'closed_tax_price',
           className:'dt-right',
+          sortable:false,
           title : '含税加工单价',
         }, {
           data : 'closed_price',
           className:'dt-right',
+          sortable:false,
           title : '未税加工单价',
         }, {
           data : 'material_quantity',
           className:'dt-right',
+          sortable:false,
           title : '出库数量',
         }, {
           data : 'tax_rate',
           className:' edit-cell dt-right',
+          sortable:false,
           title : '　　税率',
         }, {
           data : 'real_quantity',
           className:'dt-right edit-cell',
+          sortable:false,
           title : '　实收数量',
         }, {
           data : 'yuanci',
           className:'dt-right edit-cell',
+          sortable:false,
           title : '　　原次',
         }, {
           data : 'yinci',
+          sortable:false,
           className:'dt-right edit-cell',
           title : '　　印次',
         }, {
           data : 'unit_weight',
+          sortable:false,
           className:'dt-right edit-cell',
           title : '　每片基材重量',
         }, {
           data : 'yinci_standard',
+          sortable:false,
           className:'dt-right',
           title : '印次标准',
         }, {
           data : 'yinci_chargeback',
+          sortable:false,
           className:'dt-right',
           title : '印次扣款量',
         }, {
           data : 'material_less_quantity',
+          sortable:false,
           className:'dt-right',
           title : '基材少交数量',
         }, {
           data : 'material_tax_price',
           className:'dt-right',
+          sortable:false,
           title : '基材单价',
         }, {
           data : 'material_chargeback',
           className:'dt-right',
+          sortable:false,
           title : '基材扣款',
         }, {
           data : 'closed_tax_money',
           className:'dt-right',
+          sortable:false,
           title : '结算含税金额',
         }, {
           data : 'closed_money',
           className:'dt-right',
+          sortable:false,
           title : '结算未税金额',
         }, {
           data : 'memo',
+          sortable:false,
           className:'vendor',
           title : '备注　　　　　　　',
 
         } ],
-        columnDefs: [ {
-          "targets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-          "orderable": false
-        } ],
-        order: [  [ 0, "asc" ], [3, "asc"] ],      
+        order: [  [ 0, "asc" ], [3, "asc"] ],  
+        footerCallback: function ( row, data, start, end, display ) {
+          
+          App.footerCallback(this.api(), [ 
+            [6, "quantity"], 
+            [7, "quantity"], 
+            [12, "quantity"], 
+            [14, "quantity"], 
+            [15, "quantity"], 
+            [16, "quantity"],
+            [17, "quantity"],
+            [18, "quantity"],
+            [19, "quantity"],
+            [20, "quantity"],
+            [22, "cost"],
+            [23, "cost"], 
+            [24, "cost"]]
+          );
+        },
       };
         
     if ((state!=1 && state != 4) || is_readonly) {
@@ -1084,7 +1142,18 @@ $(document).ready(function() {
       table.clear().destroy();
       $('#detail_table').empty();
     }
-      
+    
+    var footer = $("<tfoot></tfoot>").appendTo("#detail_table");
+    var footertr = $("<tr></tr>").appendTo(footer);
+     
+    //Add footer cells
+    for (var i = 0; i < 21; i++) {
+      if (i==0){
+        $("<th colspan='6' class='dt-center'>合计</th>").appendTo(footertr);
+      }else{
+        $("<th></th>").appendTo(footertr);
+      }
+    }
     
     table = $('#detail_table').DataTable(table_options);
 
@@ -1092,14 +1161,14 @@ $(document).ready(function() {
       table.on( 'click', 'tbody td.edit-cell', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
-      App.addKeyDownEditor(editor, 9, 13);    
+      App.addKeyDownEditor(editor, 13, 17);    
     } 
     
     if (state == 2 && !is_readonly) {
       table.on( 'click', 'tbody td.vendor', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
-      App.addKeyDownEditor(editor, 20, 20);    
+      App.addKeyDownEditor(editor, 25, 25);    
     } 
     
   }
@@ -1201,7 +1270,7 @@ $(document).ready(function() {
         
         if ($('#type').val() == 2){
           item.closed_tax_price = item.nat_tax_price;
-          item.closed_price = item.closed_tax_price * 100 /(100 + parseFloat(item.tax_rate));          
+          item.closed_price = App.priceNumber(item.closed_tax_price * 100 /(100 + parseFloat(item.tax_rate)));          
         }
         
         table.row.add(item);
@@ -1295,7 +1364,7 @@ $(document).ready(function() {
     }
     var data = table.rows().data().toArray();
     if (data.length == 0) {
-      App.showErrorDialog("操作失败", "没有要发布的商品");
+      App.showErrorDialog("操作失败", "没有要发布的物料");
       return;
     }
     $('#state').val(2);
