@@ -225,6 +225,7 @@ public class PurchaseOrderController extends CommonController {
 
 				PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneById(Long.parseLong(item.get("id")));
 				if (this.isVendor()) {
+					detail.setConfirmquantity(detail.getQuantity());
 					detail.setConfirmdate(Utils.parseDate(item.get("confirmdate")));
 					detail.setConfirmnote(item.get("confirmnote"));
 				} else {
