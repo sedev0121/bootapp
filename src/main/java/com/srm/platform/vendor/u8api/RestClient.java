@@ -19,10 +19,12 @@ public class RestClient {
 	private HttpStatus status;
 
 	public RestClient() {
-		this.rest = new RestTemplate();
-		SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) this.rest.getRequestFactory();
-		rf.setReadTimeout(36000 * 1000);
-		rf.setConnectTimeout(36000 * 1000);
+
+		SimpleClientHttpRequestFactory rf = new SimpleClientHttpRequestFactory();
+		rf.setReadTimeout(0);
+		rf.setConnectTimeout(0);
+		this.rest = new RestTemplate(rf);
+
 		this.headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		headers.add("Accept", "*/*");
