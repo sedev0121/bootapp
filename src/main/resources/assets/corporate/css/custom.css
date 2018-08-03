@@ -3,6 +3,17 @@ body {
     font-size: 12px;
 }
 
+.top-header {
+    background: #272626;   
+    color: #b0b0b0;
+    padding-top:5px;
+    padding-bottom:5px;
+}
+
+.top-header .active {
+    color: #e6400c;
+}
+
 .select-unit {
     background-color:#fff !important
 }
