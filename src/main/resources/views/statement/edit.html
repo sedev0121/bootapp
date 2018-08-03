@@ -240,7 +240,7 @@ $(document).ready(function() {
 
       import_table = $('#import_table').DataTable({
         ordering : true,
-        select: true,
+        select: {style: 'multi'},
         ajax : {
           url : import_url,
           data : function(data) {
@@ -586,7 +586,7 @@ $(document).ready(function() {
         processing:false,
         destroy: true,
         ordering : true,
-        select: true,
+        select: {style: 'multi'},
         buttons: [
             { 
               text: "取采购入库单", 
@@ -947,7 +947,7 @@ $(document).ready(function() {
         processing:false,
         destroy: true,
         ordering : true,
-        select: true,
+        select: {style: 'multi'},
         buttons: [
             { 
               text: "取委外入库单", 

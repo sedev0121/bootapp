@@ -26,7 +26,7 @@ body {
     border: 1px solid #ccc;
 }
 
-.readed {
+.new, .new a {
     font-weight:bold;    
     color:red;
 }

@@ -233,7 +233,7 @@ jQuery(document).ready(function() {
   
   table = $('#example').DataTable({
     ordering: true,
-    select: true,
+    select: {style: 'multi'},
     serverSide:false,
     processing:false,
     buttons: [
@@ -297,7 +297,7 @@ jQuery(document).ready(function() {
     if (import_table == undefined) {
       import_table = $('#import_account').DataTable({
         ordering: true,
-        select: true,
+        select: {style: 'multi'},
         ajax : {
           url : /*[[@{/account/list}]]*/'',
           data : function(data) {

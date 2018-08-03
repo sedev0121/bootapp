@@ -272,6 +272,10 @@ var App = function() {
     getInqueryStateClass: function( td, cellData, rowData, row, col ) {
       $(td).addClass('inquery_state_' + cellData);
     },
+    getNoticeReadStateClass: function( td, cellData, rowData, row, col ) {
+      if (!rowData.read_date && rowData.state==3)
+        $(td).addClass('new');
+    },
     getInqueryStateOfId: function(id) {
       return getLabelOfId(inquery_state_data, id);
     },

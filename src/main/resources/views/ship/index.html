@@ -131,7 +131,7 @@ $(document).ready(function() {
   
   var table = $('#example').DataTable({
     ordering : true,
-    select: editable,
+    select: editable?{style: 'multi'}:false,
     ajax : {
         url : list_url,
         data : function(data) {
