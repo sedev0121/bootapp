@@ -386,7 +386,7 @@ public class StatementController extends CommonController {
 				String closedMoney = row.get("closed_money");
 				String closedTaxPrice = row.get("closed_tax_price");
 				String closedTaxMoney = row.get("closed_tax_money");
-				String taxRate = row.get("tax_rate");
+				String taxRate = row.get("nat_tax_rate");
 
 				String real_quantity = row.get("real_quantity");
 				String yuanci = row.get("yuanci");

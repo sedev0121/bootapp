@@ -43,9 +43,8 @@ import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 				@ColumnResult(name = "mainmemo", type = String.class),
 				@ColumnResult(name = "state", type = String.class),
 				@ColumnResult(name = "po_code", type = String.class),
-				@ColumnResult(name = "po_price", type = String.class),
-				@ColumnResult(name = "po_tax_price", type = String.class),
-				@ColumnResult(name = "po_tax_rate", type = String.class) }) })
+				@ColumnResult(name = "nat_price", type = String.class),
+				@ColumnResult(name = "nat_tax_rate", type = String.class) }) })
 
 @Table(name = "purchase_in_detail")
 public class PurchaseInDetail {
@@ -90,9 +89,6 @@ public class PurchaseInDetail {
 	private Float materialTaxPrice;
 
 	private String poCode;
-	private Float poPrice;
-	private Float poTaxPrice;
-	private Float poTaxRate;
 
 	private Integer state = Constants.PURCHASE_IN_STATE_WAIT;
 
@@ -110,30 +106,6 @@ public class PurchaseInDetail {
 
 	public void setPoCode(String poCode) {
 		this.poCode = poCode;
-	}
-
-	public Float getPoPrice() {
-		return poPrice;
-	}
-
-	public void setPoPrice(Float poPrice) {
-		this.poPrice = poPrice;
-	}
-
-	public Float getPoTaxPrice() {
-		return poTaxPrice;
-	}
-
-	public void setPoTaxPrice(Float poTaxPrice) {
-		this.poTaxPrice = poTaxPrice;
-	}
-
-	public Float getPoTaxRate() {
-		return poTaxRate;
-	}
-
-	public void setPoTaxRate(Float poTaxRate) {
-		this.poTaxRate = poTaxRate;
 	}
 
 	public Float getTaxRate() {

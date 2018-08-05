@@ -732,6 +732,7 @@ public class SyncController {
 						String memo = temp.get("CMemo");
 						String date = temp.get("DVeriDate");
 						String rowno = String.valueOf(temp.get("irowno"));
+						String poCode = String.valueOf(temp.get("CPOID"));
 
 						String inventory_code = temp.get("CInvCode");
 						Float quantity = Float.valueOf(String.valueOf(temp.get("IQuantity")));
@@ -796,6 +797,7 @@ public class SyncController {
 						detail.setQuantity(quantity);
 
 						detail.setPrice(price);
+						detail.setPoCode(poCode);
 						detail.setRowno(Integer.parseInt(rowno));
 
 						detail.setCost(cost);

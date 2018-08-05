@@ -49,8 +49,6 @@ public interface StatementDetailItem {
 
 	String getSpecs();
 
-	String getNat_tax_price();
-
 	String getMaterial_quantity();
 
 	String getMaterial_tax_price();
@@ -67,10 +65,10 @@ public interface StatementDetailItem {
 
 	String getPo_code();
 
-	String getPo_price();
+	String getNat_price();
 
-	String getPo_tax_price();
+	String getNat_tax_price();
 
-	String getPo_tax_rate();
+	String getNat_tax_rate();
 
 }
