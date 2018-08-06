@@ -38,7 +38,7 @@
                 <label for="duty">职位: </label>
                 <input type="text" id="duty" name="duty" th:value="${account.duty}" class="form-control" readonly>
               </div>
-              <div class="col-lg-2 col-md-2 form-group">
+              <div class="col-lg-2 col-md-2 form-group hidden">
                 <label for="entry_date">入职日期: </label>
                 <input type="text" class="form-control datepicker" name="entry_date" id="entry_date" th:value="${#dates.format(account.entryTime, 'yyyy-MM-dd')}" readonly>
               </div>
