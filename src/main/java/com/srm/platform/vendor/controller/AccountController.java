@@ -225,6 +225,7 @@ public class AccountController extends CommonController {
 		if (accountSaveForm.getState() != null) {
 			account.setState(1);
 			account.setStartDate(new Date());
+			account.setStopDate(null);
 		} else {
 			account.setState(0);
 			account.setStopDate(new Date());
