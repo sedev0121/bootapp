@@ -744,8 +744,15 @@ is_readonly = 0;
     
     $.validator.addMethod("checkTable", function(value, element){
       var exist_data = table.rows().data().toArray();
+      var inventoryIdList = []; validInventoryIdList = [];
       for(i=0; i<exist_data.length; i++) {
         exist_row = exist_data[i];
+
+        if ($.inArray(exist_row.cinvcode, inventoryIdList) < 0)
+            inventoryIdList.push(exist_row.cinvcode);
+        
+        if (exist_row.ivalid == 1)
+          validInventoryIdList.push(exist_row.cinvcode);
         
         if ($('#type').val() == 2) {
           if (exist_row.fminquantity == undefined || exist_row.fminquantity == "" || exist_row.fminquantity <= 0) {
@@ -783,6 +790,12 @@ is_readonly = 0;
           return false;
         }  
       }
+      
+      if ($('#type').val() == 2 && $('#state').val() == 5 && inventoryIdList.length != validInventoryIdList.length) {
+        App.showErrorDialog("操作失败", "每个存货必须得有一个有效的！");
+        return false;
+      }
+      
       return true;
     }, "");
     

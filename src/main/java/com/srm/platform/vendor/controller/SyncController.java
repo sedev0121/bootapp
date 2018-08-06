@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.thymeleaf.util.StringUtils;
 
@@ -83,6 +84,7 @@ public class SyncController {
 	@Autowired
 	private InventoryClassRepository inventoryClassRepository;
 
+	@ResponseBody
 	@GetMapping({ "", "/", "/daily" })
 	public boolean index() {
 		this.measurementunit();
@@ -95,6 +97,7 @@ public class SyncController {
 		return true;
 	}
 
+	@ResponseBody
 	@GetMapping({ "/init", "/init/" })
 	public boolean initAll() {
 		this.measurementunit();
@@ -107,6 +110,7 @@ public class SyncController {
 		return true;
 	}
 
+	@ResponseBody
 	@RequestMapping({ "/vendor/init", "/vendor", "/vendor/" })
 	public boolean vendorInit() {
 		vendorRepository.deleteAll();
@@ -114,6 +118,7 @@ public class SyncController {
 		return vendor(null);
 	}
 
+	@ResponseBody
 	@RequestMapping(value = "/vendor/daily")
 	public boolean vendorDaily() {
 		return vendor(new Date());
@@ -197,6 +202,7 @@ public class SyncController {
 		return true;
 	}
 
+	@ResponseBody
 	@RequestMapping(value = { "/inventory/init", "/inventory", "/inventory/" })
 	public boolean inventoryInit() {
 
@@ -205,6 +211,7 @@ public class SyncController {
 		return true;
 	}
 
+	@ResponseBody
 	@RequestMapping(value = "/inventory/daily")
 	public boolean inventoryDaily() {
 		inventory(new Date());
@@ -335,6 +342,7 @@ public class SyncController {
 
 	@SuppressWarnings("unchecked")
 	@Transactional
+	@ResponseBody
 	@RequestMapping(value = { "/measurementunit/init", "/measurementunit", "/measurementunit/" })
 	public boolean measurementunit() {
 
@@ -394,6 +402,7 @@ public class SyncController {
 
 	@SuppressWarnings("unchecked")
 	@Transactional
+	@ResponseBody
 	@RequestMapping(value = { "/inventory_class/init", "/inventory_class", "/inventory_class/" })
 	public boolean inventoryClass() {
 
@@ -451,18 +460,21 @@ public class SyncController {
 		return true;
 	}
 
+	@ResponseBody
 	@RequestMapping(value = { "/purchaseorder/init", "/purchaseorder", "/purchaseorder/" })
 	public boolean purchaseorderInit() {
 		purchaseOrder(null, null);
 		return true;
 	}
 
+	@ResponseBody
 	@RequestMapping(value = "/purchaseorder/daily")
 	public boolean purchaseorderDaily() {
 		purchaseOrder(new Date(), null);
 		return true;
 	}
 
+	@ResponseBody
 	@RequestMapping(value = "/purchaseorder/vendor")
 	public boolean purchaseorderForVendor() {
 		if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated())
@@ -652,6 +664,7 @@ public class SyncController {
 		return true;
 	}
 
+	@ResponseBody
 	@RequestMapping(value = { "/purchasein/init", "/purchasein", "/purchasein/" })
 	public boolean purchaseInInit() {
 
@@ -663,6 +676,7 @@ public class SyncController {
 		return true;
 	}
 
+	@ResponseBody
 	@RequestMapping(value = "/purchasein/daily")
 	public boolean purchaseInDaily() {
 		purchaseIn(new Date(), null, false);
@@ -670,6 +684,7 @@ public class SyncController {
 		return true;
 	}
 
+	@ResponseBody
 	@RequestMapping(value = "/purchasein/vendor/{vendorCode}")
 	public boolean purchaseInForVendor(@PathVariable("vendorCode") String vendorCode) {
 		purchaseIn(new Date(), vendorCode, false);

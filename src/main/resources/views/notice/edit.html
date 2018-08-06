@@ -211,9 +211,11 @@ jQuery(document).ready(function() {
 
     submitHandler: function (form) {
       var value='';
-      $.each(account_table.rows().data().toArray(), function(key, item){
-        value += item.id + ",";
-      });
+      if (account_table){
+        $.each(account_table.rows().data().toArray(), function(key, item){
+          value += item.id + ",";
+        });
+      }
       $('#account_list').val(value);
       jQuery(form).ajaxSubmit({
         beforeSend: function(){
