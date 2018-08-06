@@ -14,6 +14,9 @@ body {
     color: #e6400c;
 }
 
+.version {
+    /* visibility:hidden; */
+}
 .select-unit {
     background-color:#fff !important
 }
