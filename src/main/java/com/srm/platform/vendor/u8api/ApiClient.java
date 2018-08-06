@@ -153,8 +153,8 @@ public class ApiClient {
 		if (tokenExpireTime == null || token_id == null || System.currentTimeMillis() >= tokenExpireTime) {
 			Token token = getToken();
 
-			logger.info("new token=" + token.getId() + " expire=" + token.getExpiresIn());
 			if (token != null) {
+				logger.info("new token=" + token.getId() + " expire=" + token.getExpiresIn());
 				token_id = token.getId();
 				httpSession.setAttribute("token_expire_time", System.currentTimeMillis() + token.getExpiresIn() * 1000);
 				httpSession.setAttribute("token_id", token_id);

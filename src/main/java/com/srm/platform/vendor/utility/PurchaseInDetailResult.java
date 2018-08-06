@@ -51,16 +51,14 @@ public class PurchaseInDetailResult implements Serializable {
 	String mainmemo;
 
 	String poCode;
-	String poPrice;
-	String poTaxPrice;
-	String poTaxRate;
+	String natPrice;
+	String natTaxRate;
 
 	public PurchaseInDetailResult(String id, String code, String date, Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
 			String tax_price, String tax_rate, String tax_cost, String memo, String nat_tax_price,
 			String material_quantity, String material_tax_price, String vendorname, String vendorcode, String type,
-			String bredvouch, String mainmemo, String state, String poCode, String poPrice, String poTaxPrice,
-			String poTaxRate) {
+			String bredvouch, String mainmemo, String state, String poCode, String natPrice, String natTaxRate) {
 
 		this.id = id;
 		this.code = code;
@@ -91,9 +89,8 @@ public class PurchaseInDetailResult implements Serializable {
 		this.state = state;
 
 		this.poCode = poCode;
-		this.poPrice = poPrice;
-		this.poTaxPrice = poTaxPrice;
-		this.poTaxRate = poTaxRate;
+		this.natPrice = natPrice;
+		this.natTaxRate = natTaxRate;
 	}
 
 	public String getId() {
@@ -112,28 +109,24 @@ public class PurchaseInDetailResult implements Serializable {
 		this.poCode = poCode;
 	}
 
-	public String getPo_price() {
-		return poPrice;
+	public String getNat_price() {
+		return natPrice;
 	}
 
-	public void setPoPrice(String poPrice) {
-		this.poPrice = poPrice;
+	public void setNatPrice(String natPrice) {
+		this.natPrice = natPrice;
 	}
 
-	public String getPo_tax_price() {
-		return poTaxPrice;
+	public String getNat_tax_rate() {
+		return natTaxRate;
 	}
 
-	public void setPoTaxPrice(String poTaxPrice) {
-		this.poTaxPrice = poTaxPrice;
+	public void setNatTaxRate(String natTaxRate) {
+		this.natTaxRate = natTaxRate;
 	}
 
-	public String getPo_tax_rate() {
-		return poTaxRate;
-	}
-
-	public void setPoTaxRate(String poTaxRate) {
-		this.poTaxRate = poTaxRate;
+	public String getPoCode() {
+		return poCode;
 	}
 
 	public String getState() {

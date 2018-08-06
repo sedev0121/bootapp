@@ -83,6 +83,7 @@ public class AccountController extends CommonController {
 		String search = requestParams.getOrDefault("search", "");
 		String stateStr = requestParams.getOrDefault("state", "");
 		String role = requestParams.getOrDefault("role", "");
+		String exceptVendor = requestParams.get("except_vendor");
 
 		Integer state = Integer.parseInt(stateStr);
 
@@ -111,6 +112,11 @@ public class AccountController extends CommonController {
 		if (state >= 0) {
 			bodyQuery += " and state=:state";
 			params.put("state", state);
+		}
+
+		if (exceptVendor != null) {
+			bodyQuery += " and role<>:exceptRole";
+			params.put("exceptRole", "ROLE_VENDOR");
 		}
 
 		if (!role.trim().isEmpty()) {
@@ -219,6 +225,7 @@ public class AccountController extends CommonController {
 		if (accountSaveForm.getState() != null) {
 			account.setState(1);
 			account.setStartDate(new Date());
+			account.setStopDate(null);
 		} else {
 			account.setState(0);
 			account.setStopDate(new Date());

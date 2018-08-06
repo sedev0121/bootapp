@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,6 +42,9 @@ import com.srm.platform.vendor.utility.PermissionUnit;
 public class AccountService implements UserDetailsService {
 
 	public final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@Value("${version.number}")
+	public String version;
 
 	@Autowired
 	private AccountRepository accountRepository;
@@ -114,6 +118,7 @@ public class AccountService implements UserDetailsService {
 
 	private User createUser(Account account) {
 		httpSession.setAttribute("account", account);
+		httpSession.setAttribute("version", version);
 		httpSession.setAttribute("realname", account.getRealname());
 		httpSession.setAttribute("account_id", account.getId());
 		return new User(account.getUsername(), account.getPassword(), createAuthorities(account));
