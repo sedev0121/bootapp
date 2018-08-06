@@ -208,8 +208,14 @@ jQuery(document).ready(function() {
     }
   });
 	
-  
-  $('#role').select2({data: App.getRoleDataWithAll(), minimumResultsForSearch: -1});
+  var exceptVendorList = [];
+  $.each(App.getRoleDataWithAll(), function(key, value){
+    if (value.id != 'ROLE_VENDOR') {
+      exceptVendorList.push(value);
+    }
+  });
+
+  $('#role').select2({data: exceptVendorList, minimumResultsForSearch: -1});
   $('#state').select2({data: App.getAccountStateDataWithAll(), minimumResultsForSearch: -1});
   
   editor = new $.fn.dataTable.Editor({
@@ -308,6 +314,7 @@ jQuery(document).ready(function() {
               dir:data.order[0].dir,
               search: $('#search').val(),
               state:$('#state').val(),
+              except_vendor: "1",
               role:$('#role').val()
             }
             return filter;
