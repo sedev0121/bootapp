@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PasswordResetToken;
@@ -26,6 +27,7 @@ import com.srm.platform.vendor.repository.PasswordResetTokenRepository;
 import com.srm.platform.vendor.service.AccountService;
 import com.srm.platform.vendor.service.EmailService;
 import com.srm.platform.vendor.u8api.ApiClient;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
@@ -60,10 +62,11 @@ public class ResetPasswordController {
 
 	@Transactional
 	@RequestMapping(value = "/resetpassword")
-	public @ResponseBody String resetPassword(HttpServletRequest request, @RequestParam("email") String email) {
+	public @ResponseBody GenericJsonResponse<String> resetPassword(HttpServletRequest request,
+			@RequestParam("email") String email) {
 		Account account = accountService.loadUserByEmail(email);
 		if (account == null) {
-			return "0";
+			return new GenericJsonResponse<>(GenericJsonResponse.FAILED, "此用户不存在!", null);
 		}
 		String token = UUID.randomUUID().toString();
 		accountService.createPasswordResetTokenForUser(account, token);
@@ -83,15 +86,16 @@ public class ResetPasswordController {
 
 		emailService.sendEmail(message, model);
 
-		return "1";
+		return new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
 	}
 
 	@Transactional
 	@RequestMapping(value = "/resetpassword/phone")
-	public @ResponseBody String resetPasswordByPhone(HttpServletRequest request, @RequestParam("phone") String phone) {
+	public @ResponseBody GenericJsonResponse<String> resetPasswordByPhone(HttpServletRequest request,
+			@RequestParam("phone") String phone) {
 		Account account = accountRepository.findOneByMobile(phone);
 		if (account == null) {
-			return "0";
+			return new GenericJsonResponse<>(GenericJsonResponse.FAILED, "此用户不存在!", null);
 		}
 
 		String newPassword = Utils.generateResetPassword();
@@ -100,20 +104,20 @@ public class ResetPasswordController {
 
 		String message = String.format("密码重置成功！请用新密码【%s】登陆。", newPassword);
 		logger.info(message);
-		// ObjectMapper objectMapper = new ObjectMapper();
-		// Map<String, Object> map = new HashMap<>();
-		// String response = apiClient.sendSMS(account.getMobile(), message);
-		// try {
-		// map = objectMapper.readValue(response, new TypeReference<Map<String,
-		// Object>>() {
-		// });
-		// logger.info((String) map.get("errcode"));
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// return "0";
-		// }
 
-		return "1";
+		String response = apiClient.sendSMS(account.getMobile(), message);
+		logger.info(response);
+
+		String[] result = StringUtils.split(response, ",");
+		GenericJsonResponse<String> jsonResponse;
+		if ("0".equals(result[1])) {
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
+		} else {
+			String msg = String.format("短信API错误(%s)!", result[1]);
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, msg, null);
+		}
+
+		return jsonResponse;
 	}
 
 	@GetMapping(value = "/changepassword")

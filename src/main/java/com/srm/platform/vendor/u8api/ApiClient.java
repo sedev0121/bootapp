@@ -18,6 +18,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,9 @@ public class ApiClient {
 	@Autowired
 	private HttpSession httpSession;
 
+	@Value("${srm.sms.api}")
+	private String smsAPI;
+
 	private String token_id = null;
 
 	public ApiClient() {
@@ -46,8 +50,7 @@ public class ApiClient {
 
 	public String sendSMS(String toPhoneNumber, String message) {
 
-		String url = appProperties.getSystem().getSms();
-		url += "&phone=" + toPhoneNumber + "&msg=" + message;
+		String url = String.format(smsAPI, toPhoneNumber, message);
 		RestClient client = new RestClient();
 		String response = client.get(url);
 
