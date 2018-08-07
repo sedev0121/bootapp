@@ -150,7 +150,23 @@ table.DTFC_Cloned.table-striped>tbody>tr>td.even:hover) {
 }
 
 span.error {
-    color:yellow;    
+    color:#e6400c;    
+}
+
+#forget-page a {
+    color: white;
+}
+
+#forget-page p {
+    color: #808080;
+}
+
+.nav-tabs>li>a, .nav-tabs>li>a:focus, .nav-tabs>li>a:hover{
+    background: #808080;
+}
+
+.btn_back {
+    font-size:13px !important;
 }
 
 .main {
