@@ -169,6 +169,9 @@ span.error {
     font-size:13px !important;
 }
 
+.hint {
+    color: #808080;
+}
 .main {
     min-height:605px;
 }
