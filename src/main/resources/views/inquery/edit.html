@@ -206,17 +206,36 @@ is_readonly = 0;
       }        
       
       App.showConfirmDialog('修改报价类型，将会改变表体数据规则，是否继续？', function(){
+        var prev_inv_code, new_table_data=[];
+
         for(i=0;i<table_data.length; i++){
           item = table_data[i];
           if($("#type").val() == 1){
             item.fmaxquantity = '';
             item.fminquantity = '';            
-          }else{
+          }else if($("#type").val() == 2){
             item.iunitprice = '';
             item.itaxunitprice = '';            
+          }else{
+            item.fmaxquantity = '';
+            item.fminquantity = '';    
+            item.iunitprice = '';
+            item.itaxunitprice = '';  
+          }
+          
+          if ($('#type').val() != 2 && item.cinvcode != prev_inv_code){
+            new_table_data.push(item);
+            prev_inv_code = item.cinvcode;
           }
         };
-        table.rows().invalidate();
+
+        if($("#type").val() == 2) {
+          table.rows().invalidate();     
+        }else{
+          table.clear();
+          table.rows.add(new_table_data);
+          table.draw();
+        }
         
         onChangeType();
         
@@ -229,6 +248,8 @@ is_readonly = 0;
       if (table_data.length == 0){        
         onChangeType();
       } 
+      
+      
     });
 
     if ((state != 1 && state != 4) || is_readonly) {
@@ -581,6 +602,7 @@ is_readonly = 0;
         } );
 
         if ($("#type").val() == 1){
+          table.button(1).disable();
           table.off( 'click', 'td.minquantity, td.maxquantity');
           table.on( 'click', 'td.unitprice, td.taxunitprice', function (e) {
             editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
@@ -598,6 +620,7 @@ is_readonly = 0;
           }
           App.addKeyDownEditor(editor, 5, 13);
         }else{
+          table.button(1).disable();
           table.off( 'click', 'td.minquantity, td.maxquantity');
           if (is_vendor){
             table.on( 'click', 'td.unitprice, td.taxunitprice', function (e) {
@@ -704,7 +727,7 @@ is_readonly = 0;
       $.each(selected_data, function(key, item){
 
         var available = true;
-        if ($('#type').val() == "1") {
+        if ($('#type').val() != "2") {
           for(i=0; i<exist_data.length; i++) {
             exist_row = exist_data[i];
             if (exist_row.cinvcode == item.code) {

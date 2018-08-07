@@ -68,7 +68,7 @@ var url = /*[[@{/unit/}]]*/'';
               }
           },
           state:{key:"demo1"},
-          plugins:["contextmenu","dnd","state","types"]
+          plugins:["contextmenu","state","types"]
         }).on('create_node.jstree', function (e, data) {
         	$.get(url + "add/" + data.node.parent + "/" + data.node.text).done(function (d) {
               data.instance.set_id(data.node, d.id);
