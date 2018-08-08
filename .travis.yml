@@ -7,8 +7,8 @@ jdk:
   # JDK 8 is set to deploy the docs and artifacts
   - oraclejdk8
 env:
-  - SERVER=jetty DEPLOY_DOCS=true
-  - SERVER=tomcat7
+  #- SERVER=jetty DEPLOY_DOCS=true
+  #- SERVER=tomcat7
 dist: precise
 
 before_install:
