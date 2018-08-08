@@ -7,6 +7,9 @@ jdk:
   # JDK 8 is set to deploy the docs and artifacts
   - oraclejdk8
 
+before_install:
+  - chmod -R +x ./mvnw
+  
 before_script:
   - chmod -R +x ./mvnw
 
