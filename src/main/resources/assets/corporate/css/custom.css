@@ -171,6 +171,11 @@ span.error {
 
 .hint {
     color: #808080;
+    margin-top: 23px;
+}
+.login-font {
+    font-size:17px;
+    font-weight:bold !important;
 }
 .main {
     min-height:605px;

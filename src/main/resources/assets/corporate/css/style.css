@@ -3536,17 +3536,16 @@ Styler Panel
 
 .login-content {
     padding: 30px;
-    max-width: 450px;
-    min-width: 400px;
+    width: 400px;
     color: white;
-    margin-top: 230px;
-    margin-left: 210px;
-    font-size: 14px;
+    margin-top: 250px;
+    margin-left: 140px;
+    font-size: 17px;
 }
 
 .login-logo {
     width: 100%;
-    margin-bottom: 70px;
+    margin-bottom: 67px;
 }
 
 .login-content label {
@@ -3606,6 +3605,7 @@ Styler Panel
     left: 0;
     height: 18px;
     width: 18px;
+    border-radius:3px;
     background: #cb272b;
 }
 

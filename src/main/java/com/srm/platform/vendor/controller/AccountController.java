@@ -39,7 +39,6 @@ import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
-import com.srm.platform.vendor.service.AccountService;
 import com.srm.platform.vendor.utility.AccountSaveForm;
 import com.srm.platform.vendor.utility.AccountSearchItem;
 import com.srm.platform.vendor.utility.AccountSearchResult;
@@ -63,9 +62,6 @@ public class AccountController extends CommonController {
 
 	@Autowired
 	private UnitRepository unitRepository;
-
-	@Autowired
-	private AccountService accountService;
 
 	// 用户管理->列表
 	@GetMapping({ "/", "" })

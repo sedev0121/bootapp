@@ -46,6 +46,9 @@ public class AccountService implements UserDetailsService {
 	@Value("${version.number}")
 	public String version;
 
+	@Value("${server.servlet.session.timeout}")
+	public String sessionTimeout;
+
 	@Autowired
 	private AccountRepository accountRepository;
 
@@ -121,6 +124,7 @@ public class AccountService implements UserDetailsService {
 		httpSession.setAttribute("version", version);
 		httpSession.setAttribute("realname", account.getRealname());
 		httpSession.setAttribute("account_id", account.getId());
+		httpSession.setAttribute("timeout", sessionTimeout);
 		return new User(account.getUsername(), account.getPassword(), createAuthorities(account));
 	}
 
