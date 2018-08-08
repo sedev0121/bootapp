@@ -1,0 +1,18 @@
+# Travis CI Configuration file
+# @link https://travis-ci.org/
+
+# Using Java for the project
+language: java
+jdk:
+  # JDK 8 is set to deploy the docs and artifacts
+  - oraclejdk8
+
+before_install:
+  - chmod -R +x ./mvnw
+  
+before_script:
+  - chmod -R +x ./mvnw
+
+script:
+  # Unit and integration tests are run
+  - ./mvnw clean package
