@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
@@ -39,9 +40,15 @@ public class HomeController {
 		return "denied";
 	}
 
-	@RequestMapping(value = "login")
+	@GetMapping(value = "/login")
 	public String login() {
 		return "login";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/keepalive")
+	public String keepAlive() {
+		return "alive";
 	}
 
 	@GetMapping(value = "/logout")

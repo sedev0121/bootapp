@@ -270,10 +270,38 @@
     <script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
     <script th:src="@{/assets/plugins/select2/js/i18n/zh-CN.js}" type="text/javascript"></script>
     <script th:src="@{/assets/plugins/jquery.blockui.min.js}" type="text/javascript"></script>
+    <script th:src="@{/assets/plugins/session-timeout/bootstrap-session-timeout.min.js}" type="text/javascript" ></script>
     <script th:src="@{/assets/corporate/scripts/layout.js}" type="text/javascript"></script>
     <script th:src="@{/assets/corporate/scripts/app.js}" type="text/javascript"></script>
 </body>
 <!-- END BODY -->
+
+<script th:inline="javascript" sec:authorize="isAuthenticated()">
+var keep_alive_url = /*[[@{/keepalive/}]]*/'';
+var logout_url = /*[[@{/logout}]]*/'';
+var session_timeout = /*[[${session.timeout}]]*/'';
+session_timeout = App.intVal(session_timeout);
+
+jQuery(document).ready(function() {
+  $.sessionTimeout({
+    title: '会话过期',
+    message: '您的会话(Session)即将要过期!',
+    logoutButton: '退出',
+    keepAliveButton: '保持会话',
+    ajaxType:'get',
+    keepAliveUrl: keep_alive_url,
+    logoutUrl: logout_url,
+    redirUrl: logout_url,
+    warnAfter: (session_timeout - 30) * 1000,
+    redirAfter: session_timeout * 1000,
+    countdownBar: true,
+    ignoreUserActivity:false,
+    countdownMessage: '在{timer}秒后将会自动退出。'
+  });  
+});
+
+</script>
+
 <script type="text/javascript">
 var is_vendor = 0;
 var is_admin = 0;

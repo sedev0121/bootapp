@@ -31,6 +31,7 @@
   <!-- Theme styles END -->
   
   <style>
+
   .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
       background: #e6400c;
       color: #fff;
@@ -55,8 +56,8 @@
       <div class="pull-left">
           <div class="login-content">
               <div class="login-form" id="login-page">
-                  <img src="/assets/corporate/img/login_logo.png" class="login-logo" alt="采购管理平台">
-                  <form id="login_form" action="#" method="post" th:action="@{/login}">
+                  <a th:href="@{/}"><img src="/assets/corporate/img/login_logo.png" class="login-logo" alt="采购管理平台"></a>
+                  <form id="login_form" method="post" th:action="@{/login}">
                       <div class="form-group">
                           <input type="text" name="username" class="form-control" placeholder="用户名" autofocus>
                       </div>
@@ -69,21 +70,21 @@
                       <div class="form-group" th:if="${param.resetSuccess}">
                           <span class="error">密码重置成功！请用新密码登陆。</span>
                       </div>
-                      <div class="form-group">
-                          <label class="mt-checkbox">
+                      <div class="form-group" style="margin-bottom:1px;">
+                          <label class="mt-checkbox login-font">
                               <input type="checkbox" name="remember-me"> 记住密码
                               <span id="checkspan"></span>
                           </label>
-                          <a class="pull-right" id="btn_forget">密码找回</a>
+                          <a class="pull-right login-font" id="btn_forget">密码找回</a>
                       </div>
                       <div class="form-group">
-                        <button type="submit" class="btn btn-login m-b-30 m-t-30 form-control">登  录</button>
+                        <button type="submit" class="btn btn-login m-b-30 m-t-30 form-control" style="font-size:17px !important;padding-top:3px;">登  录</button>
                       </div>
                   </form>
               </div>
 
               <div class="login-form" id="forget-page" style="display:none">
-                  <img src="/assets/corporate/img/login_logo.png" class="login-logo" alt="采购管理平台">
+                  <a th:href="@{/}"><img src="/assets/corporate/img/login_logo.png" class="login-logo" alt="采购管理平台"></a>
                   <div class="detail-tabs margin-bottom-30">
                       <div class="tab-style-1" id="tabs">
                         <ul class="nav nav-tabs">
@@ -130,6 +131,9 @@
                     </div>  
                         
                 </div>
+              <div class="hint login-font text-center">
+                  <p>有情提醒：推荐使用谷歌浏览器！</p>
+              </div>
           </div>
       </div>
     </div>
@@ -233,7 +237,7 @@ $(document).ready(function() {
           App.unblockUI();
         },
         success: function(res, status, xhr, form) {
-          if (res == "1") {
+          if (res.success == "1") {
             swal({
               "title": "操作成功",
               "type": "success"
@@ -243,7 +247,7 @@ $(document).ready(function() {
             
           }else{
             swal({
-              "title": "无效邮箱",
+              "title": res.errmsg,
               "type": "error"
             });
             
@@ -278,7 +282,7 @@ $(document).ready(function() {
           App.unblockUI();
         },
         success: function(res, status, xhr, form) {
-          if (res == "1") {
+          if (res.success == "1") {
             swal({
               "title": "操作成功",
               "type": "success"
@@ -288,7 +292,7 @@ $(document).ready(function() {
             
           }else{
             swal({
-              "title": "无效的手机号",
+              "title": res.errmsg,
               "type": "error"
             });
             
