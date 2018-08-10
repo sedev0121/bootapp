@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.srm.platform</groupId>
-  <artifactId>bootapp</artifactId>
+  <artifactId>srm</artifactId>
   <version>1.0.0-0808</version>
 
   <parent>
