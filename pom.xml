@@ -4,8 +4,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.srm.platform</groupId>
-  <artifactId>bootapp</artifactId>
-  <version>1.0.0-0808</version>
+  <artifactId>srm</artifactId>
+  <version>1.0.0-0810</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -177,6 +177,7 @@
 
 
   <build>
+    <finalName>${project.artifactId}</finalName>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
