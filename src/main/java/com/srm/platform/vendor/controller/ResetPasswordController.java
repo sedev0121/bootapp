@@ -110,7 +110,7 @@ public class ResetPasswordController {
 
 		String[] result = StringUtils.split(response, ",");
 		GenericJsonResponse<String> jsonResponse;
-		if ("0".equals(result[1])) {
+		if (result[1].startsWith("0")) {
 			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
 		} else {
 			String msg = String.format("短信API错误(%s)!", result[1]);
