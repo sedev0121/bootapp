@@ -1,7 +1,6 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -121,12 +120,14 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = "/vendor/daily")
 	public boolean vendorDaily() {
-		return vendor(new Date());
+		String maxTimestamp = vendorRepository.findMaxTimestamp();
+
+		return vendor(maxTimestamp);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Transactional
-	private boolean vendor(Date beginDate) {
+	private boolean vendor(String beginTimeStamp) {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -146,8 +147,9 @@ public class SyncController {
 				requestParams.put("rows_per_page", "10");
 				requestParams.put("page_index", Integer.toString(++i));
 
-				if (beginDate != null)
-					requestParams.put("timestamp_begin", String.valueOf(beginDate.getTime()));
+				if (beginTimeStamp != null) {
+					requestParams.put("timestamp_begin", beginTimeStamp);
+				}
 
 				String response = apiClient.getBatchVendor(requestParams);
 				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
@@ -181,12 +183,15 @@ public class SyncController {
 						vendor.setName(temp.get("name"));
 						vendor.setReceiveSite(temp.get("receive_site"));
 						vendor.setSortCode(temp.get("sort_code"));
-						String timeStamp = temp.get("timeStamp");
-						if (timeStamp != null)
-							vendor.setTimestamp(Instant.ofEpochMilli(Long.parseLong(temp.get("timestamp"))));
+						String timestamp = temp.get("timestamp");
+						if (timestamp != null && !timestamp.isEmpty()) {
+							vendor.setTimestamp(Double.valueOf(timestamp));
+						}
 
 						vendorRepository.save(vendor);
 					}
+				} else if (errorCode == 20002) {
+					return true;
 				} else {
 					return false;
 				}

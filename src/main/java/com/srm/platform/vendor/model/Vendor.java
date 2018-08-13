@@ -1,7 +1,6 @@
 package com.srm.platform.vendor.model;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -179,11 +178,11 @@ public class Vendor implements Serializable {
 		this.endDate = endDate;
 	}
 
-	public Instant getTimestamp() {
+	public Double getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(Instant timestamp) {
+	public void setTimestamp(Double timestamp) {
 		this.timestamp = timestamp;
 	}
 
@@ -203,7 +202,7 @@ public class Vendor implements Serializable {
 
 	@Column(name = "end_date")
 	private Date endDate;
-	private Instant timestamp;
+	private Double timestamp;
 	private String memo;
 
 }
