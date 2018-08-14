@@ -437,8 +437,10 @@ public class StatementController extends CommonController {
 				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
 						.findOneById(detail.getPurchaseInDetailId());
 
-				purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);
-				purchaseInDetailRepository.save(purchaseInDetail);
+				if (purchaseInDetail != null) {
+					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);
+					purchaseInDetailRepository.save(purchaseInDetail);
+				}
 			}
 		}
 
@@ -448,8 +450,10 @@ public class StatementController extends CommonController {
 				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
 						.findOneById(detail.getPurchaseInDetailId());
 
-				purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_FINISH);
-				purchaseInDetailRepository.save(purchaseInDetail);
+				if (purchaseInDetail != null) {
+					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_FINISH);
+					purchaseInDetailRepository.save(purchaseInDetail);
+				}
 			}
 		}
 

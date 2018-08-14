@@ -59,9 +59,26 @@
 <!-- Body BEGIN -->
 <body class="corporate">
     <!-- BEGIN HEADER -->
-    <div class="top-header" sec:authorize="hasRole('ROLE_VENDOR')" >
+    <div class="pre-header">
       <div class="container">
-                    欢迎来到SRM系统！<span class="active" th:text="${session.account.vendor.abbrname}"> 【上海全力文体用品公司】</span>
+        <div class="row">
+            <!-- BEGIN TOP BAR LEFT PART -->
+            <div class="col-md-6 col-sm-6 additional-shop-info">
+                <ul class="list-unstyled list-inline">
+                    <li> 欢迎来到SRM系统！<span class="active" th:text="${session.account?.vendor?.abbrname}"> 【上海全力文体用品公司】</span></li>
+                </ul>
+            </div>
+            <!-- END TOP BAR LEFT PART -->
+            <!-- BEGIN TOP BAR MENU -->
+            <div class="col-md-6 col-sm-6 additional-nav" sec:authorize="isAuthenticated()">
+              <ul class="list-unstyled list-inline pull-right">
+                <li><a th:href="@{/profile}" th:text="${session.realname}">账号管理 </a></li>
+                <li><a th:href="@{/logout}">退出</a></li>
+              </ul>
+            </div>
+            <!-- END TOP BAR MENU -->
+        </div>
+                   
       </div>
     </div>
     <div class="header">
@@ -163,13 +180,7 @@
           </ul>
         </div>
 
-        <div class="header-navigation menu-right" sec:authorize="isAuthenticated()">
-          <ul>
-            <li><a th:href="@{/profile}" th:text="${session.realname}">账号管理 </a></li>
-            <li><a th:href="@{/logout}">退出</a></li>
-            <li><img th:src="@{/assets/corporate/img/user.png}" class="user_avatar"></li>
-          </ul>
-        </div>
+        
         <input type="hidden" id="timepicker"/>
         <!-- END NAVIGATION -->
       </div>

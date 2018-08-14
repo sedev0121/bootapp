@@ -235,8 +235,9 @@ $(document).ready(function() {
         success : function(data, res) {
           if (data == true) {
             App.showSuccessDialog("同步成功");
+            table.draw();
           }else{
-            App.showSuccessDialog("同步失败");
+            App.showErrorDialog("同步失败");
           }
         }
       });

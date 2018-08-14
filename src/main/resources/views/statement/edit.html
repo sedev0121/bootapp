@@ -638,6 +638,8 @@ $(document).ready(function() {
                     nat_tax_rate:$('#tax_rate').val(),
                     number:null,
                     price:null,
+                    nat_price:null,
+                    nat_tax_price:null,
                     tax_price:null,
                     tax_cost:null,
                     purchase_in_code:null,
@@ -657,7 +659,7 @@ $(document).ready(function() {
           dataSrc : function(json) {
             var result = [];
             $.each(json, function(key, item){
-              if (item.type == '普通采购') {
+              if (item.type != '委外加工') {
                 item.dstartdate = $.fn.date_renderer(item.dstartdate);
                 item.denddate = $.fn.date_renderer(item.denddate);
                 result.push(item);
@@ -971,7 +973,7 @@ $(document).ready(function() {
           dataSrc : function(json) {
             var result = [];
             $.each(json, function(key, item){  
-              if (item.type == '委外加工') {
+              if (item.type != '普通采购') {
                 item.yinci_standard = App.quantityNumber(Math.round(item.quantity*0.002));
                 item.yinci_chargeback = App.quantityNumber((item.yinci-item.yinci_standard)<=0?0:(item.yinci-item.yinci_standard));
                 item.material_less_quantity = App.quantityNumber(item.material_quantity - item.real_quantity - item.yuanci - item.yinci + item.yinci_chargeback);
@@ -998,6 +1000,13 @@ $(document).ready(function() {
           data : 'inventoryname',
           sortable:false,
           title : '存货名称',
+          render: function(data, type, row) {
+            if (row.purchase_in_detail_id == 0){
+              return "扣款";
+            }else{
+              return data;
+            }
+          },
         }, {
           data : 'inventorycode',
           sortable:false,

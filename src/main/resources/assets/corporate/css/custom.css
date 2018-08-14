@@ -3,14 +3,28 @@ body {
     font-size: 12px;
 }
 
-.top-header {
+.pre-header {
     background: #272626;   
     color: #b0b0b0;
     padding-top:5px;
     padding-bottom:5px;
+    margin-bottom:0px;
 }
 
-.top-header .active {
+.pre-header ul {
+    margin-bottom:0px;
+    color: white;
+}
+
+.pre-header a {
+    color: #57c8eb;
+}
+
+.pre-header a:focus, .top-header a:hover{
+    color: #e6400c;
+}
+
+.pre-header .active {
     color: #e6400c;
 }
 

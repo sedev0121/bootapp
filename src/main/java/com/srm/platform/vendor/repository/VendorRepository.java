@@ -38,4 +38,7 @@ public interface VendorRepository extends JpaRepository<Vendor, Long> {
 
 	@Query(value = "SELECT code, name FROM vendor where code in ?1", nativeQuery = true)
 	List<SearchItem> findVendorsByCodeList(String[] codeList);
+
+	@Query(value = "SELECT max(timestamp) max_timestamp FROM vendor", nativeQuery = true)
+	String findMaxTimestamp();
 }
