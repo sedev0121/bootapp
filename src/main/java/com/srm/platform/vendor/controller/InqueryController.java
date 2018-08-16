@@ -93,10 +93,14 @@ public class InqueryController extends CommonController {
 	// 删除API
 	@PreAuthorize("hasAuthority('询价管理-删除')")
 	@GetMapping("/{ccode}/delete")
+	@Transactional
 	public @ResponseBody Boolean delete_ajax(@PathVariable("ccode") String ccode) {
 		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
-		if (main != null)
+		if (main != null) {
+			venPriceAdjustDetailRepository.DeleteByMainId(main.getCcode());
 			venPriceAdjustMainRepository.delete(main);
+		}
+
 		return true;
 	}
 
