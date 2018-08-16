@@ -207,11 +207,14 @@ public class PermissionController extends CommonController {
 			}
 		}
 
-		List<AccountSearchItem> accountItems = accountRepository.findAccountsByUsernames(usernameList);
+		if (!usernameList.isEmpty()) {
+			List<AccountSearchItem> accountItems = accountRepository.findAccountsByUsernames(usernameList);
 
-		permissionGroupUserReopsitory.deleteByGroupId(group.getId());
-		for (int i = 0; i < accountItems.size(); i++) {
-			permissionGroupUserReopsitory.save(new PermissionGroupUser(group.getId(), accountItems.get(i).getId()));
+			permissionGroupUserReopsitory.deleteByGroupId(group.getId());
+			for (int i = 0; i < accountItems.size(); i++) {
+				permissionGroupUserReopsitory.save(new PermissionGroupUser(group.getId(), accountItems.get(i).getId()));
+			}
+
 		}
 
 		return group;
@@ -262,6 +265,7 @@ public class PermissionController extends CommonController {
 
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
 
+		permissionGroupUserReopsitory.deleteByGroupId(temp.getId());
 		permissionGroupRepository.delete(temp);
 
 		return true;
