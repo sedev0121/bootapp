@@ -33,12 +33,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/assets/**", "/**").permitAll().anyRequest().authenticated().and()
-				.formLogin().loginPage("/login").failureUrl("/login?error=1").permitAll().defaultSuccessUrl("/").and()
-				.logout().permitAll().logoutUrl("/logout").logoutSuccessUrl("/login?logout")
-				.deleteCookies("remember-me").deleteCookies("JSESSIONID").invalidateHttpSession(true).and().rememberMe()
-				.rememberMeServices(rememberMeServices()).key("remember-me-key").tokenValiditySeconds(86400).and()
-				.exceptionHandling().accessDeniedPage("/forbidden");
+		http.csrf().ignoringAntMatchers("/login").and().authorizeRequests().antMatchers("/assets/**", "/**").permitAll()
+				.anyRequest().authenticated().and().formLogin().loginPage("/login").failureUrl("/login?error=1")
+				.permitAll().defaultSuccessUrl("/").and().logout().permitAll().logoutUrl("/logout")
+				.logoutSuccessUrl("/login?logout").deleteCookies("remember-me").deleteCookies("JSESSIONID")
+				.invalidateHttpSession(true).and().rememberMe().rememberMeServices(rememberMeServices())
+				.key("remember-me-key").tokenValiditySeconds(86400).and().exceptionHandling()
+				.accessDeniedPage("/forbidden");
 
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
 		http.sessionManagement().sessionFixation().migrateSession();
