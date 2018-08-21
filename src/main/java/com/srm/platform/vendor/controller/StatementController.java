@@ -372,63 +372,64 @@ public class StatementController extends CommonController {
 		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
 				main);
 
-		if (form.getState() <= Constants.STATEMENT_STATE_CONFIRM && form.getTable() != null) {
+		if (form.getState() <= Constants.STATEMENT_STATE_CONFIRM) {
 			statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
+			if (form.getTable() != null) {
 
-			for (Map<String, String> row : form.getTable()) {
-				StatementDetail detail = new StatementDetail();
-				detail.setCode(main.getCode());
-				detail.setPurchaseinType(Constants.STATEMENT_DETAIL_TYPE_BASIC);
-				detail.setPurchaseInDetailId(Long.parseLong(row.get("purchase_in_detail_id")));
+				for (Map<String, String> row : form.getTable()) {
+					StatementDetail detail = new StatementDetail();
+					detail.setCode(main.getCode());
+					detail.setPurchaseinType(Constants.STATEMENT_DETAIL_TYPE_BASIC);
+					detail.setPurchaseInDetailId(Long.parseLong(row.get("purchase_in_detail_id")));
 
-				String closedQuantity = row.get("closed_quantity");
-				String closedPrice = row.get("closed_price");
-				String closedMoney = row.get("closed_money");
-				String closedTaxPrice = row.get("closed_tax_price");
-				String closedTaxMoney = row.get("closed_tax_money");
-				String taxRate = row.get("nat_tax_rate");
+					String closedQuantity = row.get("closed_quantity");
+					String closedPrice = row.get("closed_price");
+					String closedMoney = row.get("closed_money");
+					String closedTaxPrice = row.get("closed_tax_price");
+					String closedTaxMoney = row.get("closed_tax_money");
+					String taxRate = row.get("nat_tax_rate");
 
-				String real_quantity = row.get("real_quantity");
-				String yuanci = row.get("yuanci");
-				String yinci = row.get("yinci");
-				String unit_weight = row.get("unit_weight");
-				String memo = row.get("memo");
+					String real_quantity = row.get("real_quantity");
+					String yuanci = row.get("yuanci");
+					String yinci = row.get("yinci");
+					String unit_weight = row.get("unit_weight");
+					String memo = row.get("memo");
 
-				if (closedQuantity != null && !closedQuantity.isEmpty())
-					detail.setClosedQuantity(Float.parseFloat(closedQuantity));
+					if (closedQuantity != null && !closedQuantity.isEmpty())
+						detail.setClosedQuantity(Float.parseFloat(closedQuantity));
 
-				if (closedPrice != null && !closedPrice.isEmpty())
-					detail.setClosedPrice(Float.parseFloat(closedPrice));
+					if (closedPrice != null && !closedPrice.isEmpty())
+						detail.setClosedPrice(Float.parseFloat(closedPrice));
 
-				if (closedMoney != null && !closedMoney.isEmpty())
-					detail.setClosedMoney(Float.parseFloat(closedMoney));
+					if (closedMoney != null && !closedMoney.isEmpty())
+						detail.setClosedMoney(Float.parseFloat(closedMoney));
 
-				if (closedTaxPrice != null && !closedTaxPrice.isEmpty())
-					detail.setClosedTaxPrice(Float.parseFloat(closedTaxPrice));
+					if (closedTaxPrice != null && !closedTaxPrice.isEmpty())
+						detail.setClosedTaxPrice(Float.parseFloat(closedTaxPrice));
 
-				if (closedTaxMoney != null && !closedTaxMoney.isEmpty())
-					detail.setClosedTaxMoney(Float.parseFloat(closedTaxMoney));
+					if (closedTaxMoney != null && !closedTaxMoney.isEmpty())
+						detail.setClosedTaxMoney(Float.parseFloat(closedTaxMoney));
 
-				if (taxRate != null && !taxRate.isEmpty())
-					detail.setTaxRate(Float.parseFloat(taxRate));
+					if (taxRate != null && !taxRate.isEmpty())
+						detail.setTaxRate(Float.parseFloat(taxRate));
 
-				if (real_quantity != null && !real_quantity.isEmpty())
-					detail.setRealQuantity(Float.parseFloat(real_quantity));
+					if (real_quantity != null && !real_quantity.isEmpty())
+						detail.setRealQuantity(Float.parseFloat(real_quantity));
 
-				if (yuanci != null && !yuanci.isEmpty())
-					detail.setYuanci(Float.parseFloat(yuanci));
+					if (yuanci != null && !yuanci.isEmpty())
+						detail.setYuanci(Float.parseFloat(yuanci));
 
-				if (yinci != null && !yinci.isEmpty())
-					detail.setYinci(Float.parseFloat(yinci));
+					if (yinci != null && !yinci.isEmpty())
+						detail.setYinci(Float.parseFloat(yinci));
 
-				if (unit_weight != null && !unit_weight.isEmpty())
-					detail.setUnitWeight(Float.parseFloat(unit_weight));
+					if (unit_weight != null && !unit_weight.isEmpty())
+						detail.setUnitWeight(Float.parseFloat(unit_weight));
 
-				detail.setMemo(memo);
+					detail.setMemo(memo);
 
-				detail = statementDetailRepository.save(detail);
+					detail = statementDetailRepository.save(detail);
+				}
 			}
-
 		}
 
 		if (main.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
