@@ -11,4 +11,6 @@ public interface StatementMainRepository extends JpaRepository<StatementMain, Lo
 
 	StatementMain findOneByCode(String code);
 
+	StatementMain findOneByInvoiceCode(String code);
+
 }

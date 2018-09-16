@@ -322,6 +322,8 @@ public class StatementController extends CommonController {
 			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
 				main.setU8invoicemaker(this.getLoginAccount());
 				main.setU8invoicedate(new Date());
+				main.setInvoiceCancelDate(null);
+				main.setInvoiceCancelReason(null);
 
 			} else {
 				return u8Response;
@@ -375,7 +377,7 @@ public class StatementController extends CommonController {
 		if (form.getState() <= Constants.STATEMENT_STATE_CONFIRM) {
 			statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
 			if (form.getTable() != null) {
-
+				int i = 1;
 				for (Map<String, String> row : form.getTable()) {
 					StatementDetail detail = new StatementDetail();
 					detail.setCode(main.getCode());
@@ -426,6 +428,7 @@ public class StatementController extends CommonController {
 						detail.setUnitWeight(Float.parseFloat(unit_weight));
 
 					detail.setMemo(memo);
+					detail.setRowNo(i++);
 
 					detail = statementDetailRepository.save(detail);
 				}
@@ -508,28 +511,101 @@ public class StatementController extends CommonController {
 		String jsonString = "";
 
 		U8InvoicePostData post = new U8InvoicePostData();
-		post.setInvoicecode(main.getInvoiceCode());
-		post.setDelegatecode(main.getVendor().getCode());
-		post.setVendorcode(main.getVendor().getCode());
-		post.setDate(Utils.formatDate(main.getMakedate()));
-		post.setInvoicetype(main.getInvoiceType() == 1 ? "01" : "02");
-		post.setPurchasecode(main.getType() == 1 ? "01" : "05");
-		post.setMaker(this.getLoginAccount().getRealname());
+		post.setCpbvcode(main.getInvoiceCode());
+		post.setCunitcode(main.getVendor().getCode());
+		post.setCvencode(main.getVendor().getCode());
+		post.setCpbvbilltype(main.getInvoiceType() == 1 ? "01" : "02");
+		post.setCptcode(main.getType() == 1 ? "01" : "05");
+		post.setCpbvmaker(this.getLoginAccount().getRealname());
+		post.setIpbvtaxrate(main.getTaxRate());
+		post.setIdiscountaxtype(main.getInvoiceType() == 1 ? "0" : "1");
 
 		List<U8InvoicePostEntry> entryList = new ArrayList<>();
 
 		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
+
+		float chargeBack = 0, closedMoneySum = 0, closedTaxMoneySum = 0;
+
+		for (StatementDetail detail : detailList) {
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
+
+			if (purchaseInDetail == null) {
+				chargeBack = detail.getClosedTaxMoney();
+			} else {
+				closedMoneySum += detail.getClosedMoney();
+				closedTaxMoneySum += detail.getClosedTaxMoney();
+			}
+		}
+
+		int i = 1;
 		for (StatementDetail detail : detailList) {
 			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
 
 			if (purchaseInDetail == null)
 				continue;
+
 			U8InvoicePostEntry entry = new U8InvoicePostEntry();
-			entry.setQuantity(detail.getClosedQuantity());
-			entry.setTaxrate(detail.getTaxRate());
-			entry.setOritaxcost(detail.getClosedTaxPrice());
-			entry.setInventorycode(purchaseInDetail.getInventory().getCode());
+
+			entry.setCinvcode(purchaseInDetail.getInventory().getCode());
+			entry.setIpbvquantity(detail.getClosedQuantity());
+
+			float invoicePrice, invoiceMoney, invoiceTaxPrice, invoiceTaxMoney;
+			if (chargeBack > 0) {
+				invoiceMoney = Utils
+						.costRound(detail.getClosedMoney() - chargeBack * detail.getClosedMoney() / closedMoneySum);
+				invoicePrice = invoiceMoney / detail.getClosedQuantity();
+				invoiceTaxMoney = Utils.costRound(
+						detail.getClosedTaxMoney() - chargeBack * detail.getClosedTaxMoney() / closedTaxMoneySum);
+				invoiceTaxPrice = invoiceTaxMoney / detail.getClosedQuantity();
+			} else {
+				invoicePrice = detail.getClosedPrice();
+				invoiceMoney = detail.getClosedMoney();
+				invoiceTaxPrice = detail.getClosedTaxPrice();
+				invoiceTaxMoney = detail.getClosedTaxMoney();
+			}
+
+			invoicePrice = Utils.priceRound(invoicePrice);
+			invoiceMoney = Utils.costRound(invoiceMoney);
+			invoiceTaxPrice = Utils.priceRound(invoiceTaxPrice);
+			invoiceTaxMoney = Utils.costRound(invoiceTaxMoney);
+
+			// 发票含税单价
+			entry.setiOriTaxCost(invoiceTaxPrice);
+			// 发票未税单价
+			entry.setiOriCost(invoicePrice);
+			// 发票未税金额
+			entry.setiOriMoney(invoiceMoney);
+			// 发票含税金额-发票未税金额
+			entry.setiOriTaxPrice(invoiceTaxMoney - invoiceMoney);
+			// 发票含税金额
+			entry.setiOriSum(invoiceTaxMoney);
+
+			// 税率（表体）
+			entry.setiTaxRate(detail.getTaxRate());
+
+			// 采购入库子表ID
+			entry.setRdsid(purchaseInDetail.getPiDetailId());
+			// 采购订单子表ID
+			entry.setIposid(purchaseInDetail.getPoDetailId());
+			// SRM里表体的行号
+			entry.setIvouchrowno(i);
+
+			// 入库日期
+			entry.setDindate(purchaseInDetail.getMain().getDate());
+
+			// 发票含税单价
+			entry.setInattaxprice(invoiceTaxPrice);
+			// 发票未税单价
+			entry.setiCost(invoicePrice);
+			// 发票未税金额
+			entry.setiMoney(invoiceMoney);
+			// 发票含税金额-发票未税金额
+			entry.setiTaxPrice(invoiceTaxMoney - invoiceMoney);
+			// 发票未税金额
+			entry.setiSum(invoiceMoney);
+
 			entryList.add(entry);
+			i++;
 		}
 
 		post.setEntry(entryList);

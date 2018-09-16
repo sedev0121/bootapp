@@ -774,6 +774,16 @@ public class SyncController {
 						String material_name = temp.get("CInvNameMat");
 						String material_unitname = temp.get("ccomunitnameMat");
 
+						Long purchaseInDetailId = 0L;
+
+						if (temp.get("autoID") != null)
+							purchaseInDetailId = Long.valueOf(String.valueOf(temp.get("autoID")));
+
+						Long purchaseOrderDetailId = 0L;
+
+						if (temp.get("poautoid") != null)
+							purchaseOrderDetailId = Long.valueOf(String.valueOf(temp.get("poautoid")));
+
 						Float material_quantity = null;
 						if (temp.get("IQuantityMat") != null)
 							material_quantity = Float.valueOf(String.valueOf(temp.get("IQuantityMat")));
@@ -818,6 +828,10 @@ public class SyncController {
 
 						detail.setPrice(price);
 						detail.setPoCode(poCode);
+
+						detail.setPiDetailId(purchaseInDetailId);
+						detail.setPoDetailId(purchaseOrderDetailId);
+
 						detail.setRowno(Integer.parseInt(rowno));
 
 						detail.setCost(cost);
