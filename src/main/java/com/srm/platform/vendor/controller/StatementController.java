@@ -377,7 +377,7 @@ public class StatementController extends CommonController {
 		if (form.getState() <= Constants.STATEMENT_STATE_CONFIRM) {
 			statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
 			if (form.getTable() != null) {
-
+				int i = 1;
 				for (Map<String, String> row : form.getTable()) {
 					StatementDetail detail = new StatementDetail();
 					detail.setCode(main.getCode());
@@ -428,6 +428,7 @@ public class StatementController extends CommonController {
 						detail.setUnitWeight(Float.parseFloat(unit_weight));
 
 					detail.setMemo(memo);
+					detail.setRowNo(i++);
 
 					detail = statementDetailRepository.save(detail);
 				}
@@ -522,6 +523,20 @@ public class StatementController extends CommonController {
 		List<U8InvoicePostEntry> entryList = new ArrayList<>();
 
 		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
+
+		float chargeBack = 0, closedMoneySum = 0, closedTaxMoneySum = 0;
+
+		for (StatementDetail detail : detailList) {
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
+
+			if (purchaseInDetail == null) {
+				chargeBack = detail.getClosedTaxMoney();
+			} else {
+				closedMoneySum += detail.getClosedMoney();
+				closedTaxMoneySum += detail.getClosedTaxMoney();
+			}
+		}
+
 		int i = 1;
 		for (StatementDetail detail : detailList) {
 			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
@@ -534,16 +549,37 @@ public class StatementController extends CommonController {
 			entry.setCinvcode(purchaseInDetail.getInventory().getCode());
 			entry.setIpbvquantity(detail.getClosedQuantity());
 
+			float invoicePrice, invoiceMoney, invoiceTaxPrice, invoiceTaxMoney;
+			if (chargeBack > 0) {
+				invoiceMoney = Utils
+						.costRound(detail.getClosedMoney() - chargeBack * detail.getClosedMoney() / closedMoneySum);
+				invoicePrice = invoiceMoney / detail.getClosedQuantity();
+				invoiceTaxMoney = Utils.costRound(
+						detail.getClosedTaxMoney() - chargeBack * detail.getClosedTaxMoney() / closedTaxMoneySum);
+				invoiceTaxPrice = invoiceTaxMoney / detail.getClosedQuantity();
+			} else {
+				invoicePrice = detail.getClosedPrice();
+				invoiceMoney = detail.getClosedMoney();
+				invoiceTaxPrice = detail.getClosedTaxPrice();
+				invoiceTaxMoney = detail.getClosedTaxMoney();
+			}
+
+			invoicePrice = Utils.priceRound(invoicePrice);
+			invoiceMoney = Utils.costRound(invoiceMoney);
+			invoiceTaxPrice = Utils.priceRound(invoiceTaxPrice);
+			invoiceTaxMoney = Utils.costRound(invoiceTaxMoney);
+
 			// 发票含税单价
-			entry.setiOriTaxCost(detail.getClosedTaxPrice());
+			entry.setiOriTaxCost(invoiceTaxPrice);
 			// 发票未税单价
-			entry.setiOriCost(detail.getClosedPrice());
+			entry.setiOriCost(invoicePrice);
 			// 发票未税金额
-			entry.setiOriMoney(detail.getClosedMoney());
+			entry.setiOriMoney(invoiceMoney);
 			// 发票含税金额-发票未税金额
-			entry.setiOriTaxPrice(detail.getClosedTaxMoney() - detail.getClosedMoney());
+			entry.setiOriTaxPrice(invoiceTaxMoney - invoiceMoney);
 			// 发票含税金额
-			entry.setiOriSum(detail.getClosedTaxMoney());
+			entry.setiOriSum(invoiceTaxMoney);
+
 			// 税率（表体）
 			entry.setiTaxRate(detail.getTaxRate());
 
@@ -558,15 +594,15 @@ public class StatementController extends CommonController {
 			entry.setDindate(purchaseInDetail.getMain().getDate());
 
 			// 发票含税单价
-			entry.setInattaxprice(detail.getClosedTaxPrice());
+			entry.setInattaxprice(invoiceTaxPrice);
 			// 发票未税单价
-			entry.setiCost(detail.getClosedPrice());
+			entry.setiCost(invoicePrice);
 			// 发票未税金额
-			entry.setiMoney(detail.getClosedMoney());
+			entry.setiMoney(invoiceMoney);
 			// 发票含税金额-发票未税金额
-			entry.setiTaxPrice(detail.getClosedTaxMoney() - detail.getClosedMoney());
+			entry.setiTaxPrice(invoiceTaxMoney - invoiceMoney);
 			// 发票未税金额
-			entry.setiSum(detail.getClosedMoney());
+			entry.setiSum(invoiceMoney);
 
 			entryList.add(entry);
 			i++;

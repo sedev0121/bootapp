@@ -47,6 +47,8 @@ public class StatementDetail {
 	private Float realQuantity;
 	private Integer purchaseinType;
 
+	private Integer rowNo;
+
 	public Long getId() {
 		return id;
 	}
@@ -61,6 +63,30 @@ public class StatementDetail {
 
 	public void setMemo(String memo) {
 		this.memo = memo;
+	}
+
+	public Integer getRowNo() {
+		return rowNo;
+	}
+
+	public void setRowNo(Integer rowNo) {
+		this.rowNo = rowNo;
+	}
+
+	public void setUnitWeight(Float unitWeight) {
+		this.unitWeight = unitWeight;
+	}
+
+	public void setYinci(Float yinci) {
+		this.yinci = yinci;
+	}
+
+	public void setYuanci(Float yuanci) {
+		this.yuanci = yuanci;
+	}
+
+	public void setRealQuantity(Float realQuantity) {
+		this.realQuantity = realQuantity;
 	}
 
 	public float getUnitWeight() {

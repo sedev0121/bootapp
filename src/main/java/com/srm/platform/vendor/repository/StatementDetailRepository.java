@@ -15,7 +15,7 @@ public interface StatementDetailRepository extends JpaRepository<StatementDetail
 
 	StatementDetail findOneById(Long id);
 
-	@Query(value = "SELECT * FROM statement_detail WHERE code= :code", nativeQuery = true)
+	@Query(value = "SELECT * FROM statement_detail WHERE code= :code order by row_no", nativeQuery = true)
 	List<StatementDetail> findByCode(String code);
 
 	@Query(value = "select a.*, c.quantity-ifnull(a.closed_quantity, 0) remain_quantity, d.type, c.code purchase_in_code, c.po_code, c.nat_price, a.tax_rate nat_tax_rate, "
@@ -23,7 +23,7 @@ public interface StatementDetailRepository extends JpaRepository<StatementDetail
 			+ "f.name unitname, d.date purchase_in_date, e.code inventorycode, e.name inventoryname, e.specs "
 			+ "from statement_detail a left join statement_main b on a.code=b.code left join purchase_in_detail c on a.purchase_in_detail_id=c.id "
 			+ "left join purchase_in_main d on c.code=d.code left join inventory e on c.inventory_code=e.code "
-			+ "left join measurement_unit f on e.main_measure=f.code where a.code=?1 order by c.code, c.rowno", nativeQuery = true)
+			+ "left join measurement_unit f on e.main_measure=f.code where a.code=?1 order by a.row_no", nativeQuery = true)
 	List<StatementDetailItem> findDetailsByCode(String code);
 
 }
