@@ -32,6 +32,7 @@ public class Constants {
 	public final static int STATEMENT_STATE_VERIFY = 5;
 	public final static int STATEMENT_STATE_INVOICE_NUM = 6;
 	public final static int STATEMENT_STATE_INVOICE_PUBLISH = 7;
+	public final static int STATEMENT_STATE_INVOICE_CANCEL = 8;
 
 	public final static int NOTICE_TYPE_USER = 1;
 	public final static int NOTICE_TYPE_SYSTEM = 2;

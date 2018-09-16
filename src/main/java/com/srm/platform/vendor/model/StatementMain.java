@@ -96,8 +96,27 @@ public class StatementMain {
 	private String attachFileName;
 	private String attachOriginalName;
 
+	private String invoiceCancelReason;
+	private Date invoiceCancelDate;
+
 	public StatementMain() {
 
+	}
+
+	public String getInvoiceCancelReason() {
+		return invoiceCancelReason;
+	}
+
+	public void setInvoiceCancelReason(String invoiceCancelReason) {
+		this.invoiceCancelReason = invoiceCancelReason;
+	}
+
+	public Date getInvoiceCancelDate() {
+		return invoiceCancelDate;
+	}
+
+	public void setInvoiceCancelDate(Date invoiceCancelDate) {
+		this.invoiceCancelDate = invoiceCancelDate;
 	}
 
 	public StatementMain(AccountRepository accountRepository) {

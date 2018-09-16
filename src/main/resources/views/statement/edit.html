@@ -22,7 +22,7 @@
 
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==2}" id="verify"><i class="fa fa-check-square"></i> 确认</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==5 or main.state==6}" id="invoicenum"><i class="fa fa-check-square"></i> 填发票号</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==5 or main.state==6 or main.state==8}" id="invoicenum"><i class="fa fa-check-square"></i> 填发票号</a>
           <a class="btn btn-default" th:href="@{/statement}"><i class="fa fa-arrow-left"></i> 返回</a>
         </div>
     </div>
@@ -107,14 +107,22 @@
                   <label for="tax_rate">税率: </label>
                   <input type="number" id="tax_rate" name="tax_rate" th:value="${main.taxRate}" class="form-control"/>
                 </div>                
-                <div class="col-lg-6 col-md-6">
-                  <label for="invoice_code">发票号:(335679/80/81 表示335679、335680、335681三张发票) </label>
+                <div class="col-lg-4 col-md-4">
+                  <label for="invoice_code">发票号:(5679/80/81 表示5679、5680、5681三张发票) </label>
                   <input type="text" id="invoice_code" name="invoice_code" th:value="${main.invoiceCode}" class="form-control" disabled/>
                 </div>     
-                <div class="col-lg-6 col-md-6">
+                <div class="col-lg-6 col-md-7">
+                  <label for="invoice_code">发票退回原因 </label>
+                  <input type="text" id="invoice_code" th:value="${main.invoiceCancelReason}" class="form-control" disabled/>
+                </div>     
+                <div class="col-lg-2 col-md-2">
+                  <label for="remark">发票退回时间</label>
+                  <input type="text" id="remark" name="remark" th:value="${#dates.format(main.invoiceCancelDate, 'yyyy-MM-dd')}" class="form-control" />
+                </div>        
+                <div class="col-lg-12 col-md-12">
                   <label for="remark">摘要: </label>
                   <input type="text" id="remark" name="remark" th:value="${main.remark}" class="form-control" />
-                </div>       
+                </div>     
                 <div class="col-lg-6 col-md-6 form-group" sec:authorize="hasAuthority('对账单管理-新建/发布')" id="file_select" th:if="${(main.state==1 or main.state == 4) and main.attachFileName == null}">
                   <label for="remark">　</label>
                   <div class="input-group input-file" name="attach">
@@ -361,7 +369,7 @@ $(document).ready(function() {
     $('select').attr("readonly", true);
   }
 
-  if ((state == 5 || state == 6) && is_vendor) {
+  if ((state == 5 || state == 6 || state == 8) && is_vendor) {
     $('#invoice_code').removeAttr("disabled");
     $('#invoice_code').removeAttr("readonly");
   }
@@ -399,7 +407,45 @@ $(document).ready(function() {
     onChangeType();
   });
   
-  
+  function updateInvoiceData() {
+    var result = [];
+    var charge_back = 0, closed_tax_money_sum = 0;
+    
+    table.data().each(function(item){
+      if (item.type != '委外加工') {
+        if (item.purchase_in_detail_id == 0) {
+          charge_back = item.closed_tax_money;
+        }else{
+          closed_tax_money_sum += parseFloat(item.closed_tax_money);
+        }
+      }
+    });
+    var row_length = table.data().length;
+    var i = 1, invoice_tax_money_sum = 0;
+    console.log('row_length=' + row_length + " closed_tax_money_sum" + closed_tax_money_sum);
+    
+    table.data().each(function(item){
+      if (item.type != '委外加工') {
+        if (item.purchase_in_detail_id != 0) {
+          console.log("i=" + i + " closed_tax_money=" + item.closed_tax_money + " invoice_tax_money_sum=" + invoice_tax_money_sum );
+          if (i == row_length){
+            temp = item.closed_tax_money - (charge_back - invoice_tax_money_sum);
+          }else{
+            temp = item.closed_tax_money - charge_back * (item.closed_tax_money/closed_tax_money_sum);  
+            invoice_tax_money_sum += parseFloat(App.costNumber(charge_back * (item.closed_tax_money/closed_tax_money_sum)));
+          }
+          item.invoice_tax_money = App.costNumber(temp);          
+          item.invoice_tax_price = App.priceNumber(item.invoice_tax_money/item.quantity);
+        }else{
+          item.invoice_tax_money = item.closed_tax_money;
+          item.invoice_tax_price = item.closed_tax_price;
+        }
+      }
+      i++;
+    });
+    
+    table.rows().invalidate().draw();
+  }
   
   function onChangeType() {
     var type = $('#type').val();
@@ -577,8 +623,10 @@ $(document).ready(function() {
             item.closed_money =value?parseFloat(value).toFixed(2):'';   
           }
         });
-      }
-
+      }      
+      
+    }).on( 'submitSuccess', function ( e, data, action ) {
+      updateInvoiceData();
     });
       
     table_options = {
@@ -649,6 +697,8 @@ $(document).ready(function() {
                     memo:null,
                     specs:null,
                     state:null,
+                    invoice_tax_price:'',
+                    invoice_tax_money:''
                 };
                 table.row.add(new_row).draw();
               } 
@@ -658,15 +708,34 @@ $(document).ready(function() {
           url : detail_url,
           dataSrc : function(json) {
             var result = [];
+            var charge_back = 0, closed_tax_money_sum = 0;
             $.each(json, function(key, item){
               if (item.type != '委外加工') {
+                if (item.purchase_in_detail_id == 0) {
+                  charge_back = item.closed_tax_money;
+                }else{
+                  closed_tax_money_sum += item.closed_tax_money;
+                }
                 item.dstartdate = $.fn.date_renderer(item.dstartdate);
                 item.denddate = $.fn.date_renderer(item.denddate);
+                item.invoice_tax_money = item.closed_tax_money;
+                item.invoice_tax_price = item.closed_tax_price;
                 result.push(item);
               }
             });
+            
+            var invoice_result = [];
+            $.each(result, function(key, item){
+              if (item.type != '委外加工') {
+                if (item.purchase_in_detail_id != 0) {
+                  item.invoice_tax_money -= App.costNumber(charge_back * (item.closed_tax_money/closed_tax_money_sum));
+                  item.invoice_tax_price = App.priceNumber(item.invoice_tax_money/item.quantity);
+                }
+                invoice_result.push(item);
+              }
+            });
 
-            return result;
+            return invoice_result;
           },
         },
         columns : [ {
@@ -775,6 +844,16 @@ $(document).ready(function() {
           sortable: false,
           title : '结算含税金额',
         }, {
+          data : 'invoice_tax_price',
+          sortable: false,
+          className: 'dt-right',
+          title : '发票含税单价',
+        }, {
+          data : 'invoice_tax_money',
+          className: 'dt-right',
+          sortable: false,
+          title : '发票含税金额',
+        }, {
           data : 'memo',
           sortable: false,
           className:'vendor',
@@ -782,7 +861,7 @@ $(document).ready(function() {
         } ],
         order: [  [ 0, "asc" ], [3, "asc"] ],
         footerCallback: function ( row, data, start, end, display ) {
-          App.footerCallback(this.api(), [ [10, "cost"], [11, "cost"], [12, "quantity"], [13, "quantity"], [17, "cost"], [18, "cost"]]);
+          App.footerCallback(this.api(), [ [10, "cost"], [11, "cost"], [12, "quantity"], [13, "quantity"], [17, "cost"], [18, "cost"], [20, "cost"]]);
         },
         drawCallback: function( settings ) {
           var data_list = this.api().rows().data().toArray()
@@ -811,7 +890,7 @@ $(document).ready(function() {
     var footertr = $("<tr></tr>").appendTo(footer);
      
     //Add footer cells
-    for (var i = 0; i < 11; i++) {
+    for (var i = 0; i < 13; i++) {
       if (i==0){
         $("<th colspan='10' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
       }else{
@@ -943,6 +1022,9 @@ $(document).ready(function() {
           }
         }
       });
+      
+      var data = table.rows().data().toArray();
+      
     });      
         
     table_options = {
@@ -1116,6 +1198,16 @@ $(document).ready(function() {
           sortable:false,
           title : '结算未税金额',
         }, {
+          data : 'closed_tax_price',
+          sortable: false,
+          className: 'dt-right',
+          title : '发票含税单价',
+        }, {
+          data : 'closed_tax_money',
+          className: 'dt-right',
+          sortable: false,
+          title : '发票含税金额',
+        }, {
           data : 'memo',
           sortable:false,
           className:'vendor',
@@ -1138,7 +1230,8 @@ $(document).ready(function() {
             [20, "quantity"],
             [22, "cost"],
             [23, "cost"], 
-            [24, "cost"]]
+            [24, "cost"],
+            [26, "cost"]]
           );
         },
       };
@@ -1157,7 +1250,7 @@ $(document).ready(function() {
     var footertr = $("<tr></tr>").appendTo(footer);
      
     //Add footer cells
-    for (var i = 0; i < 21; i++) {
+    for (var i = 0; i < 23; i++) {
       if (i==0){
         $("<th colspan='6' class='dt-center'>合计</th>").appendTo(footertr);
       }else{

@@ -1,45 +1,164 @@
 package com.srm.platform.vendor.utility;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class U8InvoicePostEntry {
 
-	private String inventorycode;
-	private Float quantity;
-	private Float oritaxcost;
-	private Float taxrate;
+	private String cinvcode;
+	private Float ipbvquantity;
+	private Float iOriTaxCost;
+	private Float iOriCost;
+	private Float iOriMoney;
+	private Float iOriTaxPrice;
+	private Float iOriSum;
+	private Float iTaxRate;
+	private Long rdsid;
+	private Long iposid;
+	private Integer ivouchrowno;
+	private Date dindate;
+	private Float inattaxprice;
+	private Float iCost;
+	private Float iMoney;
+	private Float iTaxPrice;
+	private Float iSum;
 
-	public String getInventorycode() {
-		return inventorycode;
+	public String getCinvcode() {
+		return cinvcode;
 	}
 
-	public void setInventorycode(String inventorycode) {
-		this.inventorycode = inventorycode;
+	public void setCinvcode(String cinvcode) {
+		this.cinvcode = cinvcode;
 	}
 
-	public Float getQuantity() {
-		return quantity;
+	public Float getIpbvquantity() {
+		return ipbvquantity;
 	}
 
-	public void setQuantity(Float quantity) {
-		this.quantity = quantity;
+	public void setIpbvquantity(Float ipbvquantity) {
+		this.ipbvquantity = ipbvquantity;
 	}
 
-	public Float getOritaxcost() {
-		return oritaxcost;
+	public Float getiOriTaxCost() {
+		return iOriTaxCost;
 	}
 
-	public void setOritaxcost(Float oritaxcost) {
-		this.oritaxcost = oritaxcost;
+	public void setiOriTaxCost(Float iOriTaxCost) {
+		this.iOriTaxCost = iOriTaxCost;
 	}
 
-	public Float getTaxrate() {
-		return taxrate;
+	public Float getiOriCost() {
+		return iOriCost;
 	}
 
-	public void setTaxrate(Float taxrate) {
-		this.taxrate = taxrate;
+	public void setiOriCost(Float iOriCost) {
+		this.iOriCost = iOriCost;
+	}
+
+	public Float getiOriMoney() {
+		return iOriMoney;
+	}
+
+	public void setiOriMoney(Float iOriMoney) {
+		this.iOriMoney = iOriMoney;
+	}
+
+	public Float getiOriTaxPrice() {
+		return iOriTaxPrice;
+	}
+
+	public void setiOriTaxPrice(Float iOriTaxPrice) {
+		this.iOriTaxPrice = iOriTaxPrice;
+	}
+
+	public Float getiOriSum() {
+		return iOriSum;
+	}
+
+	public void setiOriSum(Float iOriSum) {
+		this.iOriSum = iOriSum;
+	}
+
+	public Float getiTaxRate() {
+		return iTaxRate;
+	}
+
+	public void setiTaxRate(Float iTaxRate) {
+		this.iTaxRate = iTaxRate;
+	}
+
+	public Long getRdsid() {
+		return rdsid;
+	}
+
+	public void setRdsid(Long rdsid) {
+		this.rdsid = rdsid;
+	}
+
+	public Long getIposid() {
+		return iposid;
+	}
+
+	public void setIposid(Long iposid) {
+		this.iposid = iposid;
+	}
+
+	public Integer getIvouchrowno() {
+		return ivouchrowno;
+	}
+
+	public void setIvouchrowno(Integer ivouchrowno) {
+		this.ivouchrowno = ivouchrowno;
+	}
+
+	public String getDindate() {
+		return Utils.formatDateTime(dindate);
+	}
+
+	public void setDindate(Date dindate) {
+		this.dindate = dindate;
+	}
+
+	public Float getInattaxprice() {
+		return inattaxprice;
+	}
+
+	public void setInattaxprice(Float inattaxprice) {
+		this.inattaxprice = inattaxprice;
+	}
+
+	public Float getiCost() {
+		return iCost;
+	}
+
+	public void setiCost(Float iCost) {
+		this.iCost = iCost;
+	}
+
+	public Float getiMoney() {
+		return iMoney;
+	}
+
+	public void setiMoney(Float iMoney) {
+		this.iMoney = iMoney;
+	}
+
+	public Float getiTaxPrice() {
+		return iTaxPrice;
+	}
+
+	public void setiTaxPrice(Float iTaxPrice) {
+		this.iTaxPrice = iTaxPrice;
+	}
+
+	public Float getiSum() {
+		return iSum;
+	}
+
+	public void setiSum(Float iSum) {
+		this.iSum = iSum;
 	}
 
 }

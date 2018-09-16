@@ -322,6 +322,8 @@ public class StatementController extends CommonController {
 			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
 				main.setU8invoicemaker(this.getLoginAccount());
 				main.setU8invoicedate(new Date());
+				main.setInvoiceCancelDate(null);
+				main.setInvoiceCancelReason(null);
 
 			} else {
 				return u8Response;
@@ -508,28 +510,66 @@ public class StatementController extends CommonController {
 		String jsonString = "";
 
 		U8InvoicePostData post = new U8InvoicePostData();
-		post.setInvoicecode(main.getInvoiceCode());
-		post.setDelegatecode(main.getVendor().getCode());
-		post.setVendorcode(main.getVendor().getCode());
-		post.setDate(Utils.formatDate(main.getMakedate()));
-		post.setInvoicetype(main.getInvoiceType() == 1 ? "01" : "02");
-		post.setPurchasecode(main.getType() == 1 ? "01" : "05");
-		post.setMaker(this.getLoginAccount().getRealname());
+		post.setCpbvcode(main.getInvoiceCode());
+		post.setCunitcode(main.getVendor().getCode());
+		post.setCvencode(main.getVendor().getCode());
+		post.setCpbvbilltype(main.getInvoiceType() == 1 ? "01" : "02");
+		post.setCptcode(main.getType() == 1 ? "01" : "05");
+		post.setCpbvmaker(this.getLoginAccount().getRealname());
+		post.setIpbvtaxrate(main.getTaxRate());
+		post.setIdiscountaxtype(main.getInvoiceType() == 1 ? "0" : "1");
 
 		List<U8InvoicePostEntry> entryList = new ArrayList<>();
 
 		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
+		int i = 1;
 		for (StatementDetail detail : detailList) {
 			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
 
 			if (purchaseInDetail == null)
 				continue;
+
 			U8InvoicePostEntry entry = new U8InvoicePostEntry();
-			entry.setQuantity(detail.getClosedQuantity());
-			entry.setTaxrate(detail.getTaxRate());
-			entry.setOritaxcost(detail.getClosedTaxPrice());
-			entry.setInventorycode(purchaseInDetail.getInventory().getCode());
+
+			entry.setCinvcode(purchaseInDetail.getInventory().getCode());
+			entry.setIpbvquantity(detail.getClosedQuantity());
+
+			// 发票含税单价
+			entry.setiOriTaxCost(detail.getClosedTaxPrice());
+			// 发票未税单价
+			entry.setiOriCost(detail.getClosedPrice());
+			// 发票未税金额
+			entry.setiOriMoney(detail.getClosedMoney());
+			// 发票含税金额-发票未税金额
+			entry.setiOriTaxPrice(detail.getClosedTaxMoney() - detail.getClosedMoney());
+			// 发票含税金额
+			entry.setiOriSum(detail.getClosedTaxMoney());
+			// 税率（表体）
+			entry.setiTaxRate(detail.getTaxRate());
+
+			// 采购入库子表ID
+			entry.setRdsid(purchaseInDetail.getPiDetailId());
+			// 采购订单子表ID
+			entry.setIposid(purchaseInDetail.getPoDetailId());
+			// SRM里表体的行号
+			entry.setIvouchrowno(i);
+
+			// 入库日期
+			entry.setDindate(purchaseInDetail.getMain().getDate());
+
+			// 发票含税单价
+			entry.setInattaxprice(detail.getClosedTaxPrice());
+			// 发票未税单价
+			entry.setiCost(detail.getClosedPrice());
+			// 发票未税金额
+			entry.setiMoney(detail.getClosedMoney());
+			// 发票含税金额-发票未税金额
+			entry.setiTaxPrice(detail.getClosedTaxMoney() - detail.getClosedMoney());
+			// 发票未税金额
+			entry.setiSum(detail.getClosedMoney());
+
 			entryList.add(entry);
+			i++;
 		}
 
 		post.setEntry(entryList);

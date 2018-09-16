@@ -89,6 +89,8 @@ public class PurchaseInDetail {
 	private Float materialTaxPrice;
 
 	private String poCode;
+	private Long piDetailId;
+	private Long poDetailId;
 
 	private Integer state = Constants.PURCHASE_IN_STATE_WAIT;
 
@@ -98,6 +100,22 @@ public class PurchaseInDetail {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getPiDetailId() {
+		return piDetailId;
+	}
+
+	public void setPiDetailId(Long piDetailId) {
+		this.piDetailId = piDetailId;
+	}
+
+	public Long getPoDetailId() {
+		return poDetailId;
+	}
+
+	public void setPoDetailId(Long poDetailId) {
+		this.poDetailId = poDetailId;
 	}
 
 	public String getPoCode() {
