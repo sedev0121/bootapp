@@ -31,10 +31,10 @@ public class RestClient {
 	}
 
 	public String get(String url) {
+		logger.info(String.format("url=>%s", url));
 		HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
 		ResponseEntity<String> responseEntity = rest.exchange(url, HttpMethod.GET, requestEntity, String.class);
 		this.setStatus(responseEntity.getStatusCode());
-		logger.info(String.format("url=>%s", url));
 		logger.info(String.format("response=>%s", responseEntity.getBody()));
 		return responseEntity.getBody();
 	}

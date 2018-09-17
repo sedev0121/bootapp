@@ -190,8 +190,8 @@ public class ApiClient {
 	}
 
 	private String getUrlSuffix(Map<String, String> requestParams) {
-		checkToken();
-		requestParams.put("token", token_id);
+		// checkToken();
+		// requestParams.put("token", token_id);
 		String urlSuffix = "";
 		for (Entry<String, String> entry : requestParams.entrySet()) {
 			urlSuffix += "&" + entry.getKey() + "=" + entry.getValue();

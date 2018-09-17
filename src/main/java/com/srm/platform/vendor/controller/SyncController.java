@@ -716,15 +716,28 @@ public class SyncController {
 
 				requestParams = new HashMap<>();
 
-				requestParams.put("rows_per_page", "10");
-				requestParams.put("page_index", Integer.toString(++i));
+				requestParams.put("sys_Order", "");
+				requestParams.put("sys_PageIndex", Integer.toString(++i));
+				requestParams.put("sys_PageSize", "10");
+				requestParams.put("code_begin", "");
+				requestParams.put("code_end", "");
+				requestParams.put("auditdate_begin", "");
+				requestParams.put("auditdate_end", "");
+				requestParams.put("warehousecode", "");
+				requestParams.put("cPOcode", "");
+				requestParams.put("cChangAuditTime_end", "");
+				requestParams.put("bredvouch", "");
 
 				if (vendorCode != null) {
 					requestParams.put("vendorcode", vendorCode);
+				} else {
+					requestParams.put("vendorcode", "");
 				}
 
 				if (startDate != null) {
 					requestParams.put("cChangAuditTime_begin", Utils.formatDateZeroTime(startDate));
+				} else {
+					requestParams.put("cChangAuditTime_begin", "");
 				}
 
 				String response;
@@ -737,141 +750,135 @@ public class SyncController {
 				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 				});
 
-				int errorCode = Integer.parseInt((String) map.get("errcode"));
+				total_page = Integer.parseInt(String.valueOf(map.get("page_count")));
+				tempList = (List<LinkedHashMap<String, String>>) map.get("list");
+				for (LinkedHashMap<String, String> temp : tempList) {
+					String code = temp.get("CCode");
+					String type = temp.get("CBusType");
+					String vendor_code = temp.get("CVenCode");
+					String bredvouch = temp.get("bredvouch");
+					String warehouse_code = temp.get("CWhCode");
+					String warehouse_name = temp.get("CWhName");
+					String memo = temp.get("CMemo");
+					String date = temp.get("DVeriDate");
+					String rowno = String.valueOf(temp.get("irowno"));
+					String poCode = String.valueOf(temp.get("CPOID"));
 
-				if (errorCode == appProperties.getError_code_success()) {
-					total_page = Integer.parseInt(String.valueOf(map.get("page_count")));
-					tempList = (List<LinkedHashMap<String, String>>) map.get("list");
-					for (LinkedHashMap<String, String> temp : tempList) {
-						String code = temp.get("CCode");
-						String type = temp.get("CBusType");
-						String vendor_code = temp.get("CVenCode");
-						String bredvouch = temp.get("bredvouch");
-						String warehouse_code = temp.get("CWhCode");
-						String warehouse_name = temp.get("CWhName");
-						String memo = temp.get("CMemo");
-						String date = temp.get("DVeriDate");
-						String rowno = String.valueOf(temp.get("irowno"));
-						String poCode = String.valueOf(temp.get("CPOID"));
+					String inventory_code = temp.get("CInvCode");
+					Float quantity = Float.valueOf(String.valueOf(temp.get("IQuantity")));
+					Float price = Float.valueOf(String.valueOf(temp.get("IUnitCost")));
+					Float cost = Float.valueOf(String.valueOf(temp.get("IPrice")));
+					Float tax = Float.valueOf(String.valueOf(temp.get("ITaxPrice")));
+					Float tax_price = Float.valueOf(String.valueOf(temp.get("ITaxUnitCost")));
+					Float tax_rate = Float.valueOf(String.valueOf(temp.get("ITaxRate")));
+					Float tax_cost = Float.valueOf(String.valueOf(temp.get("ISum")));
+					String detailMemo = temp.get("cbMemo");
+					Float nat_price = Float.valueOf(String.valueOf(temp.get("INatUnitPrice")));
+					Float nat_cost = Float.valueOf(String.valueOf(temp.get("INatMoney")));
+					Float nat_tax_rate = Float.valueOf(String.valueOf(temp.get("IPerTaxRate")));
+					Float nat_tax = Float.valueOf(String.valueOf(temp.get("INatTax")));
+					Float nat_tax_price = Float.valueOf(String.valueOf(temp.get("INatTaxUnitCost")));
 
-						String inventory_code = temp.get("CInvCode");
-						Float quantity = Float.valueOf(String.valueOf(temp.get("IQuantity")));
-						Float price = Float.valueOf(String.valueOf(temp.get("IUnitCost")));
-						Float cost = Float.valueOf(String.valueOf(temp.get("IPrice")));
-						Float tax = Float.valueOf(String.valueOf(temp.get("ITaxPrice")));
-						Float tax_price = Float.valueOf(String.valueOf(temp.get("ITaxUnitCost")));
-						Float tax_rate = Float.valueOf(String.valueOf(temp.get("ITaxRate")));
-						Float tax_cost = Float.valueOf(String.valueOf(temp.get("ISum")));
-						String detailMemo = temp.get("cbMemo");
-						Float nat_price = Float.valueOf(String.valueOf(temp.get("INatUnitPrice")));
-						Float nat_cost = Float.valueOf(String.valueOf(temp.get("INatMoney")));
-						Float nat_tax_rate = Float.valueOf(String.valueOf(temp.get("IPerTaxRate")));
-						Float nat_tax = Float.valueOf(String.valueOf(temp.get("INatTax")));
-						Float nat_tax_price = Float.valueOf(String.valueOf(temp.get("INatTaxUnitCost")));
+					Float nat_tax_cost = Float.valueOf(String.valueOf(temp.get("INatSum")));
+					String material_code = temp.get("CInvCodeMat");
+					String material_name = temp.get("CInvNameMat");
+					String material_unitname = temp.get("ccomunitnameMat");
 
-						Float nat_tax_cost = Float.valueOf(String.valueOf(temp.get("INatSum")));
-						String material_code = temp.get("CInvCodeMat");
-						String material_name = temp.get("CInvNameMat");
-						String material_unitname = temp.get("ccomunitnameMat");
+					Long purchaseInDetailId = 0L;
 
-						Long purchaseInDetailId = 0L;
+					if (temp.get("autoID") != null)
+						purchaseInDetailId = Long.valueOf(String.valueOf(temp.get("autoID")));
 
-						if (temp.get("autoID") != null)
-							purchaseInDetailId = Long.valueOf(String.valueOf(temp.get("autoID")));
+					Long purchaseOrderDetailId = 0L;
 
-						Long purchaseOrderDetailId = 0L;
+					if (temp.get("poautoid") != null)
+						purchaseOrderDetailId = Long.valueOf(String.valueOf(temp.get("poautoid")));
 
-						if (temp.get("poautoid") != null)
-							purchaseOrderDetailId = Long.valueOf(String.valueOf(temp.get("poautoid")));
+					Float material_quantity = null;
+					if (temp.get("IQuantityMat") != null)
+						material_quantity = Float.valueOf(String.valueOf(temp.get("IQuantityMat")));
 
-						Float material_quantity = null;
-						if (temp.get("IQuantityMat") != null)
-							material_quantity = Float.valueOf(String.valueOf(temp.get("IQuantityMat")));
+					Float material_price = null;
+					if (temp.get("INatUnitPriceMat") != null)
+						material_price = Float.valueOf(String.valueOf(temp.get("INatUnitPriceMat")));
 
-						Float material_price = null;
-						if (temp.get("INatUnitPriceMat") != null)
-							material_price = Float.valueOf(String.valueOf(temp.get("INatUnitPriceMat")));
+					Float material_tax_price = null;
+					if (temp.get("INatTaxUnitPriceMat") != null)
+						material_tax_price = Float.valueOf(String.valueOf(temp.get("INatTaxUnitPriceMat")));
 
-						Float material_tax_price = null;
-						if (temp.get("INatTaxUnitPriceMat") != null)
-							material_tax_price = Float.valueOf(String.valueOf(temp.get("INatTaxUnitPriceMat")));
+					PurchaseInMain main = purchaseInMainRepository.findOneByCode(code);
+					if (main == null) {
+						main = new PurchaseInMain();
+						main.setCode(code);
+						if (bredvouch != null && !bredvouch.isEmpty())
+							main.setBredvouch(Integer.parseInt(bredvouch));
+						main.setWarehouse_code(warehouse_code);
+						main.setWarehouse_name(warehouse_name);
+						main.setMemo(memo);
+						main.setDate(Utils.parseDateTime(date));
 
-						PurchaseInMain main = purchaseInMainRepository.findOneByCode(code);
-						if (main == null) {
-							main = new PurchaseInMain();
-							main.setCode(code);
-							if (bredvouch != null && !bredvouch.isEmpty())
-								main.setBredvouch(Integer.parseInt(bredvouch));
-							main.setWarehouse_code(warehouse_code);
-							main.setWarehouse_name(warehouse_name);
-							main.setMemo(memo);
-							main.setDate(Utils.parseDateTime(date));
+						main.setVendor(vendorRepository.findOneByCode(vendor_code));
+						main.setType(type);
 
-							main.setVendor(vendorRepository.findOneByCode(vendor_code));
-							main.setType(type);
-
-							main = purchaseInMainRepository.save(main);
-						}
-
-						PurchaseInDetail detail = purchaseInDetailRepository.findOneByCodeAndRowno(code,
-								Integer.parseInt(rowno));
-						if (detail != null) {
-							continue;
-						} else {
-							detail = new PurchaseInDetail();
-						}
-
-						detail.setMain(main);
-						detail.setInventory(inventoryRepository.findByCode(inventory_code));
-
-						detail.setQuantity(quantity);
-
-						detail.setPrice(price);
-						detail.setPoCode(poCode);
-
-						detail.setPiDetailId(purchaseInDetailId);
-						detail.setPoDetailId(purchaseOrderDetailId);
-
-						detail.setRowno(Integer.parseInt(rowno));
-
-						detail.setCost(cost);
-
-						detail.setTax(tax);
-
-						detail.setTaxPrice(tax_price);
-
-						detail.setTaxRate(tax_rate);
-
-						detail.setTaxCost(tax_cost);
-
-						detail.setMemo(detailMemo);
-
-						detail.setNatPrice(nat_price);
-
-						detail.setNatCost(nat_cost);
-
-						detail.setNatTaxRate(nat_tax_rate);
-
-						detail.setNatTax(nat_tax);
-
-						detail.setNatTaxPrice(nat_tax_price);
-
-						detail.setNatTaxCost(nat_tax_cost);
-
-						detail.setMaterialCode(material_code);
-						detail.setMaterialName(material_name);
-						detail.setMaterialUnitname(material_unitname);
-
-						detail.setMaterialQuantity(material_quantity);
-
-						detail.setMaterialPrice(material_price);
-
-						detail.setMaterialTaxPrice(material_tax_price);
-
-						purchaseInDetailRepository.save(detail);
+						main = purchaseInMainRepository.save(main);
 					}
-				} else {
-					return false;
+
+					PurchaseInDetail detail = purchaseInDetailRepository.findOneByCodeAndRowno(code,
+							Integer.parseInt(rowno));
+					if (detail != null) {
+						continue;
+					} else {
+						detail = new PurchaseInDetail();
+					}
+
+					detail.setMain(main);
+					detail.setInventory(inventoryRepository.findByCode(inventory_code));
+
+					detail.setQuantity(quantity);
+
+					detail.setPrice(price);
+					detail.setPoCode(poCode);
+
+					detail.setPiDetailId(purchaseInDetailId);
+					detail.setPoDetailId(purchaseOrderDetailId);
+
+					detail.setRowno(Integer.parseInt(rowno));
+
+					detail.setCost(cost);
+
+					detail.setTax(tax);
+
+					detail.setTaxPrice(tax_price);
+
+					detail.setTaxRate(tax_rate);
+
+					detail.setTaxCost(tax_cost);
+
+					detail.setMemo(detailMemo);
+
+					detail.setNatPrice(nat_price);
+
+					detail.setNatCost(nat_cost);
+
+					detail.setNatTaxRate(nat_tax_rate);
+
+					detail.setNatTax(nat_tax);
+
+					detail.setNatTaxPrice(nat_tax_price);
+
+					detail.setNatTaxCost(nat_tax_cost);
+
+					detail.setMaterialCode(material_code);
+					detail.setMaterialName(material_name);
+					detail.setMaterialUnitname(material_unitname);
+
+					detail.setMaterialQuantity(material_quantity);
+
+					detail.setMaterialPrice(material_price);
+
+					detail.setMaterialTaxPrice(material_tax_price);
+
+					purchaseInDetailRepository.save(detail);
 				}
 
 			} while (i < total_page);
