@@ -1,5 +1,7 @@
 package com.srm.platform.vendor.u8api;
 
+import java.nio.charset.Charset;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 public class RestClient {
@@ -25,6 +28,8 @@ public class RestClient {
 		rf.setConnectTimeout(0);
 		this.rest = new RestTemplate(rf);
 
+		this.rest.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("GB2312")));
+
 		this.headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		headers.add("Accept", "*/*");
@@ -33,7 +38,7 @@ public class RestClient {
 	public String get(String url) {
 		logger.info(String.format("url=>%s", url));
 		HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
-		ResponseEntity<String> responseEntity = rest.exchange(url, HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> responseEntity = rest.getForEntity(url, String.class);
 		this.setStatus(responseEntity.getStatusCode());
 		logger.info(String.format("response=>%s", responseEntity.getBody()));
 		return responseEntity.getBody();

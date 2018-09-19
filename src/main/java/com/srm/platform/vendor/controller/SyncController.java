@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.util.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -670,6 +672,19 @@ public class SyncController {
 	}
 
 	@ResponseBody
+	@RequestMapping(value = { "/test" })
+	public boolean test() {
+
+		RestTemplate restTemplate = new RestTemplate();
+		// String fooResourceUrl =
+		// "http://183.249.171.190:5588/Service.asmx/GetPoRd?&code_end=&cChangAuditTime_end=&auditdate_end=&sys_PageIndex=1&auditdate_begin=&bredvouch=&code_begin=&cPOcode=&warehousecode=&vendorcode=&cChangAuditTime_begin=&sys_Order=&sys_PageSize=10";
+		String fooResourceUrl = "http://61.164.207.46:8089/LinkU8WebService/view/purchasein_detail/batch_get?&rows_per_page=10&page_index=1&token=4a7fa15eaba64c3ba5a892033337fa3c";
+		ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
+		logger.info(response.toString());
+		return true;
+	}
+
+	@ResponseBody
 	@RequestMapping(value = { "/purchasein/init", "/purchasein", "/purchasein/" })
 	public boolean purchaseInInit() {
 
@@ -753,58 +768,58 @@ public class SyncController {
 				total_page = Integer.parseInt(String.valueOf(map.get("page_count")));
 				tempList = (List<LinkedHashMap<String, String>>) map.get("list");
 				for (LinkedHashMap<String, String> temp : tempList) {
-					String code = temp.get("CCode");
-					String type = temp.get("CBusType");
-					String vendor_code = temp.get("CVenCode");
+					String code = temp.get("cCode");
+					String type = temp.get("cBusType");
+					String vendor_code = temp.get("cVenCode");
 					String bredvouch = temp.get("bredvouch");
-					String warehouse_code = temp.get("CWhCode");
-					String warehouse_name = temp.get("CWhName");
-					String memo = temp.get("CMemo");
-					String date = temp.get("DVeriDate");
+					String warehouse_code = temp.get("cWhCode");
+					String warehouse_name = temp.get("cWhName");
+					String memo = temp.get("dMemo");
+					String date = temp.get("dVeriDate");
 					String rowno = String.valueOf(temp.get("irowno"));
-					String poCode = String.valueOf(temp.get("CPOID"));
+					String poCode = String.valueOf(temp.get("cPOID"));
 
-					String inventory_code = temp.get("CInvCode");
-					Float quantity = Float.valueOf(String.valueOf(temp.get("IQuantity")));
-					Float price = Float.valueOf(String.valueOf(temp.get("IUnitCost")));
-					Float cost = Float.valueOf(String.valueOf(temp.get("IPrice")));
-					Float tax = Float.valueOf(String.valueOf(temp.get("ITaxPrice")));
-					Float tax_price = Float.valueOf(String.valueOf(temp.get("ITaxUnitCost")));
-					Float tax_rate = Float.valueOf(String.valueOf(temp.get("ITaxRate")));
-					Float tax_cost = Float.valueOf(String.valueOf(temp.get("ISum")));
+					String inventory_code = temp.get("cInvCode");
+					Float quantity = Float.valueOf(String.valueOf(temp.get("iQuantity")));
+					Float price = Float.valueOf(String.valueOf(temp.get("iUnitCost")));
+					Float cost = Float.valueOf(String.valueOf(temp.get("iPrice")));
+					Float tax = Float.valueOf(String.valueOf(temp.get("iTaxPrice")));
+					Float tax_price = Float.valueOf(String.valueOf(temp.get("iTaxUnitCost")));
+					Float tax_rate = Float.valueOf(String.valueOf(temp.get("iTaxRate")));
+					Float tax_cost = Float.valueOf(String.valueOf(temp.get("iSum")));
 					String detailMemo = temp.get("cbMemo");
-					Float nat_price = Float.valueOf(String.valueOf(temp.get("INatUnitPrice")));
-					Float nat_cost = Float.valueOf(String.valueOf(temp.get("INatMoney")));
-					Float nat_tax_rate = Float.valueOf(String.valueOf(temp.get("IPerTaxRate")));
-					Float nat_tax = Float.valueOf(String.valueOf(temp.get("INatTax")));
-					Float nat_tax_price = Float.valueOf(String.valueOf(temp.get("INatTaxUnitCost")));
+					Float nat_price = Float.valueOf(String.valueOf(temp.get("iNatUnitPrice")));
+					Float nat_cost = Float.valueOf(String.valueOf(temp.get("iNatMoney")));
+					Float nat_tax_rate = Float.valueOf(String.valueOf(temp.get("iPerTaxRate")));
+					Float nat_tax = Float.valueOf(String.valueOf(temp.get("iNatTax")));
+					Float nat_tax_price = Float.valueOf(String.valueOf(temp.get("iNatTaxUnitCost")));
 
-					Float nat_tax_cost = Float.valueOf(String.valueOf(temp.get("INatSum")));
-					String material_code = temp.get("CInvCodeMat");
-					String material_name = temp.get("CInvNameMat");
+					Float nat_tax_cost = Float.valueOf(String.valueOf(temp.get("iNatSum")));
+					String material_code = temp.get("cInvCodeMat");
+					String material_name = temp.get("cInvNameMat");
 					String material_unitname = temp.get("ccomunitnameMat");
 
 					Long purchaseInDetailId = 0L;
 
-					if (temp.get("autoID") != null)
-						purchaseInDetailId = Long.valueOf(String.valueOf(temp.get("autoID")));
+					if (temp.get("AutoID") != null && temp.get("AutoID").length() > 0)
+						purchaseInDetailId = Long.valueOf(String.valueOf(temp.get("AutoID")));
 
 					Long purchaseOrderDetailId = 0L;
 
-					if (temp.get("poautoid") != null)
-						purchaseOrderDetailId = Long.valueOf(String.valueOf(temp.get("poautoid")));
+					if (temp.get("pOAutoID") != null && temp.get("pOAutoID").length() > 0)
+						purchaseOrderDetailId = Long.valueOf(String.valueOf(temp.get("pOAutoID")));
 
 					Float material_quantity = null;
-					if (temp.get("IQuantityMat") != null)
-						material_quantity = Float.valueOf(String.valueOf(temp.get("IQuantityMat")));
+					if (temp.get("iQuantityMat") != null && temp.get("iQuantityMat").length() > 0)
+						material_quantity = Float.valueOf(String.valueOf(temp.get("iQuantityMat")));
 
 					Float material_price = null;
-					if (temp.get("INatUnitPriceMat") != null)
-						material_price = Float.valueOf(String.valueOf(temp.get("INatUnitPriceMat")));
+					if (temp.get("iNatUnitPriceMat") != null && temp.get("iNatUnitPriceMat").length() > 0)
+						material_price = Float.valueOf(String.valueOf(temp.get("iNatUnitPriceMat")));
 
 					Float material_tax_price = null;
-					if (temp.get("INatTaxUnitPriceMat") != null)
-						material_tax_price = Float.valueOf(String.valueOf(temp.get("INatTaxUnitPriceMat")));
+					if (temp.get("iNatTaxUnitPriceMat") != null && temp.get("iNatTaxUnitPriceMat").length() > 0)
+						material_tax_price = Float.valueOf(String.valueOf(temp.get("iNatTaxUnitPriceMat")));
 
 					PurchaseInMain main = purchaseInMainRepository.findOneByCode(code);
 					if (main == null) {
