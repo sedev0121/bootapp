@@ -8,6 +8,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class U8InvoicePostData {
 
+	private String cbustype = "";
+	private String cdepcode = "";
+	private String cpersoncode = "";
+	private String cpbvmemo = "";
+
 	private String cpbvbilltype;
 	private String cpbvcode;
 	private String dpbvdate = Utils.formatDateTime(new Date());
@@ -21,7 +26,7 @@ public class U8InvoicePostData {
 	private String cpbvmaker;
 	private String idiscountaxtype;
 
-	private List<U8InvoicePostEntry> entry;
+	private List<U8InvoicePostEntry> list;
 
 	public String getCpbvbilltype() {
 		return cpbvbilltype;
@@ -119,12 +124,44 @@ public class U8InvoicePostData {
 		this.idiscountaxtype = idiscountaxtype;
 	}
 
-	public List<U8InvoicePostEntry> getEntry() {
-		return entry;
+	public String getCbustype() {
+		return cbustype;
 	}
 
-	public void setEntry(List<U8InvoicePostEntry> entry) {
-		this.entry = entry;
+	public void setCbustype(String cbustype) {
+		this.cbustype = cbustype;
+	}
+
+	public String getCdepcode() {
+		return cdepcode;
+	}
+
+	public void setCdepcode(String cdepcode) {
+		this.cdepcode = cdepcode;
+	}
+
+	public String getCpersoncode() {
+		return cpersoncode;
+	}
+
+	public void setCpersoncode(String cpersoncode) {
+		this.cpersoncode = cpersoncode;
+	}
+
+	public String getCpbvmemo() {
+		return cpbvmemo;
+	}
+
+	public void setCpbvmemo(String cpbvmemo) {
+		this.cpbvmemo = cpbvmemo;
+	}
+
+	public List<U8InvoicePostEntry> getList() {
+		return list;
+	}
+
+	public void setList(List<U8InvoicePostEntry> list) {
+		this.list = list;
 	}
 
 }

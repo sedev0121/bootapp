@@ -13,7 +13,6 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.util.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -672,19 +670,6 @@ public class SyncController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/test" })
-	public boolean test() {
-
-		RestTemplate restTemplate = new RestTemplate();
-		// String fooResourceUrl =
-		// "http://183.249.171.190:5588/Service.asmx/GetPoRd?&code_end=&cChangAuditTime_end=&auditdate_end=&sys_PageIndex=1&auditdate_begin=&bredvouch=&code_begin=&cPOcode=&warehousecode=&vendorcode=&cChangAuditTime_begin=&sys_Order=&sys_PageSize=10";
-		String fooResourceUrl = "http://61.164.207.46:8089/LinkU8WebService/view/purchasein_detail/batch_get?&rows_per_page=10&page_index=1&token=4a7fa15eaba64c3ba5a892033337fa3c";
-		ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
-		logger.info(response.toString());
-		return true;
-	}
-
-	@ResponseBody
 	@RequestMapping(value = { "/purchasein/init", "/purchasein", "/purchasein/" })
 	public boolean purchaseInInit() {
 
@@ -780,21 +765,61 @@ public class SyncController {
 					String poCode = String.valueOf(temp.get("cPOID"));
 
 					String inventory_code = temp.get("cInvCode");
-					Float quantity = Float.valueOf(String.valueOf(temp.get("iQuantity")));
-					Float price = Float.valueOf(String.valueOf(temp.get("iUnitCost")));
-					Float cost = Float.valueOf(String.valueOf(temp.get("iPrice")));
-					Float tax = Float.valueOf(String.valueOf(temp.get("iTaxPrice")));
-					Float tax_price = Float.valueOf(String.valueOf(temp.get("iTaxUnitCost")));
-					Float tax_rate = Float.valueOf(String.valueOf(temp.get("iTaxRate")));
-					Float tax_cost = Float.valueOf(String.valueOf(temp.get("iSum")));
-					String detailMemo = temp.get("cbMemo");
-					Float nat_price = Float.valueOf(String.valueOf(temp.get("iNatUnitPrice")));
-					Float nat_cost = Float.valueOf(String.valueOf(temp.get("iNatMoney")));
-					Float nat_tax_rate = Float.valueOf(String.valueOf(temp.get("iPerTaxRate")));
-					Float nat_tax = Float.valueOf(String.valueOf(temp.get("iNatTax")));
-					Float nat_tax_price = Float.valueOf(String.valueOf(temp.get("iNatTaxUnitCost")));
 
-					Float nat_tax_cost = Float.valueOf(String.valueOf(temp.get("iNatSum")));
+					Float quantity = 0F;
+					if (temp.get("iQuantity") != null && temp.get("iQuantity").length() > 0)
+						quantity = Float.valueOf(String.valueOf(temp.get("iQuantity")));
+
+					Float price = 0F;
+					if (temp.get("iUnitCost") != null && temp.get("iUnitCost").length() > 0)
+						price = Float.valueOf(String.valueOf(temp.get("iUnitCost")));
+
+					Float cost = 0F;
+					if (temp.get("iPrice") != null && temp.get("iPrice").length() > 0)
+						cost = Float.valueOf(String.valueOf(temp.get("iPrice")));
+
+					Float tax = 0F;
+					if (temp.get("iTaxPrice") != null && temp.get("iTaxPrice").length() > 0)
+						tax = Float.valueOf(String.valueOf(temp.get("iTaxPrice")));
+
+					Float tax_price = 0F;
+					if (temp.get("iTaxUnitCost") != null && temp.get("iTaxUnitCost").length() > 0)
+						tax_price = Float.valueOf(String.valueOf(temp.get("iTaxUnitCost")));
+
+					Float tax_rate = 0F;
+					if (temp.get("iTaxRate") != null && temp.get("iTaxRate").length() > 0)
+						tax_rate = Float.valueOf(String.valueOf(temp.get("iTaxRate")));
+
+					Float tax_cost = 0F;
+					if (temp.get("iSum") != null && temp.get("iSum").length() > 0)
+						tax_cost = Float.valueOf(String.valueOf(temp.get("iSum")));
+
+					String detailMemo = temp.get("cbMemo");
+
+					Float nat_price = 0F;
+					if (temp.get("iNatUnitPrice") != null && temp.get("iNatUnitPrice").length() > 0)
+						nat_price = Float.valueOf(String.valueOf(temp.get("iNatUnitPrice")));
+
+					Float nat_cost = 0F;
+					if (temp.get("iNatMoney") != null && temp.get("iNatMoney").length() > 0)
+						nat_cost = Float.valueOf(String.valueOf(temp.get("iNatMoney")));
+
+					Float nat_tax_rate = 0F;
+					if (temp.get("iPerTaxRate") != null && temp.get("iPerTaxRate").length() > 0)
+						nat_tax_rate = Float.valueOf(String.valueOf(temp.get("iPerTaxRate")));
+
+					Float nat_tax = 0F;
+					if (temp.get("iNatTax") != null && temp.get("iNatTax").length() > 0)
+						nat_tax = Float.valueOf(String.valueOf(temp.get("iNatTax")));
+
+					Float nat_tax_price = 0F;
+					if (temp.get("iNatTaxUnitCost") != null && temp.get("iNatTaxUnitCost").length() > 0)
+						nat_tax_price = Float.valueOf(String.valueOf(temp.get("iNatTaxUnitCost")));
+
+					Float nat_tax_cost = 0F;
+					if (temp.get("iNatSum") != null && temp.get("iNatSum").length() > 0)
+						nat_tax_cost = Float.valueOf(String.valueOf(temp.get("iNatSum")));
+
 					String material_code = temp.get("cInvCodeMat");
 					String material_name = temp.get("cInvNameMat");
 					String material_unitname = temp.get("ccomunitnameMat");
@@ -830,7 +855,7 @@ public class SyncController {
 						main.setWarehouse_code(warehouse_code);
 						main.setWarehouse_name(warehouse_name);
 						main.setMemo(memo);
-						main.setDate(Utils.parseDateTime(date));
+						main.setDate(Utils.parseDateTime2(date));
 
 						main.setVendor(vendorRepository.findOneByCode(vendor_code));
 						main.setType(type);
@@ -841,6 +866,7 @@ public class SyncController {
 					PurchaseInDetail detail = purchaseInDetailRepository.findOneByCodeAndRowno(code,
 							Integer.parseInt(rowno));
 					if (detail != null) {
+						logger.info("code=" + code + " rowno=" + rowno);
 						continue;
 					} else {
 						detail = new PurchaseInDetail();

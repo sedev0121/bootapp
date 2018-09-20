@@ -479,10 +479,7 @@ public class StatementController extends CommonController {
 			String postJson = createJsonString(main);
 			Map<String, String> getParams = new HashMap<>();
 
-			getParams.put("biz_id", main.getCode());
-			getParams.put("sync", "1");
-
-			String response = apiClient.generatePurchaseInvoice(getParams, postJson);
+			String response = apiClient.generateLinkU8PurchaseInvoice(getParams, postJson);
 
 			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 			});
@@ -490,11 +487,7 @@ public class StatementController extends CommonController {
 			int errorCode = Integer.parseInt((String) map.get("errcode"));
 			String errmsg = String.valueOf(map.get("errmsg"));
 
-			if (errorCode == appProperties.getError_code_success()) {
-				String id = String.valueOf(map.get("id"));
-				main.setU8invoiceid(id);
-				statementMainRepository.save(main);
-			} else {
+			if (errorCode == 0) {
 				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
 			}
 
@@ -515,6 +508,8 @@ public class StatementController extends CommonController {
 		post.setCunitcode(main.getVendor().getCode());
 		post.setCvencode(main.getVendor().getCode());
 		post.setCpbvbilltype(main.getInvoiceType() == 1 ? "01" : "02");
+		post.setCbustype(main.getType() == 1 ? "普通采购" : "委外加工");
+		post.setCpbvmemo(main.getRemark());
 		post.setCptcode(main.getType() == 1 ? "01" : "05");
 		post.setCpbvmaker(this.getLoginAccount().getRealname());
 		post.setIpbvtaxrate(main.getTaxRate());
@@ -608,12 +603,13 @@ public class StatementController extends CommonController {
 			i++;
 		}
 
-		post.setEntry(entryList);
+		post.setList(entryList);
 
 		try {
-			Map<String, U8InvoicePostData> map = new HashMap<>();
-			map.put("purchaseinvoice", post);
-			jsonString = mapper.writeValueAsString(map);
+			// Map<String, U8InvoicePostData> map = new HashMap<>();
+			// map.put("StrJson", post);
+			//
+			jsonString = mapper.writeValueAsString(post);
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

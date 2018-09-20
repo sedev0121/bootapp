@@ -23,6 +23,11 @@ public class Utils {
 		return dateFormat;
 	}
 
+	private static SimpleDateFormat getDateTimeFormat2() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		return dateFormat;
+	}
+
 	public static Date parseDate(String dateStr) {
 		Date date = null;
 
@@ -42,6 +47,20 @@ public class Utils {
 		try {
 			if (dateStr != null && !dateStr.isEmpty())
 				date = getDateTimeFormat().parse(dateStr);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return date;
+	}
+
+	public static Date parseDateTime2(String dateStr) {
+		Date date = null;
+
+		try {
+			if (dateStr != null && !dateStr.isEmpty())
+				date = getDateTimeFormat2().parse(dateStr);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
