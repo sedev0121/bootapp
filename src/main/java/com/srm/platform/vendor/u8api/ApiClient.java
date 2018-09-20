@@ -59,13 +59,18 @@ public class ApiClient {
 	}
 
 	public String getLinkU8BatchWeiwai(Map<String, String> requestParams) {
-		String url = appProperties.getLinku8().getBatch_get_weiwai() + getUrlSuffix(requestParams);
-		return get(url);
+		String url = appProperties.getLinku8().getBatch_get_weiwai() + getUrlSuffixWithoutToken(requestParams);
+		return getGB2312(url);
 	}
 
 	public String getLinkU8BatchBasic(Map<String, String> requestParams) {
-		String url = appProperties.getLinku8().getBatch_get() + getUrlSuffix(requestParams);
-		return get(url);
+		String url = appProperties.getLinku8().getBatch_get() + getUrlSuffixWithoutToken(requestParams);
+		return getGB2312(url);
+	}
+
+	public String generateLinkU8PurchaseInvoice(Map<String, String> getParams, String json) {
+		String url = appProperties.getLinku8().getPurinvoice_add() + getUrlSuffixWithoutToken(getParams);
+		return postGB2312(url, json);
 	}
 
 	public String generatePurchaseInvoice(Map<String, String> getParams, String json) {
@@ -192,6 +197,10 @@ public class ApiClient {
 	private String getUrlSuffix(Map<String, String> requestParams) {
 		checkToken();
 		requestParams.put("token", token_id);
+		return getUrlSuffixWithoutToken(requestParams);
+	}
+
+	private String getUrlSuffixWithoutToken(Map<String, String> requestParams) {
 		String urlSuffix = "";
 		for (Entry<String, String> entry : requestParams.entrySet()) {
 			urlSuffix += "&" + entry.getKey() + "=" + entry.getValue();
@@ -209,6 +218,19 @@ public class ApiClient {
 	private String post(String url, String postJson) {
 		RestClient client = new RestClient();
 		String response = client.post(url, postJson);
+		return response;
+	}
+
+	private String getGB2312(String url) {
+		httpSession.setMaxInactiveInterval(0);
+		RestClient client = new RestClient();
+		String response = client.getGB2312(url);
+		return response;
+	}
+
+	private String postGB2312(String url, String postJson) {
+		RestClient client = new RestClient();
+		String response = client.postGB2312(url, postJson);
 		return response;
 	}
 

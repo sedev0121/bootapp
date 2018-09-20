@@ -7,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class U8InvoicePostEntry {
 
+	private String cunitcode = "";
+	private Float iinvexchrate = 0F;
+	private Float inum = 0F;
+
 	private String cinvcode;
 	private Float ipbvquantity;
 	private Float iOriTaxCost;
@@ -159,6 +163,30 @@ public class U8InvoicePostEntry {
 
 	public void setiSum(Float iSum) {
 		this.iSum = iSum;
+	}
+
+	public String getCunitcode() {
+		return cunitcode;
+	}
+
+	public void setCunitcode(String cunitcode) {
+		this.cunitcode = cunitcode;
+	}
+
+	public Float getIinvexchrate() {
+		return iinvexchrate;
+	}
+
+	public void setIinvexchrate(Float iinvexchrate) {
+		this.iinvexchrate = iinvexchrate;
+	}
+
+	public Float getInum() {
+		return inum;
+	}
+
+	public void setInum(Float inum) {
+		this.inum = inum;
 	}
 
 }

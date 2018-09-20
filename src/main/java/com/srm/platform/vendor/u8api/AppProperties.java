@@ -135,6 +135,7 @@ public class AppProperties {
 	public static class PropertyLinkU8 {
 		private String batch_get;
 		private String batch_get_weiwai;
+		private String purinvoice_add;
 
 		public String getBatch_get() {
 			return batch_get;
@@ -150,6 +151,14 @@ public class AppProperties {
 
 		public void setBatch_get_weiwai(String batch_get_weiwai) {
 			this.batch_get_weiwai = batch_get_weiwai;
+		}
+
+		public String getPurinvoice_add() {
+			return purinvoice_add;
+		}
+
+		public void setPurinvoice_add(String purinvoice_add) {
+			this.purinvoice_add = purinvoice_add;
 		}
 
 	}
