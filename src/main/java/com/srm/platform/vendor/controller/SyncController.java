@@ -439,7 +439,7 @@ public class SyncController {
 
 				if (errorCode == appProperties.getError_code_success()) {
 					total_page = Integer.parseInt((String) map.get("page_count"));
-					tempList = (List<LinkedHashMap<String, String>>) map.get("inventory");
+					tempList = (List<LinkedHashMap<String, String>>) map.get("inventoryclass");
 					for (LinkedHashMap<String, String> temp : tempList) {
 
 						InventoryClass inventoryClass = new InventoryClass();
