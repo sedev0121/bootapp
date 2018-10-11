@@ -17,8 +17,12 @@ public class PriceSearchResult implements Serializable {
 	String fauxunit;
 
 	String vendorname;
+	
+	String vendorcode;
 
 	String inventoryname;
+	
+	String inventorycode;
 
 	String favdate;
 
@@ -41,7 +45,7 @@ public class PriceSearchResult implements Serializable {
 	String fnote;
 
 	public PriceSearchResult(String cinvdate, String createdate, String description, String faddqty, String fauxunit,
-			String vendorname, String inventoryname, String favdate, String fcanceldate, String fcancelno,
+			String vendorname, String vendorcode, String inventoryname, String inventorycode, String favdate, String fcanceldate, String fcancelno,
 			String fprice, String ftax, String ftaxprice, String foldcheckdate, String fisoutside, String createname,
 			String fnote) {
 		this.cinvdate = cinvdate;
@@ -50,7 +54,9 @@ public class PriceSearchResult implements Serializable {
 		this.faddqty = faddqty;
 		this.fauxunit = fauxunit;
 		this.vendorname = vendorname;
+		this.vendorcode = vendorcode;
 		this.inventoryname = inventoryname;
+		this.inventorycode = inventorycode;
 		this.favdate = favdate;
 		this.fcanceldate = fcanceldate;
 		this.fcancelno = fcancelno;
@@ -111,6 +117,14 @@ public class PriceSearchResult implements Serializable {
 	public void setVendorname(String vendorname) {
 		this.vendorname = vendorname;
 	}
+	
+	public String getVendorcode() {
+		return vendorcode;
+	}
+
+	public void setVendorcode(String vendorcode) {
+		this.vendorcode = vendorcode;
+	}
 
 	public String getInventoryname() {
 		return inventoryname;
@@ -120,6 +134,14 @@ public class PriceSearchResult implements Serializable {
 		this.inventoryname = inventoryname;
 	}
 
+	public String getInventorycode() {
+		return inventorycode;
+	}
+
+	public void setInventorycode(String inventorycode) {
+		this.inventorycode = inventorycode;
+	}
+	
 	public String getFavdate() {
 		return favdate;
 	}

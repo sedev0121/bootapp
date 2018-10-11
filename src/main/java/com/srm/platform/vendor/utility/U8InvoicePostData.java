@@ -20,7 +20,7 @@ public class U8InvoicePostData {
 	private String cunitcode;
 	private String cptcode;
 	private Float ipbvtaxrate;
-	private String cexch_name = "RMB";
+	private String cexch_name = "人民币";
 	private Float cexchrate = 1.0F;
 	private String dvoudate = Utils.formatDateTime(new Date());
 	private String cpbvmaker;

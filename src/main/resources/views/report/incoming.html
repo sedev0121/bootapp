@@ -10,83 +10,23 @@
           <li><a href="#">报表中心</a></li>
           <li class="active">来料异常报表</li>
         </ul>
+		<div class="search-content">
+          <div class="search-cell width-10">
+            <label for="start_date">订单开始日期: </label>
+            <input type="text" id="start_date" value="" class="form-control datepicker" />
+          </div>
+          <div class="search-cell width-10">
+            <label for="end_date">订单结束日期: </label>
+            <input type="text" id="end_date" value="" class="form-control datepicker" />
+          </div>
+          <div style="vertical-align: bottom" class="search-cell width-15">
+            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+            <button class="btn btn-default" id="btn_export"><i class="fa fa-level-down"></i> 导出</button>
+          </div>
+        </div>
         <div class="row">
           <div class="col-lg-12">
               <table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
-				  <thead>
-					  <th tabindex="0" rowspan="1" colspan="1">供应商编码</th>
-					  <th tabindex="0" rowspan="1" colspan="1">供应商</th>
-					  <th tabindex="0" rowspan="1" colspan="1">表体订单号</th>
-					  <th tabindex="0" rowspan="1" colspan="1">订单日期</th>
-					  <th tabindex="0" rowspan="1" colspan="1">计划到货日期</th>
-					  <th tabindex="0" rowspan="1" colspan="1">存货编码</th>
-					  <th tabindex="0" rowspan="1" colspan="1">存货名称</th>
-					  <th tabindex="0" rowspan="1" colspan="1">规格型号</th>
-					  <th tabindex="0" rowspan="1" colspan="1">主计量单位</th>
-					  <th tabindex="0" rowspan="1" colspan="1">订单数量</th>
-					  <th tabindex="0" rowspan="1" colspan="1">到货数量</th>
-					  <th tabindex="0" rowspan="1" colspan="1">合格数量</th>
-					  <th tabindex="0" rowspan="1" colspan="1">退货数量</th>
-					  <th tabindex="0" rowspan="1" colspan="1">异常比例</th>
-					  <th tabindex="0" rowspan="1" colspan="1">异常原因</th>
-					  <th tabindex="0" rowspan="1" colspan="1">处理结果</th>
-				  </thead>
-				  <tbody>
-					  <tr role="row" class="odd">
-					      <td>1204</td>
-						  <td>浙江美的</td>
-						  <td>PO2018012300001</td>
-						  <td></td>
-						  <td>2018/2/10</td>
-						  <td>01010323</td>
-						  <td>电机</td>
-						  <td>10W</td>
-						  <td>个</td>
-						  <td>1000</td>
-						  <td>600</td>
-						  <td>598</td>
-						  <td>2</td>
-						  <td>1%</td>
-						  <td></td>
-						  <td></td>
-					  </tr>
-					  <tr role="row" class="odd">
-					      <td>1204</td>
-						  <td>浙江美的</td>
-						  <td>PO2018012300003</td>
-						  <td></td>
-						  <td>2018/1/30</td>
-						  <td>02010345</td>
-						  <td>HD100LED灯条（冷光）</td>
-						  <td></td>
-						  <td>个</td>
-						  <td>2200</td>
-						  <td>2200</td>
-						  <td></td>
-						  <td>0</td>
-						  <td>5%</td>
-						  <td></td>
-						  <td></td>
-					  </tr>
-					  <tr role="row" class="odd">
-					      <td>1204</td>
-						  <td>浙江美的</td>
-						  <td>PO2018012800168</td>
-						  <td></td>
-						  <td>2018/2/5</td>
-						  <td>01010327</td>
-						  <td>电机</td>
-						  <td>10W</td>
-						  <td>个</td>
-						  <td>4000</td>
-						  <td>4000</td>
-						  <td></td>
-						  <td>0</td>
-						  <td>10%</td>
-						  <td></td>
-						  <td></td>
-					  </tr>
-				  </tbody>
               </table>
           </div>
         </div>
@@ -94,3 +34,102 @@
   </div>
 </body>
 </html>
+
+
+<script th:inline="javascript">
+  $(document).ready(function() {
+    $(".datepicker").datepicker({
+      onSelect: function(dateText) {
+        table.draw();
+      }
+    });
+
+    var table = $('#example').DataTable({
+      ordering : true,
+      ajax : {
+        url : /*[[@{/incoming/list}]]*/'',
+        data : function(data) {
+          var filter = {
+            rows_per_page : data.length,
+            page_index : data.start / data.length + 1,
+            order : data.columns[data.order[0].column].data,
+            dir : data.order[0].dir,
+            start_date : $('#start_date').val(),
+            end_date : $('#end_date').val()
+          }
+          return filter;
+        },
+        dataSrc : function(json) {
+          json.recordsTotal = json.row_count;
+          json.recordsFiltered = json.row_count;
+          return json.list;
+        },
+      },
+
+      columns : [ {
+        data : 'cVenCode',
+        title : '供应商编码',
+      }, {
+        data : 'cVenAbbName',
+        title : '供应商',
+      }, {
+        data : 'cPoid',
+        title : '表体订单号',
+      }, {
+        data : 'dArriveDate',
+        title : '到货日期',
+      }, {
+        data : 'cInvCode',
+        title : '存货编码',
+      }, {
+        data : 'cInvName',
+        title : '存货名称',
+      }, {
+        data : 'ccomunitname',
+        title : '主计量单位',
+      }, {
+        data : 'iQuantity',
+        title : '订单数量',
+      }, {
+        data : 'iArrQTY',
+        title : '到货数量',
+      }, {
+        data : 'fPoValidQuantity',
+        title : '合格数量',
+      }, {
+        data : 'fPoRetQuantity',
+        title : '退货数量',
+      }, {
+        data : null,
+        title : '异常比例',
+        defaultContent : '',
+      }, {
+        data : null,
+        title : '异常原因',
+        defaultContent : '',
+      }, {
+        data : null,
+        title : '处理结果',
+        defaultContent : '',
+      }],
+    });
+
+    $("#btn_search").click(function() {
+      table.draw();
+    });
+
+    $("#btn_export").click(function() {
+      var tbl = $('#example').DataTable();
+      var url_string = "/incoming/export?rows_per_page=" + tbl.page.info().recordsTotal +
+                       "&page_index=" + tbl.page.info().page +
+                       "&start_date=" + $('#start_date').val() +
+                       "&end_date=" + $('#end_date').val();
+      location.href = url_string;
+    });
+
+    $('#date_begin, #date_end').keyup(function(e) {
+      if (e.keyCode == 13)
+        table.draw();
+    });
+  });
+</script>

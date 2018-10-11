@@ -31,7 +31,7 @@ import com.srm.platform.vendor.utility.PriceSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
-@RequestMapping(path = "/price")
+@RequestMapping(path = "/baseprice")
 @PreAuthorize("hasRole('ROLE_BUYER')")
 public class PriceController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -58,9 +58,9 @@ public class PriceController extends CommonController {
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<PriceSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
-		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
-		String order = requestParams.getOrDefault("order", "name");
+		String order = requestParams.getOrDefault("order", "b.name");
 		String vendorStr = requestParams.getOrDefault("vendor", "");
 		String inventory = requestParams.getOrDefault("inventory", "");
 		String dir = requestParams.getOrDefault("dir", "asc");
@@ -86,7 +86,7 @@ public class PriceController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT a.*, d.realname createname, b.name vendorname, c.name inventoryname ";
+		String selectQuery = "SELECT a.*, d.realname createname, b.name vendorname, b.code vendorcode, c.name inventoryname, c.code inventorycode ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 

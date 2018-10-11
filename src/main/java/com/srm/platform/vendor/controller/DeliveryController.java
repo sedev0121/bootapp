@@ -30,20 +30,18 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.VendorSearchItem;
 import com.srm.platform.vendor.view.ExcelDeliveryReportView;
-import com.srm.platform.vendor.view.ExcelOrderlistReportView;
 
-//库存报表
 @Controller
-@RequestMapping(path = "/orderlist")
-public class OrderListController extends CommonController {
+@RequestMapping(path = "/delivery")
+public class DeliveryController extends CommonController {
 	@Autowired
 	private VendorRepository vendorRepository;
 	
 	@GetMapping({ "/", "" })
 	public String index() {
-		return "report/orderlist";
+		return "report/delivery";
 	}
-
+	
 	@RequestMapping(value = "/list")
 	public @ResponseBody String list_ajax(@RequestParam Map<String, String> requestParams) throws IOException, JSONException {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
@@ -99,10 +97,13 @@ public class OrderListController extends CommonController {
 	}
 	
 	@RequestMapping(value = "/export")
-	public ModelAndView export_file(@RequestParam Map<String, String> requestParams, Principal principal)  throws JSONException, IOException {
-		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
-		int page_index = 0; //Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
-		String dir = requestParams.getOrDefault("dir", "asc");
+	public ModelAndView export_file(@RequestParam Map<String, String> exportData, Principal principal)  throws JSONException, IOException {
+		int rows_per_page = Integer.parseInt(exportData.getOrDefault("rows_per_page", "10"));
+		int page_index = 0; // Integer.parseInt(exportData.getOrDefault("page_index", "1"));
+		String order = exportData.getOrDefault("order", "");
+		String dir = exportData.getOrDefault("dir", "asc");
+		String date_begin = exportData.getOrDefault("start_date", null);
+		String date_end = exportData.getOrDefault("end_date", null);
 		Vendor vendor = this.getLoginAccount().getVendor();
 		String vendorStr = vendor == null ? "0" : vendor.getCode();
 		
@@ -115,7 +116,7 @@ public class OrderListController extends CommonController {
 			Page<VendorSearchItem> result = null;
 			result = vendorRepository.findBySearchTerm("", unitList, request);
 			
-			if (result.getSize() > 0) {
+			if (result.getTotalElements() > 0) {
 				List<VendorSearchItem> listVendor = result.getContent();
 				VendorSearchItem aa = listVendor.get(0);
 				vendorStr = aa.getCode();
@@ -123,15 +124,16 @@ public class OrderListController extends CommonController {
 		}
 		
 		String base_url = "http://183.249.171.190:5588/Service.asmx/GetMoPo?";
-		String request_params = String.format("sys_PageIndex=%d&sys_PageSize=%d&cpoid=&cbustype=&vendorcode=%s&verifier_begin=&verifier_end=&invcode_begin=&invcode_end=&sys_Order=",
+		String request_params = String.format("sys_PageIndex=%d&sys_PageSize=%d&cpoid=&cbustype=&vendorcode=%s&verifier_begin=&verifier_end=&invcode_begin=&invcode_end=",
 											  page_index, rows_per_page, vendorStr);
 		String request_url = base_url + request_params;
 		request_url += "&sys_Order=";
+		
 		request_url += "&date_begin=";
 		request_url += "&date_end=";
 		
 		JSONObject json = this.readJsonFromUrl(request_url);
-		return new ModelAndView(new ExcelOrderlistReportView(), "exportList", json);
+		return new ModelAndView(new ExcelDeliveryReportView(), "exportList", json);
 	}
 	
 	private static String readAll(Reader rd) throws IOException {
@@ -143,7 +145,7 @@ public class OrderListController extends CommonController {
 		return sb.toString();
 	}
 	
-	public JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+	public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
 	    InputStream is = new URL(url).openStream();
 	    try {
 	    	BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("GB2312")));
@@ -155,13 +157,13 @@ public class OrderListController extends CommonController {
 	    		
 	    		for (int i = 0; i < dataList.length(); ++i) {
 	    			JSONObject objects = dataList.getJSONObject(i);
-	    			double receiveQty = this.TryParseDouble(objects.getString("freceivedqty"));
-	    			double poretQty = this.TryParseDouble(objects.getString("fPoRetQuantity"));
-	    			double totalQty = this.TryParseDouble(objects.getString("iQuantity"));
-	    			double stockQty = receiveQty - poretQty;
-	    			double noarriveQty = totalQty - stockQty;
-	    			json.getJSONArray("list").getJSONObject(i).put("fnoarriveqty", noarriveQty);
-	    			json.getJSONArray("list").getJSONObject(i).put("fstockqty", stockQty);
+	    			int mainQty = objects.getInt("iQuantity");
+	    			int timeQty = objects.getInt("itimelyQuantity");
+	    			double percent = 0.0f;
+	    			if (mainQty > 0) {
+	    				percent = (double)timeQty / (double)mainQty * 100.0f;
+	    			}
+	    			json.getJSONArray("list").getJSONObject(i).put("timelyPercent", percent);
 	    		}
 	    	}
 	    	
@@ -169,15 +171,5 @@ public class OrderListController extends CommonController {
 	    } finally {
 	    	is.close();
 	    }
-	}
-	
-	@SuppressWarnings("finally")
-	public double TryParseDouble(String data) {
-		try {
-			return Double.parseDouble(data);
-		}
-		finally {
-			return 0.0;
-		}
 	}
 }
