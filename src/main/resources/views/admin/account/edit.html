@@ -192,14 +192,17 @@ jQuery(document).ready(function() {
     $('#vendor_div').addClass('hidden');
     $('#permission_div').addClass('hidden');
     $('#vendor').prop('disabled', true);
+    $('#del').addClass('hidden');
 
     switch($('#role').val()){
       case 'ROLE_VENDOR':
         $('#vendor_div').removeClass('hidden');
         $('#vendor').prop('disabled', false);
+        $('#del').removeClass('hidden');
         break;
       case 'ROLE_BUYER':
         $('#permission_div').removeClass('hidden');
+        $('#del').removeClass('hidden');
         break;
     }
     

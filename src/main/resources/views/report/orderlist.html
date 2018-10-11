@@ -8,53 +8,25 @@
             <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
           </li>
           <li><a href="#">报表中心</a></li>
-          <li class="active">库存报表</li>
+          <li class="active">订单明细列表</li>
         </ul>
+        <div class="search-content">
+          <div class="search-cell width-10">
+            <label for="start_date">订单开始日期: </label>
+            <input type="text" id="start_date" value="" class="form-control datepicker" />
+          </div>
+          <div class="search-cell width-10">
+            <label for="end_date">订单结束日期: </label>
+            <input type="text" id="end_date" value="" class="form-control datepicker" />
+          </div>
+          <div style="vertical-align: bottom" class="search-cell width-15">
+            <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+            <button class="btn btn-default" id="btn_export"><i class="fa fa-level-down"></i> 导出</button>
+          </div>
+        </div>
         <div class="row">
           <div class="col-lg-12">
               <table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
-				  <thead>
-					  <th tabindex="0" rowspan="1" colspan="1" style="width: 48px;">存货编码</th>
-					  <th tabindex="0" rowspan="1" colspan="1" style="width: 48px;">存货名称</th>
-					  <th tabindex="0" rowspan="1" colspan="1" style="width: 48px;">规格型号</th>
-					  <th tabindex="0" rowspan="1" colspan="1" style="width: 48px;">主计量</th>
-					  <th tabindex="0" rowspan="1" colspan="1" style="width: 48px;">仓库名称</th>
-					  <th tabindex="0" rowspan="1" colspan="1" style="width: 48px;">结存数量</th>
-					  <th tabindex="0" rowspan="1" colspan="1" style="width: 48px;">可用数量</th>
-				  </thead>
-				  <tbody>
-					  <tr role="row" class="odd">
-					      <td>0100001</td>
-						  <td>4#换气电机</td>
-						  <td>YHS-8-4</td>
-						  <td>只</td>
-						  <td></td>
-						  <td></td>
-						  <td></td>
-					  </tr>
-
-					  <tr role="row" class="odd">
-					      <td>0100001</td>
-						  <td>4#换气电机</td>
-						  <td>YHS-8-4</td>
-						  <td>只</td>
-						  <td></td>
-						  <td></td>
-						  <td></td>
-					  </tr>
-
-					  <tr role="row" class="odd">
-					      <td>0100001</td>
-						  <td>4#换气电机</td>
-						  <td>YHS-8-4</td>
-						  <td>只</td>
-						  <td></td>
-						  <td></td>
-						  <td></td>
-					  </tr>
-
-
-				  </tbody>
               </table>
           </div>
         </div>
@@ -62,3 +34,109 @@
   </div>
 </body>
 </html>
+
+
+<script th:inline="javascript">
+  $(document).ready(function() {
+    $(".datepicker").datepicker({
+      onSelect: function(dateText) {
+        table.draw();
+      }
+    });
+
+    var table = $('#example').DataTable({
+      ordering : true,
+      ajax : {
+        url : /*[[@{/orderlist/list}]]*/'',
+        data : function(data) {
+          var filter = {
+            rows_per_page : data.length,
+            page_index : data.start / data.length + 1,
+            order : data.columns[data.order[0].column].data,
+            dir : data.order[0].dir,
+            start_date : $('#start_date').val(),
+            end_date : $('#end_date').val()
+          }
+          return filter;
+        },
+        dataSrc : function(json) {
+          json.recordsTotal = json.row_count;
+          json.recordsFiltered = json.row_count;
+          return json.list;
+        },
+      },
+
+      columns : [ {
+        data : 'cVenCode',
+        title : '供应商编码',
+      }, {
+        data : 'cVenAbbName',
+        title : '供应商简称',
+      }, {
+        data : 'cPoid',
+        title : '订单编号',
+      }, {
+        data : 'dDate',
+        className: 'dt-center',
+        title : '订单日期',
+      }, {
+        data : 'dArriveDate',
+        title : '计划到货日期',
+      }, {
+        data : 'cInvCode',
+        title : '存货编码',
+      }, {
+        data : 'cInvCName',
+        title : '存货名称',
+      }, {
+        data : 'cInvName',
+        title : '规格型号',
+      }, {
+        data : 'ccomunitname',
+        title : '主计量单位',
+      }, {
+        data : 'iQuantity',
+        title : '订单数量',
+      }, {
+        data : 'iArrQTY',
+        title : '到货数量',
+      }, {
+        data : 'fstockqty',
+        title : '入库数量',
+        orderable : false,
+      }, {
+        data : 'fnoarriveqty',
+        title : '未交货数量',
+        orderable : false,
+      }, {
+        data : 'iTaxNatPrice',
+        title : '含税单价',
+        orderable : false,
+      }, {
+        data : 'iNatSum',
+        title : '含税金额',
+      }, {
+        data : 'cMemo',
+        title : '备注',
+      }],
+    });
+    
+    $("#btn_search").click(function() {
+      table.draw();
+    });
+
+    $("#btn_export").click(function() {
+      var tbl = $('#example').DataTable();
+      var url_string = "/orderlist/export?rows_per_page=" + tbl.page.info().recordsTotal +
+                       "&page_index=" + tbl.page.info().page +
+                       "&start_date=" + $('#start_date').val() +
+                       "&end_date=" + $('#end_date').val();
+      location.href = url_string;
+    });
+
+    $('#date_begin, #date_end').keyup(function(e) {
+      if (e.keyCode == 13)
+        table.draw();
+    });
+  });
+</script>

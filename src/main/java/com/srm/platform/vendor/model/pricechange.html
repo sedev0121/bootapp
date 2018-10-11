@@ -16,9 +16,7 @@
               </table>
           </div>
         </div>
-        <div class="col-lg-12">
-        <div id="container" style="height: 300px"></div>
-        </div>
+        <div id="container" style="height: 100%"></div>
     </div>
   </div>
 </body>
@@ -33,14 +31,13 @@
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
 <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
 <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
-<script>
+<script th:inline="javascript">
 
   $(document).ready(function() {
     var table = $('#example').DataTable({
-      ordering : false,
-      select : true,
+      ordering : true,
       ajax : {
-        url : 'pricechange/list',
+        url : /*[[@{/pricechange/list}]]*/'',
         data : function(data) {
           var filter = {
             rows_per_page : data.length,
@@ -56,11 +53,11 @@
       },
 
       columns : [ {
-        data : 'vendorcode',
+        data : 'vendorname',
         title : '供应商编码',
       }, {
-        data : 'vendorname',
-        title : '供应商名称',
+        data : 'vendorcode',
+        title : '供应商',
       }, {
         data : 'inventorycode',
         title : '存货编码',
@@ -70,9 +67,8 @@
       }, {
         data : 'specs',
         title : '规格型号',
-        defaultContent : '',
       }, {
-        data : 'unitname',
+        data : null,
         title : '主计量单位',
         defaultContent : '',
       }, {
@@ -89,67 +85,79 @@
         title : '平均价格',
       }],
     });
-
-    table.on('select', function (e, dt, type, indexes ) {
-    if ( type === 'row' ) {
-        var rowdata = table.rows( indexes ).data();
-        var celltext = rowdata[0]["inventorycode"];
-        
-        $.ajax({
-            method: "GET",
-            url: 'pricechange/singlehistory',
-            data: {
-                inventory: celltext,
-            },
-            success : function(response, status, jqxhr) {
-                var dom = document.getElementById("container");
-                var myChart = echarts.init(dom);
-                var app = {};
-                option = null;
-                option = {
-                    title: {
-                        text: response.title
-                    },
-                    tooltip: {
-                        trigger: 'axis'
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
-                    toolbox: {
-                        feature: {
-                            saveAsImage: {}
-                        }
-                    },
-                    xAxis: {
-                        type: 'category',
-                        boundaryGap: false,
-                        data : response.month
-                    },
-                    yAxis: {
-                        type: 'value'
-                    },
-                    series: [
-                        {
-                            name:'邮件营销',
-                            type:'line',
-                            stack: '总量',
-                            data: response.data
-                        }
-                    ]
-                };
-                ;
-                if (option && typeof option === "object") {
-                    myChart.setOption(option, true);
-                }
-            },
-            error : function(jqxhr, status, errorthrown) {
-            }
-        });
-      }
-    });
   });
+
+  table.on('select', function (e, dt, type, indices ) {
+    debugger;
+    if ( type === 'row' ) {
+      
+      // do something with the ID of the selected items
+
+      $.ajax({
+        method: "GET",
+        url: /*[[@{/pricechange/singlehistory}]]*/'',
+        data : function(data) {
+          var rowdata = table.rows( indexes ).data().pluck( 'inventorycode' );
+          var filter = {
+            inventorycode : rowdata
+          }
+          return filter;
+        },
+        dataType: "json",
+        success : function(response, status, jqxhr) {
+        },
+        error : function(jqxhr, status, errorthrown) {
+        });
+     }
+  });
+
+  function refreshGraph(chartData) {
+    var dom = document.getElementById("container");
+    var myChart = echarts.init(dom);
+    var app = {};
+    option = null;
+    app.title = '坐标轴刻度与标签对齐';
+
+    option = {
+        color: ['#3398DB'],
+        tooltip : {
+            trigger: 'axis',
+            axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis : [
+            {
+                type : 'category',
+                data : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                axisTick: {
+                    alignWithLabel: true
+                }
+            }
+        ],
+        yAxis : [
+            {
+                type : 'value'
+            }
+        ],
+        series : [
+            {
+                name:'直接访问',
+                type:'bar',
+                barWidth: '60%',
+                data:chartData
+            }
+        ]
+    };
+    ;
+    if (option && typeof option === "object") {
+        myChart.setOption(option, true);
+    }
+  }
 </script>

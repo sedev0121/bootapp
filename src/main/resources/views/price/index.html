@@ -56,7 +56,7 @@ $(document).ready(function() {
   table = $('#example').DataTable({
       ordering: true,
       ajax : {
-          url : /*[[@{/price/list}]]*/'',
+          url : /*[[@{/baseprice/list}]]*/'',
           data : function(data) {
               var filter = {
                       rows_per_page : data.length,

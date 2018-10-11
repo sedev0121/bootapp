@@ -120,27 +120,27 @@
             <li th:classappend="${#strings.startsWith(#request.requestURI,'/statement')} ? active : ''" >
               <a th:href="@{/statement}">对账单管理</a>
             </li>
-            <li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')} or ${#strings.startsWith(#request.requestURI,'/price')}? active : ''" >   
+            <li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')} or ${#strings.startsWith(#request.requestURI,'/baseprice')}? active : ''" >   
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
                 
               <ul class="dropdown-menu">
                 <li><a th:href="@{/vendor}">供应商档案表</a></li>
                 <li><a th:href="@{/inventory}">物料档案表</a></li>
-                <li><a th:href="@{/price}">物料价格查询</a></li>
+                <li><a th:href="@{/baseprice}">物料价格查询</a></li>
               </ul>
             </li>
-            <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/stock')} or
-            ${#strings.startsWith(#request.requestURI,'/incoming')} or 
-            ${#strings.startsWith(#request.requestURI,'/delivery')} or 
-            ${#strings.startsWith(#request.requestURI,'/pricechange')} or 
-            ${#strings.startsWith(#request.requestURI,'/orderlist')} ? active : ''" >
-              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">报表中心 </a>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/stock')} or
+			${#strings.startsWith(#request.requestURI,'/incoming')} or 
+			${#strings.startsWith(#request.requestURI,'/incoming')} or 
+			${#strings.startsWith(#request.requestURI,'/pricechange')} or 
+			${#strings.startsWith(#request.requestURI,'/orderlist')} ? active : ''" >
+			  <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">报表中心 </a>
 
-              <ul class="dropdown-menu">
-                <li><a th:href="@{/stock}">库存报表</a></li>
-                <li><a th:href="@{/incoming}">来料异常报表 </a></li>
+			  <ul class="dropdown-menu">
+                <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/stock}">库存报表</a></li>
+                <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/incoming}">来料异常报表 </a></li>
                 <li><a th:href="@{/delivery}">准时交货率报表</a></li>
-                <li><a th:href="@{/pricechange}">价格变动报表</a></li>
+				<li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/pricechange}">价格变动报表</a></li>
                 <li><a th:href="@{/orderlist}">订单明细列表</a></li>
               </ul>
             </li>

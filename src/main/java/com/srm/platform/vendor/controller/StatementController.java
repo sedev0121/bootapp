@@ -118,10 +118,8 @@ public class StatementController extends CommonController {
 					PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
 							.findOneById(detail.getPurchaseInDetailId());
 
-					if (purchaseInDetail != null) {
-						purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_WAIT);
-						purchaseInDetailRepository.save(purchaseInDetail);
-					}
+					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_WAIT);
+					purchaseInDetailRepository.save(purchaseInDetail);
 				}
 			}
 			statementMainRepository.delete(main);
@@ -489,7 +487,7 @@ public class StatementController extends CommonController {
 			int errorCode = Integer.parseInt((String) map.get("errcode"));
 			String errmsg = String.valueOf(map.get("errmsg"));
 
-			if (errorCode == 1) {
+			if (errorCode == 0) {
 				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
 			}
 

@@ -112,6 +112,11 @@ public class ApiClient {
 		String url = appProperties.getPurchaseOrder().getGet() + getUrlSuffix(requestParams);
 		return get(url);
 	}
+	
+	public String getCurrentStock(Map<String, String> requestParams) {
+		String url = appProperties.getCurrentStock().getBatch_get() + getUrlSuffix(requestParams);
+		return get(url);
+	}
 
 	private void disableCertificateValidation() {
 		// Create a trust manager that does not validate certificate chains

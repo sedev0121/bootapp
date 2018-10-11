@@ -20,6 +20,8 @@ public class AppProperties {
 	private PropertyMeasurementUnit measurementUnit;
 	private PropertyInventoryClass inventoryClass;
 	private PropertyVenPriceAdjust venPriceAdjust;
+	
+	private PropertyCurrentStock currentStock;
 
 	private PropertyLinkU8 linku8;
 
@@ -78,6 +80,14 @@ public class AppProperties {
 	public void setPurchaseOrder(PropertyPurchaseOrder purchaseOrder) {
 		this.purchaseOrder = purchaseOrder;
 	}
+	
+	public PropertyCurrentStock getCurrentStock() {
+		return currentStock;
+	}
+	
+	public void setCurrentStock(PropertyCurrentStock currentStock) {
+		this.currentStock = currentStock;
+	}
 
 	public PropertyPurInvoice getPurInvoice() {
 		return purInvoice;
@@ -86,6 +96,7 @@ public class AppProperties {
 	public void setPurInvoice(PropertyPurInvoice purInvoice) {
 		this.purInvoice = purInvoice;
 	}
+	
 
 	public PropertyInventory getInventory() {
 		return inventory;
@@ -268,6 +279,18 @@ public class AppProperties {
 			this.add = add;
 		}
 
+	}
+	
+	public static class PropertyCurrentStock {
+		private String batch_get;
+
+		public String getBatch_get() {
+			return batch_get;
+		}
+
+		public void setBatch_get(String batch_get) {
+			this.batch_get = batch_get;
+		}
 	}
 
 }
