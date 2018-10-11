@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.PermissionGroupUser;
+import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
@@ -215,9 +216,11 @@ public class AccountController extends CommonController {
 		account.setRole(accountSaveForm.getRole());
 		account.setDuty(accountSaveForm.getDuty());
 		account.setUnit(unitRepository.findOneById(accountSaveForm.getUnit()));
-		if (account.getVendor() != null)
-			account.getVendor().setUnit(account.getUnit());
-
+		if (account.getVendor() != null) {
+			account.getVendor().setUnit(null);
+			vendorRepository.save(account.getVendor());
+		}
+		
 		if (accountSaveForm.getState() != null) {
 			account.setState(1);
 			account.setStartDate(new Date());
@@ -227,11 +230,14 @@ public class AccountController extends CommonController {
 			account.setStopDate(new Date());
 		}
 
-		if (accountSaveForm.getVendor() != null && !accountSaveForm.getVendor().isEmpty())
-			account.setVendor(vendorRepository.findOneByCode(accountSaveForm.getVendor()));
-		else
+		if (accountSaveForm.getVendor() != null && !accountSaveForm.getVendor().isEmpty()) {
+			Vendor newVendor = vendorRepository.findOneByCode(accountSaveForm.getVendor());
+			newVendor.setUnit(account.getUnit());
+			vendorRepository.save(newVendor);
+			account.setVendor(newVendor);
+		}else {
 			account.setVendor(null);
-
+		}
 		account = accountRepository.save(account);
 
 		permissionGroupUserRepository.deleteByAccountId(account.getId());
