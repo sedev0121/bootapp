@@ -130,10 +130,10 @@ public class StatementController extends CommonController {
 
 	@GetMapping("/{code}/deleteattach")
 	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
-	public @ResponseBody Boolean deleteAttach(@PathVariable("code") String code, HttpServletRequest request) {
+	public @ResponseBody Boolean deleteAttach(@PathVariable("code") String code) {
 		StatementMain main = statementMainRepository.findOneByCode(code);
-		String applicationPath = request.getServletContext().getRealPath("");
-		File attach = new File(applicationPath + File.separator + main.getAttachFileName());
+		
+		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_STATEMENT) + File.separator + main.getAttachFileName());
 		if (attach.exists())
 			attach.delete();
 		main.setAttachFileName(null);
@@ -270,7 +270,7 @@ public class StatementController extends CommonController {
 	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody GenericJsonResponse<StatementMain> update_ajax(StatementSaveForm form,
-			BindingResult bindingResult, HttpServletRequest request) {
+			BindingResult bindingResult) {
 		StatementMain main = statementMainRepository.findOneByCode(form.getCode());
 
 		if (main == null) {
@@ -292,7 +292,7 @@ public class StatementController extends CommonController {
 			MultipartFile attach = form.getAttach();
 			if (attach != null) {
 				origianlFileName = attach.getOriginalFilename();
-				File file = UploadFileHelper.simpleUpload(attach, request, true, Constants.PATH_UPLOADS_STATEMENT);
+				File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_STATEMENT);
 
 				if (file != null)
 					savedFileName = file.getName();

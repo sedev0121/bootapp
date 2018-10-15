@@ -48,8 +48,10 @@ public class Constants {
 
 	public final static String KEY_DEFAULT_UNIT_LIST = "my_unit_list";
 
+
 	public final static String PATH_UPLOADS_SHIP = "ship";
 	public final static String PATH_UPLOADS_NOTICE = "notice";
 	public final static String PATH_UPLOADS_STATEMENT = "statement";
+	public final static String PATH_UPLOADS_INQUERY = "inquery";
 
 }

@@ -52,6 +52,7 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.ExportShipForm;
 import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchResult;
 import com.srm.platform.vendor.utility.UploadFileHelper;
@@ -247,9 +248,9 @@ public class ShipController extends CommonController {
 
 	@Transactional
 	@RequestMapping("/import")
-	public String import_file(@RequestParam("import_file") MultipartFile excelFile, HttpServletRequest request,
+	public String import_file(@RequestParam("import_file") MultipartFile excelFile, 
 			RedirectAttributes redirectAttributes, Principal principal) {
-		File file = UploadFileHelper.simpleUpload(excelFile, request, true, "uploads");
+		File file = UploadFileHelper.simpleUpload(excelFile, true, Constants.PATH_UPLOADS_SHIP);
 
 		List<ArrayList<String>> importList = new ArrayList<>();
 
