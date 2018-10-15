@@ -657,7 +657,7 @@ public class SyncController {
 					
 					String arriveDateStr = entryMap.get("arrivedate");
 					detail.setArrivedate(Utils.parseDate(arriveDateStr));
-					detail.setConfirmdate(Utils.parseDate(arriveDateStr));
+//					detail.setConfirmdate(Utils.parseDate(arriveDateStr));
 					
 					purchaseOrderDetailRepository.save(detail);
 				}

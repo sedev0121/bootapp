@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -31,8 +32,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Notice;
+import com.srm.platform.vendor.model.PurchaseInDetail;
+import com.srm.platform.vendor.model.StatementDetail;
+import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
@@ -42,6 +49,8 @@ import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.InquerySearchResult;
+import com.srm.platform.vendor.utility.U8InvoicePostData;
+import com.srm.platform.vendor.utility.U8InvoicePostEntry;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 import com.srm.platform.vendor.utility.VenPriceDetailItem;
@@ -401,5 +410,7 @@ public class InqueryController extends CommonController {
 		return download(Constants.PATH_UPLOADS_INQUERY + File.separator + main.getAttachFileName(),
 				main.getAttachOriginalName());
 	}
+	
+	
 
 }

@@ -72,6 +72,16 @@ public class ApiClient {
 		String url = appProperties.getLinku8().getPurinvoice_add() + getUrlSuffixWithoutToken(getParams);
 		return postGB2312(url, json);
 	}
+	
+	public String postLock(String json) {
+		String url = appProperties.getLinku8().getLock();
+		return postGB2312(url, json);
+	}
+
+	public String postUnLock(String json) {
+		String url = appProperties.getLinku8().getUnlock();
+		return postGB2312(url, json);
+	}
 
 	public String generatePurchaseInvoice(Map<String, String> getParams, String json) {
 		String url = appProperties.getPurInvoice().getAdd() + getUrlSuffix(getParams);
