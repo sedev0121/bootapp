@@ -29,16 +29,20 @@ public class ApiController {
 		String reason = requestParams.getOrDefault("reason", null);
 		String invoice_num = requestParams.getOrDefault("invoice_num", null);
 
-		StatementMain main = statementMainRepository.findOneByInvoiceCode(invoice_num);
-
-		if (main != null) {
-			main.setInvoiceCancelDate(new Date());
-			main.setInvoiceCancelReason(reason);
-			main.setState(Constants.STATEMENT_STATE_INVOICE_CANCEL);
-			statementMainRepository.save(main);
-			return 1;
-		} else {
+		if (invoice_num == null) {
 			return 0;
+		}else {
+			StatementMain main = statementMainRepository.findOneByInvoiceCode(invoice_num);
+
+			if (main != null) {
+				main.setInvoiceCancelDate(new Date());
+				main.setInvoiceCancelReason(reason);
+				main.setState(Constants.STATEMENT_STATE_INVOICE_CANCEL);
+				statementMainRepository.save(main);
+				return 1;
+			} else {
+				return 0;
+			}
 		}
 
 	}

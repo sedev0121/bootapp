@@ -650,6 +650,11 @@ public class SyncController {
 					if (entryMap.get("rowno") != null && !entryMap.get("rowno").isEmpty())
 						detail.setRowno(Integer.parseInt(entryMap.get("rowno")));
 
+					if (entryMap.get("define36") != null && !entryMap.get("define36").isEmpty()) {
+						String confirmDateStr = entryMap.get("define36");
+						detail.setConfirmdate(Utils.parseDate(confirmDateStr));
+					}
+					
 					String arriveDateStr = entryMap.get("arrivedate");
 					detail.setArrivedate(Utils.parseDate(arriveDateStr));
 

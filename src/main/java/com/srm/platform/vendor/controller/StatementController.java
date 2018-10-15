@@ -487,7 +487,7 @@ public class StatementController extends CommonController {
 			int errorCode = Integer.parseInt((String) map.get("errcode"));
 			String errmsg = String.valueOf(map.get("errmsg"));
 
-			if (errorCode == 0) {
+			if (errorCode == 1) {
 				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
 			}
 
