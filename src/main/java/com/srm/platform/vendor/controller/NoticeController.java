@@ -218,10 +218,10 @@ public class NoticeController extends CommonController {
 
 	@GetMapping("/{id}/deleteattach")
 	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('公告通知-新建')")
-	public @ResponseBody Boolean deleteAttach(@PathVariable("id") Long id, HttpServletRequest request) {
+	public @ResponseBody Boolean deleteAttach(@PathVariable("id") Long id) {
 		Notice notice = noticeRepository.findOneById(id);
-		String applicationPath = request.getServletContext().getRealPath("");
-		File attach = new File(applicationPath + File.separator + notice.getAttachFileName());
+		
+		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_NOTICE) + File.separator + notice.getAttachFileName());
 		if (attach.exists())
 			attach.delete();
 		notice.setAttachFileName(null);
@@ -235,13 +235,13 @@ public class NoticeController extends CommonController {
 	@PostMapping("/update")
 	@PreAuthorize("hasRole('ROLE_BUYER') and (hasAuthority('公告通知-新建') or hasAuthority('公告通知-发布'))")
 	public @ResponseBody Notice update_ajax(@RequestParam(value = "attach", required = false) MultipartFile attach,
-			HttpServletRequest request, @RequestParam Map<String, String> requestParams) {
+			@RequestParam Map<String, String> requestParams) {
 
 		String origianlFileName = null;
 		String savedFileName = null;
 		if (attach != null) {
 			origianlFileName = attach.getOriginalFilename();
-			File file = UploadFileHelper.simpleUpload(attach, request, true, Constants.PATH_UPLOADS_NOTICE);
+			File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_NOTICE);
 
 			if (file != null)
 				savedFileName = file.getName();

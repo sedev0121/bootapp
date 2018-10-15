@@ -43,6 +43,7 @@ import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
+import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
@@ -58,6 +59,7 @@ import com.srm.platform.vendor.utility.U8InvoicePostData;
 import com.srm.platform.vendor.utility.U8InvoicePostEntry;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
+import com.srm.platform.vendor.utility.VenPriceDetailItem;
 
 @Controller
 @RequestMapping(path = "/statement")
@@ -117,12 +119,16 @@ public class StatementController extends CommonController {
 				for (StatementDetail detail : detailList) {
 					PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
 							.findOneById(detail.getPurchaseInDetailId());
-
+					
+					if (purchaseInDetail == null)
+						continue;
+					
 					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_WAIT);
 					purchaseInDetailRepository.save(purchaseInDetail);
 				}
 			}
 			statementMainRepository.delete(main);
+			postUnLock(main);
 		}
 
 		return true;
@@ -130,10 +136,11 @@ public class StatementController extends CommonController {
 
 	@GetMapping("/{code}/deleteattach")
 	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
-	public @ResponseBody Boolean deleteAttach(@PathVariable("code") String code, HttpServletRequest request) {
+	public @ResponseBody Boolean deleteAttach(@PathVariable("code") String code) {
 		StatementMain main = statementMainRepository.findOneByCode(code);
-		String applicationPath = request.getServletContext().getRealPath("");
-		File attach = new File(applicationPath + File.separator + main.getAttachFileName());
+
+		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_STATEMENT) + File.separator
+				+ main.getAttachFileName());
 		if (attach.exists())
 			attach.delete();
 		main.setAttachFileName(null);
@@ -270,7 +277,7 @@ public class StatementController extends CommonController {
 	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody GenericJsonResponse<StatementMain> update_ajax(StatementSaveForm form,
-			BindingResult bindingResult, HttpServletRequest request) {
+			BindingResult bindingResult) {
 		StatementMain main = statementMainRepository.findOneByCode(form.getCode());
 
 		if (main == null) {
@@ -292,7 +299,7 @@ public class StatementController extends CommonController {
 			MultipartFile attach = form.getAttach();
 			if (attach != null) {
 				origianlFileName = attach.getOriginalFilename();
-				File file = UploadFileHelper.simpleUpload(attach, request, true, Constants.PATH_UPLOADS_STATEMENT);
+				File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_STATEMENT);
 
 				if (file != null)
 					savedFileName = file.getName();
@@ -358,6 +365,11 @@ public class StatementController extends CommonController {
 			toList.add(main.getMaker());
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			action = "生成U8发票";
+			break;
+		case Constants.STATEMENT_STATE_INVOICE_CANCEL:
+			toList.add(main.getMaker());
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			action = "撤销";
 		}
 		String title = String.format("对账单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), this.getLoginAccount().getRealname(),
 				action);
@@ -446,9 +458,7 @@ public class StatementController extends CommonController {
 					purchaseInDetailRepository.save(purchaseInDetail);
 				}
 			}
-		}
-
-		if (main.getState() == Constants.STATEMENT_STATE_VERIFY) {
+		} else if (main.getState() == Constants.STATEMENT_STATE_VERIFY) {
 			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
 			for (StatementDetail detail : detailList) {
 				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
@@ -459,6 +469,10 @@ public class StatementController extends CommonController {
 					purchaseInDetailRepository.save(purchaseInDetail);
 				}
 			}
+		}
+
+		if (form.getState() == Constants.STATEMENT_STATE_NEW) {
+			postLock(main);
 		}
 
 		return jsonResponse;
@@ -487,7 +501,7 @@ public class StatementController extends CommonController {
 			int errorCode = Integer.parseInt((String) map.get("errcode"));
 			String errmsg = String.valueOf(map.get("errmsg"));
 
-			if (errorCode == 0) {
+			if (errorCode == 1) {
 				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
 			}
 
@@ -625,5 +639,43 @@ public class StatementController extends CommonController {
 
 		return download(Constants.PATH_UPLOADS_STATEMENT + File.separator + main.getAttachFileName(),
 				main.getAttachOriginalName());
+	}
+
+	private String createLockJsonString(StatementMain main) {
+		String jsonString = "";
+		List<StatementDetail> list = statementDetailRepository.findByCode(main.getCode());
+
+		List<Map<String, String>> postData = new ArrayList();
+
+		for (StatementDetail detail : list) {
+			Map<String, String> map = new HashMap<>();
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
+			
+			if (purchaseInDetail == null)
+				continue;
+			
+			map.put("autoid", String.valueOf(purchaseInDetail.getId()));
+			map.put("iquantity", String.valueOf(purchaseInDetail.getQuantity()));
+			postData.add(map);
+		}
+
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			jsonString = objectMapper.writeValueAsString(postData);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+
+		return jsonString;
+	}
+
+	private void postLock(StatementMain main) {
+		String postJson = createLockJsonString(main);
+		String response = apiClient.postLock(postJson);
+	}
+
+	private void postUnLock(StatementMain main) {
+		String postJson = createLockJsonString(main);
+		String response = apiClient.postUnLock(postJson);
 	}
 }

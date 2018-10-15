@@ -47,7 +47,14 @@ public class UploadFileHelper {
 
 	}
 
-	public static File simpleUpload(MultipartFile file, HttpServletRequest request, boolean encrypt_file_name,
+	public static String getUploadDir(String upload_folder) {
+		File dir = new File(FILE_UPLOAD_PATH + File.separator + upload_folder);
+		if (!dir.exists())
+			dir.mkdirs();
+		return dir.getAbsolutePath();
+	}
+	
+	public static File simpleUpload(MultipartFile file, boolean encrypt_file_name,
 			String Upload_folder) {
 
 		String filename = null;
@@ -57,7 +64,7 @@ public class UploadFileHelper {
 			if (!file.isEmpty())
 
 			{
-				String applicationPath = FILE_UPLOAD_PATH;
+				
 				if (encrypt_file_name) {
 					String currentFileName = file.getOriginalFilename();
 					String extention = currentFileName.substring(currentFileName.lastIndexOf("."),
@@ -68,11 +75,8 @@ public class UploadFileHelper {
 				} else
 					filename = file.getOriginalFilename();
 				byte[] bytes = file.getBytes();
-				String rootPath = applicationPath;
-				File dir = new File(rootPath + File.separator + Upload_folder);
-				if (!dir.exists())
-					dir.mkdirs();
-				serverFile = new File(dir.getAbsolutePath() + File.separator + filename);
+				
+				serverFile = new File(getUploadDir(Upload_folder) + File.separator + filename);
 				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
 				stream.write(bytes);
 				stream.close();

@@ -147,6 +147,8 @@ public class AppProperties {
 		private String batch_get;
 		private String batch_get_weiwai;
 		private String purinvoice_add;
+		private String lock;
+		private String unlock;
 
 		public String getBatch_get() {
 			return batch_get;
@@ -170,6 +172,22 @@ public class AppProperties {
 
 		public void setPurinvoice_add(String purinvoice_add) {
 			this.purinvoice_add = purinvoice_add;
+		}
+
+		public String getLock() {
+			return lock;
+		}
+
+		public void setLock(String lock) {
+			this.lock = lock;
+		}
+
+		public String getUnlock() {
+			return unlock;
+		}
+
+		public void setUnlock(String unlock) {
+			this.unlock = unlock;
 		}
 
 	}
