@@ -358,6 +358,11 @@ public class StatementController extends CommonController {
 			toList.add(main.getMaker());
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			action = "生成U8发票";
+			break;
+		case Constants.STATEMENT_STATE_INVOICE_CANCEL:
+			toList.add(main.getMaker());
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			action = "撤销";
 		}
 		String title = String.format("对账单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), this.getLoginAccount().getRealname(),
 				action);
@@ -446,9 +451,7 @@ public class StatementController extends CommonController {
 					purchaseInDetailRepository.save(purchaseInDetail);
 				}
 			}
-		}
-
-		if (main.getState() == Constants.STATEMENT_STATE_VERIFY) {
+		} else if (main.getState() == Constants.STATEMENT_STATE_VERIFY) {
 			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
 			for (StatementDetail detail : detailList) {
 				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
