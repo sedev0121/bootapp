@@ -538,9 +538,10 @@ public class SyncController {
 				requestParams.put("invcode_begin", "");
 				requestParams.put("invcode_end", "");
 				
+				
 				if (startDate != null) {
-					requestParams.put("date_begin", Utils.formatDate(startDate));
-				} {
+					requestParams.put("date_begin", Utils.formatDateZeroTime(startDate));
+				} else {
 					requestParams.put("date_begin","");
 				}
 
