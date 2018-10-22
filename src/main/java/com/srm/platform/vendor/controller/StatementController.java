@@ -211,7 +211,7 @@ public class StatementController extends CommonController {
 			bodyQuery += " and b.code= :vendor";
 			params.put("vendor", vendorStr);
 
-			bodyQuery += " and a.state>1";
+			bodyQuery += " and a.state>" + Constants.STATEMENT_STATE_REVIEW;
 
 		} else {
 			bodyQuery += " and b.unit_id in :unitList";
@@ -309,20 +309,21 @@ public class StatementController extends CommonController {
 				main.setAttachFileName(savedFileName);
 				main.setAttachOriginalName(origianlFileName);
 			}
-
-		} else if (form.getState() == Constants.STATEMENT_STATE_CONFIRM
+		} else if (form.getState() == Constants.STATEMENT_STATE_REVIEW
 				|| (main.getState() == Constants.STATEMENT_STATE_SUBMIT
-						&& form.getState() == Constants.STATEMENT_STATE_CANCEL)) {
-			main.setConfirmer(this.getLoginAccount());
-			main.setConfirmdate(new Date());
-		} else if (form.getState() == Constants.STATEMENT_STATE_VERIFY
-				|| (main.getState() == Constants.STATEMENT_STATE_CONFIRM
 						&& form.getState() == Constants.STATEMENT_STATE_CANCEL)) {
 			main.setVerifier(this.getLoginAccount());
 			main.setVerifydate(new Date());
-		} else if (form.getState() == Constants.STATEMENT_STATE_INVOICE_NUM) {
+
+		} else if (form.getState() == Constants.STATEMENT_STATE_CONFIRM) {
 			main.setInvoicenummaker(this.getLoginAccount());
 			main.setInvoicenumdate(new Date());
+			main.setConfirmer(this.getLoginAccount());
+			main.setConfirmdate(new Date());
+		} else if (main.getState() == Constants.STATEMENT_STATE_REVIEW
+						&& form.getState() == Constants.STATEMENT_STATE_CANCEL) {
+			main.setConfirmer(this.getLoginAccount());
+			main.setConfirmdate(new Date());
 		} else if (form.getState() == Constants.STATEMENT_STATE_INVOICE_PUBLISH) {
 			main.setInvoiceType(form.getInvoice_type());
 			GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
@@ -341,25 +342,23 @@ public class StatementController extends CommonController {
 		List<Account> toList = new ArrayList<>();
 		switch (form.getState()) {
 		case Constants.STATEMENT_STATE_SUBMIT:
+			List<String> idList = new ArrayList();
+			idList.add(String.valueOf(main.getVendor().getUnit().getId()));
+			toList.addAll(accountRepository.findAllBuyersByUnitIdList(idList));
+			action = "提交";
+			break;
+		case Constants.STATEMENT_STATE_REVIEW:
+			toList.add(main.getMaker());
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			action = "发布";
+			action = "审核发布";
+			break;
+		case Constants.STATEMENT_STATE_CANCEL:
+			toList.add(main.getMaker());
+			action = "退回";
 			break;
 		case Constants.STATEMENT_STATE_CONFIRM:
 			toList.add(main.getMaker());
 			action = "确认";
-			break;
-		case Constants.STATEMENT_STATE_VERIFY:
-			toList.add(main.getMaker());
-			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			action = "审核";
-			break;
-		case Constants.STATEMENT_STATE_CANCEL:
-			toList.add(main.getMaker());
-			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			action = "退回";
-		case Constants.STATEMENT_STATE_INVOICE_NUM:
-			toList.add(main.getMaker());
-			action = "填发票号";
 			break;
 		case Constants.STATEMENT_STATE_INVOICE_PUBLISH:
 			toList.add(main.getMaker());
@@ -386,7 +385,7 @@ public class StatementController extends CommonController {
 		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
 				main);
 
-		if (form.getState() <= Constants.STATEMENT_STATE_CONFIRM) {
+		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT ) {
 			statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
 			if (form.getTable() != null) {
 				int i = 1;
@@ -458,7 +457,7 @@ public class StatementController extends CommonController {
 					purchaseInDetailRepository.save(purchaseInDetail);
 				}
 			}
-		} else if (main.getState() == Constants.STATEMENT_STATE_VERIFY) {
+		} else if (main.getState() == Constants.STATEMENT_STATE_INVOICE_PUBLISH) {
 			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
 			for (StatementDetail detail : detailList) {
 				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
