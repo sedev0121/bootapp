@@ -39,7 +39,7 @@
               </div>
               <div class="col-lg-2 col-md-2">
                 <label>订单总金额: </label>
-                <input type="text" class="form-control" th:value="${main.money}" readonly/>
+                <input type="text" class="form-control" id="money_total" readonly/>
               </div>
               <div class="col-lg-4 col-md-4">
                 <label>供应商: </label>
@@ -263,13 +263,12 @@ $(document).ready(function() {
       
     }).on( 'postEdit', function (e, json, data, action) {
       var table_data = basic_table.rows().data().toArray();
-      var prepay_sum = 0;
+      var prepay_sum = 0, money_total = 0;
       $.each(table_data, function(key, item){    
-        console.log(item);
         prepay_sum += parseFloat(item.prepaymoney);
-        console.log(prepay_sum);
+        
       })
-      $("#prepay_total").val(prepay_sum);      
+      $("#prepay_total").val(prepay_sum);
     });
     
     basic_table = $('#basic_info').DataTable({
@@ -278,14 +277,18 @@ $(document).ready(function() {
       ajax : {
           url : detail_url,
           dataSrc : function(json) {
-            var prepay_sum = 0;
+        	var prepay_sum = 0, money_total = 0;
             $.each(json, function(key, item){
               item.arrivedate = $.fn.date_renderer(item.arrivedate);
               item.confirmdate = $.fn.date_renderer(item.confirmdate);
               if (item.prepaymoney)
                 prepay_sum += parseFloat(item.prepaymoney);
+              
+              money_total += parseFloat(item.money);
+              
             })
             $("#prepay_total").val(prepay_sum);
+            $("#money_total").val(money_total);
             return json;
           },
       },

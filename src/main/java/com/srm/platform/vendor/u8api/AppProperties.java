@@ -149,6 +149,7 @@ public class AppProperties {
 		private String purinvoice_add;
 		private String lock;
 		private String unlock;
+		private String purchaseorder;
 
 		public String getBatch_get() {
 			return batch_get;
@@ -188,6 +189,14 @@ public class AppProperties {
 
 		public void setUnlock(String unlock) {
 			this.unlock = unlock;
+		}
+
+		public String getPurchaseorder() {
+			return purchaseorder;
+		}
+
+		public void setPurchaseorder(String purchaseorder) {
+			this.purchaseorder = purchaseorder;
 		}
 
 	}

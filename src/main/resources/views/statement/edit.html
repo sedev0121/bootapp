@@ -701,7 +701,13 @@ $(document).ready(function() {
                     invoice_tax_price:'',
                     invoice_tax_money:''
                 };
-                table.row.add(new_row).draw();
+                
+                table.row.add(new_row);
+                
+                var aiDisplayMaster = $('#detail_table').dataTable().fnSettings()["aiDisplayMaster"];
+                irow = aiDisplayMaster.pop();
+                aiDisplayMaster.unshift(irow);
+                table.draw();
               } 
             },
         ],

@@ -517,6 +517,8 @@ public class SyncController {
 			this.purchaseOrderMainRepository.deleteAllInBatch();
 		}
 
+		List<LinkedHashMap<String, String>> tempList;
+		
 		try {
 			do {
 
@@ -524,67 +526,114 @@ public class SyncController {
 
 				requestParams = new HashMap<>();
 
-				requestParams.put("rows_per_page", "10");
-				requestParams.put("page_index", Integer.toString(++i));
+				requestParams.put("sys_Order", "");
+				requestParams.put("sys_PageIndex", Integer.toString(++i));
+				requestParams.put("sys_PageSize", "10");
 
+				requestParams.put("cpoid", "");
+				requestParams.put("cbustype", "");
+				requestParams.put("date_end", "");
+				requestParams.put("verifier_begin", "");
+				requestParams.put("verifier_end", "");
+				requestParams.put("invcode_begin", "");
+				requestParams.put("invcode_end", "");
+				
 				if (startDate != null) {
 					requestParams.put("date_begin", Utils.formatDate(startDate));
+				} {
+					requestParams.put("date_begin","");
 				}
 
 				if (vendorCode != null) {
 					requestParams.put("vendorcode", vendorCode);
+				}else {
+					requestParams.put("vendorcode", "");
 				}
 
-				String response = apiClient.getBatchPurchaseOrder(requestParams);
+				String response = apiClient.getLinkU8PurchaseOrder(requestParams);
 
 				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 				});
 
-				int errorCode = Integer.parseInt((String) map.get("errcode"));
+				total_page = Integer.parseInt((String) map.get("page_count"));
+				tempList = (List<LinkedHashMap<String, String>>) map.get("list");
+				for (LinkedHashMap<String, String> temp : tempList) {
+					Date makeDate = Utils.parseDateTime2(temp.get("cmaketime"));
+					Vendor vendor = vendorRepository.findOneByCode(temp.get("cVenCode"));
 
-				if (errorCode == appProperties.getError_code_success()) {
-					total_page = Integer.parseInt((String) map.get("page_count"));
-					list = (List<LinkedHashMap<String, String>>) map.get("purchaseorderlist");
-					for (LinkedHashMap<String, String> temp : list) {
-
-						PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(temp.get("code"));
-						if (main == null) {
-							main = new PurchaseOrderMain();
-							main.setCode(temp.get("code"));
-						}
-
-						Date makeDate = Utils.parseDate(temp.get("date"));
-						Vendor vendor = vendorRepository.findOneByCode(temp.get("vendorcode"));
-
-						if (temp.get("state") == "新建" || vendor == null) {
-							continue;
-						}
-
-						main.setSrmstate(Constants.PURCHASE_ORDER_STATE_START);
-						main.setVendor(vendorRepository.findOneByCode(temp.get("vendorcode")));
-						main.setMakedate(makeDate);
-						main.setState(temp.get("state"));
-						if (temp.get("money") != null && !temp.get("money").isEmpty())
-							main.setMoney(Float.parseFloat(temp.get("money")));
-						if (temp.get("sum") != null && !temp.get("sum").isEmpty())
-							main.setSum(Float.parseFloat(temp.get("sum")));
-						main.setPurchaseTypeName(temp.get("purchase_type_name"));
-						main.setRemark(temp.get("remark"));
-						main.setMaker(temp.get("maker"));
-						main.setVerifier(temp.get("verifier"));
-						main.setCloser(temp.get("closer"));
-						main.setDeptcode(temp.get("deptcode"));
-						main.setDeptname(temp.get("deptname"));
-						main.setPersoncode(temp.get("personcode"));
-						main.setPersonname(temp.get("personname"));
-
-						purchaseOrderMainRepository.save(main);
-
-						purchaseOrderDetail(main);
+					//TODO:0=新建 1=审核 2=关闭
+					int cState = Integer.parseInt(temp.get("cState"));
+					if (cState == 0 || vendor == null) {
+						continue;
 					}
-				} else {
-					return false;
+
+					PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(temp.get("cPoid"));
+					if (main == null) {
+						main = new PurchaseOrderMain();
+						main.setCode(temp.get("cPoid"));
+					}
+					
+					String state = "";
+					switch(cState) {
+					case 1:
+						state = "审核";
+						break;
+					case 2:
+						state = "关闭";
+						break;
+					};
+					main.setState(state);
+
+					main.setSrmstate(Constants.PURCHASE_ORDER_STATE_START);
+					main.setVendor(vendor);
+					
+					//TODO: 未税金额
+//					if (temp.get("money") != null && !temp.get("money").isEmpty())
+//						main.setMoney(Float.parseFloat(temp.get("money")));
+					//TODO: 含税金额
+//					if (temp.get("sum") != null && !temp.get("sum").isEmpty())
+//						main.setSum(Float.parseFloat(temp.get("sum")));
+					
+					
+					main.setPurchaseTypeName(temp.get("cBusType"));
+					main.setMaker(temp.get("cMaker"));
+					main.setMakedate(makeDate);
+					main.setVerifier(temp.get("cVerifier"));
+					main.setCloser(temp.get("cCloser"));
+					main.setRemark(temp.get("cMemo"));
+
+					purchaseOrderMainRepository.save(main);
+
+					PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByCodeAndRowno(main.getCode(),
+							temp.get("ivouchrowno"));
+
+					if (detail == null) {
+						detail = new PurchaseOrderDetail();
+						detail.setMain(main);
+					}
+
+					detail.setInventory(inventoryRepository.findByCode(temp.get("cInvCode")));
+					if (temp.get("iQuantity") != null && !temp.get("iQuantity").isEmpty())
+						detail.setQuantity(Float.parseFloat(temp.get("iQuantity")));
+					if (temp.get("iNatUnitPrice") != null && !temp.get("iNatUnitPrice").isEmpty())
+						detail.setPrice(Float.parseFloat(temp.get("iNatUnitPrice")));
+					if (temp.get("iTaxNatPrice") != null && !temp.get("iTaxNatPrice").isEmpty())
+						detail.setTaxprice(Float.parseFloat(temp.get("iTaxNatPrice")));
+					if (temp.get("iNatSum") != null && !temp.get("iNatSum").isEmpty())
+						detail.setSum(Float.parseFloat(temp.get("iNatSum")));
+					if (temp.get("iNatMoney") != null && !temp.get("iNatMoney").isEmpty())
+						detail.setMoney(Float.parseFloat(temp.get("iNatMoney")));
+					if (temp.get("ivouchrowno") != null && !temp.get("ivouchrowno").isEmpty())
+						detail.setRowno(Integer.parseInt(temp.get("ivouchrowno")));
+
+					
+					String arriveDateStr = temp.get("dArriveDate");
+					detail.setArrivedate(Utils.parseDateTime2(arriveDateStr));
+					
+					purchaseOrderDetailRepository.save(detail);
 				}
+				
+				
 
 			} while (i < total_page);
 
@@ -597,84 +646,7 @@ public class SyncController {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
-	private boolean purchaseOrderDetail(PurchaseOrderMain main) {
-
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		List<LinkedHashMap<String, String>> entryList;
-
-		Map<String, Object> map = new HashMap<>();
-
-		try {
-
-			map = new HashMap<>();
-
-			Map<String, String> requestParams = new HashMap<>();
-
-			requestParams.put("id", main.getCode());
-
-			String response = apiClient.getPurchaseOrder(requestParams);
-
-			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
-			});
-
-			int errorCode = Integer.parseInt((String) map.get("errcode"));
-
-			if (errorCode == appProperties.getError_code_success()) {
-				LinkedHashMap<String, Object> order = (LinkedHashMap<String, Object>) map.get("purchaseorder");
-				entryList = (List<LinkedHashMap<String, String>>) order.get("entry");
-
-				for (LinkedHashMap<String, String> entryMap : entryList) {
-					PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByCodeAndRowno(main.getCode(),
-							entryMap.get("rowno"));
-
-					if (detail == null) {
-						detail = new PurchaseOrderDetail();
-						detail.setMain(purchaseOrderMainRepository.findOneByCode(main.getCode()));
-					}
-
-					detail.setInventory(inventoryRepository.findByCode(entryMap.get("inventorycode")));
-					if (entryMap.get("quantity") != null && !entryMap.get("quantity").isEmpty())
-						detail.setQuantity(Float.parseFloat(entryMap.get("quantity")));
-					if (entryMap.get("price") != null && !entryMap.get("price").isEmpty())
-						detail.setPrice(Float.parseFloat(entryMap.get("price")));
-					if (entryMap.get("tax") != null && !entryMap.get("tax").isEmpty())
-						detail.setTaxprice(Float.parseFloat(entryMap.get("tax")));
-					if (entryMap.get("sum") != null && !entryMap.get("sum").isEmpty())
-						detail.setSum(Float.parseFloat(entryMap.get("sum")));
-					if (entryMap.get("money") != null && !entryMap.get("money").isEmpty())
-						detail.setMoney(Float.parseFloat(entryMap.get("money")));
-					if (entryMap.get("tax") != null && !entryMap.get("tax").isEmpty())
-						detail.setTax(Float.parseFloat(entryMap.get("tax")));
-					if (entryMap.get("rowno") != null && !entryMap.get("rowno").isEmpty())
-						detail.setRowno(Integer.parseInt(entryMap.get("rowno")));
-
-//					if (entryMap.get("define36") != null && !entryMap.get("define36").isEmpty()) {
-//						String confirmDateStr = entryMap.get("define36");
-//						detail.setConfirmdate(Utils.parseDate(confirmDateStr));
-//					}
-					
-					String arriveDateStr = entryMap.get("arrivedate");
-					detail.setArrivedate(Utils.parseDate(arriveDateStr));
-//					detail.setConfirmdate(Utils.parseDate(arriveDateStr));
-					
-					purchaseOrderDetailRepository.save(detail);
-				}
-
-			} else {
-				return false;
-			}
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.info(e.getMessage());
-			return false;
-		}
-
-		return true;
-	}
-
+	
 	@ResponseBody
 	@RequestMapping(value = { "/purchasein/init", "/purchasein", "/purchasein/" })
 	public boolean purchaseInInit() {
