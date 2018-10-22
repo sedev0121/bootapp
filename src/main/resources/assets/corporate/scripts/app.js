@@ -14,7 +14,7 @@ var App = function() {
   var purchase_order_state_data = [{id:0, text:'审核'}, {id:1, text:'发布'}, {id:2, text:'确认'}, {id:3, text:'拒绝'}];
   var purchase_in_state_data = [{id:0, text:'未对账'}, {id:1, text:'对账中'}, {id:2, text:'已对账'}];
   var purchase_in_bredvouch_data = [{id:0, text:'蓝字'}, {id:1, text:'红字'}];
-  var statement_state_data = [{id:1, text:"新建"}, {id:2, text:"发布"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"审核"}, {id:6, text:"已填发票号"}, {id:7, text:"已生成U8发票"}, {id:8, text:"发票退回"}];
+  var statement_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"审核/发布"}, {id:4, text:"退回"}, {id:5, text:"确认"}, {id:6, text:"已生成U8发票"}, {id:7, text:"发票退回"}];
   var notice_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"发布"}, {id:4, text:"退回"}];
   
   var role_data = [{id:"ROLE_BUYER", text:"采购员"}, {id:"ROLE_VENDOR", text:"供应商"}, {id:"ROLE_ADMIN", text:"管理员"}];
