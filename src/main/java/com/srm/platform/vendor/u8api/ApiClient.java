@@ -82,6 +82,11 @@ public class ApiClient {
 		String url = appProperties.getLinku8().getUnlock();
 		return postGB2312(url, json);
 	}
+	
+	public String getLinkU8PurchaseOrder(Map<String, String> requestParams) {
+		String url = appProperties.getLinku8().getPurchaseorder() + getUrlSuffixWithoutToken(requestParams);
+		return getGB2312(url);
+	}
 
 	public String generatePurchaseInvoice(Map<String, String> getParams, String json) {
 		String url = appProperties.getPurInvoice().getAdd() + getUrlSuffix(getParams);

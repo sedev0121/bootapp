@@ -52,9 +52,6 @@ public class PurchaseOrderMain {
 	private String remark;
 	private String state;
 
-	private Float money;
-	private Float sum;
-
 	private Integer srmstate;
 
 	private String maker;
@@ -209,21 +206,7 @@ public class PurchaseOrderMain {
 		this.state = state;
 	}
 
-	public Float getMoney() {
-		return money;
-	}
-
-	public void setMoney(Float money) {
-		this.money = money;
-	}
-
-	public Float getSum() {
-		return sum;
-	}
-
-	public void setSum(Float sum) {
-		this.sum = sum;
-	}
+	
 
 	public Integer getSrmstate() {
 		return srmstate;

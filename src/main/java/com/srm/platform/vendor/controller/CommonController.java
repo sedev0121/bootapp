@@ -195,13 +195,14 @@ public class CommonController {
 		}
 	}
 
-	public void sendmessage(String title, List<Account> toList) {
+	public void sendmessage(String title, List<Account> toList, String url) {
 		Notice notice = new Notice();
 		notice.setState(Constants.NOTICE_STATE_PUBLISH);
 		notice.setType(Constants.NOTICE_TYPE_SYSTEM);
 		notice.setTitle(title);
 		notice.setContent(title);
 		notice.setCreateDate(new Date());
+		notice.setUrl(url);
 		notice = noticeRepository.save(notice);
 
 		for (Account account : toList) {

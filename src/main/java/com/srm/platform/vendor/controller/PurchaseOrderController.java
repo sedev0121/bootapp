@@ -115,12 +115,12 @@ public class PurchaseOrderController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT a.*, b.name vendorname, c.realname deployername, d.realname reviewername, e.prepaymoney ";
+		String selectQuery = "SELECT a.*, b.name vendorname, c.realname deployername, d.realname reviewername, e.prepaymoney, e.money, e.sum ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "FROM purchase_order_main a left join vendor b on a.vencode=b.code left join account c on a.deployer=c.id left join account d on a.reviewer=d.id "
-				+ "left join (select code, sum(prepaymoney) prepaymoney from purchase_order_detail group by code) e on a.code=e.code "
+				+ "left join (select code, sum(prepaymoney) prepaymoney, sum(money) money, sum(sum) sum from purchase_order_detail group by code) e on a.code=e.code "
 				+ "WHERE a.state='审核' ";
 
 		List<String> unitList = this.getDefaultUnitList();
@@ -218,7 +218,7 @@ public class PurchaseOrderController extends CommonController {
 		}
 		String title = String.format("订单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
 
-		this.sendmessage(title, toList);
+		this.sendmessage(title, toList, String.format("/purchaseorder/%s/edit", main.getCode()));
 
 		if (form.getTable() != null) {
 			for (Map<String, String> item : form.getTable()) {

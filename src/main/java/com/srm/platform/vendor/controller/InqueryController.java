@@ -298,8 +298,11 @@ public class InqueryController extends CommonController {
 			}
 
 		}
-
-		venPriceAdjustMain.setIverifystate(form.getState());
+		int state = form.getState();
+		if (venPriceAdjustMain.getCreatetype() == Constants.CREATE_TYPE_VENDOR && form.getState() == Constants.STATE_SUBMIT) {
+			state = Constants.STATE_CONFIRM;
+		}
+		venPriceAdjustMain.setIverifystate(state);
 		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
 
 		GenericJsonResponse<VenPriceAdjustMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS,
@@ -308,6 +311,8 @@ public class InqueryController extends CommonController {
 		String action = null;
 		List<Account> toList = new ArrayList<>();
 
+		String url = String.format("/inquery/%s/edit", venPriceAdjustMain.getCcode());
+		
 		switch (form.getState()) {
 		case Constants.STATE_SUBMIT:
 			action = "提交";
@@ -318,6 +323,7 @@ public class InqueryController extends CommonController {
 			} else {
 				toList.addAll(accountRepository.findAccountsByVendor(venPriceAdjustMain.getVendor().getCode()));
 			}
+			url = String.format("/quote/%s/edit", venPriceAdjustMain.getCcode());
 			break;
 		case Constants.STATE_CONFIRM:
 			toList.add(venPriceAdjustMain.getMaker());
@@ -338,12 +344,12 @@ public class InqueryController extends CommonController {
 		case Constants.STATE_CANCEL:
 			toList.add(venPriceAdjustMain.getMaker());
 			action = "退回";
-			break;
+			break;			
 		}
 
 		String title = String.format("询价单【%s】已由【%s】%s，请及时查阅和处理！", venPriceAdjustMain.getCcode(), account.getRealname(),
 				action);
-		this.sendmessage(title, toList);
+		this.sendmessage(title, toList, url);
 
 		if (form.getState() <= Constants.STATE_PASS && form.getTable() != null) {
 			venPriceAdjustDetailRepository

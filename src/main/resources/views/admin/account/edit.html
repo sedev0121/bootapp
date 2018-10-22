@@ -15,7 +15,7 @@
       <div class="text-right">
           <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
           <a class="btn btn-danger" id="del" th:if="${account.id}"><i class="fa fa-remove"></i> 删除</a>
-          <a class="btn btn-default" th:href="@{/account}"><i class="fa fa-arrow-left"></i> 返回</a>
+          <a class="btn btn-default" th:href="@{/account}"><i class="fa fa-arrow-left"></i> 返回列表</a>
       </div>
     </div>
     <form id="form" th:action="@{/account/update}" method="post">  

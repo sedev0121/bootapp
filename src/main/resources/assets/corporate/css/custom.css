@@ -431,3 +431,7 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
 #dashboard .panel-body {
     min-height: 165px;
 }
+
+.detail {
+	color: green;
+}
