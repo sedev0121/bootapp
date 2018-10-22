@@ -93,10 +93,6 @@
                   <label for="tax_rate">税率: </label>
                   <input type="number" id="tax_rate" name="tax_rate" th:value="${main.taxRate}" class="form-control"/>
                 </div>                
-                <div class="col-lg-6 col-md-6">
-                  <label for="remark">摘要: </label>
-                  <input type="text" id="remark" name="remark" th:value="${main.remark}" class="form-control" />
-                </div>     
                 <div class="col-lg-4 col-md-4">
                   <label for="invoice_code">发票号:(5679/80/81 表示5679、5680、5681三张发票) </label>
                   <input type="text" id="invoice_code" name="invoice_code" th:value="${main.invoiceCode}" class="form-control" disabled/>
@@ -105,6 +101,10 @@
                   <label for="invoice_type">U8发票类型: </label>
                   <select name="invoice_type" id="invoice_type" class="form-control" readonly></select>
                 </div>                
+                <div class="col-lg-6 col-md-6">
+                  <label for="remark">摘要: </label>
+                  <input type="text" id="remark" name="remark" th:value="${main.remark}" class="form-control" />
+                </div>     
                 <div class="col-lg-4 col-md-4">
                   <label for="cancel_reason">发票退回原因 </label>
                   <input type="text" id="cancel_reason" th:value="${main.invoiceCancelReason}" class="form-control" disabled/>

@@ -365,15 +365,21 @@ public class StatementController extends CommonController {
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			action = "生成U8发票";
 			break;
-		case Constants.STATEMENT_STATE_INVOICE_CANCEL:
-			toList.add(main.getMaker());
-			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			action = "撤销";
+		case Constants.STATEMENT_STATE_NEW:
+			if (main.getState() == Constants.STATEMENT_STATE_INVOICE_CANCEL || main.getState() == Constants.STATEMENT_STATE_CONFIRM) {
+				toList.add(main.getMaker());
+				toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+				action = "撤销";
+			}
 		}
-		String title = String.format("对账单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), this.getLoginAccount().getRealname(),
-				action);
+		
+		if (action != null) {
+			String title = String.format("对账单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), this.getLoginAccount().getRealname(),
+					action);
 
-		this.sendmessage(title, toList, String.format("/statement/%s/edit", main.getCode()));
+			this.sendmessage(title, toList, String.format("/statement/%s/edit", main.getCode()));
+		}
+
 
 		if (this.isVendor() && form.getInvoice_code() != null && !form.getInvoice_code().isEmpty()) {
 			main.setInvoiceCode(form.getInvoice_code());
@@ -500,7 +506,7 @@ public class StatementController extends CommonController {
 			int errorCode = Integer.parseInt((String) map.get("errcode"));
 			String errmsg = String.valueOf(map.get("errmsg"));
 
-			if (errorCode == 1) {
+			if (errorCode == 0) {
 				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
 			}
 

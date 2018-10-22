@@ -16,10 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
+import com.srm.platform.vendor.model.PurchaseInDetail;
+import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
+import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.utility.Constants;
 
@@ -40,6 +44,12 @@ public class ApiController {
 	@Autowired
 	private AccountRepository accountRepository;
 	
+	@Autowired
+	private PurchaseInDetailRepository purchaseInDetailRepository;
+	
+	@Autowired
+	private StatementDetailRepository statementDetailRepository;
+	
 	@ResponseBody
 	@RequestMapping({ "/invoice" })
 	public Integer index(@RequestParam Map<String, String> requestParams) {
@@ -56,6 +66,7 @@ public class ApiController {
 				main.setInvoiceCancelReason(reason);
 				main.setState(Constants.STATEMENT_STATE_INVOICE_CANCEL);
 				statementMainRepository.save(main);
+				this.cancelPurchaseInState(main);
 				sendmessage(main);
 				return 1;
 				
@@ -68,6 +79,18 @@ public class ApiController {
 
 	}
 	
+	private void cancelPurchaseInState(StatementMain main) {
+		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
+		for (StatementDetail detail : detailList) {
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
+					.findOneById(detail.getPurchaseInDetailId());
+
+			if (purchaseInDetail != null) {
+				purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);
+				purchaseInDetailRepository.save(purchaseInDetail);
+			}
+		}
+	}
 	private void sendmessage(StatementMain main) {
 		List<Account> toList = new ArrayList<>();
 		toList.add(main.getMaker());
