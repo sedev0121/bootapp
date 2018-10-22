@@ -32,7 +32,10 @@ import com.srm.platform.vendor.utility.NoticeSearchResult;
 				@ColumnResult(name = "to_all_vendor", type = Integer.class),
 				@ColumnResult(name = "to_unit_account", type = Integer.class),
 				@ColumnResult(name = "attach_file_name", type = String.class),
-				@ColumnResult(name = "read_date", type = Date.class) }) })
+				@ColumnResult(name = "read_date", type = Date.class),
+				@ColumnResult(name = "url", type = String.class)
+			}) 
+		})
 
 public class Notice {
 
@@ -66,7 +69,8 @@ public class Notice {
 	private String attachOriginalName;
 	private String vendorCodeList;
 	private String accountIdList;
-
+	private String url;
+	
 	public Notice() {
 		this.createDate = new Date();
 	}
@@ -77,6 +81,14 @@ public class Notice {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	public String getAccountIdList() {

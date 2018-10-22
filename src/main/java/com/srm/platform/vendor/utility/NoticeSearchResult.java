@@ -32,10 +32,12 @@ public class NoticeSearchResult implements Serializable {
 	String attach_file_name;
 
 	Date read_date;
+	
+	String url;
 
 	public NoticeSearchResult(String id, String title, String content, Date create_date, String create_name,
 			String create_unitname, Date verify_date, String verify_name, Integer state, Integer to_all_vendor,
-			Integer to_unit_account, String attach_file_name, Date read_date) {
+			Integer to_unit_account, String attach_file_name, Date read_date, String url) {
 
 		this.id = id;
 		this.title = title;
@@ -50,6 +52,7 @@ public class NoticeSearchResult implements Serializable {
 		this.to_unit_account = to_unit_account;
 		this.attach_file_name = attach_file_name;
 		this.read_date = read_date;
+		this.url = url;
 	}
 
 	public String getId() {
@@ -58,6 +61,14 @@ public class NoticeSearchResult implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	public Date getRead_date() {

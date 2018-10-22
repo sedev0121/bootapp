@@ -245,7 +245,7 @@ public class QuoteController extends CommonController {
 		}
 		String title = String.format("询价单【%s】已由【%s】%s，请及时查阅和处理！", venPriceAdjustMain.getCcode(), account.getRealname(),
 				action);
-		this.sendmessage(title, toList);
+		this.sendmessage(title, toList, String.format("/inquery/%s/edit", venPriceAdjustMain.getCcode()));
 
 		if (state == Constants.STATE_PASS || state == Constants.STATE_CONFIRM || state == Constants.STATE_CANCEL) {
 			if (form.getTable() != null) {

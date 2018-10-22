@@ -123,7 +123,7 @@
 		        <div class="col-lg-6 col-md-6 form-group margin-top-10" id="file_show" th:if="!${(main.iverifystate==1 or main.iverifystate==4) and main.attachFileName == null}">
 		            <div>
 		              <b> 附件：</b><a th:href="@{|/inquery/${main.ccode}/download|}" th:if="${main.attachFileName}" th:text="${main.attachOriginalName}"></a>
-		              <span th:if="!${main.attachFileName}"><b>附件：</b>---</span>              
+		              <span th:if="!${main.attachFileName}">---</span>              
 		              <a class="btn btn-danger" id="del_attach" th:if="${main.maker?.id==session.account_id and (main.iverifystate==1  || main.iverifystate==4)}">删除附件</a>
 		            </div>
 		        </div>
@@ -927,7 +927,7 @@ is_readonly = 0;
     
     $("#submit").click(function() {   
       editor.submit();
-      $('#state').val(is_vendor?3:2);
+      $('#state').val(2);
       $("#form").submit();            
     });
 

@@ -110,7 +110,7 @@
                 <div class="col-lg-6 col-md-6 form-group margin-top-10" id="file_show" th:if="!${(main.iverifystate==1) and main.attachFileName == null}">
 		            <div>
                       <b> 附件：</b><a th:href="@{|/inquery/${main.ccode}/download|}" th:if="${main.attachFileName}" th:text="${main.attachOriginalName}"></a>
-		              <span th:if="!${main.attachFileName}"><b>附件：</b>---</span>
+		              <span th:if="!${main.attachFileName}">---</span>
 		            </div>
 		        </div>
             </div>

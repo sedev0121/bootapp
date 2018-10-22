@@ -374,7 +374,7 @@ public class StatementController extends CommonController {
 		String title = String.format("对账单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), this.getLoginAccount().getRealname(),
 				action);
 
-		this.sendmessage(title, toList);
+		this.sendmessage(title, toList, String.format("/statement/%s/edit", main.getCode()));
 
 		if (this.isVendor() && form.getInvoice_code() != null && !form.getInvoice_code().isEmpty()) {
 			main.setInvoiceCode(form.getInvoice_code());
