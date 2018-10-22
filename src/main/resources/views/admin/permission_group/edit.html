@@ -14,7 +14,7 @@
       <div class="text-right">
           <a id="save" class="btn btn-primary"><i class="fa fa-save"></i> 保存</a>
           <a id="del" class="btn btn-danger" th:if="${permission_group.id}"><i class="fa fa-remove"></i> 删除</a>
-          <a class="btn btn-default" th:href="@{/permission_group}"><i class="fa fa-arrow-left"></i> 返回</a>
+          <a class="btn btn-default" th:href="@{/permission_group}"><i class="fa fa-arrow-left"></i> 返回列表</a>
       </div>
     </div>
     <form id="form" th:action="@{/permission_group/update}" method="post">  

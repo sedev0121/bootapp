@@ -15,7 +15,7 @@
           <a class="btn btn-primary" id="deploy" sec:authorize="hasAuthority('订单管理-新建/发布')" th:if="${(main.srmstate==0 or main.srmstate==3 ) AND main.state =='审核'} "><i class="fa fa-undo"></i> 发布</a>
           <a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a>
           <a class="btn btn-primary" id="cancel" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-undo"></i> 拒绝</a>
-          <a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回</a>
+          <a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回列表</a>
         </div>
       </div> 
             
