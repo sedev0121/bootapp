@@ -61,8 +61,11 @@ $(document).ready(function() {
       createdCell: App.getNoticeReadStateClass,
       render: function (data, display, record) {
         var edit_url = /*[[@{/message/}]]*/'';
+        var detail_url = record.url;
         edit_url +=  record.id + '/edit';
-        return '<a href="' + edit_url + '">' + data  + '</a>';
+        var html = '<a href="' + edit_url + '">' + data  + '</a>';
+        html +='<a class="detail" href="' + detail_url + '">【单据详情】</a>';
+        return html;
       },
     }, {
       data : 'create_date',
