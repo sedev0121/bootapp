@@ -86,7 +86,7 @@ public class StatementMain {
 	private Integer type = 1;
 	private Integer invoiceType = 1;
 	private String remark;
-	private Integer state;
+	private Integer state = Constants.STATEMENT_STATE_NEW;
 	private String u8invoiceid;
 
 	@OneToOne(cascade = { CascadeType.REFRESH })

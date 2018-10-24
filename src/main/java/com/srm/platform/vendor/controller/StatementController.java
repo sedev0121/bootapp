@@ -211,7 +211,7 @@ public class StatementController extends CommonController {
 			bodyQuery += " and b.code= :vendor";
 			params.put("vendor", vendorStr);
 
-			bodyQuery += " and a.state>" + Constants.STATEMENT_STATE_REVIEW;
+			bodyQuery += " and a.state>=" + Constants.STATEMENT_STATE_REVIEW;
 
 		} else {
 			bodyQuery += " and b.unit_id in :unitList";
