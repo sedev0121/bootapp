@@ -242,22 +242,25 @@ public class AccountController extends CommonController {
 
 		permissionGroupUserRepository.deleteByAccountId(account.getId());
 
-		List<Long> permissionList = accountSaveForm.getPermission();
-		if (permissionList != null) {
-			for (Long id : permissionList) {
-				PermissionGroupUser temp = new PermissionGroupUser();
-				temp.setAccountId(account.getId());
-				temp.setGroupId(id);
+		if ("ROLE_BUYER".equals(account.getRole())) {
+			List<Long> permissionList = accountSaveForm.getPermission();
+			if (permissionList != null) {
+				for (Long id : permissionList) {
+					PermissionGroupUser temp = new PermissionGroupUser();
+					temp.setAccountId(account.getId());
+					temp.setGroupId(id);
 
-				Example<PermissionGroupUser> example = Example.of(temp);
-				Optional<PermissionGroupUser> result = permissionGroupUserRepository.findOne(example);
-				if (result.isPresent()) {
-					temp = result.get();
+					Example<PermissionGroupUser> example = Example.of(temp);
+					Optional<PermissionGroupUser> result = permissionGroupUserRepository.findOne(example);
+					if (result.isPresent()) {
+						temp = result.get();
+					}
+
+					permissionGroupUserRepository.save(temp);
 				}
-
-				permissionGroupUserRepository.save(temp);
 			}
 		}
+		
 
 		return account;
 	}
