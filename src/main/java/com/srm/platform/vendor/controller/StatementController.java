@@ -391,7 +391,19 @@ public class StatementController extends CommonController {
 		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
 				main);
 
-		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT ) {
+		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT ) {			
+
+			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
+			for (StatementDetail detail : detailList) {
+				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
+						.findOneById(detail.getPurchaseInDetailId());
+
+				if (purchaseInDetail != null) {
+					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_WAIT);
+					purchaseInDetailRepository.save(purchaseInDetail);
+				}
+			}
+			
 			statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
 			if (form.getTable() != null) {
 				int i = 1;
