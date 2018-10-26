@@ -5,7 +5,7 @@
 
   <groupId>com.srm.platform</groupId>
   <artifactId>srm</artifactId>
-  <version>1.0.0-0920</version>
+  <version>1.0.0-1026</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>

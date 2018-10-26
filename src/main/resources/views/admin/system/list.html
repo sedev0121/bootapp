@@ -73,7 +73,8 @@ $(document).ready(function() {
         render: function (data, display, record) {
           var edit_url = /*[[@{/account/}]]*/'';
           edit_url +=  record.id + '/edit';
-          return '<a href="' + edit_url + '">' + data  + '</a>';
+          //return '<a href="' + edit_url + '">' + data  + '</a>';
+          return data;
         },
       }, {
         data : 'realname',
