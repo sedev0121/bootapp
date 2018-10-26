@@ -1,20 +1,18 @@
 package com.srm.platform.vendor.controller;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,12 +45,13 @@ public class SystemSettingController extends CommonController {
 		String smsUser = requestParams.get("smsuser");
 		String smsPassword = requestParams.get("smspassword");
 		
-		FileInputStream in = new FileInputStream("./application.properties");
+		File file = ResourceUtils.getFile("classpath:application.properties");
+		FileInputStream in = new FileInputStream(file);
 		Properties props = new Properties();
 		props.load(in);
 		in.close();
 
-		FileOutputStream out = new FileOutputStream("./application.properties");
+		FileOutputStream out = new FileOutputStream(file);
 		props.setProperty("srm.password.minlength", pwdMinLength);
 		
 		props.setProperty("spring.mail.host", mailHostAddress);
@@ -77,7 +76,8 @@ public class SystemSettingController extends CommonController {
 	private SystemConfig readConfig() throws FileNotFoundException, IOException  {
 		SystemConfig config = new SystemConfig();
 		
-		FileInputStream in = new FileInputStream("./application.properties");
+		File file = ResourceUtils.getFile("classpath:application.properties");
+		FileInputStream in = new FileInputStream(file);
 		Properties props = new Properties();
 		props.load(in);
 		in.close();

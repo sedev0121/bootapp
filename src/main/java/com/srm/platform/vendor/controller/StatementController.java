@@ -489,7 +489,7 @@ public class StatementController extends CommonController {
 			}
 		}
 
-		if (form.getState() == Constants.STATEMENT_STATE_NEW) {
+		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
 			postLock(main);
 		}
 
@@ -689,11 +689,11 @@ public class StatementController extends CommonController {
 
 	private void postLock(StatementMain main) {
 		String postJson = createLockJsonString(main);
-		String response = apiClient.postLock(postJson);
+		String response = apiClient.postLock(String.format("{%s}", postJson));
 	}
 
 	private void postUnLock(StatementMain main) {
 		String postJson = createLockJsonString(main);
-		String response = apiClient.postUnLock(postJson);
+		String response = apiClient.postUnLock(String.format("{%s}", postJson));
 	}
 }
