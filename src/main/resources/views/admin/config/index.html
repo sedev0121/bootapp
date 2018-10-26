@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"
+  layout:decorate="~{layout/layout}">
+<body>
+  <div class="container" layout:fragment="content">
+    <ul class="breadcrumb">
+      <li>
+        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+      </li>
+      <li class="active">系统配置</li>
+    </ul>
+    <div class="btn-group-bar">
+      <div class="text-right">
+          <a class="btn btn-primary" id="save" href="#"><i class="fa fa-save"></i> 保存</a>
+      </div>
+    </div>
+    <form id="form" th:action="@{/config/update}" method="post">  
+      <div class="panel-body form-body"> 
+        <div class="row">
+          <div class="account">
+            <hr>
+              <legend>密码长度</legend>
+              <div class="row">
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="minpassword">长度设定</label>
+                  <input type="text" name="minpassword" th:value="${config.minpassword}"  class="form-control">
+                </div>
+              </div>
+            <hr>
+              <legend>邮箱集成</legend>
+              <div class="row">
+                <div class="col-lg-4 col-md-4 form-group">
+                  <label for="mailhost">邮箱地址:</label>
+                  <input type="text" name="mailhost" id="mailhost" th:value="${config.mailhost}" class="form-control">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="mailuser">邮箱用户名:</label>
+                  <input type="text" name="mailuser" id="mailuser" th:value="${config.mailuser}" class="form-control">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="mailpassword">邮箱密码:</label>
+                  <input type="password" name="mailpassword" id="mailpassword" th:value="${config.mailpassword}" class="form-control">
+                </div>       
+              </div>
+            <hr>
+              <legend>用户空闲时间</legend>
+              <div class="row">
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="sessiontimeout">空闲时间:</label>
+                  <input type="text" name="sessiontimeout" id="sessiontimeout" th:value="${config.sessiontimeout}" class="form-control">
+                </div>
+              </div>
+            <hr>
+              <legend>短讯集成</legend>
+              <div class="row">
+                <div class="col-lg-4 col-md-4 form-group">
+                  <label for="smshost">短讯地址: </label>
+                  <input type="text" id="smshost" name="smshost" th:value="${config.smshost}" class="form-control">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="smsuser">短讯用户名: </label>
+                  <input type="text" id="smsuser" name="smsuser" th:value="${config.smsuser}" class="form-control">
+                </div>
+                <div class="col-lg-2 col-md-2 form-group">
+                  <label for="smspassword">短讯密码: </label>
+                  <input type="password" id="smspassword" name="smspassword" th:value="${config.smspassword}" class="form-control">
+                </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    </form>
+  </div>
+</body>
+</html>
+
+<script>
+$(document).ready(function() {
+  $("#form" ).validate({
+    rules: {
+      minpassword : {
+        required : true
+      },
+      mailhost : {
+        required : true
+      },
+      mailuser : {
+        required : true
+      },
+      mailpassword : {
+        required : true
+      },
+      smshost : {
+        required : true
+      },
+      smsuser : {
+        required : true
+      },
+      smspassword : {
+        required : true
+      },
+    },
+
+    invalidHandler : function(event, validator) {
+      App.showErrorDialog("输入有误", "请输入正确的值");
+    },
+
+    submitHandler: function (form) {
+        jQuery(form).ajaxSubmit({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          }, 
+          success: function(res, status, xhr, form) {
+            App.showSuccessDialog("操作成功", function(){
+                window.location.href = edit_url + res.id + "/edit";
+            });
+          },
+          error: function (res, status, xhr, form) {
+            App.showErrorDialog("操作失败", "请输入正确的值");
+          }
+        });
+      }
+  });
+});
+$("#save").click(function() {
+    $("#form").submit();            
+});
+</script>
