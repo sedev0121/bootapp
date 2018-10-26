@@ -219,7 +219,7 @@ $(document).ready(function() {
     },
     
     submitHandler: function (form) {
-      if ($("#username").val() == 'admin')
+      if ($("#username").val() != "admin")
       {
         alert("用户名或密码错误！");
         return false;

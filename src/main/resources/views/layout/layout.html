@@ -177,6 +177,9 @@
             <li th:classappend="${#strings.startsWith(#request.requestURI,'/system')} ? active : ''" >
               <a th:href="@{/system}">系统状态</a>
             </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/config')} ? active : ''" >
+              <a th:href="@{/config}">系统配置</a>
+            </li>
           </ul>
         </div>
 
