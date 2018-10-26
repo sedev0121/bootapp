@@ -672,7 +672,7 @@ public class StatementController extends CommonController {
 			if (purchaseInDetail == null)
 				continue;
 			
-			map.put("autoid", String.valueOf(purchaseInDetail.getId()));
+			map.put("autoid", String.valueOf(purchaseInDetail.getPiDetailId()));
 			map.put("iquantity", String.valueOf(purchaseInDetail.getQuantity()));
 			postData.add(map);
 		}
