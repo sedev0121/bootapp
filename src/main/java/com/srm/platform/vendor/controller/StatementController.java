@@ -393,6 +393,7 @@ public class StatementController extends CommonController {
 
 		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT ) {			
 
+			postUnLock(main);
 			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
 			for (StatementDetail detail : detailList) {
 				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
