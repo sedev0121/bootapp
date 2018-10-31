@@ -98,6 +98,13 @@ public class InqueryController extends CommonController {
 		return "inquery/edit";
 	}
 
+	
+	@GetMapping({ "/{ccode}/read/{msgid}" })
+	public String read(@PathVariable("ccode") String ccode, @PathVariable("msgid") Long msgid, Model model) {
+		setReadDate(msgid);
+		return "redirect:/inquery/" + ccode + "/edit";
+	}
+
 	// 询价单商品列表API
 	@RequestMapping(value = "/{mainId}/details", produces = "application/json")
 	public @ResponseBody List<VenPriceDetailItem> details_ajax(@PathVariable("mainId") String mainId) {
@@ -110,8 +117,9 @@ public class InqueryController extends CommonController {
 	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
 	public @ResponseBody Boolean deleteAttach(@PathVariable("ccode") String ccode) {
 		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
-		
-		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_INQUERY) + File.separator + main.getAttachFileName());
+
+		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_INQUERY) + File.separator
+				+ main.getAttachFileName());
 		if (attach.exists())
 			attach.delete();
 		main.setAttachFileName(null);
@@ -119,7 +127,7 @@ public class InqueryController extends CommonController {
 		venPriceAdjustMainRepository.save(main);
 		return true;
 	}
-	
+
 	// 删除API
 	@PreAuthorize("hasAuthority('询价管理-删除')")
 	@GetMapping("/{ccode}/delete")
@@ -242,7 +250,7 @@ public class InqueryController extends CommonController {
 	@PostMapping("/update")
 	public @ResponseBody GenericJsonResponse<VenPriceAdjustMain> update_ajax(VenPriceSaveForm form,
 			@RequestParam(value = "attach", required = false) MultipartFile attach, Principal principal) {
-		
+
 		String origianlFileName = null;
 		String savedFileName = null;
 		if (attach != null) {
@@ -252,7 +260,7 @@ public class InqueryController extends CommonController {
 			if (file != null)
 				savedFileName = file.getName();
 		}
-		
+
 		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(form.getCcode());
 
 		if (venPriceAdjustMain == null) {
@@ -273,7 +281,7 @@ public class InqueryController extends CommonController {
 			venPriceAdjustMain.setDmakedate(new Date());
 			venPriceAdjustMain.setVendor(vendorRepository.findOneByCode(form.getVendor()));
 			venPriceAdjustMain.setMaker(accountRepository.findOneById(form.getMaker()));
-			
+
 			if (savedFileName != null) {
 				venPriceAdjustMain.setAttachFileName(savedFileName);
 				venPriceAdjustMain.setAttachOriginalName(origianlFileName);
@@ -299,7 +307,8 @@ public class InqueryController extends CommonController {
 
 		}
 		int state = form.getState();
-		if (venPriceAdjustMain.getCreatetype() == Constants.CREATE_TYPE_VENDOR && form.getState() == Constants.STATE_SUBMIT) {
+		if (venPriceAdjustMain.getCreatetype() == Constants.CREATE_TYPE_VENDOR
+				&& form.getState() == Constants.STATE_SUBMIT) {
 			state = Constants.STATE_CONFIRM;
 		}
 		venPriceAdjustMain.setIverifystate(state);
@@ -310,11 +319,11 @@ public class InqueryController extends CommonController {
 
 		String action = null;
 		String type = "询价单";
-		
+
 		List<Account> toList = new ArrayList<>();
 
-		String url = String.format("/inquery/%s/edit", venPriceAdjustMain.getCcode());
-		
+		String url = String.format("/inquery/%s/read", venPriceAdjustMain.getCcode());
+
 		switch (form.getState()) {
 		case Constants.STATE_SUBMIT:
 			action = "提交";
@@ -326,7 +335,7 @@ public class InqueryController extends CommonController {
 			} else {
 				toList.addAll(accountRepository.findAccountsByVendor(venPriceAdjustMain.getVendor().getCode()));
 			}
-			url = String.format("/quote/%s/edit", venPriceAdjustMain.getCcode());
+			url = String.format("/quote/%s/read", venPriceAdjustMain.getCcode());
 			break;
 		case Constants.STATE_CONFIRM:
 			toList.add(venPriceAdjustMain.getMaker());
@@ -347,11 +356,11 @@ public class InqueryController extends CommonController {
 		case Constants.STATE_CANCEL:
 			toList.add(venPriceAdjustMain.getMaker());
 			action = "退回";
-			break;			
+			break;
 		}
 
-		String title = String.format("%s【%s】已由【%s】%s，请及时查阅和处理！", type, venPriceAdjustMain.getCcode(), account.getRealname(),
-				action);
+		String title = String.format("%s【%s】已由【%s】%s，请及时查阅和处理！", type, venPriceAdjustMain.getCcode(),
+				account.getRealname(), action);
 		this.sendmessage(title, toList, url);
 
 		if (form.getState() <= Constants.STATE_PASS && form.getTable() != null) {
@@ -408,8 +417,7 @@ public class InqueryController extends CommonController {
 
 		return jsonResponse;
 	}
-	
-	
+
 	@GetMapping("/{ccode}/download")
 	public ResponseEntity<Resource> download(@PathVariable("ccode") String ccode) {
 		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
@@ -419,7 +427,5 @@ public class InqueryController extends CommonController {
 		return download(Constants.PATH_UPLOADS_INQUERY + File.separator + main.getAttachFileName(),
 				main.getAttachOriginalName());
 	}
-	
-	
 
 }

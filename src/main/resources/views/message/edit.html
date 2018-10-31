@@ -34,7 +34,7 @@
           </div>
           <div class="col-lg-12 col-md-12 form-group">
             <label for="content">单据链接: </label>
-            <a class="detail" th:href="@{${notice.url}}">单据详情</a>
+            <a class="detail" th:href="@{|${notice.url}/${notice.id}|}">单据详情</a>
           </div>
         </div>
       </div>

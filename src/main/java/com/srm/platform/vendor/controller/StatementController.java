@@ -109,6 +109,12 @@ public class StatementController extends CommonController {
 		return "statement/edit";
 	}
 
+	@GetMapping({ "/{code}/read/{msgid}" })
+	public String read(@PathVariable("ccode") String code, @PathVariable("msgid") Long msgid, Model model) {
+		setReadDate(msgid);
+		return "redirect:/statement/" + code + "/edit";
+	}
+	
 	@GetMapping("/{code}/delete")
 	@PreAuthorize("hasAuthority('对账单管理-删除')")
 	public @ResponseBody Boolean delete(@PathVariable("code") String code) {
@@ -377,7 +383,7 @@ public class StatementController extends CommonController {
 			String title = String.format("对账单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), this.getLoginAccount().getRealname(),
 					action);
 
-			this.sendmessage(title, toList, String.format("/statement/%s/edit", main.getCode()));
+			this.sendmessage(title, toList, String.format("/statement/%s/read", main.getCode()));
 		}
 
 
