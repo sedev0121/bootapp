@@ -309,6 +309,8 @@ public class InqueryController extends CommonController {
 				null, venPriceAdjustMain);
 
 		String action = null;
+		String type = "询价单";
+		
 		List<Account> toList = new ArrayList<>();
 
 		String url = String.format("/inquery/%s/edit", venPriceAdjustMain.getCcode());
@@ -320,6 +322,7 @@ public class InqueryController extends CommonController {
 				List<String> idList = new ArrayList();
 				idList.add(String.valueOf(venPriceAdjustMain.getVendor().getUnit().getId()));
 				toList.addAll(accountRepository.findAccountsByUnitIdList(idList));
+				type = "报价单";
 			} else {
 				toList.addAll(accountRepository.findAccountsByVendor(venPriceAdjustMain.getVendor().getCode()));
 			}
@@ -347,7 +350,7 @@ public class InqueryController extends CommonController {
 			break;			
 		}
 
-		String title = String.format("询价单【%s】已由【%s】%s，请及时查阅和处理！", venPriceAdjustMain.getCcode(), account.getRealname(),
+		String title = String.format("%s【%s】已由【%s】%s，请及时查阅和处理！", type, venPriceAdjustMain.getCcode(), account.getRealname(),
 				action);
 		this.sendmessage(title, toList, url);
 
