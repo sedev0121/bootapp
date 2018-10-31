@@ -557,7 +557,7 @@ public class StatementController extends CommonController {
 			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
 
 			if (purchaseInDetail == null) {
-				chargeBack = detail.getClosedTaxMoney();
+				chargeBack = -detail.getClosedTaxMoney();
 			} else {
 				closedMoneySum += detail.getClosedMoney();
 				closedTaxMoneySum += detail.getClosedTaxMoney();
