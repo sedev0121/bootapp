@@ -64,7 +64,7 @@ $(document).ready(function() {
         var detail_url = record.url;
         edit_url +=  record.id + '/edit';
         var html = '<a href="' + edit_url + '">' + data  + '</a>';
-        html +='<a class="detail" href="' + detail_url + '">【单据详情】</a>';
+        html +='<a class="detail" href="' + detail_url + '/' + record.id + '">【单据详情】</a>';
         return html;
       },
     }, {

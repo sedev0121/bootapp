@@ -85,6 +85,12 @@ public class QuoteController extends CommonController {
 		return "quote/edit";
 	}
 
+	@GetMapping({ "/{ccode}/read/{msgid}" })
+	public String read(@PathVariable("ccode") String ccode, @PathVariable("msgid") Long msgid, Model model) {
+		setReadDate(msgid);
+		return "redirect:/quote/" + ccode + "/edit";
+	}
+	
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<InquerySearchResult> list_ajax(Principal principal,
@@ -245,7 +251,7 @@ public class QuoteController extends CommonController {
 		}
 		String title = String.format("询价单【%s】已由【%s】%s，请及时查阅和处理！", venPriceAdjustMain.getCcode(), account.getRealname(),
 				action);
-		this.sendmessage(title, toList, String.format("/inquery/%s/edit", venPriceAdjustMain.getCcode()));
+		this.sendmessage(title, toList, String.format("/inquery/%s/read", venPriceAdjustMain.getCcode()));
 
 		if (state == Constants.STATE_PASS || state == Constants.STATE_CONFIRM || state == Constants.STATE_CANCEL) {
 			if (form.getTable() != null) {
@@ -254,8 +260,11 @@ public class QuoteController extends CommonController {
 							.findById(Long.parseLong(row.get("id")));
 					if (result.isPresent()) {
 						VenPriceAdjustDetail detail = result.get();
-						detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
-						detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
+						if (row.get("iunitprice") != null && !row.get("iunitprice").isEmpty())
+							detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
+						if (row.get("itaxunitprice") != null && !row.get("itaxunitprice").isEmpty())
+							detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
+						
 						detail.setCbodymemo(row.get("cbodymemo"));
 
 						if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())

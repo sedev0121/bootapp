@@ -9,7 +9,8 @@ public class U8VenpriceadjustPostData {
 
 	private String ccode;
 	private String maker;
-
+	private Integer isupplytype;
+	
 	private List<U8VenpriceadjustPostEntry> entry;
 
 	public String getCcode() {
@@ -26,6 +27,15 @@ public class U8VenpriceadjustPostData {
 
 	public void setMaker(String maker) {
 		this.maker = maker;
+	}
+
+	
+	public Integer getIsupplytype() {
+		return isupplytype;
+	}
+
+	public void setIsupplytype(Integer isupplytype) {
+		this.isupplytype = isupplytype;
 	}
 
 	public List<U8VenpriceadjustPostEntry> getEntry() {

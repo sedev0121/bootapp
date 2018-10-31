@@ -631,6 +631,9 @@ public class SyncController {
 					String arriveDateStr = temp.get("dArriveDate");
 					detail.setArrivedate(Utils.parseDateTime2(arriveDateStr));
 					
+					detail.setConfirmdate(detail.getArrivedate());
+					detail.setConfirmquantity(detail.getQuantity());
+					
 					purchaseOrderDetailRepository.save(detail);
 				}
 				

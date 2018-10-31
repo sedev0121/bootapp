@@ -44,7 +44,7 @@
             <p th:each="notice : ${messageList}">
             <span th:classappend="!${notice.read_date}?new" th:text="|${#dates.format(notice.create_date, 'yyyy-MM-dd HH:mm:ss')} |">aaa</span>
             <a class="notice" th:classappend="!${notice.read_date}?new" th:href="@{|/message/${notice.id}/edit|}" th:utext="${notice.title}">2018-6-11 9:29:09 采购管理平台</a>
-            <a class="detail" th:href="@{${notice.url}}">【单据详情】</a></p>
+            <a class="detail" th:href="@{|${notice.url}/${notice.id}|}">【单据详情】</a></p>
           </div>
         </div>
       </div>
