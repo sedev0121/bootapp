@@ -322,6 +322,7 @@ public class CommonController {
 
 		U8VenpriceadjustPostData post = new U8VenpriceadjustPostData();
 		post.setCcode(main.getCcode());
+		post.setIsupplytype(main.getIsupplytype());
 		post.setMaker(this.getLoginAccount().getRealname());
 
 		List<U8VenpriceadjustPostEntry> entryList = new ArrayList<>();
