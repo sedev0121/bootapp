@@ -322,9 +322,13 @@ jQuery(document).ready(function() {
             App.unblockUI();
           }, 
           success: function(res, status, xhr, form) {
-            App.showSuccessDialog("操作成功", function(){
-                window.location.href = edit_url + res.id + "/edit";
-            });
+			if (res.success == 1){
+			  App.showSuccessDialog("操作成功", function(){
+			    window.location.href = edit_url + res.data.id + "/edit";
+			  });
+			}else{
+			  App.showErrorDialog("操作失败", res.errmsg);
+			}            
           },
           error: function (res, status, xhr, form) {
             App.showErrorDialog("操作失败", "请输入正确的值");

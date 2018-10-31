@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.PermissionGroupUser;
+import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
@@ -43,6 +44,7 @@ import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.AccountSaveForm;
 import com.srm.platform.vendor.utility.AccountSearchItem;
 import com.srm.platform.vendor.utility.AccountSearchResult;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
 
 @Controller
 @RequestMapping(path = "/account")
@@ -194,7 +196,7 @@ public class AccountController extends CommonController {
 	// 用户修改
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody Account update_ajax(AccountSaveForm accountSaveForm) {
+	public @ResponseBody GenericJsonResponse<Account> update_ajax(AccountSaveForm accountSaveForm) {
 
 		Account account = new Account();
 		if (accountSaveForm.getId() != null) {
@@ -216,11 +218,28 @@ public class AccountController extends CommonController {
 		account.setRole(accountSaveForm.getRole());
 		account.setDuty(accountSaveForm.getDuty());
 		account.setUnit(unitRepository.findOneById(accountSaveForm.getUnit()));
+
+		boolean isDuplicatedVendor = false;
+		List<Account> accountsHavingVendorCode = accountRepository.findAccountsByVendor(accountSaveForm.getVendor());
+		for (Account vendorAccount : accountsHavingVendorCode) {
+			if (vendorAccount.getId() != accountSaveForm.getId()) {
+				isDuplicatedVendor = true;
+				break;
+			}
+		}
+
+		GenericJsonResponse<Account> jsonResponse;
+
+		if (isDuplicatedVendor) {
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "供应商重复", null);
+			return jsonResponse;
+		}
+
 		if (account.getVendor() != null) {
 			account.getVendor().setUnit(null);
 			vendorRepository.save(account.getVendor());
 		}
-		
+
 		if (accountSaveForm.getState() != null) {
 			account.setState(1);
 			account.setStartDate(new Date());
@@ -235,10 +254,12 @@ public class AccountController extends CommonController {
 			newVendor.setUnit(account.getUnit());
 			vendorRepository.save(newVendor);
 			account.setVendor(newVendor);
-		}else {
+		} else {
 			account.setVendor(null);
 		}
 		account = accountRepository.save(account);
+
+		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, account);
 
 		permissionGroupUserRepository.deleteByAccountId(account.getId());
 
@@ -260,9 +281,8 @@ public class AccountController extends CommonController {
 				}
 			}
 		}
-		
 
-		return account;
+		return jsonResponse;
 	}
 
 	@ResponseBody
