@@ -441,6 +441,11 @@ is_readonly = 0;
     
     $("#cancel").click(function() {
       editor.submit();
+      $('#vendor').rules( 'remove');
+      $('#tax_rate').rules( 'remove');
+      $('#start_date').rules( 'remove');
+      $('#end_date').rules( 'remove');
+      
       $('#state').val(4);
       $("#form").submit();            
     });

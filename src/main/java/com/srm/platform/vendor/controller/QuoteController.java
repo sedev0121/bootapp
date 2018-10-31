@@ -254,8 +254,11 @@ public class QuoteController extends CommonController {
 							.findById(Long.parseLong(row.get("id")));
 					if (result.isPresent()) {
 						VenPriceAdjustDetail detail = result.get();
-						detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
-						detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
+						if (row.get("iunitprice") != null && !row.get("iunitprice").isEmpty())
+							detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
+						if (row.get("itaxunitprice") != null && !row.get("itaxunitprice").isEmpty())
+							detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
+						
 						detail.setCbodymemo(row.get("cbodymemo"));
 
 						if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())
