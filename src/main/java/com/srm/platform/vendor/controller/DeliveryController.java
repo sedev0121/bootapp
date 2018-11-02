@@ -28,6 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.utility.Utils;
 import com.srm.platform.vendor.utility.VendorSearchItem;
 import com.srm.platform.vendor.view.ExcelDeliveryReportView;
 
@@ -55,7 +56,6 @@ public class DeliveryController extends CommonController {
 		
 		if (vendor == null) {
 			List<String> unitList = this.getDefaultUnitList();
-			page_index--;
 			PageRequest request = PageRequest.of(0, 10,
 					dir.equals("asc") ? Direction.ASC : Direction.DESC, "b.name");
 	
@@ -159,9 +159,10 @@ public class DeliveryController extends CommonController {
 	    			JSONObject objects = dataList.getJSONObject(i);
 	    			int mainQty = objects.getInt("iQuantity");
 	    			int timeQty = objects.getInt("itimelyQuantity");
-	    			double percent = 0.0f;
+	    			float percent = 0.0f;
 	    			if (mainQty > 0) {
-	    				percent = (double)timeQty / (double)mainQty * 100.0f;
+	    				percent = (float)timeQty / (float)mainQty * 100.0f;
+	    				percent = Utils.costRound(percent);
 	    			}
 	    			json.getJSONArray("list").getJSONObject(i).put("timelyPercent", percent);
 	    		}

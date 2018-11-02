@@ -13,6 +13,8 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 
+import com.srm.platform.vendor.utility.Utils;
+
 public class ExcelDeliveryReportView extends AbstractXlsView {
 
 	@Override
@@ -46,9 +48,10 @@ public class ExcelDeliveryReportView extends AbstractXlsView {
 			JSONObject objects = dataList.getJSONObject(i);
 			int mainQty = objects.getInt("iQuantity");
 			int timeQty = objects.getInt("itimelyQuantity");
-			double percent = 0.0f;
+			float percent = 0.0f;
 			if (mainQty > 0) {
-				percent = (double)timeQty / (double)mainQty * 100.0f;
+				percent = (float)timeQty / (float)mainQty * 100.0f;
+				percent = Utils.costRound(percent);
 			}
 			
 			// create the row data

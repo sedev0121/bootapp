@@ -18,17 +18,17 @@ public class PriceChangeReportItem implements Serializable {
 	
 	String unitname;
 	
-	double previousprice;
+	float previousprice;
 	
-	double currentprice;
+	float currentprice;
 	
-	double changepercent;
+	float changepercent;
 	
-	double averageprice;
+	float averageprice;
 	
 	public PriceChangeReportItem(String vendorname, String vendorcode,
 			String inventoryname, String inventorycode, String specs, String unitname,
-			double previousprice, double currentprice, double changepercent, double averageprice) {
+			float previousprice, float currentprice, float changepercent, float averageprice) {
 		this.vendorname = vendorname;
 		this.vendorcode = vendorcode;
 		this.inventoryname = inventoryname;
@@ -90,35 +90,35 @@ public class PriceChangeReportItem implements Serializable {
 		this.unitname = unitname;
 	}
 	
-	public double getPreviousprice() {
+	public float getPreviousprice() {
 		return this.previousprice;
 	}
 	
-	public void setPreviousPrice(double previousprice) {
+	public void setPreviousPrice(float previousprice) {
 		this.previousprice = previousprice;
 	}
 	
-	public double getCurrentprice() {
+	public float getCurrentprice() {
 		return this.currentprice;
 	}
 	
-	public void setCurrentprice(double currentprice) {
+	public void setCurrentprice(float currentprice) {
 		this.currentprice = currentprice;
 	}
 
-	public double getChangepercent() {
+	public float getChangepercent() {
 		return this.changepercent;
 	}
 
-	public void setChangepercent(double changepercent) {
+	public void setChangepercent(float changepercent) {
 		this.changepercent = changepercent;
 	}
 	
-	public double getAverageprice() {
+	public float getAverageprice() {
 		return this.averageprice;
 	}
 	
-	public void setAverageprice(double averageprice) {
+	public void setAverageprice(float averageprice) {
 		this.averageprice = averageprice;
 	}
 }
