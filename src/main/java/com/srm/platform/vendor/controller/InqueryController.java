@@ -157,7 +157,7 @@ public class InqueryController extends CommonController {
 
 		Integer state = Integer.parseInt(stateStr);
 		Date startDate = Utils.parseDate(start_date);
-		Date endDate = Utils.getNextDate(end_date);
+		Date endDate = Utils.parseDate(end_date);
 
 		switch (order) {
 		case "vendorname":
@@ -216,11 +216,11 @@ public class InqueryController extends CommonController {
 		}
 
 		if (startDate != null) {
-			bodyQuery += " and a.dstartdate>=:startDate";
+			bodyQuery += " and a.dstartdate=:startDate";
 			params.put("startDate", startDate);
 		}
 		if (endDate != null) {
-			bodyQuery += " and a.denddate<:endDate";
+			bodyQuery += " and a.denddate=:endDate";
 			params.put("endDate", endDate);
 		}
 
@@ -397,7 +397,7 @@ public class InqueryController extends CommonController {
 				if (startDateStr != null && !startDateStr.isEmpty())
 					detail.setDstartdate(Utils.parseDate(startDateStr));
 				if (endDateStr != null && !endDateStr.isEmpty())
-					detail.setDenddate(Utils.getNextDate(endDateStr));
+					detail.setDenddate(Utils.parseDate(endDateStr));
 
 				if (row.get("rowno") != null && !row.get("rowno").isEmpty())
 					detail.setRowno(Integer.parseInt(row.get("rowno")));

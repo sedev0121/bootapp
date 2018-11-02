@@ -98,7 +98,7 @@ public class PriceChangeController extends CommonController {
 				q.setParameter(entry.getKey(), entry.getValue());
 			}
 			Object priceResult = q.getSingleResult();
-			double previousprice = this.getChildDoubleValue(priceResult, 0);
+			float previousprice = this.getChildFloatValue(priceResult, 0);
 			
 			// current year query
 			q = em.createNativeQuery(priceQuery + bodyQuery + currentDate + " and c.code= '" + searchItem.getInventorycode() + "'");
@@ -106,10 +106,11 @@ public class PriceChangeController extends CommonController {
 				q.setParameter(entry.getKey(), entry.getValue());
 			}
 			priceResult = q.getSingleResult();
-			double currentprice = this.getChildDoubleValue(priceResult, 0);
-			double changepercent = 0.0;
+			float currentprice = this.getChildFloatValue(priceResult, 0);
+			
+			float changepercent = 0.0f;
 			if (currentprice != 0) {
-				changepercent = (currentprice - previousprice) / currentprice * 100.0;
+				changepercent = (currentprice - previousprice) / currentprice * 100.0f;
 			}
 			
 			// average
@@ -118,10 +119,15 @@ public class PriceChangeController extends CommonController {
 				q.setParameter(entry.getKey(), entry.getValue());
 			}
 			priceResult = q.getSingleResult();
-			double averageprice = 0.0;
+			float averageprice = 0.0f;
 			if (priceResult != null) {
-				averageprice = new Double(priceResult.toString());
+				averageprice = new Float(priceResult.toString());
 			}
+			
+			previousprice = Utils.costRound(previousprice);
+			currentprice = Utils.costRound(currentprice);
+			changepercent = Utils.costRound(changepercent);
+			averageprice = Utils.costRound(averageprice);
 			
 			PriceChangeReportItem item = new PriceChangeReportItem(searchItem.getVendorname(), searchItem.getVendorcode(), 
 					searchItem.getInventoryname(), searchItem.getInventorycode(), searchItem.getDescription(), searchItem.getFauxunit(),
@@ -132,8 +138,8 @@ public class PriceChangeController extends CommonController {
 		return new PageImpl<PriceChangeReportItem>(list, request, list.size());
 	}
 	
-	private double getChildDoubleValue(Object parent, int index) {
-		double result = 0;
+	private float getChildFloatValue(Object parent, int index) {
+		float result = 0;
 		if (parent == null) {
 			return result;
 		}
@@ -144,7 +150,7 @@ public class PriceChangeController extends CommonController {
 			return result;
 		}
 		
-		result = new Double(arrayObject[index].toString());
+		result = new Float(arrayObject[index].toString());
 		return result;
 	}
 	
@@ -169,7 +175,7 @@ public class PriceChangeController extends CommonController {
 
 		Query q;
 		Map<String, Object> params = new HashMap<>();
-		List<Object> priceList = new ArrayList<Object>();
+		List<Float> priceList = new ArrayList<Float>();
 		List<String> monthList = new ArrayList<String>();
 		
 		for (int i = 0; i < 12; ++i) {
@@ -182,8 +188,10 @@ public class PriceChangeController extends CommonController {
 			if (priceResult == null) {
 				priceResult = "0";
 			}
+			float price = getChildFloatValue(priceResult, 0);
+			price = Utils.costRound(price);
 			
-			priceList.add(priceResult);
+			priceList.add(price);
 			monthList.add(String.format("%d-%02d", lastYear, lastMonth));
 			
 			lastMonth++;

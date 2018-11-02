@@ -108,7 +108,7 @@ public class QuoteController extends CommonController {
 
 		Integer state = Integer.parseInt(stateStr);
 		Date startDate = Utils.parseDate(start_date);
-		Date endDate = Utils.getNextDate(end_date);
+		Date endDate = Utils.parseDate(end_date);
 
 		switch (order) {
 		case "vendorname":
@@ -167,11 +167,11 @@ public class QuoteController extends CommonController {
 		}
 
 		if (startDate != null) {
-			bodyQuery += " and a.dstartdate>=:startDate";
+			bodyQuery += " and a.dstartdate=:startDate";
 			params.put("startDate", startDate);
 		}
 		if (endDate != null) {
-			bodyQuery += " and a.denddate<:endDate";
+			bodyQuery += " and a.denddate=:endDate";
 			params.put("endDate", endDate);
 		}
 
