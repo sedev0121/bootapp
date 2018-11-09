@@ -415,8 +415,8 @@ $(document).ready(function() {
           item.invoice_tax_money = App.costNumber(temp);          
           item.invoice_tax_price = App.priceNumber(item.invoice_tax_money/item.quantity);
         }else{
-          item.invoice_tax_money = item.closed_tax_money;
-          item.invoice_tax_price = item.closed_tax_price;
+          item.invoice_tax_money = '';
+          item.invoice_tax_price = '';
         }
       }
       i++;
@@ -721,6 +721,9 @@ $(document).ready(function() {
                   item.invoice_tax_money -= charge_back * (item.closed_tax_money/closed_tax_money_sum);
                   item.invoice_tax_price = App.priceNumber(item.invoice_tax_money/item.quantity);
                   item.invoice_tax_money = App.costNumber(item.invoice_tax_money);
+                } else {
+				  item.invoice_tax_money = '';
+				  item.invoice_tax_price = '';
                 }
                 invoice_result.push(item);
               }
