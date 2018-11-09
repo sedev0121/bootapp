@@ -314,7 +314,7 @@ $(document).ready(function() {
           className:'dt-right',
           title : '税率',
         }, {
-          data : 'tax_price',
+          data : 'nat_tax_price',
           className:'dt-right',
           title : '含税单价',
         }, {
@@ -1358,8 +1358,8 @@ $(document).ready(function() {
         item.closed_money = item.cost;
         item.closed_price = item.price;
         item.closed_tax_money = item.tax_cost;
-        item.closed_tax_price = item.tax_price;
-        item.invoice_tax_price = item.tax_price;
+        item.closed_tax_price = item.nat_tax_price;
+        item.invoice_tax_price = item.nat_tax_price;
         item.invoice_tax_money = item.tax_cost;
         item.closed_quantity = item.quantity;
         
