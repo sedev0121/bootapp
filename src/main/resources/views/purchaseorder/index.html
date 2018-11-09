@@ -66,9 +66,10 @@ var edit_url = [[@{/purchaseorder/}]];
     }
     $("#state").select2({
       data : App.getPurchaseOrderStateDataWithAll(),
-      minimumResultsForSearch : -1
+      minimumResultsForSearch : -1,
     });
-
+    
+    $("#state").val(0).trigger("change");
     $(".datepicker").datepicker({
       onSelect: function(dateText) {
         table.draw();

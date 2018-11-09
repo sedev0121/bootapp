@@ -110,7 +110,7 @@ public class StatementController extends CommonController {
 	}
 
 	@GetMapping({ "/{code}/read/{msgid}" })
-	public String read(@PathVariable("ccode") String code, @PathVariable("msgid") Long msgid, Model model) {
+	public String read(@PathVariable("code") String code, @PathVariable("msgid") Long msgid, Model model) {
 		setReadDate(msgid);
 		return "redirect:/statement/" + code + "/edit";
 	}
