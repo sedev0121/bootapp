@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.utility;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -173,10 +174,11 @@ public class Utils {
 	}
 
 	public static float priceRound(float value) {
-		return round(value, 6);
+		return Float.parseFloat(String.format("%.6f", value));		
 	}
 
 	public static float costRound(float value) {
-		return round(value, 2);
+		float result = Float.parseFloat(String.format("%.2f", value));
+		return result;
 	}
 }
