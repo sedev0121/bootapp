@@ -714,19 +714,29 @@ $(document).ready(function() {
               }
             });
             
+            var row_length = result.length;
+            var i = 1, invoice_tax_money_sum = 0;
+            
             var invoice_result = [];
             $.each(result, function(key, item){
-              if (item.type != '委外加工') {
-                if (item.purchase_in_detail_id != 0) {
-                  item.invoice_tax_money -= charge_back * (item.closed_tax_money/closed_tax_money_sum);
-                  item.invoice_tax_price = App.priceNumber(item.invoice_tax_money/item.quantity);
-                  item.invoice_tax_money = App.costNumber(item.invoice_tax_money);
-                } else {
-				  item.invoice_tax_money = '';
-				  item.invoice_tax_price = '';
+            	if (item.type != '委外加工') {
+                  if (item.purchase_in_detail_id != 0) {
+                    if (i == row_length){
+                      temp = item.closed_tax_money - (charge_back - invoice_tax_money_sum);
+                    }else{
+                      temp = item.closed_tax_money - charge_back * (item.closed_tax_money/closed_tax_money_sum);  
+                      invoice_tax_money_sum += parseFloat(App.costNumber(charge_back * (item.closed_tax_money/closed_tax_money_sum)));
+                    }
+                    item.invoice_tax_money = App.costNumber(temp);          
+                    item.invoice_tax_price = App.priceNumber(item.invoice_tax_money/item.quantity);
+                  }else{
+                    item.invoice_tax_money = '';
+                    item.invoice_tax_price = '';
+                  }
                 }
+                i++;
                 invoice_result.push(item);
-              }
+
             });
 
             return invoice_result;
@@ -866,7 +876,8 @@ $(document).ready(function() {
 
           if ((state!=1 && state != 4) || is_readonly) {
             $('#vendor').attr("readonly", true);
-          }
+          }          
+          
         }
       };
     
