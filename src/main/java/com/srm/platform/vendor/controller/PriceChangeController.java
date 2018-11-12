@@ -124,10 +124,10 @@ public class PriceChangeController extends CommonController {
 				averageprice = new Float(priceResult.toString());
 			}
 			
-			previousprice = Utils.costRound(previousprice);
-			currentprice = Utils.costRound(currentprice);
-			changepercent = Utils.costRound(changepercent);
-			averageprice = Utils.costRound(averageprice);
+			previousprice = (float) Utils.costRound(previousprice);
+			currentprice = (float) Utils.costRound(currentprice);
+			changepercent = (float) Utils.costRound(changepercent);
+			averageprice = (float) Utils.costRound(averageprice);
 			
 			PriceChangeReportItem item = new PriceChangeReportItem(searchItem.getVendorname(), searchItem.getVendorcode(), 
 					searchItem.getInventoryname(), searchItem.getInventorycode(), searchItem.getDescription(), searchItem.getFauxunit(),
@@ -189,7 +189,7 @@ public class PriceChangeController extends CommonController {
 				priceResult = "0";
 			}
 			float price = getChildFloatValue(priceResult, 0);
-			price = Utils.costRound(price);
+			price = (float) Utils.costRound(price);
 			
 			priceList.add(price);
 			monthList.add(String.format("%d-%02d", lastYear, lastMonth));

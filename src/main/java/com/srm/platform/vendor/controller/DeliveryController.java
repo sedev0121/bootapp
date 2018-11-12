@@ -162,7 +162,7 @@ public class DeliveryController extends CommonController {
 	    			float percent = 0.0f;
 	    			if (mainQty > 0) {
 	    				percent = (float)timeQty / (float)mainQty * 100.0f;
-	    				percent = Utils.costRound(percent);
+	    				percent = (float) Utils.costRound(percent);
 	    			}
 	    			json.getJSONArray("list").getJSONObject(i).put("timelyPercent", percent);
 	    		}
