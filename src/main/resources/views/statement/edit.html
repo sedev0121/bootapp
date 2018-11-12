@@ -406,7 +406,7 @@ $(document).ready(function() {
       if (item.type != '委外加工') {
         if (item.purchase_in_detail_id != 0) {
           console.log("i=" + i + " closed_tax_money=" + item.closed_tax_money + " invoice_tax_money_sum=" + invoice_tax_money_sum );
-          if (i == row_length){
+          if (i == row_length-1){
             temp = item.closed_tax_money - (charge_back - invoice_tax_money_sum);
           }else{
             temp = item.closed_tax_money - charge_back * (item.closed_tax_money/closed_tax_money_sum);  
