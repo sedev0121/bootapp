@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.utility;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -173,12 +174,12 @@ public class Utils {
 		return (float) tmp / factor;
 	}
 
-	public static float priceRound(float value) {
-		return Float.parseFloat(String.format("%.6f", value));		
+	public static double priceRound(double value) {
+		return Double.parseDouble(String.format("%.6f", value));		
 	}
 
-	public static float costRound(float value) {
-		float result = Float.parseFloat(String.format("%.2f", value));
+	public static double costRound(double value) {
+		double result = Double.parseDouble(String.format("%.2f", value));
 		return result;
 	}
 }

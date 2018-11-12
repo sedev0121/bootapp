@@ -13,21 +13,21 @@ public class U8InvoicePostEntry {
 
 	private String cinvcode;
 	private Float ipbvquantity;
-	private Float iOriTaxCost;
-	private Float iOriCost;
-	private Float iOriMoney;
-	private Float iOriTaxPrice;
-	private Float iOriSum;
+	private Double iOriTaxCost;
+	private Double iOriCost;
+	private Double iOriMoney;
+	private Double iOriTaxPrice;
+	private Double iOriSum;
 	private Float iTaxRate;
 	private Long rdsid;
 	private Long iposid;
 	private Integer ivouchrowno;
 	private Date dindate;
-	private Float inattaxprice;
-	private Float iCost;
-	private Float iMoney;
-	private Float iTaxPrice;
-	private Float iSum;
+	private Double inattaxprice;
+	private Double iCost;
+	private Double iMoney;
+	private Double iTaxPrice;
+	private Double iSum;
 
 	public String getCinvcode() {
 		return cinvcode;
@@ -45,43 +45,43 @@ public class U8InvoicePostEntry {
 		this.ipbvquantity = ipbvquantity;
 	}
 
-	public Float getiOriTaxCost() {
+	public Double getiOriTaxCost() {
 		return iOriTaxCost;
 	}
 
-	public void setiOriTaxCost(Float iOriTaxCost) {
+	public void setiOriTaxCost(Double iOriTaxCost) {
 		this.iOriTaxCost = iOriTaxCost;
 	}
 
-	public Float getiOriCost() {
+	public Double getiOriCost() {
 		return iOriCost;
 	}
 
-	public void setiOriCost(Float iOriCost) {
+	public void setiOriCost(Double iOriCost) {
 		this.iOriCost = iOriCost;
 	}
 
-	public Float getiOriMoney() {
+	public Double getiOriMoney() {
 		return iOriMoney;
 	}
 
-	public void setiOriMoney(Float iOriMoney) {
+	public void setiOriMoney(Double iOriMoney) {
 		this.iOriMoney = iOriMoney;
 	}
 
-	public Float getiOriTaxPrice() {
+	public Double getiOriTaxPrice() {
 		return iOriTaxPrice;
 	}
 
-	public void setiOriTaxPrice(Float iOriTaxPrice) {
+	public void setiOriTaxPrice(Double iOriTaxPrice) {
 		this.iOriTaxPrice = iOriTaxPrice;
 	}
 
-	public Float getiOriSum() {
+	public Double getiOriSum() {
 		return iOriSum;
 	}
 
-	public void setiOriSum(Float iOriSum) {
+	public void setiOriSum(Double iOriSum) {
 		this.iOriSum = iOriSum;
 	}
 
@@ -125,43 +125,43 @@ public class U8InvoicePostEntry {
 		this.dindate = dindate;
 	}
 
-	public Float getInattaxprice() {
+	public Double getInattaxprice() {
 		return inattaxprice;
 	}
 
-	public void setInattaxprice(Float inattaxprice) {
+	public void setInattaxprice(Double inattaxprice) {
 		this.inattaxprice = inattaxprice;
 	}
 
-	public Float getiCost() {
+	public Double getiCost() {
 		return iCost;
 	}
 
-	public void setiCost(Float iCost) {
+	public void setiCost(Double iCost) {
 		this.iCost = iCost;
 	}
 
-	public Float getiMoney() {
+	public Double getiMoney() {
 		return iMoney;
 	}
 
-	public void setiMoney(Float iMoney) {
+	public void setiMoney(Double iMoney) {
 		this.iMoney = iMoney;
 	}
 
-	public Float getiTaxPrice() {
+	public Double getiTaxPrice() {
 		return iTaxPrice;
 	}
 
-	public void setiTaxPrice(Float iTaxPrice) {
+	public void setiTaxPrice(Double iTaxPrice) {
 		this.iTaxPrice = iTaxPrice;
 	}
 
-	public Float getiSum() {
+	public Double getiSum() {
 		return iSum;
 	}
 
-	public void setiSum(Float iSum) {
+	public void setiSum(Double iSum) {
 		this.iSum = iSum;
 	}
 

@@ -849,7 +849,6 @@ public class SyncController {
 							Integer.parseInt(rowno));
 					if (detail != null) {
 						logger.info("code=" + code + " rowno=" + rowno);
-						continue;
 					} else {
 						detail = new PurchaseInDetail();
 					}

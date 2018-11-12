@@ -20,19 +20,19 @@ public class StatementDetail {
 	private Float closedQuantity;
 
 	@Column(name = "closed_price")
-	private Float closedPrice;
+	private Double closedPrice;
 
 	@Column(name = "closed_money")
-	private Float closedMoney;
+	private Double closedMoney;
 
 	@Column(name = "closed_tax_price")
-	private Float closedTaxPrice;
+	private Double closedTaxPrice;
 
 	@Column(name = "tax_rate")
 	private Float taxRate;
 
 	@Column(name = "closed_tax_money")
-	private Float closedTaxMoney;
+	private Double closedTaxMoney;
 
 	@Column(name = "purchase_in_detail_id")
 	Long purchaseInDetailId;
@@ -153,35 +153,35 @@ public class StatementDetail {
 		this.closedQuantity = closedQuantity;
 	}
 
-	public Float getClosedPrice() {
+	public Double getClosedPrice() {
 		return closedPrice;
 	}
 
-	public void setClosedPrice(Float closedPrice) {
+	public void setClosedPrice(Double closedPrice) {
 		this.closedPrice = closedPrice;
 	}
 
-	public Float getClosedMoney() {
+	public Double getClosedMoney() {
 		return closedMoney;
 	}
 
-	public void setClosedMoney(Float closedMoney) {
+	public void setClosedMoney(Double closedMoney) {
 		this.closedMoney = closedMoney;
 	}
 
-	public Float getClosedTaxPrice() {
+	public Double getClosedTaxPrice() {
 		return closedTaxPrice;
 	}
 
-	public void setClosedTaxPrice(Float closedTaxPrice) {
+	public void setClosedTaxPrice(Double closedTaxPrice) {
 		this.closedTaxPrice = closedTaxPrice;
 	}
 
-	public Float getClosedTaxMoney() {
+	public Double getClosedTaxMoney() {
 		return closedTaxMoney;
 	}
 
-	public void setClosedTaxMoney(Float closedTaxMoney) {
+	public void setClosedTaxMoney(Double closedTaxMoney) {
 		this.closedTaxMoney = closedTaxMoney;
 	}
 

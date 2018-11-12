@@ -131,7 +131,7 @@ var App = function() {
       //return (Number(App.intVal(i)) + (1 / x)).toFixed(length);
       
       var num = App.intVal(i);      
-      return (+(Math.round(+(num + 'e' + length)) + 'e' + -length)).toFixed(length);
+      return parseFloat((+(Math.round(+(num + 'e' + length)) + 'e' + -length)).toFixed(length));
       
     },
     quantityNumber : function (i) {
