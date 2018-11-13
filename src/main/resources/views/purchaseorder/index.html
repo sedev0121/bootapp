@@ -69,7 +69,9 @@ var edit_url = [[@{/purchaseorder/}]];
       minimumResultsForSearch : -1,
     });
     
-    $("#state").val(0).trigger("change");
+    if (!is_vendor)
+    	  $("#state").val(0).trigger("change");
+    
     $(".datepicker").datepicker({
       onSelect: function(dateText) {
         table.draw();
