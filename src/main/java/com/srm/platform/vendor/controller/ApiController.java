@@ -97,7 +97,7 @@ public class ApiController {
 		toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 		
 		String title = String.format("对账单【%s】已由【U8系统】退回，请及时查阅和处理！", main.getCode());
-		String url = String.format("/statement/%s/edit", main.getCode());		
+		String url = String.format("/statement/%s/read", main.getCode());		
 		
 		Notice notice = new Notice();
 		notice.setState(Constants.NOTICE_STATE_PUBLISH);
