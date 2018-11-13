@@ -1023,8 +1023,9 @@ $(document).ready(function() {
         item.material_chargeback = '';
         item.price = '';
         
-        if (item.quantity != undefined) {
-          item.yinci_standard = App.quantityNumber(Math.round(item.quantity*0.002));
+        if (item.material_quantity != undefined) {
+          item.yinci_standard = App.quantityNumber(Math.round(item.material_quantity*0.002));
+          console.log(item);          
           
           if (item.yinci != undefined) {
             item.yinci_chargeback = App.quantityNumber((item.yinci-item.yinci_standard)<=0?0:(item.yinci-item.yinci_standard));
@@ -1078,7 +1079,7 @@ $(document).ready(function() {
             var result = [];
             $.each(json, function(key, item){  
               if (item.type != '普通采购' && item.purchase_in_detail_id != 0) {
-                item.yinci_standard = App.quantityNumber(Math.round(item.quantity*0.002));
+                item.yinci_standard = App.quantityNumber(Math.round(item.material_quantity*0.002));
                 item.yinci_chargeback = App.quantityNumber((item.yinci-item.yinci_standard)<=0?0:(item.yinci-item.yinci_standard));
                 item.material_less_quantity = App.quantityNumber(item.material_quantity - item.real_quantity - item.yuanci - item.yinci + item.yinci_chargeback);
 
