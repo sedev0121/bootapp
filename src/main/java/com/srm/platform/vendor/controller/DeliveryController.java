@@ -58,14 +58,23 @@ public class DeliveryController extends CommonController {
 			List<String> unitList = this.getDefaultUnitList();
 			PageRequest request = PageRequest.of(0, 10,
 					dir.equals("asc") ? Direction.ASC : Direction.DESC, "b.name");
-	
+			
 			Page<VendorSearchItem> result = null;
 			result = vendorRepository.findBySearchTerm("", unitList, request);
 			
 			if (result.getTotalElements() > 0) {
 				List<VendorSearchItem> listVendor = result.getContent();
-				VendorSearchItem aa = listVendor.get(0);
-				vendorStr = aa.getCode();
+				String vendorCode = "";
+				
+				for (int i = 0; i < listVendor.size(); ++i) {
+					VendorSearchItem item = listVendor.get(i);
+					vendorCode = item.getCode();
+					vendorStr += vendorCode;
+					
+					if (i != listVendor.size() - 1) {
+						vendorStr += ",";
+					}
+				}
 			}
 		}
 		
@@ -109,17 +118,25 @@ public class DeliveryController extends CommonController {
 		
 		if (vendor == null) {
 			List<String> unitList = this.getDefaultUnitList();
-			page_index--;
 			PageRequest request = PageRequest.of(0, 10,
 					dir.equals("asc") ? Direction.ASC : Direction.DESC, "b.name");
-	
+			
 			Page<VendorSearchItem> result = null;
 			result = vendorRepository.findBySearchTerm("", unitList, request);
 			
 			if (result.getTotalElements() > 0) {
 				List<VendorSearchItem> listVendor = result.getContent();
-				VendorSearchItem aa = listVendor.get(0);
-				vendorStr = aa.getCode();
+				String vendorCode = "";
+				
+				for (int i = 0; i < listVendor.size(); ++i) {
+					VendorSearchItem item = listVendor.get(i);
+					vendorCode = item.getCode();
+					vendorStr += vendorCode;
+					
+					if (i != listVendor.size() - 1) {
+						vendorStr += ",";
+					}
+				}
 			}
 		}
 		
