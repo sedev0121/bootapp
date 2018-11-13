@@ -76,6 +76,12 @@ public class PurchaseOrderController extends CommonController {
 		model.addAttribute("main", main);
 		return "purchaseorder/edit";
 	}
+	
+	@GetMapping({ "/{code}/read/{msgid}" })
+	public String read(@PathVariable("code") String code, @PathVariable("msgid") Long msgid, Model model) {
+		setReadDate(msgid);
+		return "redirect:/purchaseorder/" + code + "/edit";
+	}
 
 	@RequestMapping(value = "/{code}/details", produces = "application/json")
 	public @ResponseBody List<PurchaseOrderDetail> details_ajax(@PathVariable("code") String code) {
