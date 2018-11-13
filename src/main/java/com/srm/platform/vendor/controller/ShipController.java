@@ -314,7 +314,7 @@ public class ShipController extends CommonController {
 								toList.add(main.getDeployer());
 								String title = String.format("订单【%s】已由【%s】订单出货，请及时查阅和处理！", main.getCode(),
 										account.getRealname());
-								this.sendmessage(title, toList, String.format("/purchaseorder/%s/edit", main.getCode()));
+								this.sendmessage(title, toList, String.format("/purchaseorder/%s/read", main.getCode()));
 
 								importCount++;
 							}
@@ -352,7 +352,7 @@ public class ShipController extends CommonController {
 				toList.add(main.getDeployer());
 				String title = String.format("订单【%s】已由【%s】订单出货，请及时查阅和处理！", main.getCode(),
 						this.getLoginAccount().getRealname());
-				this.sendmessage(title, toList, String.format("/purchaseorder/%s/edit", main.getCode()));
+				this.sendmessage(title, toList, String.format("/purchaseorder/%s/read", main.getCode()));
 			}
 		}
 

@@ -224,7 +224,7 @@ public class PurchaseOrderController extends CommonController {
 		}
 		String title = String.format("订单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
 
-		this.sendmessage(title, toList, String.format("/purchaseorder/%s/edit", main.getCode()));
+		this.sendmessage(title, toList, String.format("/purchaseorder/%s/read", main.getCode()));
 
 		if (form.getTable() != null) {
 			for (Map<String, String> item : form.getTable()) {
