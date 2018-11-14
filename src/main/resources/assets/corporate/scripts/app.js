@@ -134,6 +134,9 @@ var App = function() {
       return parseFloat((+(Math.round(+(num + 'e' + length)) + 'e' + -length)).toFixed(length));
       
     },
+    intNumber : function (i) {
+	  return App.formatNumber(i, 0);
+	},
     quantityNumber : function (i) {
       return App.formatNumber(i, 4);
     },
