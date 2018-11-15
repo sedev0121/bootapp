@@ -513,14 +513,17 @@ $(document).ready(function() {
       }    	  
       
       var editingField = editor.field(currentFieldName);
-      if (editingField.val() == undefined || editingField.val() == '' || 
-    		  (isChargeBackRow && parseFloat(editingField.val())>0) || 
-    		  (!isChargeBackRow && parseFloat(editingField.val())<0)) {
-        editingField.input().addClass('error');
-        return false;
-      }else{
-        editingField.input().removeClass('error');
+      if (currentFieldName != 'memo') {
+    	  if (editingField.val() == undefined || editingField.val() == '' || 
+	          (isChargeBackRow && parseFloat(editingField.val())>0) || 
+	          (!isChargeBackRow && parseFloat(editingField.val())<0)) {
+	        editingField.input().addClass('error');
+	        return false;
+	      }else{
+	        editingField.input().removeClass('error');
+	      }
       }
+      
 
       if (currentFieldName == 'nat_tax_rate') {
         
@@ -870,7 +873,7 @@ $(document).ready(function() {
         }, {
           data : 'memo',
           sortable: false,
-          className:'vendor',
+          className:'edit-cell',
           title : '备注　　　　　　　',
         } ],
         order: [  [ 0, "asc" ], [3, "asc"] ],
@@ -1007,13 +1010,15 @@ $(document).ready(function() {
       }    	  
       
       var editingField = editor.field(currentFieldName);
-      if (editingField.val() == undefined || editingField.val() == '' || 
-    		  (isChargeBackRow && parseFloat(editingField.val())>0) || 
-    		  (!isChargeBackRow && parseFloat(editingField.val())<0)) {
-        editingField.input().addClass('error');
-        return false;
-      }else{
-        editingField.input().removeClass('error');
+      if (currentFieldName != 'memo') {
+        if (editingField.val() == undefined || editingField.val() == '' || 
+      		  (isChargeBackRow && parseFloat(editingField.val())>0) || 
+      		  (!isChargeBackRow && parseFloat(editingField.val())<0)) {
+          editingField.input().addClass('error');
+          return false;
+        }else{
+          editingField.input().removeClass('error');
+        }
       }
 
       $.each(data.data, function(key, item){  
@@ -1233,7 +1238,7 @@ $(document).ready(function() {
         }, {
           data : 'memo',
           sortable:false,
-          className:'vendor',
+          className:'edit-cell',
           title : '备注　　　　　　　',
 
         } ],
