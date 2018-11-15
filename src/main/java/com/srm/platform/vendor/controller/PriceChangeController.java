@@ -42,8 +42,8 @@ public class PriceChangeController extends CommonController {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "c.code");
-		// String vendorStr = requestParams.getOrDefault("vendor", "");
-		// String inventory = requestParams.getOrDefault("inventory", "");
+		String vendorStr = requestParams.getOrDefault("vendor", "");
+		String inventory = requestParams.getOrDefault("inventory", "");
 		String start_inventory = requestParams.getOrDefault("start_date", "");
 		String end_inventory = requestParams.getOrDefault("end_date", "");
 		
@@ -71,14 +71,24 @@ public class PriceChangeController extends CommonController {
 
 		params.put("unitList", unitList);
 		
-		if (start_inventory != "") {
+		if (!start_inventory.trim().isEmpty()) {
 			bodyQuery += " and c.code>=:startCode";
-			params.put("startCode", start_inventory);
+			params.put("startCode", start_inventory.trim());
 		}
 		
-		if (end_inventory != "") {
+		if (!end_inventory.trim().isEmpty()) {
 			bodyQuery += " and c.code<=:endCode";
-			params.put("endCode", end_inventory);
+			params.put("endCode", end_inventory.trim());
+		}
+		
+		if (!vendorStr.trim().isEmpty()) {
+			bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
+			params.put("vendor", vendorStr.trim());
+		}
+		
+		if (!inventory.trim().isEmpty()) {
+			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
+			params.put("inventory", inventory.trim());
 		}
 
 		Query q;
@@ -88,6 +98,7 @@ public class PriceChangeController extends CommonController {
 			q.setParameter(entry.getKey(), entry.getValue());
 		}
 
+		int total = q.getResultList().size();
 		List<PriceSearchResult> searchResult = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
 		List<PriceChangeReportItem> list = new ArrayList<>();
 		
@@ -135,7 +146,7 @@ public class PriceChangeController extends CommonController {
 			list.add(item);
 		}
 		
-		return new PageImpl<PriceChangeReportItem>(list, request, list.size());
+		return new PageImpl<PriceChangeReportItem>(list, request, total);
 	}
 	
 	private float getChildFloatValue(Object parent, int index) {
@@ -175,7 +186,7 @@ public class PriceChangeController extends CommonController {
 
 		Query q;
 		Map<String, Object> params = new HashMap<>();
-		List<Float> priceList = new ArrayList<Float>();
+		List<Object> priceList = new ArrayList<Object>();
 		List<String> monthList = new ArrayList<String>();
 		
 		for (int i = 0; i < 12; ++i) {
@@ -188,10 +199,8 @@ public class PriceChangeController extends CommonController {
 			if (priceResult == null) {
 				priceResult = "0";
 			}
-			float price = getChildFloatValue(priceResult, 0);
-			price = (float) Utils.costRound(price);
 			
-			priceList.add(price);
+			priceList.add(priceResult);
 			monthList.add(String.format("%d-%02d", lastYear, lastMonth));
 			
 			lastMonth++;
