@@ -1162,7 +1162,7 @@ $(document).ready(function() {
           title : '未税加工单价',
         }, {
           data : 'material_quantity',
-          className:'dt-right',
+          className:'edit-cell dt-right',
           sortable:false,
           title : '出库数量',
         }, {
@@ -1292,7 +1292,7 @@ $(document).ready(function() {
       table.on( 'click', 'tbody td.edit-cell', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
-      App.addKeyDownEditor(editor, 13, 17);    
+      App.addKeyDownEditor(editor, 12, 17);    
     } 
     
     if (state == 2 && !is_readonly) {
