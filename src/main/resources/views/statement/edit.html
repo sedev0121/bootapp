@@ -997,6 +997,20 @@ $(document).ready(function() {
               }
           },
       }
+    }).on( 'preOpen', function ( e, mode, action ) {
+    	var currentFieldName = e.currentTarget.s.includeFields[0];
+      var key = Object.keys(e.currentTarget.s.editFields)[0];
+      var isChargeBackRow = false;
+      if (key == 0) {
+        isChargeBackRow = true;
+      } 
+
+      var editableColumns = ['real_quantity', 'quantity', 'material_quantity'];
+      if (isChargeBackRow && $.inArray(currentFieldName, editableColumns) == -1) {
+    	  return false;
+      }else{
+    	  return true;
+      }    	
     }).on( 'preSubmit', function ( e, data, action ) {
       if ( action == 'remove') {
         return true;
@@ -1077,6 +1091,63 @@ $(document).ready(function() {
               } 
             },
             { extend: "remove", editor: editor },
+            { 
+                text: "增加扣款项", 
+                action: function( e, dt, node, config) {
+                  if (!$("#vendor").val()) {
+                    $('#vendor').focus();
+                    App.showErrorDialog("请选择供应商！");
+                    return false;
+                  }
+                  
+                  var exist_data = table.rows().data().toArray();
+                  for(i=0; i<exist_data.length; i++) {
+                    exist_row = exist_data[i];
+                    if (exist_row.purchase_in_detail_id == 0) {
+                      App.showErrorDialog("已存在扣款项！");
+                      return;
+                    }
+                  }
+                  
+                  var new_row = {
+                      po_code:null,
+                      purchase_in_code:null,
+                      inventoryname:"扣款",                  
+                      inventorycode:null,
+                      specs: null,
+                      unitname:null,
+                      quantity:null,
+                      closed_quantity:1,
+                      nat_price:null,
+                      nat_tax_price:null,
+                      closed_tax_price:'',
+                      closed_price:'',
+                      material_quantity: null,
+                      nat_tax_rate:$('#tax_rate').val(),
+                      real_quantity: null,
+                      yuanci: null,
+                      yinci: null,
+                      unit_weight: null,
+                      yinci_standard: null,
+                      yinci_chargeback: null,
+                      material_less_quantity: null,
+                      material_tax_price: null,
+                      material_chargeback: null,
+                      closed_tax_money:'',
+                      closed_money:'',
+                      closed_tax_price: null,
+                      purchase_in_detail_id:0,
+                      memo:null,
+                  };
+                  
+                  table.row.add(new_row);
+                  
+                  var aiDisplayMaster = $('#detail_table').dataTable().fnSettings()["aiDisplayMaster"];
+                  irow = aiDisplayMaster.pop();
+                  aiDisplayMaster.unshift(irow);
+                  table.draw();
+                } 
+              },
         ],
         ajax : {
           url : detail_url,
@@ -1122,7 +1193,7 @@ $(document).ready(function() {
           sortable:false,
           title : '存货编码',
         }, {
-          data : 'inventorycode',
+          data : 'specs',
           sortable:false,
           title : '规格',
         }, {
@@ -1472,6 +1543,11 @@ $(document).ready(function() {
           available = false;
           break;
         }
+        if (item.material_quantity==undefined || item.material_quantity==""){
+            empty_column = "出库数量";
+            available = false;
+            break;
+          }
       }
     }
     
