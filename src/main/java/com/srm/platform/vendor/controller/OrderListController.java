@@ -57,7 +57,7 @@ public class OrderListController extends CommonController {
 		
 		if (vendor == null) {
 			List<String> unitList = this.getDefaultUnitList();
-			PageRequest request = PageRequest.of(0, 10,
+			PageRequest request = PageRequest.of(0, 999,
 					dir.equals("asc") ? Direction.ASC : Direction.DESC, "b.name");
 			
 			Page<VendorSearchItem> result = null;
@@ -116,7 +116,7 @@ public class OrderListController extends CommonController {
 		
 		if (vendor == null) {
 			List<String> unitList = this.getDefaultUnitList();
-			PageRequest request = PageRequest.of(0, 10,
+			PageRequest request = PageRequest.of(0, 999,
 					dir.equals("asc") ? Direction.ASC : Direction.DESC, "b.name");
 			
 			Page<VendorSearchItem> result = null;

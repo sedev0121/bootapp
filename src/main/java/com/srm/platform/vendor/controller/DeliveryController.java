@@ -56,7 +56,7 @@ public class DeliveryController extends CommonController {
 		
 		if (vendor == null) {
 			List<String> unitList = this.getDefaultUnitList();
-			PageRequest request = PageRequest.of(0, 10,
+			PageRequest request = PageRequest.of(0, 999,
 					dir.equals("asc") ? Direction.ASC : Direction.DESC, "b.name");
 			
 			Page<VendorSearchItem> result = null;
@@ -118,7 +118,7 @@ public class DeliveryController extends CommonController {
 		
 		if (vendor == null) {
 			List<String> unitList = this.getDefaultUnitList();
-			PageRequest request = PageRequest.of(0, 10,
+			PageRequest request = PageRequest.of(0, 999,
 					dir.equals("asc") ? Direction.ASC : Direction.DESC, "b.name");
 			
 			Page<VendorSearchItem> result = null;
@@ -126,6 +126,7 @@ public class DeliveryController extends CommonController {
 			
 			if (result.getTotalElements() > 0) {
 				List<VendorSearchItem> listVendor = result.getContent();
+
 				String vendorCode = "";
 				
 				for (int i = 0; i < listVendor.size(); ++i) {
