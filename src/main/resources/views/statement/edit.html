@@ -392,8 +392,11 @@ $(document).ready(function() {
     var chargeRowIndex = 1;
     var rowDatas = table.data();
     var row_length = rowDatas.length;
+    
+    var type_name = $('#type').val()==1?'普通采购':'委外加工';
+    
     rowDatas.each(function(item){
-      if (item.type != '委外加工') {
+    	if (item.type == type_name || item.type == undefined) {
         if (item.purchase_in_detail_id == 0) {
           if (chargeRowIndex == row_length) {
         	  isNew = true;
@@ -410,7 +413,7 @@ $(document).ready(function() {
     console.log('row_length=' + row_length + " closed_tax_money_sum" + closed_tax_money_sum);
     
     rowDatas.each(function(item){
-      if (item.type != '委外加工') {
+    	if (item.type == type_name || item.type == undefined) {
         if (item.purchase_in_detail_id != 0) {
           console.log("i=" + i + " closed_tax_money=" + item.closed_tax_money + " invoice_tax_money_sum=" + invoice_tax_money_sum );
           if (!isNew && i == row_length || isNew && i==(row_length-1)){
@@ -445,6 +448,54 @@ $(document).ready(function() {
   }
   
   $('#type').trigger('change');
+  
+  function calc_invoice_data(json) {
+	  var result = [];
+	  var type_name = $('#type').val()==1?'普通采购':'委外加工';
+	  
+    var charge_back = 0, closed_tax_money_sum = 0;
+    $.each(json, function(key, item){
+      if (item.type == type_name || item.type == undefined) {
+        if (item.purchase_in_detail_id == 0) {
+          charge_back = -item.closed_tax_money;
+        }else{
+          closed_tax_money_sum += item.closed_tax_money;
+        }
+        item.dstartdate = $.fn.date_renderer(item.dstartdate);
+        item.denddate = $.fn.date_renderer(item.denddate);
+        item.invoice_tax_money = item.closed_tax_money;
+        item.invoice_tax_price = item.closed_tax_price;
+        result.push(item);
+      }
+    });
+    
+    var row_length = result.length;
+    var i = 1, invoice_tax_money_sum = 0;
+    
+    var invoice_result = [];
+    $.each(result, function(key, item){
+    	if (item.type == type_name || item.type == undefined) {
+        if (item.purchase_in_detail_id != 0) {
+          if (i == row_length){
+            temp = item.closed_tax_money - (charge_back - invoice_tax_money_sum);
+          }else{
+            temp = item.closed_tax_money - charge_back * (item.closed_tax_money/closed_tax_money_sum);  
+            invoice_tax_money_sum += parseFloat(App.costNumber(charge_back * (item.closed_tax_money/closed_tax_money_sum)));
+          }
+          item.invoice_tax_money = App.costNumber(temp);          
+          item.invoice_tax_price = App.priceNumber(item.invoice_tax_money/item.quantity);
+        }else{
+          item.invoice_tax_money = '';
+          item.invoice_tax_price = '';
+        }
+      }
+      i++;
+      invoice_result.push(item);
+
+    });
+    
+    return invoice_result;
+  }
   
   function loadNormalTable(){
     editor = new $.fn.dataTable.Editor( {
@@ -709,50 +760,8 @@ $(document).ready(function() {
         ],
         ajax : {
           url : detail_url,
-          dataSrc : function(json) {
-            var result = [];
-            var charge_back = 0, closed_tax_money_sum = 0;
-            $.each(json, function(key, item){
-              if (item.type != '委外加工') {
-                if (item.purchase_in_detail_id == 0) {
-                  charge_back = -item.closed_tax_money;
-                }else{
-                  closed_tax_money_sum += item.closed_tax_money;
-                }
-                item.dstartdate = $.fn.date_renderer(item.dstartdate);
-                item.denddate = $.fn.date_renderer(item.denddate);
-                item.invoice_tax_money = item.closed_tax_money;
-                item.invoice_tax_price = item.closed_tax_price;
-                result.push(item);
-              }
-            });
-            
-            var row_length = result.length;
-            var i = 1, invoice_tax_money_sum = 0;
-            
-            var invoice_result = [];
-            $.each(result, function(key, item){
-            	if (item.type != '委外加工') {
-                  if (item.purchase_in_detail_id != 0) {
-                    if (i == row_length){
-                      temp = item.closed_tax_money - (charge_back - invoice_tax_money_sum);
-                    }else{
-                      temp = item.closed_tax_money - charge_back * (item.closed_tax_money/closed_tax_money_sum);  
-                      invoice_tax_money_sum += parseFloat(App.costNumber(charge_back * (item.closed_tax_money/closed_tax_money_sum)));
-                    }
-                    item.invoice_tax_money = App.costNumber(temp);          
-                    item.invoice_tax_price = App.priceNumber(item.invoice_tax_money/item.quantity);
-                  }else{
-                    item.invoice_tax_money = '';
-                    item.invoice_tax_price = '';
-                  }
-                }
-                i++;
-                invoice_result.push(item);
-
-            });
-
-            return invoice_result;
+          dataSrc : function(json) {            
+        	  return calc_invoice_data(json);
           },
         },
         columns : [ {
@@ -985,6 +994,16 @@ $(document).ready(function() {
       },{
         id: "memo",
         name: "memo"  
+      },{
+        attr: {
+          type: "number",
+        },
+        name: "closed_tax_money"   
+      },{
+        attr: {
+          type: "number",
+        },
+        name: "closed_money"             
       }],
       i18n: {
           remove: {
@@ -998,6 +1017,10 @@ $(document).ready(function() {
           },
       }
     }).on( 'preOpen', function ( e, mode, action ) {
+    	if ( action == 'remove') {
+        return true;
+      }
+    
     	var currentFieldName = e.currentTarget.s.includeFields[0];
       var key = Object.keys(e.currentTarget.s.editFields)[0];
       var isChargeBackRow = false;
@@ -1005,8 +1028,8 @@ $(document).ready(function() {
         isChargeBackRow = true;
       } 
 
-      var editableColumns = ['real_quantity', 'quantity', 'material_quantity'];
-      if (isChargeBackRow && $.inArray(currentFieldName, editableColumns) == -1) {
+      var editableColumns = ['closed_money', 'closed_tax_money'];
+      if (isChargeBackRow && $.inArray(currentFieldName, editableColumns) == -1 || !isChargeBackRow && $.inArray(currentFieldName, editableColumns) > -1) {
     	  return false;
       }else{
     	  return true;
@@ -1042,31 +1065,42 @@ $(document).ready(function() {
         item.material_chargeback = '';
         item.price = '';
         
-        if (item.material_quantity != undefined) {
-          item.yinci_standard = App.quantityNumber(Math.round(item.material_quantity*0.002));
-          console.log(item);          
-          
-          if (item.yinci != undefined) {
-            item.yinci_chargeback = App.quantityNumber((item.yinci-item.yinci_standard)<=0?0:(item.yinci-item.yinci_standard));
+        if (isChargeBackRow) {
+        	if (currentFieldName == 'closed_tax_money') {
+        		item.closed_money = App.costNumber(item.closed_tax_money*100/(Number.parseFloat(item.nat_tax_rate) + 100));
+        	}
+          if (currentFieldName == 'closed_money') {
+            item.closed_tax_money = App.costNumber(item.closed_money * (Number.parseFloat(item.nat_tax_rate) + 100) / 100);
+          }
+        	
+        } else {
+        	if (item.material_quantity != undefined) {
+            item.yinci_standard = App.quantityNumber(Math.round(item.material_quantity*0.002));
+            console.log(item);          
             
-            if (item.material_quantity != undefined && item.real_quantity != undefined) {
-              item.material_less_quantity = App.intNumber(item.material_quantity - item.real_quantity - item.yuanci - item.yinci + item.yinci_chargeback);
+            if (item.yinci != undefined) {
+              item.yinci_chargeback = App.quantityNumber((item.yinci-item.yinci_standard)<=0?0:(item.yinci-item.yinci_standard));
               
-              if (item.unit_weight != undefined && item.material_tax_price != undefined) {
-                item.material_chargeback = App.costNumber(item.material_less_quantity * item.unit_weight * item.material_tax_price);
+              if (item.material_quantity != undefined && item.real_quantity != undefined) {
+                item.material_less_quantity = App.intNumber(item.material_quantity - item.real_quantity - item.yuanci - item.yinci + item.yinci_chargeback);
                 
-                if (item.closed_tax_price != undefined) {
-                  item.closed_tax_money = App.costNumber(item.material_chargeback>=0?(item.real_quantity * item.closed_tax_price - item.material_chargeback):(item.real_quantity * item.closed_tax_price));
-                  item.closed_money = App.costNumber(item.closed_tax_money * 100 / (100 + parseFloat(item.nat_tax_rate)));
+                if (item.unit_weight != undefined && item.material_tax_price != undefined) {
+                  item.material_chargeback = App.costNumber(item.material_less_quantity * item.unit_weight * item.material_tax_price);
+                  
+                  if (item.closed_tax_price != undefined) {
+                    item.closed_tax_money = App.costNumber(item.material_chargeback>=0?(item.real_quantity * item.closed_tax_price - item.material_chargeback):(item.real_quantity * item.closed_tax_price));
+                    item.closed_money = App.costNumber(item.closed_tax_money * 100 / (100 + parseFloat(item.nat_tax_rate)));
+                  }
                 }
               }
             }
           }
         }
+        
       });
       
-      var data = table.rows().data().toArray();
-      
+    }).on( 'submitSuccess', function ( e, data, action ) {
+      updateInvoiceData();
     });      
         
     table_options = {
@@ -1117,7 +1151,7 @@ $(document).ready(function() {
                       specs: null,
                       unitname:null,
                       quantity:null,
-                      closed_quantity:1,
+                      closed_quantity: 1,
                       nat_price:null,
                       nat_tax_price:null,
                       closed_tax_price:'',
@@ -1137,6 +1171,8 @@ $(document).ready(function() {
                       closed_money:'',
                       closed_tax_price: null,
                       purchase_in_detail_id:0,
+                      invoice_tax_money: null,
+                      invoice_tax_price: null,
                       memo:null,
                   };
                   
@@ -1154,19 +1190,23 @@ $(document).ready(function() {
           dataSrc : function(json) {
             var result = [];
             $.each(json, function(key, item){  
-              if (item.type != '普通采购' && item.purchase_in_detail_id != 0) {
+              if (item.purchase_in_detail_id != 0) {
                 item.yinci_standard = App.quantityNumber(Math.round(item.material_quantity*0.002));
                 item.yinci_chargeback = App.quantityNumber((item.yinci-item.yinci_standard)<=0?0:(item.yinci-item.yinci_standard));
                 item.material_less_quantity = App.intNumber(item.material_quantity - item.real_quantity - item.yuanci - item.yinci + item.yinci_chargeback);
-
                 item.material_chargeback = App.quantityNumber(item.material_less_quantity * item.unit_weight * item.material_tax_price);
-                item.closed_tax_money = App.quantityNumber(item.material_chargeback>=0?(item.real_quantity * item.closed_tax_price - item.material_chargeback):(item.real_quantity * item.closed_tax_price));
-                
-                result.push(item);
+              }else{
+                item.yinci_standard = null;
+                item.yinci_chargeback = null;
+                item.material_less_quantity = null;
+                item.material_chargeback = null;
               }
+
+              result.push(item);
               
             });
-            return result;
+            
+            return calc_invoice_data(result);
           },
         },
         columns : [ {
@@ -1288,21 +1328,21 @@ $(document).ready(function() {
           title : '基材扣款',
         }, {
           data : 'closed_tax_money',
-          className:'dt-right',
+          className:'dt-right edit-cell',
           sortable:false,
           title : '结算含税金额',
         }, {
           data : 'closed_money',
-          className:'dt-right',
+          className:'dt-right edit-cell',
           sortable:false,
           title : '结算未税金额',
         }, {
-          data : 'closed_tax_price',
+          data : 'invoice_tax_price',
           sortable: false,
           className: 'dt-right',
           title : '发票含税单价',
         }, {
-          data : 'closed_tax_money',
+          data : 'invoice_tax_money',
           className: 'dt-right',
           sortable: false,
           title : '发票含税金额',
@@ -1523,31 +1563,44 @@ $(document).ready(function() {
           break;
         }
       }else{
-        if (item.real_quantity==undefined || item.real_quantity==""){
-          empty_column = "实收数量";
-          available = false;
-          break;
-        }
-        if (item.yuanci==undefined || item.yuanci==""){
-          empty_column = "原次";
-          available = false;
-          break;
-        }
-        if (item.yinci==undefined || item.yinci==""){
-          empty_column = "印次";
-          available = false;
-          break;
-        }
-        if (item.unit_weight==undefined || item.unit_weight==""){
-          empty_column = "每片基材重量";
-          available = false;
-          break;
-        }
-        if (item.material_quantity==undefined || item.material_quantity==""){
-            empty_column = "出库数量";
+    	  if (item.purchase_in_detail_id == 0) {
+          if (item.closed_tax_money == undefined || item.closed_tax_money == ""){
+            empty_column = "结算含税金额";
             available = false;
             break;
           }
+          if (item.closed_money == undefined || item.closed_money == ""){
+            empty_column = "结算未税金额";
+            available = false;
+            break;
+          }
+    	  } else {
+	        if (item.real_quantity==undefined || item.real_quantity==""){
+            empty_column = "实收数量";
+            available = false;
+            break;
+          }
+          if (item.yuanci==undefined || item.yuanci==""){
+            empty_column = "原次";
+            available = false;
+            break;
+          }
+          if (item.yinci==undefined || item.yinci==""){
+            empty_column = "印次";
+            available = false;
+            break;
+          }
+          if (item.unit_weight==undefined || item.unit_weight==""){
+            empty_column = "每片基材重量";
+            available = false;
+            break;
+          }
+          if (item.material_quantity==undefined || item.material_quantity==""){
+              empty_column = "出库数量";
+              available = false;
+              break;
+          }    		  
+    	  }
       }
     }
     
