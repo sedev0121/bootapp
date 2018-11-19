@@ -927,14 +927,14 @@ $(document).ready(function() {
     
     table = $('#detail_table').DataTable(table_options);
 
-    if ((state == 1 || state == 4) && !is_readonly) {
+    if ((state == 1 || state == 4) && !is_readonly && !is_vendor) {
       table.on( 'click', 'tbody td.edit-cell', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
       App.addKeyDownEditor(editor, 11, 15);    
     }
     
-    if (state == 2 && !is_readonly) {
+    if (state == 2 && !is_readonly && is_vendor) {
       table.on( 'click', 'tbody td.vendor', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
@@ -1399,14 +1399,14 @@ $(document).ready(function() {
     
     table = $('#detail_table').DataTable(table_options);
 
-    if ((state == 1 || state == 4) && !is_readonly) {
+    if ((state == 1 || state == 4) && !is_readonly && !is_vendor) {
       table.on( 'click', 'tbody td.edit-cell', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
       App.addKeyDownEditor(editor, 12, 17);    
     } 
     
-    if (state == 2 && !is_readonly) {
+    if (state == 2 && !is_readonly && is_vendor) {
       table.on( 'click', 'tbody td.vendor', function (e) {
         editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true });
       } );
