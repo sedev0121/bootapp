@@ -185,7 +185,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                        <button type="button" class="btn btn-primary" id="btn_import">保存</button>
+                        <button type="button" class="btn btn-primary" id="btn_import">添加</button>
                     </div>
                 </div>
             </div>
@@ -238,7 +238,7 @@ $(document).ready(function() {
 
       import_table = $('#import_table').DataTable({
         ordering : true,
-        select: {style: 'multi'},
+        select: {style: 'os'},
         ajax : {
           url : import_url,
           data : function(data) {
@@ -685,7 +685,7 @@ $(document).ready(function() {
         select: {style: 'multi'},
         buttons: [
             { 
-              text: "取采购入库单", 
+              text: "选择要对账的物料", 
               action: function( e, dt, node, config) {
                 
                 if (!$("#vendor").val()) {
@@ -1028,7 +1028,7 @@ $(document).ready(function() {
         isChargeBackRow = true;
       } 
 
-      var editableColumns = ['closed_money', 'closed_tax_money'];
+      var editableColumns = ['closed_money', 'closed_tax_money', 'memo'];
       if (isChargeBackRow && $.inArray(currentFieldName, editableColumns) == -1 || !isChargeBackRow && $.inArray(currentFieldName, editableColumns) > -1) {
     	  return false;
       }else{
@@ -1111,7 +1111,7 @@ $(document).ready(function() {
         select: {style: 'multi'},
         buttons: [
             { 
-              text: "取委外入库单", 
+              text: "选择要对账的物料", 
               action: function( e, dt, node, config) {
                 
                 if (!$("#vendor").val()) {
@@ -1315,7 +1315,7 @@ $(document).ready(function() {
           data : 'material_less_quantity',
           sortable:false,
           className:'dt-right',
-          title : '基材少交数量',
+          title : '基材合计扣款数量',
         }, {
           data : 'material_tax_price',
           className:'dt-right',
