@@ -1028,8 +1028,9 @@ $(document).ready(function() {
         isChargeBackRow = true;
       } 
 
-      var editableColumns = ['closed_money', 'closed_tax_money', 'memo'];
-      if (isChargeBackRow && $.inArray(currentFieldName, editableColumns) == -1 || !isChargeBackRow && $.inArray(currentFieldName, editableColumns) > -1) {
+      var chargeEditableColumns = ['closed_money', 'closed_tax_money', 'memo'];
+      var notChargeNonEditableColumns = ['closed_money', 'closed_tax_money'];
+      if (isChargeBackRow && $.inArray(currentFieldName, chargeEditableColumns) == -1 || !isChargeBackRow && $.inArray(currentFieldName, notChargeNonEditableColumns) > -1) {
     	  return false;
       }else{
     	  return true;
