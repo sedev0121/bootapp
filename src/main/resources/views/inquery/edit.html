@@ -168,7 +168,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="btn_import">保存</button>
+                    <button type="button" class="btn btn-primary" id="btn_import">添加</button>
                 </div>
             </div>
         </div>
@@ -672,7 +672,7 @@ is_readonly = 0;
       if (import_table == undefined) {
         import_table = $('#import_table').DataTable({
           ordering : true,
-          select: {style: 'multi'},
+          select: {style: 'os'},
           ajax : {
             url : /*[[@{/inventory/list}]]*/'',
             data : function(data) {
