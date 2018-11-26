@@ -55,16 +55,19 @@ public class RestClient {
 	}
 
 	public String post(String url, String json) {
-		logger.info(String.format("url=>%s", url));
+		logger.info(String.format("GB2312 url=>%s", url));
 		logger.info(String.format("post=>%s", json));
+
+		rest.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
 		HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
-		ResponseEntity<String> responseEntity = rest.exchange(url, HttpMethod.POST, requestEntity, String.class);
+		ResponseEntity<String> responseEntity = rest.postForEntity(url, requestEntity, String.class);
 		this.setStatus(responseEntity.getStatusCode());
 
 		logger.info(String.format("response=>%s", responseEntity.getBody()));
 
 		return responseEntity.getBody();
 	}
+	
 
 	public String postGB2312(String url, String json) {
 		logger.info(String.format("GB2312 url=>%s", url));

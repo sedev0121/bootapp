@@ -61,13 +61,13 @@
               <a class="btn btn-danger" id="del_attach" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}">删除附件</a>
             </div>
           </div>
-          <div class="col-lg-2 col-md-2 form-group">
+          <div class="col-lg-2 col-md-2 form-group" id="all_vendor_div">
             <div class="ui toggle checkbox">
               <input type="checkbox" name="to_all_vendor" id="to_all_vendor" value="1" th:checked="${notice.toAllVendor}">
               <label>全部供应商</label>
             </div>
           </div>
-          <div class="col-lg-2 col-md-2 form-group">
+          <div class="col-lg-2 col-md-2 form-group" id="all_account_div">
             <div class="ui toggle checkbox">
               <input type="checkbox" id="to_unit_account" name="to_unit_account" value="1" th:checked="${notice.toUnitAccount}">
               <label>内部人员</label>
@@ -168,6 +168,7 @@ var account_table, import_table, editor;
 var isEditable = [[${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}?true:false]];
 var hasAttach = [[${notice.attachFileName != null}]];
 var is_to_all_vendor = [[${notice.toAllVendor}?true:false]];
+var is_editor = [[${notice.createAccount?.id==session.account_id}?true:false]];
 var is_to_unit_account = [[${notice.toUnitAccount}?true:false]];
 var read_list_url = [[@{|/notice/readlist/${notice.id}|}]];
 +]*/ 
@@ -567,6 +568,15 @@ jQuery(document).ready(function() {
 
   });
 
+  if (state == 3 && !is_editor) {
+   $('#vendor_div').hide();
+   $('#account_div').hide();
+   $('#all_vendor_div').css('visibility', 'hidden');
+   $('#all_account_div').css('visibility', 'hidden');
+  }
+	  
+
+  
 });
 
 
