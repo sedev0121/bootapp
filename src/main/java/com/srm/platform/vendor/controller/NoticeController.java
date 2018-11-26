@@ -180,7 +180,7 @@ public class NoticeController extends CommonController {
 
 		setReadDate(id);
 		model.addAttribute("notice", notice);
-		if (notice.getVendorCodeList() != null) {
+		if (notice.getVendorCodeList() != null && !notice.getVendorCodeList().isEmpty()) {
 			List<SearchItem> vendorList = vendorRepository
 					.findVendorsByCodeList(StringUtils.split(notice.getVendorCodeList(), ","));
 			List<String> vendors = new ArrayList<>();
@@ -314,7 +314,7 @@ public class NoticeController extends CommonController {
 					toAccountList.addAll(accountRepository.findAllVendorsByUnitIdList(unitIdList));
 
 				} else {
-					if (notice.getVendorCodeList() != null) {
+					if (notice.getVendorCodeList() != null && !notice.getVendorCodeList().isEmpty()) {
 						List<String> vendorCodeList = Arrays.asList(StringUtils.split(notice.getVendorCodeList(), ","));
 						toAccountList.addAll(accountRepository.findAccountsByVendorCodeList(vendorCodeList));
 					}
