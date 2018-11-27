@@ -49,6 +49,7 @@ import com.srm.platform.vendor.utility.NoticeSearchResult;
 import com.srm.platform.vendor.utility.SearchItem;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
+import com.srm.platform.vendor.utility.VendorSearchItem;
 
 @Controller
 @RequestMapping(path = "/notice")
@@ -180,18 +181,6 @@ public class NoticeController extends CommonController {
 
 		setReadDate(id);
 		model.addAttribute("notice", notice);
-		if (notice.getVendorCodeList() != null && !notice.getVendorCodeList().isEmpty()) {
-			List<SearchItem> vendorList = vendorRepository
-					.findVendorsByCodeList(StringUtils.split(notice.getVendorCodeList(), ","));
-			List<String> vendors = new ArrayList<>();
-			for (SearchItem item : vendorList) {
-				vendors.add(item.getName() + "(" + item.getCode() + ")");
-			}
-			model.addAttribute("vendorList", StringUtils.join(vendors, ","));
-		} else {
-			model.addAttribute("vendorList", "");
-		}
-
 		return "notice/edit";
 	}
 
@@ -278,27 +267,25 @@ public class NoticeController extends CommonController {
 			notice.setCreateAccount(this.getLoginAccount());
 			if (to_all_vendor != null) {
 				notice.setToAllVendor(1);
+				notice.setVendorCodeList(null);
 			} else {
 				notice.setToAllVendor(0);
-				if (vendor_list != null) {
-					String[] vendorList = StringUtils.split(vendor_list, ",");
-					List<String> vendorCodeList = new ArrayList<>();
-					for (int i = 0; i < vendorList.length; i++) {
-						String item = vendorList[i];
-						if (item.lastIndexOf("(") >= 0 && item.lastIndexOf(")") >= 0) {
-							vendorCodeList.add(item.substring(item.lastIndexOf("(") + 1, item.lastIndexOf(")")));
-						}
-					}
-					notice.setVendorCodeList(StringUtils.join(vendorCodeList, ","));
+				if (vendor_list != null && !vendor_list.trim().isEmpty()) {
+					notice.setVendorCodeList(vendor_list);
 				} else {
 					notice.setVendorCodeList(null);
 				}
 			}
 			if (to_unit_account != null) {
-				notice.setToUnitAccount(1);
-				notice.setAccountIdList(account_list);
+				notice.setToUnitAccount(1);				
+				if (account_list != null && !account_list.trim().isEmpty()) {
+					notice.setAccountIdList(account_list);
+				} else {
+					notice.setAccountIdList(null);
+				}
 			} else {
 				notice.setToUnitAccount(0);
+				notice.setAccountIdList(null);
 			}
 
 		} else {
@@ -442,6 +429,28 @@ public class NoticeController extends CommonController {
 		}
 
 		return q.getResultList();
+
+	}
+	@GetMapping("/{id}/vendor/list")
+	public @ResponseBody List<VendorSearchItem> vendorList_ajax(@PathVariable("id") String noticeId) {
+
+		if (noticeId == null || "null".equals(noticeId)) {
+			return new ArrayList<>();
+		}
+
+		Notice notice = noticeRepository.findOneById(Long.valueOf(noticeId));
+
+		String vendorCodeListStr = notice.getVendorCodeList();
+		String[] vendorList = null;
+		if (vendorCodeListStr !=null && !vendorCodeListStr.trim().isEmpty()) {
+			vendorList = StringUtils.split(vendorCodeListStr, ",");
+		}
+		
+		if (vendorList == null) {
+			return new ArrayList<>();
+		}
+		
+		return vendorRepository.findVendorsByCodeList(vendorList);
 
 	}
 
