@@ -21,6 +21,7 @@
           </div>
           <div style="vertical-align: bottom" class="search-cell width-15">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+            <button class="btn btn-default" id="btn_export"><i class="fa fa-level-down"></i> 导出</button>
           </div>
         </div>
         <div class="row">
@@ -169,6 +170,15 @@
     
     $("#btn_search").click(function() {
       table.draw();
+    });
+
+    $("#btn_export").click(function() {
+      var tbl = $('#example').DataTable();
+      var url_string = "/pricechange/export?rows_per_page=" + tbl.page.info().recordsTotal +
+                       "&page_index=" + (tbl.page.info().page + 1) +
+                       "&vendor=" + $('#vendor').val() +
+                       "&inventory=" + $('#inventory').val();
+      location.href = url_string;
     });
 
     $('#vendor, #inventory').keyup(function(e){

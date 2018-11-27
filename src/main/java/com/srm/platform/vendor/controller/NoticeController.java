@@ -449,7 +449,7 @@ public class NoticeController extends CommonController {
 		if (vendorList == null) {
 			return new ArrayList<>();
 		}
-		logger.info(vendorCodeListStr);
+		
 		return vendorRepository.findVendorsByCodeList(vendorList);
 
 	}

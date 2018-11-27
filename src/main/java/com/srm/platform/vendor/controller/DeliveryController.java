@@ -108,7 +108,7 @@ public class DeliveryController extends CommonController {
 	@RequestMapping(value = "/export")
 	public ModelAndView export_file(@RequestParam Map<String, String> exportData, Principal principal)  throws JSONException, IOException {
 		int rows_per_page = Integer.parseInt(exportData.getOrDefault("rows_per_page", "10"));
-		int page_index = 0; // Integer.parseInt(exportData.getOrDefault("page_index", "1"));
+		int page_index = 1; // Integer.parseInt(exportData.getOrDefault("page_index", "1"));
 		String order = exportData.getOrDefault("order", "");
 		String dir = exportData.getOrDefault("dir", "asc");
 		String date_begin = exportData.getOrDefault("start_date", null);

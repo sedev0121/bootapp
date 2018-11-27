@@ -109,7 +109,7 @@ public class OrderListController extends CommonController {
 	@RequestMapping(value = "/export")
 	public ModelAndView export_file(@RequestParam Map<String, String> requestParams, Principal principal)  throws JSONException, IOException {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
-		int page_index = 0; //Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		int page_index = 1; //Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String dir = requestParams.getOrDefault("dir", "asc");
 		Vendor vendor = this.getLoginAccount().getVendor();
 		String vendorStr = vendor == null ? "0" : vendor.getCode();
@@ -139,7 +139,7 @@ public class OrderListController extends CommonController {
 		}
 		
 		String base_url = "http://183.249.171.190:5588/Service.asmx/GetMoPo?";
-		String request_params = String.format("sys_PageIndex=%d&sys_PageSize=%d&cpoid=&cbustype=&vendorcode=%s&verifier_begin=&verifier_end=&invcode_begin=&invcode_end=&sys_Order=",
+		String request_params = String.format("sys_PageIndex=%d&sys_PageSize=%d&cpoid=&cbustype=&vendorcode=%s&verifier_begin=&verifier_end=&invcode_begin=&invcode_end=",
 											  page_index, rows_per_page, vendorStr);
 		String request_url = base_url + request_params;
 		request_url += "&sys_Order=";
