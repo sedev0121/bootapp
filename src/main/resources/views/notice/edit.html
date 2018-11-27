@@ -238,7 +238,7 @@ jQuery(document).ready(function() {
    $('#all_account_div').css('visibility', 'hidden');
   } else {
 	  function checkTable(){
-	    if (!$('#to_all_vendor').attr('checked')) {
+	    if (!$('#to_all_vendor').attr('checked') && !$('#to_unit_account').attr('checked')) {
 	      if (!vendor_table || vendor_table.rows().data().toArray().length == 0) {
 	        App.showErrorDialog("输入有误", "请选择供应商的值");
 	        return false;
