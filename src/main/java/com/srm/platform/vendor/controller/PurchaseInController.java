@@ -112,7 +112,7 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select distinct a.*, m.name unitname, b.date, c.name inventoryname,c.specs, v.name vendorname, v.code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
+		String selectQuery = "select distinct a.*, m.name unitname, b.date, b.verify_date, c.name inventoryname,c.specs, v.name vendorname, v.code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
 		String countQuery = "select count(distinct a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
@@ -221,7 +221,7 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, m.name unitname, b.date, c.name inventoryname,c.specs, null vendorname, vendor_code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
+		String selectQuery = "select a.*, m.name unitname, b.date, b.verify_date, c.name inventoryname,c.specs, null vendorname, vendor_code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 

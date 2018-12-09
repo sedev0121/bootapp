@@ -21,14 +21,18 @@ import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 
 @SqlResultSetMapping(name = "PurchaseInDetailResult", classes = {
 		@ConstructorResult(targetClass = PurchaseInDetailResult.class, columns = {
-				@ColumnResult(name = "id", type = String.class), @ColumnResult(name = "code", type = String.class),
-				@ColumnResult(name = "date", type = String.class), @ColumnResult(name = "rowno", type = Integer.class),
+				@ColumnResult(name = "id", type = String.class), 
+				@ColumnResult(name = "code", type = String.class),
+				@ColumnResult(name = "date", type = String.class),
+				@ColumnResult(name = "verify_date", type = String.class),
+				@ColumnResult(name = "rowno", type = Integer.class),
 				@ColumnResult(name = "inventoryname", type = String.class),
 				@ColumnResult(name = "inventory_code", type = String.class),
 				@ColumnResult(name = "specs", type = String.class),
 				@ColumnResult(name = "unitname", type = String.class),
 				@ColumnResult(name = "quantity", type = String.class),
-				@ColumnResult(name = "price", type = String.class), @ColumnResult(name = "cost", type = String.class),
+				@ColumnResult(name = "price", type = String.class), 
+				@ColumnResult(name = "cost", type = String.class),
 				@ColumnResult(name = "tax_price", type = String.class),
 				@ColumnResult(name = "tax_rate", type = String.class),
 				@ColumnResult(name = "tax_cost", type = String.class),

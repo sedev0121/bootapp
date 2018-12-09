@@ -12,19 +12,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
-import com.srm.platform.vendor.utility.PurchaseInSearchResult;
 
 @Entity
-
-@SqlResultSetMapping(name = "PurchaseInSearchResult", classes = {
-		@ConstructorResult(targetClass = PurchaseInSearchResult.class, columns = {
-				@ColumnResult(name = "code", type = String.class),
-				@ColumnResult(name = "warehouse_name", type = String.class),
-				@ColumnResult(name = "date", type = Date.class), @ColumnResult(name = "type", type = String.class),
-				@ColumnResult(name = "memo", type = String.class),
-				@ColumnResult(name = "bredvouch", type = Integer.class),
-				@ColumnResult(name = "vendorname", type = String.class),
-				@ColumnResult(name = "vendor_code", type = String.class) }) })
 
 @Table(name = "purchase_in_main")
 public class PurchaseInMain {
@@ -43,6 +32,15 @@ public class PurchaseInMain {
 	private String memo;
 
 	private Date date;
+	private Date verifyDate;
+
+	public Date getVerifyDate() {
+		return verifyDate;
+	}
+
+	public void setVerifyDate(Date verifyDate) {
+		this.verifyDate = verifyDate;
+	}
 
 	public String getCode() {
 		return code;

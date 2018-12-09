@@ -108,6 +108,11 @@ var edit_url = [[@{/purchasein/}]];
         className:'dt-center',
         title : '单据日期'
       }, {
+          data : 'verify_date',
+          render : $.fn.date_renderer,
+          className:'dt-center',
+          title : '审核日期'
+      }, {
         data : 'type',
         className:'dt-center',
         title : '入库类型',

@@ -10,3 +10,6 @@ ALTER TABLE purchase_in_detail MODIFY nat_tax_price DOUBLE;
 ALTER TABLE purchase_in_detail MODIFY price DOUBLE;
 ALTER TABLE purchase_in_detail MODIFY material_price DOUBLE;
 ALTER TABLE purchase_in_detail MODIFY material_tax_price DOUBLE;
+
+
+ALTER TABLE purchase_in_main add verify_date datetime;

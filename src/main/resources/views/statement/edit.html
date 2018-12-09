@@ -267,6 +267,11 @@ $(document).ready(function() {
           className:'dt-center',
           title : '入库日期'
         }, {
+            data : 'verify_date',
+            render : $.fn.date_renderer,
+            className:'dt-center',
+            title : '审核日期'
+        }, {
           data : 'code',
           title : '出入库单号'
         }, {

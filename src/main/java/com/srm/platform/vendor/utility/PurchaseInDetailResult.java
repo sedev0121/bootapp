@@ -11,6 +11,7 @@ public class PurchaseInDetailResult implements Serializable {
 	String code;
 
 	String date;
+	String verify_date;
 
 	Integer rowno;
 
@@ -54,7 +55,7 @@ public class PurchaseInDetailResult implements Serializable {
 	String natPrice;
 	String natTaxRate;
 
-	public PurchaseInDetailResult(String id, String code, String date, Integer rowno, String inventoryname,
+	public PurchaseInDetailResult(String id, String code, String date, String verify_date,Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
 			String tax_price, String tax_rate, String tax_cost, String memo, String nat_tax_price,
 			String material_quantity, String material_tax_price, String vendorname, String vendorcode, String type,
@@ -63,6 +64,7 @@ public class PurchaseInDetailResult implements Serializable {
 		this.id = id;
 		this.code = code;
 		this.date = date;
+		this.verify_date = verify_date;
 		this.rowno = rowno;
 		this.inventoryname = inventoryname;
 		this.inventory_code = inventorycode;
@@ -92,6 +94,18 @@ public class PurchaseInDetailResult implements Serializable {
 		this.natPrice = natPrice;
 		this.natTaxRate = natTaxRate;
 	}
+
+	
+	
+	public String getVerify_date() {
+		return verify_date;
+	}
+
+
+	public void setVerify_date(String verify_date) {
+		this.verify_date = verify_date;
+	}
+
 
 	public String getId() {
 		return id;

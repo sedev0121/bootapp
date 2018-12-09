@@ -742,7 +742,8 @@ public class SyncController {
 					String warehouse_code = temp.get("cWhCode");
 					String warehouse_name = temp.get("cWhName");
 					String memo = temp.get("dMemo");
-					String date = temp.get("dVeriDate");
+					String date = temp.get("dDate");
+					String verifyDate = temp.get("dVeriDate");
 					String rowno = String.valueOf(temp.get("irowno"));
 					String poCode = String.valueOf(temp.get("cPOID"));
 
@@ -838,6 +839,7 @@ public class SyncController {
 						main.setWarehouse_name(warehouse_name);
 						main.setMemo(memo);
 						main.setDate(Utils.parseDateTime2(date));
+						main.setVerifyDate(Utils.parseDateTime2(verifyDate));
 
 						main.setVendor(vendorRepository.findOneByCode(vendor_code));
 						main.setType(type);
