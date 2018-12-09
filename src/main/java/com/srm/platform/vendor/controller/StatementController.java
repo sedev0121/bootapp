@@ -557,7 +557,7 @@ public class StatementController extends CommonController {
 
 		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
 
-		double chargeBack = 0D, closedMoneySum = 0D, closedTaxMoneySum = 0D;
+		double chargeBack = 0D, closedMoneySum = 0D, closedTaxMoneySum = 0D, closedQuantitySum = 0D;
 
 		for (StatementDetail detail : detailList) {
 			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
@@ -567,6 +567,7 @@ public class StatementController extends CommonController {
 			} else {
 				closedMoneySum += detail.getClosedMoney();
 				closedTaxMoneySum += detail.getClosedTaxMoney();
+				closedQuantitySum += detail.getClosedQuantity();
 			}
 		}
 
@@ -651,6 +652,26 @@ public class StatementController extends CommonController {
 
 			entryList.add(entry);
 			i++;
+		}
+		
+		boolean is_bug = false;
+		String bug_message = "";
+		
+		if ((closedQuantitySum == 0) && (invoiceTaxMoneySum == 0)) {
+			is_bug = true;
+			// bug_message = "合计数量和合计发票金额不可同时0";
+		}
+		else if ((closedQuantitySum > 0) && (invoiceTaxMoneySum < 0)) {
+			is_bug = true;
+		}
+		else if ((closedQuantitySum < 0) && (invoiceTaxMoneySum > 0)) {
+			is_bug = true;
+		}
+		else if ((closedQuantitySum >= 0) && (invoiceTaxMoneySum >= 0)) {
+			post.setIsBlue("1");
+		}
+		else if ((closedQuantitySum <= 0) && (invoiceTaxMoneySum <= 0)) {
+			post.setIsBlue("0");
 		}
 
 		post.setList(entryList);

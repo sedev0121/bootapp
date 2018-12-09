@@ -206,6 +206,7 @@ is_readonly = 0;
 
 <script th:inline="javascript">
 var editor, table_options, table, import_table; 
+var qty_sum, money_sum;
 /*[+
 var sync_url = [[@{/sync/purchasein/vendor/}]];
 var detail_url = [[@{|/statement/${main.code}/details|}]];
@@ -1537,6 +1538,21 @@ $(document).ready(function() {
   });
   
   function checkTable() {
+    var table = $('#detail_table').DataTable();
+    var sum1 = $(table.column(7).footer()).html();          // 合计对账数量
+    var sum2 = $(table.column(26).footer()).html();         // 合计发票含税金额
+
+
+    if ((sum1 > 0) && (sum2 < 0)) {
+        App.showErrorDialog("操作失败", "合计数量>0， 合计发票金额<0， 不符合U8发票规则");
+    }
+    else if ((sum1 == 0) && (sum2 == 0)) {
+        App.showErrorDialog("操作失败", "合计数量和合计发票金额不同是为0");
+    }
+    else if ((sum1 < 0) && (sum2 > 0)) {
+        App.showErrorDialog("操作失败", "合计数量<0， 合计发票金额>0， 不符合U8发票规则");
+    }
+
     var data = table.rows().data().toArray();
     var available = true;
     var empty_column = "";

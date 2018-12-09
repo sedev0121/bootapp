@@ -25,9 +25,18 @@ public class U8InvoicePostData {
 	private String dvoudate = Utils.formatDateTime(new Date());
 	private String cpbvmaker;
 	private String idiscountaxtype;
+	private String is_blue;
 
 	private List<U8InvoicePostEntry> list;
 
+	public String getIsBlue() {
+		return is_blue;
+	}
+	
+	public void setIsBlue(String is_blue) {
+		this.is_blue = is_blue;
+	}
+	
 	public String getCpbvbilltype() {
 		return cpbvbilltype;
 	}
