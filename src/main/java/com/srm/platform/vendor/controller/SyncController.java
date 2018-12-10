@@ -552,6 +552,7 @@ public class SyncController {
 				}
 
 				String response = apiClient.getLinkU8PurchaseOrder(requestParams);
+				response = response.replaceAll("\\\\", "");
 
 				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 				});
@@ -728,6 +729,8 @@ public class SyncController {
 				} else {
 					response = apiClient.getLinkU8BatchBasic(requestParams);
 				}
+				
+				response = response.replaceAll("\\\\", "");
 
 				map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 				});
