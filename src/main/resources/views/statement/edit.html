@@ -1538,23 +1538,34 @@ $(document).ready(function() {
   });
   
   function checkTable() {
-    var table = $('#detail_table').DataTable();
-    var sum1 = $(table.column(7).footer()).html();          // 合计对账数量
-    var sum2 = $(table.column(26).footer()).html();         // 合计发票含税金额
+	  var available = true;
+	  
+	  if ($('#type').val()==2) {
+		    //var table = $('#detail_table').DataTable();
+		    var sum1 = $(table.column(7).footer()).html();          // 合计对账数量
+		    var sum2 = $(table.column(26).footer()).html();         // 合计发票含税金额
 
-
-    if ((sum1 > 0) && (sum2 < 0)) {
-        App.showErrorDialog("操作失败", "合计数量>0， 合计发票金额<0， 不符合U8发票规则");
-    }
-    else if ((sum1 == 0) && (sum2 == 0)) {
-        App.showErrorDialog("操作失败", "合计数量和合计发票金额不同是为0");
-    }
-    else if ((sum1 < 0) && (sum2 > 0)) {
-        App.showErrorDialog("操作失败", "合计数量<0， 合计发票金额>0， 不符合U8发票规则");
-    }
+		    var error_msg = '';
+		    if ((sum1 > 0) && (sum2 < 0)) {
+		    	available = false;
+		    	error_msg = "合计数量>0， 合计发票金额<0， 不符合U8发票规则";
+		    }
+		    else if ((sum1 == 0) && (sum2 == 0)) {
+		    	available = false;
+		    	error_msg = "合计数量和合计发票金额不同是为0";
+		    }
+		    else if ((sum1 < 0) && (sum2 > 0)) {
+		    	available = false;
+		    	error_msg = "合计数量<0， 合计发票金额>0， 不符合U8发票规则";
+		    }
+		    
+		    if (!available) {
+		    	App.showErrorDialog("操作失败", error_msg);
+		    	return available;
+		    }		    
+	  }
 
     var data = table.rows().data().toArray();
-    var available = true;
     var empty_column = "";
     for(i=0; i<data.length; i++){
       item = data[i];

@@ -11,13 +11,13 @@ public interface StatementDetailItem {
 
 	Float getRemain_quantity();
 
-	Float getClosed_price();
+	Double getClosed_price();
 
-	Float getClosed_money();
+	Double getClosed_money();
 
-	Float getClosed_tax_price();
+	Double getClosed_tax_price();
 
-	Float getClosed_tax_money();
+	Double getClosed_tax_money();
 
 	String getType();
 

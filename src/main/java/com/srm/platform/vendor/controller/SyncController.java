@@ -776,9 +776,9 @@ public class SyncController {
 					if (temp.get("iTaxRate") != null && temp.get("iTaxRate").length() > 0)
 						tax_rate = Float.valueOf(String.valueOf(temp.get("iTaxRate")));
 
-					Float tax_cost = 0F;
+					Double tax_cost = 0d;
 					if (temp.get("iSum") != null && temp.get("iSum").length() > 0)
-						tax_cost = Float.valueOf(String.valueOf(temp.get("iSum")));
+						tax_cost = Double.valueOf(String.valueOf(temp.get("iSum")));
 
 					String detailMemo = temp.get("cbMemo");
 
@@ -786,25 +786,25 @@ public class SyncController {
 					if (temp.get("iNatUnitPrice") != null && temp.get("iNatUnitPrice").length() > 0)
 						nat_price = Double.valueOf(String.valueOf(temp.get("iNatUnitPrice")));
 
-					Float nat_cost = 0F;
+					Double nat_cost = 0d;
 					if (temp.get("iNatMoney") != null && temp.get("iNatMoney").length() > 0)
-						nat_cost = Float.valueOf(String.valueOf(temp.get("iNatMoney")));
+						nat_cost = Double.valueOf(String.valueOf(temp.get("iNatMoney")));
 
 					Float nat_tax_rate = 0F;
 					if (temp.get("iPerTaxRate") != null && temp.get("iPerTaxRate").length() > 0)
 						nat_tax_rate = Float.valueOf(String.valueOf(temp.get("iPerTaxRate")));
 
-					Float nat_tax = 0F;
+					Double nat_tax = 0d;
 					if (temp.get("iNatTax") != null && temp.get("iNatTax").length() > 0)
-						nat_tax = Float.valueOf(String.valueOf(temp.get("iNatTax")));
+						nat_tax = Double.valueOf(String.valueOf(temp.get("iNatTax")));
 
 					Double nat_tax_price = 0d;
 					if (temp.get("iNatTaxUnitCost") != null && temp.get("iNatTaxUnitCost").length() > 0)
 						nat_tax_price = Double.valueOf(String.valueOf(temp.get("iNatTaxUnitCost")));
 
-					Float nat_tax_cost = 0F;
+					Double nat_tax_cost = 0d;
 					if (temp.get("iNatSum") != null && temp.get("iNatSum").length() > 0)
-						nat_tax_cost = Float.valueOf(String.valueOf(temp.get("iNatSum")));
+						nat_tax_cost = Double.valueOf(String.valueOf(temp.get("iNatSum")));
 
 					String material_code = temp.get("cInvCodeMat");
 					String material_name = temp.get("cInvNameMat");

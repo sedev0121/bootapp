@@ -13,3 +13,14 @@ ALTER TABLE purchase_in_detail MODIFY material_tax_price DOUBLE;
 
 
 ALTER TABLE purchase_in_main add verify_date datetime;
+
+ALTER TABLE purchase_in_detail MODIFY tax_cost DOUBLE;
+ALTER TABLE purchase_in_detail MODIFY nat_cost DOUBLE;
+ALTER TABLE purchase_in_detail MODIFY nat_tax DOUBLE;
+ALTER TABLE purchase_in_detail MODIFY nat_tax_cost DOUBLE;
+
+
+ALTER TABLE statement_detail MODIFY closed_tax_price DOUBLE;
+ALTER TABLE statement_detail MODIFY closed_tax_money DOUBLE;
+ALTER TABLE statement_detail MODIFY closed_price DOUBLE;
+ALTER TABLE statement_detail MODIFY closed_money DOUBLE;
