@@ -432,7 +432,7 @@ $(document).ready(function() {
           invoice_tax_money_sum = App.costNumber(invoice_tax_money_sum + temp);
           console.log("temp=" + App.costNumber(temp) + " invoice_tax_money_sum=" + invoice_tax_money_sum );
           item.invoice_tax_money = App.costNumber(item.closed_tax_money - temp);  
-          item.invoice_tax_price = App.priceNumber(item.invoice_tax_money/item.quantity);
+          item.invoice_tax_price = App.costNumber(item.invoice_tax_money/item.quantity);
         }else{
           item.invoice_tax_money = '';
           item.invoice_tax_price = '';
