@@ -1502,10 +1502,10 @@ $(document).ready(function() {
         
         item.closed_money = item.cost;
         item.closed_price = item.nat_price;
-        item.closed_tax_money = item.tax_cost;
+        item.closed_tax_money = App.costNumber(item.nat_tax_price*item.quantity);
         item.closed_tax_price = item.nat_tax_price;
         item.invoice_tax_price = item.nat_tax_price;
-        item.invoice_tax_money = item.tax_cost;
+        item.invoice_tax_money = App.costNumber(item.nat_tax_price*item.quantity);
         item.closed_quantity = item.quantity;
         
         item.real_quantity = null;
