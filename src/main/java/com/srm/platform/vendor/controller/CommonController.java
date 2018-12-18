@@ -45,6 +45,7 @@ import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.PriceRepository;
+import com.srm.platform.vendor.repository.ProvideClassRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.service.SessionCounter;
@@ -101,6 +102,9 @@ public class CommonController {
 
 	@Autowired
 	public PriceRepository priceRepository;
+	
+	@Autowired
+	public ProvideClassRepository provideClassRepository;
 
 	protected int currentPage;
 	protected int maxResults;

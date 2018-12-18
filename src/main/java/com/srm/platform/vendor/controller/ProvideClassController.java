@@ -1,6 +1,9 @@
 package com.srm.platform.vendor.controller;
 
+import java.io.File;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,16 +19,27 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.util.StringUtils;
 
+import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Notice;
+import com.srm.platform.vendor.model.NoticeRead;
+import com.srm.platform.vendor.model.ProvideClass;
+import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.NoticeSearchResult;
+import com.srm.platform.vendor.utility.ProvideClassSearchResult;
+import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
@@ -40,73 +54,49 @@ public class ProvideClassController extends CommonController {
 		return "admin/provide_class/list";
 	}
 
+	@GetMapping("/add")
+	public String add(Model model) {
+		ProvideClass item = new ProvideClass();
+		model.addAttribute("item", item);
+		return "admin/provide_class/edit";
+	}
+
 	// 修改
 	@GetMapping("/{id}/edit")
 	public String edit(@PathVariable("id") Long id, Model model) {
-		Notice notice = noticeRepository.findOneById(id);
-		if (notice == null || notice.getType() != Constants.NOTICE_TYPE_SYSTEM
-				|| notice.getState() != Constants.NOTICE_STATE_PUBLISH)
-			show404();
+		ProvideClass item = provideClassRepository.findOneById(id);
 
-		if (!isVisibleNotice(id)) {
-			show403();
+		if (item == null) {
+			this.show404();
 		}
-
-		setReadDate(id);
-		model.addAttribute("notice", notice);
+		model.addAttribute("item", item);
 		return "admin/provide_class/edit";
 	}
 
 	// 用户管理->列表
 	@GetMapping("/list")
-	public @ResponseBody Page<NoticeSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<ProvideClassSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
-		String order = requestParams.getOrDefault("order", "deploydate");
-		String dir = requestParams.getOrDefault("dir", "desc");
+		String order = requestParams.getOrDefault("order", "code");
+		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
-		String start_date = requestParams.getOrDefault("start_date", null);
-		String end_date = requestParams.getOrDefault("end_date", null);
 
-		Date startDate = Utils.parseDate(start_date);
-		Date endDate = Utils.getNextDate(end_date);
-
-		switch (order) {
-		case "create_name":
-			order = "b.realname";
-			break;
-		case "create_unitname":
-			order = "c.name";
-			break;
-		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name, e.read_date ";
-		String countQuery = "select count(distinct a.id) ";
+		String selectQuery = "SELECT * ";
+		String countQuery = "select count(id) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id "
-				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id where type=2 ";
+		String bodyQuery = "FROM provide_class";
 
 		Map<String, Object> params = new HashMap<>();
 
-		bodyQuery += " and e.to_account_id=:to_account";
-		params.put("to_account", this.getLoginAccount().getId());
-
 		if (!search.trim().isEmpty()) {
-			bodyQuery += " and (a.title like CONCAT('%',:search, '%') or a.content like CONCAT('%',:search, '%')) ";
+			bodyQuery += " where name like CONCAT('%',:search, '%') or code like CONCAT('%',:search, '%') ";
 			params.put("search", search.trim());
-		}
-
-		if (startDate != null) {
-			bodyQuery += " and a.create_date>=:startDate";
-			params.put("startDate", startDate);
-		}
-		if (endDate != null) {
-			bodyQuery += " and a.create_date<:endDate";
-			params.put("endDate", endDate);
 		}
 
 		countQuery += bodyQuery;
@@ -119,14 +109,62 @@ public class ProvideClassController extends CommonController {
 		BigInteger totalCount = (BigInteger) q.getSingleResult();
 
 		selectQuery += bodyQuery + orderBy;
-		q = em.createNativeQuery(selectQuery, "NoticeSearchResult");
+		q = em.createNativeQuery(selectQuery, "ProvideClassSearchResult");
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			q.setParameter(entry.getKey(), entry.getValue());
 		}
 
 		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
 
-		return new PageImpl<NoticeSearchResult>(list, request, totalCount.longValue());
+		return new PageImpl<ProvideClassSearchResult>(list, request, totalCount.longValue());
 	}
 
+	// 修改
+	@Transactional
+	@PostMapping("/update")
+	public @ResponseBody GenericJsonResponse<ProvideClass> update_ajax(
+			@RequestParam Map<String, String> requestParams) {
+
+		GenericJsonResponse<ProvideClass> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
+				null);
+
+		String id = requestParams.get("id");
+		String code = requestParams.get("code");
+		String name = requestParams.get("name");
+
+		Long idKey = (id != null && !id.isEmpty()) ? Long.valueOf(id) : 0L;
+
+		List<ProvideClass> duplicatedItems = provideClassRepository.findDuplicatedCode(Long.valueOf(code), idKey);
+		if (duplicatedItems.size() > 0) {
+			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
+			jsonResponse.setErrmsg("供货类别编码重复");
+		} else {
+			ProvideClass item = new ProvideClass();
+
+			if (id != null && !id.isEmpty()) {
+				item = provideClassRepository.findOneById(Long.parseLong(id));
+			}
+
+			item.setCode(Long.parseLong(code));
+			item.setName(name);
+			item = provideClassRepository.save(item);
+
+			jsonResponse.setData(item);
+		}
+
+		return jsonResponse;
+
+	}
+
+	// 删除
+	@GetMapping("/{id}/delete")
+	public @ResponseBody GenericJsonResponse<ProvideClass> delete(@PathVariable("id") Long id, Model model) {
+		ProvideClass item = provideClassRepository.findOneById(id);
+		provideClassRepository.delete(item);
+
+		GenericJsonResponse<ProvideClass> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
+				item);
+
+		return jsonResponse;
+	}
 }

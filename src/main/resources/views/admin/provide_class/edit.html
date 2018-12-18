@@ -1,47 +1,109 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}">
- 
+
 <body>
   <div class="container" layout:fragment="content">
     <ul class="breadcrumb">
-      <li>
-        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
+      <li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li><a th:href="@{/message}">系统消息</a></li>
-      <li class="active">系统消息详细</li>
+      <li><a th:href="@{/provideclass}">供货类别</a></li>
+      <li class="active">供货类别详细</li>
     </ul>
     <div class="btn-group-bar">
       <div class="text-right">
-        <a class="btn btn-default" th:href="@{/message}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+        <a class="btn btn-primary" id="save"><i
+          class="fa fa-check-square"></i> 保存</a> <a class="btn btn-primary"
+          id="delete"><i class="fa fa-remove"></i> 删除</a> <a
+          class="btn btn-default" th:href="@{/provideclass}"><i
+          class="fa fa-arrow-left"></i> 返回列表</a>
       </div>
     </div>
-
-    <div class="panel panel-default">
-      <div class="panel-body form-body"> 
-        <div class="row">
-          <div class="col-lg-10 col-md-10 form-group">
-            <label for="title">标题: </label>
-            <input type="text" name="title" id="title" readonly class="form-control" th:value="${notice.title}">
-          </div>
-          <div class="col-lg-2 col-md-2 form-group">
-            <label for="title">发布时间: </label>
-            <input type="text" class="form-control" readonly th:value="${#dates.format(notice.createDate, 'yyyy-MM-dd HH:mm:ss')}">
-          </div>                    
-          <div class="col-lg-12 col-md-12 form-group">
-            <label for="content">内容: </label>
-            <textarea readonly class="form-control" rows=5 th:text="${notice.content}"></textarea>
-          </div>
-          <div class="col-lg-12 col-md-12 form-group">
-            <label for="content">单据链接: </label>
-            <a class="detail" th:href="@{|${notice.url}/${notice.id}|}">单据详情</a>
+    <form id="form" th:action="@{/provideclass/update}" method="post">
+      <input type="hidden" id="id" name="id" th:value="${item.id}">
+      <div class="panel panel-default">
+        <div class="panel-body form-body">
+          <div class="row">
+            <div class="col-lg-4 col-md-4 form-group">
+              <label for="title">供货类别编码: </label> 
+              <input type="text" name="code" id="code" class="form-control" th:value="${item.code}">
+            </div>
+            <div class="col-lg-8 col-md-8 form-group">
+              <label for="content">供货类别名称: </label> 
+              <input type="text" name="name" id="name" class="form-control" th:value="${item.name}">
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    
-    </div>
+    </form>
+  </div>
 </body>
 </html>
 
+<script th:inline="javascript">
+	var edit_url = /*[[@{/provideclass/}]]*/'';
+
+	jQuery(document).ready(function() {
+		
+		$("#form" ).validate({
+      // define validation rules
+      rules: {
+          code: {
+              required: true,
+              number: true,
+          }, 
+          name: {
+              required: true
+          },
+      },
+      
+      //display error alert on form submit  
+      invalidHandler: function(event, validator) {
+        App.showErrorDialog("输入有误", "请输入正确的值");
+      },
+
+      submitHandler: function (form) {
+        jQuery(form).ajaxSubmit({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          },
+          success: function(res, status, xhr, form) {
+        	  if (res.success) {
+              App.showSuccessDialog("操作成功", function(){
+                  window.location.href = edit_url + res.data.id + "/edit";
+              });
+        	  } else {
+              App.showErrorDialog("操作失败", res.errmsg);
+        	  }
+          },
+          error: function (res, status, xhr, form) {
+            App.showErrorDialog("操作失败", "请输入正确的值");
+          }
+        });
+      }
+    }); 
+		
+		$("#save").click(function() {
+			$("#form").submit();
+		});
+
+		$("#delete").click(function() {
+			App.showConfirmDialog('确定要删除吗?', function() {
+				var del_url = edit_url + $("#id").val() + "/delete";
+				$.get(del_url, function(res, status) {
+					if (res.success) {
+	          App.showSuccessDialog("操作成功", function() {
+              window.location.href = edit_url;
+            });
+					} else {
+						App.showErrorDialog("操作失败", res.data.errmsg);
+					}
+				});
+			});
+		});
+	});
+</script>
 
