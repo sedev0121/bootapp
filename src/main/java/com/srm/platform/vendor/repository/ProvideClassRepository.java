@@ -23,4 +23,8 @@ public interface ProvideClassRepository extends JpaRepository<ProvideClass, Long
 	
 	@Query(value = "SELECT id code, concat(name, '(', code, ')') name FROM provide_class a WHERE name LIKE %?1% order by a.code asc", countQuery = "SELECT count(*) FROM provide_class WHERE name LIKE %?1%", nativeQuery = true)
 	Page<SearchItem> findForSelect(String search, Pageable pageable);
+	
+	
+	@Query(value = "select a.* from provide_class a left join unit_provide b on a.id=b.provide_id where b.unit_id=?1", nativeQuery = true)
+	List<ProvideClass> findProvideClasses(Long id);
 }
