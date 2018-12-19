@@ -15,4 +15,6 @@ public interface ProvideClassRepository extends JpaRepository<ProvideClass, Long
 	@Query(value = "SELECT * FROM provide_class where code=?1 and id<>?2", nativeQuery = true)
 	List<ProvideClass> findDuplicatedCode(Long code, Long id);
 
+	@Query(value = "select a.* from provide_class a left join unit_provide b on a.id=b.provide_id left join vendor_provide c on a.id=c.provide_id where a.id=?1 and (b.unit_id is not null or c.vendor_code is not null)", nativeQuery = true)
+	List<ProvideClass> findListUsingId(Long id);
 }

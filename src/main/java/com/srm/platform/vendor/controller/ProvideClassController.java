@@ -159,11 +159,21 @@ public class ProvideClassController extends CommonController {
 	// 删除
 	@GetMapping("/{id}/delete")
 	public @ResponseBody GenericJsonResponse<ProvideClass> delete(@PathVariable("id") Long id, Model model) {
-		ProvideClass item = provideClassRepository.findOneById(id);
-		provideClassRepository.delete(item);
-
+		
 		GenericJsonResponse<ProvideClass> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
-				item);
+				null);
+		
+		List<ProvideClass> usingList = provideClassRepository.findListUsingId(id);
+		if (usingList.size() > 0) {
+			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
+			jsonResponse.setErrmsg("供货类别正在使用当中");
+		}else {
+			ProvideClass item = provideClassRepository.findOneById(id);
+			provideClassRepository.delete(item);
+
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, item);
+		}
+		
 
 		return jsonResponse;
 	}
