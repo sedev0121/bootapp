@@ -20,7 +20,7 @@
 	          <div id="tree_3"></div>
           </div>   
           <div class="col-md-6">
-            <form id="form" th:action="@{/account/update}" method="post">  
+            <form id="form" th:action="@{/unit/update}" method="post">  
               <input type="hidden" id="id" name="id">
           	  <h3>组织信息</h3>
 	          <div class="col-md-12 form-group">
@@ -29,7 +29,7 @@
            	   </div>
            	   <div class="col-md-12 form-group">
 	             <label for="vendor">供货类别:</label>
-	             <select multiple="true" name="provide_class" id="provide_class" class="form-control">
+	             <select multiple="true" name="provideclasses" id="provideclasses" class="form-control">
 	             </select>
            	   </div>
            	   <div class="text-center">
@@ -52,7 +52,7 @@ var get_url = /*[[@{/unit/get}]]*/'';
 
 jQuery(document).ready(function() {
 	
-	$("#provide_class").select2(App.getSelect2TagOptions(perm_search_url));
+	$("#provideclasses").select2(App.getSelect2TagOptions(perm_search_url));
 	
 	
 	  
@@ -97,7 +97,7 @@ jQuery(document).ready(function() {
       state:{key:"demo1"},
       plugins:["contextmenu","state","types"]
     }).on('create_node.jstree', function (e, data) {
-    	$('#provide_class').val(null).trigger('change');
+    	$('#provideclasses').empty();
         $('#id').val(null);
         $('#name').val(null);
         
@@ -111,7 +111,7 @@ jQuery(document).ready(function() {
         });
     }).on("select_node.jstree", function(e, data){
         console.log(data);
-        $('#provide_class').val(null).trigger('change');
+        $('#provideclasses').empty();
         $('#id').val(null);
         $('#name').val(null);
         $.ajax({
@@ -122,10 +122,11 @@ jQuery(document).ready(function() {
             $('#id').val(responseData.unit.id);
             $('#name').val(responseData.unit.name);
         	$.each(responseData.provide_classes, function(key, item){
-        	  var option = new Option(item.name + '(' + item.code +')', item.id, true, true);
-        	  $("#provide_class").append(option);
+        	  var option = new Option(item.name + '(' + item.code +')', item.id.toString(), true, true);
+        	  $("#provideclasses").append(option);
         	});
-        	$("#provide_class").trigger('change');
+        	
+        	$("#provideclasses").trigger('change');
         });
     }).on('rename_node.jstree', function (e, data) {
     	$.get(url + data.node.id + "/rename/" + data.node.text).done(function (d) {
@@ -135,25 +136,7 @@ jQuery(document).ready(function() {
           data.instance.refresh();
         });
     }).on('delete_node.jstree', function (e, data) {
-      App.showConfirmDialog('确定要删除吗?', function(){
-        $.get(url + data.node.id + "/delete").done(function (d) {
-          if (d.success == 1){
-			$('#provide_class').val(null).trigger('change');
-			$('#id').val(null);
-			$('#name').val(null);
-            App.showSuccessDialog("操作成功！");
-          }else{
-            App.showErrorDialog(d.errmsg);
-          }
-          $("#tree_3").jstree("refresh");
-        })
-        .fail(function () {
-          $("#tree_3").jstree("refresh");
-          App.showErrorDialog("操作失败！");
-        });  
-      }, function(){
-        $("#tree_3").jstree("refresh");
-      });        	
+    	deleteUnit(data.node.id);         	
     });
     
     $(document).bind("dnd_start.vakata", function(e, data) {
@@ -181,6 +164,71 @@ jQuery(document).ready(function() {
         
     });
     
+    function deleteUnit(id) {
+   		App.showConfirmDialog('确定要删除吗?', function(){
+           $.get(url + id + "/delete").done(function (d) {
+             if (d.success == 1){
+   			$('#provideclasses').empty();
+   			$('#id').val(null);
+   			$('#name').val(null);
+               App.showSuccessDialog("操作成功！");
+             }else{
+               App.showErrorDialog(d.errmsg);
+             }
+             $("#tree_3").jstree("refresh");
+           })
+           .fail(function () {
+             $("#tree_3").jstree("refresh");
+             App.showErrorDialog("操作失败！");
+           });  
+         }, function(){
+           $("#tree_3").jstree("refresh");
+         }); 
+    }
+    $("#form" ).validate({
+      // define validation rules
+      rules: {
+        name: {
+          required: true
+        }, 
+      },
+     
+      //display error alert on form submit  
+      invalidHandler: function(event, validator) {
+        App.showErrorDialog("输入有误", "请输入正确的值");
+      },
+
+      submitHandler: function (form) {
+          jQuery(form).ajaxSubmit({
+            beforeSend: function(){
+              App.blockUI();
+            },
+            complete: function(){
+              App.unblockUI();
+            }, 
+            success: function(res, status, xhr, form) {
+	  			if (res.success == 1){
+	  			  App.showSuccessDialog("操作成功", function(){
+	  				  $("#tree_3").jstree("refresh");
+	  			  });
+	  			}else{
+	  			  App.showErrorDialog("操作失败", res.errmsg);
+	  			}            
+            },
+            error: function (res, status, xhr, form) {
+              App.showErrorDialog("操作失败", "请输入正确的值");
+            }
+          });
+      }
+    }); 
+    
+    $("#save").click(function() {
+        $("#form").submit();            
+    });
+    
+    $("#del").click(function(){
+    	deleteUnit($('#id').val());
+    });
 });
 
 </script>
