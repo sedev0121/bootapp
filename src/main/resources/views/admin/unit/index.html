@@ -223,10 +223,18 @@ jQuery(document).ready(function() {
     }); 
     
     $("#save").click(function() {
+    	if (!$('#id').val()) {
+    		App.showErrorDialog("操作失败", "请选择一个组织");
+    		return;
+    	}
         $("#form").submit();            
     });
     
     $("#del").click(function(){
+    	if (!$('#id').val()) {
+    		App.showErrorDialog("操作失败", "请选择一个组织");
+    		return;
+    	}
     	deleteUnit($('#id').val());
     });
 });
