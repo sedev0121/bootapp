@@ -39,6 +39,7 @@ import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.NoticeSearchResult;
 import com.srm.platform.vendor.utility.ProvideClassSearchResult;
+import com.srm.platform.vendor.utility.SearchItem;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
@@ -176,5 +177,14 @@ public class ProvideClassController extends CommonController {
 		
 
 		return jsonResponse;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/search", produces = "application/json")
+	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
+
+		return provideClassRepository.findForSelect(search, request);
+
 	}
 }
