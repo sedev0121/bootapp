@@ -59,7 +59,7 @@ public class OrderListController extends CommonController {
 		if (vendor == null) {
 			List<String> unitList = this.getDefaultUnitList();
 			PageRequest request = PageRequest.of(0, 999,
-					dir.equals("asc") ? Direction.ASC : Direction.DESC, "b.name");
+					dir.equals("asc") ? Direction.ASC : Direction.DESC, "name");
 			
 			Page<VendorSearchItem> result = null;
 			result = vendorRepository.findBySearchTerm("", unitList, request);

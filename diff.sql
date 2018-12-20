@@ -54,3 +54,60 @@ CREATE TABLE `vendor_provide`  (
 
 DROP TABLE IF EXISTS `notice_vendor`;
 DROP TABLE IF EXISTS `permission_group_function_unit`;
+
+DROP TABLE IF EXISTS `function`;
+CREATE TABLE `function`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = MyISAM AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of function
+-- ----------------------------
+INSERT INTO `function` VALUES (1, '询价管理');
+INSERT INTO `function` VALUES (2, '报价管理');
+INSERT INTO `function` VALUES (3, '订单管理');
+INSERT INTO `function` VALUES (4, '出货看板');
+INSERT INTO `function` VALUES (5, '出入库单据');
+INSERT INTO `function` VALUES (6, '对账单管理');
+INSERT INTO `function` VALUES (7, '基础资料');
+INSERT INTO `function` VALUES (8, '报表中心');
+INSERT INTO `function` VALUES (9, '公告通知');
+
+DROP TABLE IF EXISTS `function_action`;
+CREATE TABLE `function_action`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `function_id` bigint(20) NULL DEFAULT NULL,
+  `action_id` bigint(20) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `FK6gpnrgxvuhi6ibpse9pjjln7a`(`action_id`) USING BTREE,
+  INDEX `FK8g1u0nym8shhaq5bk66bhu36x`(`function_id`) USING BTREE
+) ENGINE = MyISAM AUTO_INCREMENT = 24 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Fixed;
+
+-- ----------------------------
+-- Records of function_action
+-- ----------------------------
+INSERT INTO `function_action` VALUES (1, 1, 1);
+INSERT INTO `function_action` VALUES (2, 1, 2);
+INSERT INTO `function_action` VALUES (3, 1, 3);
+INSERT INTO `function_action` VALUES (4, 1, 4);
+INSERT INTO `function_action` VALUES (5, 1, 5);
+INSERT INTO `function_action` VALUES (6, 1, 6);
+INSERT INTO `function_action` VALUES (7, 2, 1);
+INSERT INTO `function_action` VALUES (8, 2, 5);
+INSERT INTO `function_action` VALUES (9, 3, 1);
+INSERT INTO `function_action` VALUES (10, 3, 2);
+INSERT INTO `function_action` VALUES (11, 4, 1);
+INSERT INTO `function_action` VALUES (12, 5, 1);
+INSERT INTO `function_action` VALUES (13, 6, 1);
+INSERT INTO `function_action` VALUES (14, 6, 2);
+INSERT INTO `function_action` VALUES (15, 6, 3);
+INSERT INTO `function_action` VALUES (16, 6, 4);
+INSERT INTO `function_action` VALUES (17, 2, 4);
+INSERT INTO `function_action` VALUES (18, 2, 6);
+INSERT INTO `function_action` VALUES (19, 7, 1);
+INSERT INTO `function_action` VALUES (20, 8, 1);
+INSERT INTO `function_action` VALUES (21, 9, 1);
+INSERT INTO `function_action` VALUES (22, 9, 7);
+INSERT INTO `function_action` VALUES (23, 9, 8);
