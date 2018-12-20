@@ -45,7 +45,7 @@ import com.srm.platform.vendor.utility.VendorSearchItem;
 public class VendorController extends CommonController {
 
 	private static String DEFAULT_PASSWORD = "111111";
-	
+
 	@Autowired
 	private VendorRepository vendorRepository;
 
@@ -60,7 +60,7 @@ public class VendorController extends CommonController {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	// 查询列表
 	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
 	@GetMapping({ "", "/" })
@@ -73,10 +73,9 @@ public class VendorController extends CommonController {
 	@GetMapping("/add")
 	public String add(Model model) {
 		Vendor vendor = new Vendor();
-		List<Account> accountList = new ArrayList<Account>();
 		model.addAttribute("data", vendor);
-		model.addAttribute("accounts", accountList);
 		model.addAttribute("provideClassList", "[]");
+		model.addAttribute("accountState", "2");
 		return "vendor/edit";
 	}
 
@@ -94,7 +93,7 @@ public class VendorController extends CommonController {
 
 		List<ProvideClass> provideClassList = provideClassRepository.findProvideClassesByVendorCode(code);
 
-		List<Account> accountList = accountRepository.findAccountsByVendor(vendor.getCode());
+		Account account = accountRepository.findOneByUsername(code);
 
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonGroupString = "";
@@ -106,8 +105,8 @@ public class VendorController extends CommonController {
 		}
 
 		model.addAttribute("data", vendor);
-		model.addAttribute("accounts", accountList);
 		model.addAttribute("provideClassList", jsonGroupString);
+		model.addAttribute("accountState", account == null ? 2 : account.getState());
 		return "vendor/edit";
 	}
 
@@ -148,7 +147,6 @@ public class VendorController extends CommonController {
 		String order = requestParams.getOrDefault("order", "name");
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
-
 
 		if (order.equals("unitname")) {
 			order = "b.name";
