@@ -30,4 +30,5 @@ public interface VendorSearchItem {
 	String getIndustry();
 	String getTimestamp();
 	String getSort_code();
+	String getState();
 }

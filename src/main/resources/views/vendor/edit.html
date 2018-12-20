@@ -15,7 +15,8 @@
 
       <div class="btn-group-bar">
         <div class="text-right">
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" id="start"><i class="fa fa-save"></i> 启用</a>  
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${accountState==1}" id="start"><i class="fa fa-save"></i> 修改</a>  
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${accountState!=1}" id="start"><i class="fa fa-save"></i> 启用</a>  
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${data.code}" id="delete"><i class="fa fa-remove"></i> 停用</a>
           <a class="btn btn-default" th:href="@{/vendor}"><i class="fa fa-arrow-left"></i> 返回列表</a>
         </div>
@@ -83,7 +84,7 @@
                 <input type="text" id="vendor_timestamp" class="form-control" readonly th:value="${data.timestamp}"/>
               </div>
             </div>
-			<div class="row" style="margin-top: 10px;">
+			<div class="row">
 				<div class="col-lg-8 col-md-8">
 					<label for="provideclasses">供货类别:</label>
 					<select multiple="true" name="provideclasses" id="provideclasses" class="form-control" th:each="provideClass : ${provideClassList}">
@@ -236,9 +237,11 @@ $(document).ready(function() {
   
   
   
-	$(".select-vendor").click(function(){  //"select all" change
-	  $('#vendor_dialog').modal('show');
-	});
+	if (account_state == 2) {
+		$(".select-vendor").click(function(){  //"select all" change
+		  $('#vendor_dialog').modal('show');
+		});
+	}
 	
 	$('#search_keyword').keyup(function(e){
 	    if(e.keyCode == 13)
@@ -283,23 +286,29 @@ $(document).ready(function() {
 		  App.showErrorDialog("请选择一个供应商");
 		  return;
 		}	  
+		
 		var vendor = selectedRows[0];
-		$('#vendor_name').val(vendor.name);
-		$('#vendor_abbrname').val(vendor.abbrname);
-		$('#vendor_address').val(vendor.address);
-		$('#vendor_bank_acc_number').val(vendor.bank_acc_number);
-		$('#vendor_bank_open').val(vendor.bank_open);
-		$('#vendor_code').val(vendor.code);
-		$('#vendor_contact').val(vendor.contact);
-		$('#vendor_email').val(vendor.email);
-		$('#vendor_end_date').val(vendor.end_date);
-		$('#vendor_fax').val(vendor.fax);
-		$('#vendor_industry').val(vendor.industry);
-		$('#vendor_mobile').val(vendor.mobile);
-		$('#vendor_receive_site').val(vendor.receive_site);
-		$('#vendor_sort_code').val(vendor.sort_code);
-		$('#vendor_timestamp').val(vendor.timestamp);
-		$('#vendor_dialog').modal('hide');
+		if (vendor.state != null) {
+			window.location.href = edit_url + vendor.code + "/edit";
+		} else {
+			$('#vendor_name').val(vendor.name);
+			$('#vendor_abbrname').val(vendor.abbrname);
+			$('#vendor_address').val(vendor.address);
+			$('#vendor_bank_acc_number').val(vendor.bank_acc_number);
+			$('#vendor_bank_open').val(vendor.bank_open);
+			$('#vendor_code').val(vendor.code);
+			$('#vendor_contact').val(vendor.contact);
+			$('#vendor_email').val(vendor.email);
+			$('#vendor_end_date').val(vendor.end_date);
+			$('#vendor_fax').val(vendor.fax);
+			$('#vendor_industry').val(vendor.industry);
+			$('#vendor_mobile').val(vendor.mobile);
+			$('#vendor_receive_site').val(vendor.receive_site);
+			$('#vendor_sort_code').val(vendor.sort_code);
+			$('#vendor_timestamp').val(vendor.timestamp);
+			$('#vendor_dialog').modal('hide');
+		}
+		
 	});
   
 
