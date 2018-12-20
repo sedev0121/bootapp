@@ -9,169 +9,87 @@
           <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
         <li sec:authorize="hasRole('ROLE_BUYER')"><a href="#">基础资料</a></li>
-        <li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/vendor}">供应商档案表</a></li>
-        <li sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{/vendor}">供应商管理</a></li>
-        <li class="active">详细信息</li>
+        <li><a th:href="@{/vendor}">供应商管理</a></li>
+        <li class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建供应商':'供应商详细'">详细信息</li>
       </ul>
 
       <div class="btn-group-bar">
         <div class="text-right">
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" id="save"><i class="fa fa-save"></i> 启用</a>  
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" id="delete"><i class="fa fa-remove"></i> 停用</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" id="start"><i class="fa fa-save"></i> 启用</a>  
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${data.code}" id="delete"><i class="fa fa-remove"></i> 停用</a>
           <a class="btn btn-default" th:href="@{/vendor}"><i class="fa fa-arrow-left"></i> 返回列表</a>
         </div>
       </div>
       <div class="panel panel-default">
         <div class="panel-body">
         <form id="form" th:action="@{/vendor/update}" method="post">
+          <input type="hidden" id="state" name="state" value="1"/>
           <div class="row">
               <div class="col-lg-4 col-md-4">
                 <label>供应商编码: </label>
-                <input type="text" name="code" class="form-control select-vendor" readonly th:value="${data.code}"/>
+                <input type="text" name="code" id="vendor_code" class="form-control select-vendor" readonly th:value="${data.code}"/>
               </div>
               <div class="col-lg-4 col-md-4">
                 <label>供应商名称: </label>
-                <input type="text" class="form-control select-vendor" readonly  th:value="${data.name}"/>
+                <input type="text" id="vendor_name" class="form-control select-vendor" readonly  th:value="${data.name}"/>
               </div>
               <div class="col-lg-4 col-md-4">
                 <label>供应商简称: </label>
-                <input type="text" class="form-control" readonly th:value="${data.abbrname}"/>
+                <input type="text" id="vendor_abbrname" class="form-control" readonly th:value="${data.abbrname}"/>
               </div>
 
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>所属地区: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
               <div class="col-lg-4 col-md-4">
                 <label>所属类别: </label>
-                <input type="text" class="form-control" readonly th:value="${data.sortCode}"/>
-              </div>
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>员工人数: </label>
-                <input type="text" class="form-control" readonly/>
+                <input type="text" id="vendor_sort_code" class="form-control" readonly th:value="${data.sortCode}"/>
               </div>
 
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>供应商总公司: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
               <div class="col-lg-4 col-md-4">
                 <label>所属行业: </label>
-                <input type="text" class="form-control" readonly th:value="${data.industry}"/>
-              </div>
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>对应客户: </label>
-                <input type="text" class="form-control" readonly/>
+                <input type="text" id="vendor_industry" class="form-control" readonly th:value="${data.industry}"/>
               </div>
 
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>币种: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>税号: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>注册资金: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
 
               <div class="col-lg-4 col-md-4">
                 <label>开户银行: </label>
-                <input type="text" class="form-control" readonly th:value="${data.bankOpen}"/>
+                <input type="text" id="vendor_bank_open" class="form-control" readonly th:value="${data.bankOpen}"/>
               </div>
               <div class="col-lg-4 col-md-4">
                 <label>银行账号: </label>
-                <input type="text" class="form-control" readonly th:value="${data.bankAccNumber}"/>
-              </div>
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>法人: </label>
-                <input type="text" class="form-control" readonly/>
+                <input type="text" id="vendor_bank_acc_number" class="form-control" readonly th:value="${data.bankAccNumber}"/>
               </div>
 
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>税率: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>分管部门: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>专营业务员: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
 
               <div class="col-lg-4 col-md-4">
                 <label>电话: </label>
-                <input type="text" class="form-control" readonly th:value="${data.phone}"/>
+                <input type="text" id="vendor_phone" class="form-control" readonly th:value="${data.phone}"/>
               </div>
               <div class="col-lg-4 col-md-4">
                 <label>传真: </label>
-                <input type="text" class="form-control" readonly th:value="${data.fax}"/>
+                <input type="text" id="vendor_fax" class="form-control" readonly th:value="${data.fax}"/>
               </div>
               <div class="col-lg-4 col-md-4">
                 <label>手机: </label>
-                <input type="text" class="form-control" readonly th:value="${data.mobile}"/>
+                <input type="text" id="vendor_mobile" class="form-control" readonly th:value="${data.mobile}"/>
               </div>
 
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>呼机: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>邮政编码: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
               <div class="col-lg-4 col-md-4">
                 <label>联系人: </label>
-                <input type="text" class="form-control" readonly th:value="${data.contact}"/>
+                <input type="text" id="vendor_contact" class="form-control" readonly th:value="${data.contact}"/>
               </div>
 
               <div class="col-lg-4 col-md-4">
                 <label>地址: </label>
-                <input type="text" class="form-control" readonly th:value="${data.address}"/>
+                <input type="text" id="vendor_address" class="form-control" readonly th:value="${data.address}"/>
               </div>
 
               <div class="col-lg-4 col-md-4">
                 <label>Email地址: </label>
-                <input type="text" class="form-control" readonly th:value="${data.email}"/>
-              </div>
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>结算方式: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>到货方式: </label>
-                <input type="text" class="form-control" readonly/>
+                <input type="text" id="vendor_email" class="form-control" readonly th:value="${data.email}"/>
               </div>
 
-              <div class="col-lg-12 col-md-12 hidden">
-                <label>到货地址: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
-
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>到货仓库: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>建档人: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>建档日期: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
-
-              <div class="col-lg-4 col-md-4 hidden">
-                <label>变更人: </label>
-                <input type="text" class="form-control" readonly/>
-              </div>
               <div class="col-lg-4 col-md-4">
                 <label>变更日期: </label>
-                <input type="text" class="form-control" readonly th:value="${data.timestamp}"/>
+                <input type="text" id="vendor_timestamp" class="form-control" readonly th:value="${data.timestamp}"/>
               </div>
               <div class="col-lg-4 col-md-4">
                 <label>采购组织: </label>
@@ -308,7 +226,7 @@ $(document).ready(function() {
 	      ordering: true,
 	      select: true,
 	      ajax : {
-	          url : /*[[@{/vendor/list}]]*/'',
+	          url : /*[[@{/vendor/listall}]]*/'',
 	          data : function(data) {
 	              var filter = {
 	                  rows_per_page : data.length,
@@ -384,7 +302,16 @@ $(document).ready(function() {
 		vendor_table.draw();
 	});
   
-	$("#save").click(function() {
+	$("#delete").click(function() {
+		$('#state').val(0);
+		save();
+	});
+	$("#start").click(function() {
+		$('#state').val(1);
+		save();
+	});
+	
+	function save() {
 	    jQuery(form).ajaxSubmit({
 	      beforeSend: function(){
 	        App.blockUI();
@@ -401,7 +328,7 @@ $(document).ready(function() {
 	        App.showErrorDialog("操作失败", "请输入正确的值");
 	      }
 	    });
-	});
+	}
 	
 	$("#save_vendor").click(function() {
 		var selectedRows = vendor_table.rows('.selected').data();
@@ -409,6 +336,22 @@ $(document).ready(function() {
 		  App.showErrorDialog("请选择一个供应商");
 		  return;
 		}	  
+		var vendor = selectedRows[0];
+		$('#vendor_name').val(vendor.name);
+		$('#vendor_abbrname').val(vendor.abbrname);
+		$('#vendor_address').val(vendor.address);
+		$('#vendor_bank_acc_number').val(vendor.bank_acc_number);
+		$('#vendor_bank_open').val(vendor.bank_open);
+		$('#vendor_code').val(vendor.code);
+		$('#vendor_contact').val(vendor.contact);
+		$('#vendor_email').val(vendor.email);
+		$('#vendor_end_date').val(vendor.end_date);
+		$('#vendor_fax').val(vendor.fax);
+		$('#vendor_industry').val(vendor.industry);
+		$('#vendor_mobile').val(vendor.mobile);
+		$('#vendor_receive_site').val(vendor.receive_site);
+		$('#vendor_sort_code').val(vendor.sort_code);
+		$('#vendor_timestamp').val(vendor.timestamp);
 		$('#vendor_dialog').modal('hide');
 	});
   

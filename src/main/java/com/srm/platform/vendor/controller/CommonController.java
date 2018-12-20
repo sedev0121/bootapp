@@ -131,10 +131,10 @@ public class CommonController {
 	public void checkVendor(Vendor vendor) {
 		List<String> unitList = getDefaultUnitList();
 
-		if ((isVendor() && !vendor.getCode().equals(this.getLoginAccount().getVendor().getCode())) || (!isVendor()
-				&& (vendor.getUnit() == null || !unitList.contains(String.valueOf(vendor.getUnit().getId()))))) {
-			show403();
-		}
+//		if ((isVendor() && !vendor.getCode().equals(this.getLoginAccount().getVendor().getCode())) || (!isVendor()
+//				&& (vendor.getUnit() == null || !unitList.contains(String.valueOf(vendor.getUnit().getId()))))) {
+//			show403();
+//		}
 	}
 
 	public boolean hasAuthority(String authority) {

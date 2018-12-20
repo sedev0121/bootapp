@@ -5,6 +5,7 @@ import java.util.List;
 public class VendorSaveForm {
 
 	private String code;
+	private Integer state;
 
 	public String getCode() {
 		return code;
@@ -23,6 +24,14 @@ public class VendorSaveForm {
 
 	public void setProvideclasses(List<Long> provideclasses) {
 		this.provideclasses = provideclasses;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 
