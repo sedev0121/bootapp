@@ -45,17 +45,19 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/provideclass")
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+
 public class ProvideClassController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	// 列表
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping({ "/", "" })
 	public String index(Model model) {
 		return "admin/provide_class/list";
 	}
 
 	@GetMapping("/add")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public String add(Model model) {
 		ProvideClass item = new ProvideClass();
 		model.addAttribute("item", item);
@@ -64,6 +66,7 @@ public class ProvideClassController extends CommonController {
 
 	// 修改
 	@GetMapping("/{id}/edit")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public String edit(@PathVariable("id") Long id, Model model) {
 		ProvideClass item = provideClassRepository.findOneById(id);
 
@@ -76,6 +79,7 @@ public class ProvideClassController extends CommonController {
 
 	// 用户管理->列表
 	@GetMapping("/list")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public @ResponseBody Page<ProvideClassSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
@@ -123,6 +127,7 @@ public class ProvideClassController extends CommonController {
 	// 修改
 	@Transactional
 	@PostMapping("/update")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public @ResponseBody GenericJsonResponse<ProvideClass> update_ajax(
 			@RequestParam Map<String, String> requestParams) {
 
@@ -159,6 +164,7 @@ public class ProvideClassController extends CommonController {
 
 	// 删除
 	@GetMapping("/{id}/delete")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public @ResponseBody GenericJsonResponse<ProvideClass> delete(@PathVariable("id") Long id, Model model) {
 		
 		GenericJsonResponse<ProvideClass> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
@@ -180,6 +186,7 @@ public class ProvideClassController extends CommonController {
 	}
 	
 	@ResponseBody
+	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/search", produces = "application/json")
 	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");

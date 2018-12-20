@@ -16,7 +16,8 @@
 
       <div class="btn-group-bar">
         <div class="text-right">
-          <a class="btn btn-primary hidden" sec:authorize="hasRole('ROLE_ADMIN')" id="save"><i class="fa fa-save"></i> 保存</a>  
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" id="save"><i class="fa fa-save"></i> 启用</a>  
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" id="delete"><i class="fa fa-remove"></i> 停用</a>
           <a class="btn btn-default" th:href="@{/vendor}"><i class="fa fa-arrow-left"></i> 返回列表</a>
         </div>
       </div>
@@ -175,9 +176,16 @@
               <div class="col-lg-4 col-md-4">
                 <label>采购组织: </label>
                 <input type="hidden" id="unit" name="unit" th:value="${data.unit?.id}">
-                <input type="text" id="unit_name" name="unit_name" class="form-control select-unit" th:value="${data.unit?.name}" readonly>
+                <input type="text" class="form-control select-unit" th:value="${data.unit?.name}" readonly>
               </div>
             </div>
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					<label for="provideclasses">供货类别:</label>
+					<select multiple="true" name="provideclasses" id="provideclasses" class="form-control" th:each="provideClass : ${provideClassList}">
+					</select>
+				</div>
+			</div>
             <div class="row" style="margin-top:15px;" th:each="account : ${accounts}">
               <div class="col-lg-2 col-md-2">
                 <label for="document_date">联系人: </label>
@@ -257,6 +265,7 @@ is_admin = 1;
 <script th:inline="javascript">
 
 /*[+
+var search_url = [[@{/provideclass/search}]];
 var tree_url = [[@{/unit/tree}]];  
 var edit_url = [[@{/vendor/}]];
 +]*/ 
@@ -265,6 +274,15 @@ var edit_url = [[@{/vendor/}]];
 
 $(document).ready(function() {
 
+  $("#provideclasses").select2(App.getSelect2TagOptions(search_url));
+  
+  var data = $.parseJSON(/*[[${provideClassList}]]*/'');
+  $.each(data, function(key, item){
+    var option = new Option(item.name + '(' + item.code + ')', item.id, true, true);
+    $("#provideclasses").append(option);
+  })
+  $("#provideclasses").trigger('change');
+  
   if (!is_admin) {
     $('#unit_name').removeClass("select-unit");
   }

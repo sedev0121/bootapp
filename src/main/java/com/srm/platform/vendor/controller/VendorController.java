@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,12 +20,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.util.StringUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.ProvideClass;
+import com.srm.platform.vendor.model.UnitProvide;
 import com.srm.platform.vendor.model.Vendor;
+import com.srm.platform.vendor.model.VendorProvide;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
+import com.srm.platform.vendor.repository.VendorProvideRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.SearchItem;
+import com.srm.platform.vendor.utility.VendorSaveForm;
 import com.srm.platform.vendor.utility.VendorSearchItem;
 
 // 供应商管理
@@ -41,6 +49,9 @@ public class VendorController extends CommonController {
 
 	@Autowired
 	private UnitRepository unitRepository;
+	
+	@Autowired
+	private VendorProvideRepository vendorProvideRepository;
 
 	// 查询列表
 	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
@@ -49,6 +60,18 @@ public class VendorController extends CommonController {
 		return "vendor/index";
 	}
 
+	// 详细
+	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
+	@GetMapping("/add")
+	public String add(Model model) {
+		Vendor vendor = new Vendor();
+		List<Account> accountList = new ArrayList<Account>();
+		model.addAttribute("data", vendor);
+		model.addAttribute("accounts", accountList);
+		model.addAttribute("provideClassList", "[]");
+		return "vendor/edit";
+	}
+	
 	// 详细
 	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
 	@GetMapping("/{code}/edit")
@@ -61,9 +84,22 @@ public class VendorController extends CommonController {
 			checkVendor(vendor);
 		}
 
+		List<ProvideClass> provideClassList = provideClassRepository.findProvideClassesByVendorCode(code);
+		
 		List<Account> accountList = accountRepository.findAccountsByVendor(vendor.getCode());
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonGroupString = "";
+		try {
+			jsonGroupString = mapper.writeValueAsString(provideClassList);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		model.addAttribute("data", vendor);
 		model.addAttribute("accounts", accountList);
+		model.addAttribute("provideClassList", jsonGroupString);
 		return "vendor/edit";
 	}
 
@@ -124,17 +160,18 @@ public class VendorController extends CommonController {
 	// 修改
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody Vendor update_ajax(@RequestParam Map<String, String> requestParams) {
-		String code = requestParams.get("code");
-
-		String unit = requestParams.get("unit");
-
-		Vendor vendor = vendorRepository.findOneByCode(code);
-
-		vendor.setUnit(unitRepository.findOneById(Long.parseLong(unit)));
-
-		vendorRepository.save(vendor);
-
+	public @ResponseBody Vendor update_ajax(VendorSaveForm vendorSaveForm) {
+		Vendor vendor = vendorRepository.findOneByCode(vendorSaveForm.getCode());
+		vendorProvideRepository.deleteByVendorCode(vendorSaveForm.getCode());
+		
+		List<Long> provideClassIdList = vendorSaveForm.getProvideclasses();
+		if (provideClassIdList != null) {
+			for (Long id : provideClassIdList) {
+				VendorProvide temp = new VendorProvide(id, vendorSaveForm.getCode());
+				vendorProvideRepository.save(temp);
+			}
+		}
+		
 		return vendor;
 	}
 

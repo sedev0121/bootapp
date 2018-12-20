@@ -47,12 +47,12 @@
 
 <script th:inline="javascript">
 var url = /*[[@{/unit/}]]*/'';
-var perm_search_url = /*[[@{/provideclass/search}]]*/'';
+var search_url = /*[[@{/provideclass/search}]]*/'';
 var get_url = /*[[@{/unit/get}]]*/'';
 
 jQuery(document).ready(function() {
 	
-	$("#provideclasses").select2(App.getSelect2TagOptions(perm_search_url));
+	$("#provideclasses").select2(App.getSelect2TagOptions(search_url));
 	
 	
 	  

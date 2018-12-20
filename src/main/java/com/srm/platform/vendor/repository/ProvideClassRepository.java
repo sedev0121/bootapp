@@ -26,5 +26,8 @@ public interface ProvideClassRepository extends JpaRepository<ProvideClass, Long
 	
 	
 	@Query(value = "select a.* from provide_class a left join unit_provide b on a.id=b.provide_id where b.unit_id=?1", nativeQuery = true)
-	List<ProvideClass> findProvideClasses(Long id);
+	List<ProvideClass> findProvideClassesByUnitId(Long id);
+	
+	@Query(value = "select a.* from provide_class a left join vendor_provide b on a.id=b.provide_id where b.vendor_code=?1", nativeQuery = true)
+	List<ProvideClass> findProvideClassesByVendorCode(String code);
 }

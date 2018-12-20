@@ -194,7 +194,7 @@ public class UnitController extends CommonController {
 	@RequestMapping(value = "/get/{id}", produces = "application/json")
 	public Map<String, Object> get_ajax(@PathVariable("id") Long id) {
 		Unit unit = unitRepository.findOneById(id);
-		List<ProvideClass> provideClassList = provideClassRepository.findProvideClasses(id);
+		List<ProvideClass> provideClassList = provideClassRepository.findProvideClassesByUnitId(id);
 		Map<String, Object> response = new HashMap();
 		response.put("unit", unit);
 		response.put("provide_classes", provideClassList);
