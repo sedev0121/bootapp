@@ -44,7 +44,7 @@ import com.srm.platform.vendor.utility.VendorSearchItem;
 
 public class VendorController extends CommonController {
 
-	private static String DEFAULT_PASSWORD = "111111";
+	private static String DEFAULT_PASSWORD = "111";
 
 	@Autowired
 	private VendorRepository vendorRepository;

@@ -15,9 +15,9 @@
 
       <div class="btn-group-bar">
         <div class="text-right">
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${accountState==1}" id="start"><i class="fa fa-save"></i> 修改</a>  
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${accountState!=1}" id="start"><i class="fa fa-save"></i> 启用</a>  
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${data.code}" id="delete"><i class="fa fa-remove"></i> 停用</a>
+          <a class="btn btn-primary" th:if="${accountState==1}" id="start"><i class="fa fa-save"></i> 修改</a>  
+          <a class="btn btn-primary" th:if="${accountState!=1}" id="start"><i class="fa fa-save"></i> 启用</a>  
+          <a class="btn btn-primary" th:if="${data.code}" id="delete"><i class="fa fa-remove"></i> 停用</a>
           <a class="btn btn-default" th:href="@{/vendor}"><i class="fa fa-arrow-left"></i> 返回列表</a>
         </div>
       </div>
@@ -257,6 +257,10 @@ $(document).ready(function() {
 		save();
 	});
 	$("#start").click(function() {
+		if (!$('#vendor_code').val()) {
+			App.showErrorDialog("操作失败", "请选择供应商");
+			return;
+		}
 		$('#state').val(1);
 		save();
 	});
