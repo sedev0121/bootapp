@@ -79,7 +79,7 @@ public class QuoteController extends CommonController {
 			show403();
 		}
 
-		checkVendor(main.getVendor());
+//		checkVendor(main.getVendor());
 
 		model.addAttribute("main", main);
 		return "quote/edit";
@@ -137,7 +137,7 @@ public class QuoteController extends CommonController {
 				+ "left join account e on a.maker_id=e.id left join account f on a.cverifier_id=f.id "
 				+ "where a.iverifystate>1 and a.createtype= :createType ";
 
-		List<String> unitList = this.getDefaultUnitList();
+		List<String> vendorList = this.getVendorListOfUser();
 		Map<String, Object> params = new HashMap<>();
 
 		if (isVendor()) {
@@ -147,8 +147,8 @@ public class QuoteController extends CommonController {
 			params.put("vendor", vendorStr);
 			params.put("createType", Constants.CREATE_TYPE_BUYER);
 		} else {
-			bodyQuery += " and c.unit_id in :unitList";
-			params.put("unitList", unitList);
+			bodyQuery += " and c.code in :vendorList";
+			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {
 				bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";
 				params.put("vendor", vendorStr.trim());

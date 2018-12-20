@@ -71,7 +71,7 @@ public class PurchaseOrderController extends CommonController {
 		if (main == null)
 			show404();
 
-		checkVendor(main.getVendor());
+//		checkVendor(main.getVendor());
 
 		model.addAttribute("main", main);
 		return "purchaseorder/edit";
@@ -129,7 +129,7 @@ public class PurchaseOrderController extends CommonController {
 				+ "left join (select code, sum(prepaymoney) prepaymoney, sum(money) money, sum(sum) sum from purchase_order_detail group by code) e on a.code=e.code "
 				+ "WHERE a.state='审核' ";
 
-		List<String> unitList = this.getDefaultUnitList();
+		List<String> vendorList = this.getVendorListOfUser();
 		Map<String, Object> params = new HashMap<>();
 
 		if (isVendor()) {
@@ -141,8 +141,8 @@ public class PurchaseOrderController extends CommonController {
 			bodyQuery += " and a.srmstate>0 ";
 
 		} else {
-			bodyQuery += " and b.unit_id in :unitList";
-			params.put("unitList", unitList);
+			bodyQuery += " and b.code in :vendorList";
+			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {
 				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
 				params.put("vendor", vendorStr.trim());

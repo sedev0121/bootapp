@@ -50,3 +50,7 @@ CREATE TABLE `vendor_provide`  (
   `provide_id` int(11) NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+DROP TABLE IF EXISTS `notice_vendor`;
+DROP TABLE IF EXISTS `permission_group_function_unit`;

@@ -31,8 +31,8 @@ import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PasswordResetToken;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PasswordResetTokenRepository;
-import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
+import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.PermissionItem;
 import com.srm.platform.vendor.utility.PermissionUnit;
@@ -59,7 +59,7 @@ public class AccountService implements UserDetailsService {
 	private PermissionGroupRepository permissionGroupRepository;
 
 	@Autowired
-	private PermissionGroupFunctionUnitRepository permissionGroupFunctionUnitRepository;
+	private UnitRepository unitRepository;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -130,12 +130,6 @@ public class AccountService implements UserDetailsService {
 
 	private List<GrantedAuthority> createAuthorities(Account account) {
 
-		List<PermissionUnit> permissionUnitList = permissionGroupFunctionUnitRepository
-				.findPermissionUnitsForAccount(account.getId());
-		for (PermissionUnit unit : permissionUnitList) {
-			httpSession.setAttribute(unit.getName(), unit.getUnits());
-		}
-
 		if (account.getUnit() != null) {
 			String myUnitList = String.valueOf(account.getUnit().getId());
 			myUnitList = StringUtils.append(myUnitList, "," + searchChildren(myUnitList));
@@ -158,7 +152,7 @@ public class AccountService implements UserDetailsService {
 
 	private String searchChildren(String parentIdList) {
 		String childList = "";
-		List<PermissionUnit> unitList = permissionGroupFunctionUnitRepository
+		List<PermissionUnit> unitList = unitRepository
 				.findChildrenByParentId(StringUtils.split(parentIdList, ","));
 		for (PermissionUnit unit : unitList) {
 			if (unit != null)

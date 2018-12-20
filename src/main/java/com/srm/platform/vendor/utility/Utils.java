@@ -11,7 +11,7 @@ import java.util.Random;
 
 import org.thymeleaf.util.StringUtils;
 
-import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
+import com.srm.platform.vendor.repository.UnitRepository;
 
 public class Utils {
 
@@ -126,33 +126,6 @@ public class Utils {
 		return id;
 	}
 
-	public static List<String> getAllUnitsOfId(Long unitId,
-			PermissionGroupFunctionUnitRepository permissionGroupFunctionUnitRepository) {
-		String unitList = String.valueOf(unitId);
-		unitList = StringUtils.append(unitList, "," + searchChildren(unitList, permissionGroupFunctionUnitRepository));
-
-		return Arrays.asList(StringUtils.split(unitList, ","));
-	}
-
-	private static String searchChildren(String parentIdList,
-			PermissionGroupFunctionUnitRepository permissionGroupFunctionUnitRepository) {
-		String childList = "";
-		List<PermissionUnit> unitList = permissionGroupFunctionUnitRepository
-				.findChildrenByParentId(StringUtils.split(parentIdList, ","));
-		for (PermissionUnit unit : unitList) {
-			if (unit != null)
-				childList = StringUtils.append(childList, "," + unit.getUnits());
-		}
-
-		if (childList.isEmpty()) {
-			return childList;
-		} else {
-			childList = StringUtils.append(childList,
-					"," + searchChildren(childList, permissionGroupFunctionUnitRepository));
-			return childList;
-		}
-	}
-
 	public static String generateResetPassword() {
 		int max = 1000000;
 		int min = 100000;
@@ -175,7 +148,7 @@ public class Utils {
 	}
 
 	public static double priceRound(double value) {
-		return Double.parseDouble(String.format("%.6f", value));		
+		return Double.parseDouble(String.format("%.6f", value));
 	}
 
 	public static double costRound(double value) {

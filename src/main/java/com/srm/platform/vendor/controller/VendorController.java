@@ -87,10 +87,6 @@ public class VendorController extends CommonController {
 		if (vendor == null)
 			show404();
 
-		if (!isAdmin()) {
-			checkVendor(vendor);
-		}
-
 		List<ProvideClass> provideClassList = provideClassRepository.findProvideClassesByVendorCode(code);
 
 		Account account = accountRepository.findOneByUsername(code);
@@ -173,17 +169,6 @@ public class VendorController extends CommonController {
 			List<String> unitList = this.getDefaultUnitList();
 			return vendorRepository.findForSelect(unitList, search, request);
 		}
-
-	}
-
-	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR') or hasRole('ROLE_ADMIN')")
-	@ResponseBody
-	@RequestMapping(value = "/select", produces = "application/json")
-	public Page<SearchItem> select_ajax(@RequestParam(value = "q") String search) {
-		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "b.name");
-
-		List<String> unitList = this.getDefaultUnitList();
-		return vendorRepository.findForNotice(unitList, search, request);
 
 	}
 

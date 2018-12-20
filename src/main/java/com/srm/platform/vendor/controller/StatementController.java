@@ -208,7 +208,7 @@ public class StatementController extends CommonController {
 				+ "left join account d on a.verifier_id=d.id left join account e on a.confirmer_id=e.id left join account f on a.invoicenummaker_id=f.id "
 				+ "left join account g on a.u8invoicemaker_id=g.id where 1=1 ";
 
-		List<String> unitList = this.getDefaultUnitList();
+		List<String> vendorList = this.getVendorListOfUser();
 		Map<String, Object> params = new HashMap<>();
 
 		if (isVendor()) {
@@ -220,8 +220,8 @@ public class StatementController extends CommonController {
 			bodyQuery += " and a.state>=" + Constants.STATEMENT_STATE_REVIEW;
 
 		} else {
-			bodyQuery += " and b.unit_id in :unitList";
-			params.put("unitList", unitList);
+			bodyQuery += " and b.code in :vendorList";
+			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {
 				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
 				params.put("vendor", vendorStr.trim());

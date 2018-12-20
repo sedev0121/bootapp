@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.srm.platform.vendor.model.ProvideClass;
 import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.utility.PermissionItem;
+import com.srm.platform.vendor.utility.PermissionUnit;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
@@ -31,5 +32,7 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
 	@Query(value = "delete from unit where id in ?1", nativeQuery = true)
 	void deleteByChildIds(String[] childIds);
 	
+	@Query(value = "select GROUP_CONCAT(id) units from unit where parent_id in :parentIds", nativeQuery = true)
+	List<PermissionUnit> findChildrenByParentId(String[] parentIds);
 
 }

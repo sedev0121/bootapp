@@ -118,13 +118,6 @@ public class UnitController extends CommonController {
 			return response;
 		}
 
-		List<Vendor> vendorList = vendorRepository.findVendorsByUnitIdList(childUnitList);
-		if (vendorList.size() > 0) {
-			GenericJsonResponse<Unit> response = new GenericJsonResponse<>(GenericJsonResponse.FAILED,
-					vendorList.size() + "个供应商被属于该组织。", null);
-			return response;
-		}
-
 		unitProvideRepository.deleteByUnitId(unit.getId());
 		unitRepository.delete(unit);
 		if (childrenUnitIds != null) {

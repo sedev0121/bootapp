@@ -38,6 +38,7 @@ import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.model.Price;
+import com.srm.platform.vendor.model.ProvideClass;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
@@ -48,6 +49,7 @@ import com.srm.platform.vendor.repository.PriceRepository;
 import com.srm.platform.vendor.repository.ProvideClassRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
+import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.service.SessionCounter;
 import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.u8api.AppProperties;
@@ -79,6 +81,10 @@ public class CommonController {
 	@PersistenceContext
 	public EntityManager em;
 
+	
+	@Autowired
+	private VendorRepository vendorRepository;
+	
 	@Autowired
 	public NoticeRepository noticeRepository;
 
@@ -130,11 +136,12 @@ public class CommonController {
 
 	public void checkVendor(Vendor vendor) {
 		List<String> unitList = getDefaultUnitList();
-
-//		if ((isVendor() && !vendor.getCode().equals(this.getLoginAccount().getVendor().getCode())) || (!isVendor()
-//				&& (vendor.getUnit() == null || !unitList.contains(String.valueOf(vendor.getUnit().getId()))))) {
-//			show403();
-//		}
+		List<ProvideClass> provideClassListOfUnits = provideClassRepository.findVendorProvideClassesForUnits(vendor.getCode(), unitList);
+		
+		if ((isVendor() && !vendor.getCode().equals(this.getLoginAccount().getVendor().getCode())) || 
+				(!isVendor() && provideClassListOfUnits.size() == 0)) {
+			show403();
+		}
 	}
 
 	public boolean hasAuthority(String authority) {
@@ -167,6 +174,20 @@ public class CommonController {
 		return result;
 
 	}
+	
+	public List<String> getVendorListOfUser() {
+		List<String> unitList = this.getDefaultUnitList();
+		List<Vendor> vendorList = vendorRepository.findVendorsByUnitIdList(unitList);
+		
+		List<String> vendorCodeList = new ArrayList<String>();
+		for (Vendor vendor : vendorList) {
+			vendorCodeList.add(vendor.getCode());
+		}
+		
+		return vendorCodeList;
+	}
+	
+	
 
 	public boolean isAuthorizedUnit(Long unitId) {
 		for (String unitIdStr : getDefaultUnitList()) {
@@ -193,6 +214,12 @@ public class CommonController {
 	public void setReadDate(Long noticeId) {
 		NoticeRead noticeRead = noticeReadRepository.findOneByNoticeAndAccount(noticeId,
 				this.getLoginAccount().getId());
+		if (noticeRead == null) {
+			noticeRead = new NoticeRead();
+			noticeRead.setAccount(this.getLoginAccount());
+			noticeRead.setNotice(noticeRepository.findOneById(noticeId));
+		}
+
 		if (noticeRead != null) {
 			noticeRead.setReadDate(new Date());
 			noticeReadRepository.save(noticeRead);

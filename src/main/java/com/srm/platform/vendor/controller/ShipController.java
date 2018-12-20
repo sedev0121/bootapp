@@ -142,7 +142,7 @@ public class ShipController extends CommonController {
 				+ "left join inventory c on a.inventorycode=c.code left join vendor d on b.vencode=d.code "
 				+ "left join measurement_unit e on c.main_measure=e.code where b.srmstate=2 ";
 
-		List<String> unitList = this.getDefaultUnitList();
+		List<String> vendorList = this.getVendorListOfUser();
 		Map<String, Object> params = new HashMap<>();
 
 		if (!code.trim().isEmpty()) {
@@ -156,8 +156,8 @@ public class ShipController extends CommonController {
 			bodyQuery += " and d.code= :vendor";
 			params.put("vendor", vendorStr);
 		} else {
-			bodyQuery += " and d.unit_id in :unitList";
-			params.put("unitList", unitList);
+			bodyQuery += " and d.code in :vendorList";
+			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {
 				bodyQuery += " and (d.name like CONCAT('%',:vendor, '%') or d.code like CONCAT('%',:vendor, '%')) ";
 				params.put("vendor", vendorStr.trim());

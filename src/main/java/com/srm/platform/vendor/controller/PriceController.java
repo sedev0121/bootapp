@@ -86,17 +86,17 @@ public class PriceController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT a.*, d.realname createname, b.name vendorname, b.code vendorcode, c.name inventoryname, c.code inventorycode ";
-		String countQuery = "select count(*) ";
+		String selectQuery = "SELECT distinct a.*, d.realname createname, b.name vendorname, b.code vendorcode, c.name inventoryname, c.code inventorycode ";
+		String countQuery = "select count(DISTINCT a.id, d.realname , b.name, b.code, c.name, c.code) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "FROM price a left join vendor b on a.fsupplyno=b.code left join inventory c on a.cinvcode=c.code "
-				+ "left join account d on a.createby=d.id WHERE b.unit_id in :unitList ";
+				+ "left join account d on a.createby=d.id WHERE b.code in :vendorList ";
 
-		List<String> unitList = this.getDefaultUnitList();
+		List<String> vendorList = this.getVendorListOfUser();
 		Map<String, Object> params = new HashMap<>();
 
-		params.put("unitList", unitList);
+		params.put("vendorList", vendorList);
 		if (!vendorStr.trim().isEmpty()) {
 			bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
 			params.put("vendor", vendorStr.trim());
