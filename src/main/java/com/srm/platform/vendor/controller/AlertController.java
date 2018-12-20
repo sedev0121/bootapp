@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,7 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/alert")
+@PreAuthorize("hasAuthority('公告通知-查看列表')")
 public class AlertController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

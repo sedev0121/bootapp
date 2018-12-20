@@ -32,7 +32,7 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/baseprice")
-@PreAuthorize("hasRole('ROLE_BUYER')")
+@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('基础资料-查看列表')")
 public class PriceController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

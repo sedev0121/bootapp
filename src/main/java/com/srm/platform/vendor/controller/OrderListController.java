@@ -35,6 +35,7 @@ import com.srm.platform.vendor.view.ExcelOrderlistReportView;
 //库存报表
 @Controller
 @RequestMapping(path = "/orderlist")
+@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('报表中心-查看列表')")
 public class OrderListController extends CommonController {
 	@Autowired
 	private VendorRepository vendorRepository;

@@ -35,6 +35,7 @@ import com.srm.platform.vendor.view.ExcelPriceChangeReportView;
 
 @Controller
 @RequestMapping(path = "/pricechange")
+@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('报表中心-查看列表')")
 public class PriceChangeController extends CommonController {
 	@PreAuthorize("hasRole('ROLE_BUYER')")
 	@GetMapping({ "/", "" })

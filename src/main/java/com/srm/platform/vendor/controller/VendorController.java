@@ -41,7 +41,7 @@ import com.srm.platform.vendor.utility.VendorSearchItem;
 // 供应商管理
 @Controller
 @RequestMapping(path = "/vendor")
-
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('基础资料-查看列表')")
 public class VendorController extends CommonController {
 
 	private static String DEFAULT_PASSWORD = "111";
