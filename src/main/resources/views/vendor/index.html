@@ -15,7 +15,7 @@
               <input type="text" id="product_name" class="form-control">
             <a class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</a>
             <a class="btn btn-success" id="btn_sync_vendor"><i class="fa fa-download"></i> 同步U8供应商</a>
-            <a class="btn btn-primary" th:href="@{/vendor/add}"><i class="fa fa-plus-circle"></i> 新建</a>
+            <a class="btn btn-primary" sec:authorize="hasAuthority('基础资料-新建供应商')"  th:href="@{/vendor/add}"><i class="fa fa-plus-circle"></i> 新建</a>
           </div>
       </div>
       <div class="row">

@@ -41,7 +41,7 @@ import com.srm.platform.vendor.utility.VendorSearchItem;
 // 供应商管理
 @Controller
 @RequestMapping(path = "/vendor")
-@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('基础资料-查看列表')")
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('基础资料-供应商档案')")
 public class VendorController extends CommonController {
 
 	private static String DEFAULT_PASSWORD = "111";
@@ -68,8 +68,9 @@ public class VendorController extends CommonController {
 		return "vendor/index";
 	}
 
+	
 	// 详细
-	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAuthority('基础资料-新建供应商')")
 	@GetMapping("/add")
 	public String add(Model model) {
 		Vendor vendor = new Vendor();
@@ -80,7 +81,7 @@ public class VendorController extends CommonController {
 	}
 
 	// 详细
-	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAuthority('基础资料-新建供应商')")
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
 		Vendor vendor = vendorRepository.findOneByCode(code);

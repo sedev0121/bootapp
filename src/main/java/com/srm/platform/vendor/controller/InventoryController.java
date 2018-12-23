@@ -25,7 +25,7 @@ import com.srm.platform.vendor.utility.InventorySearchItem;
 //商品档案表
 @Controller
 @RequestMapping(path = "/inventory")
-@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('基础资料-查看列表')")
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('基础资料-物料档案')")
 public class InventoryController extends CommonController {
 
 	@PersistenceContext
@@ -35,14 +35,12 @@ public class InventoryController extends CommonController {
 	private InventoryRepository inventoryRepository;
 
 	// 查询列表
-	@PreAuthorize("hasRole('ROLE_BUYER')")
 	@GetMapping({ "/", "" })
 	public String index() {
 		return "inventory/index";
 	}
 
 	// 详细
-	@PreAuthorize("hasRole('ROLE_BUYER')")
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
 		Inventory main = inventoryRepository.findByCode(code);

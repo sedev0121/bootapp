@@ -30,7 +30,7 @@
                 <label class="small active margin-right-10">全选 </label>
               </legend>
    
-              <div class="col-lg-4 col-md-4" th:each="action : ${item.Actions}">
+              <div class="col-lg-4 col-md-4" style="padding-left: 0px" th:each="action : ${item.Actions}">
                 <input type="checkbox" th:classappend="${item.id}?'class_' + ${item.id}" th:attrappend="checked=${action.available}?true" name="functions[]" th:value="${action.functionActionId}"><label th:text="${action.name}"> </label>
               </div>  
               
