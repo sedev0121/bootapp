@@ -146,6 +146,7 @@ is_admin = 1;
 
 /*[+
 var search_url = [[@{/provideclass/search}]];
+var search_admin_url = [[@{/provideclass/search/admin}]];
 var tree_url = [[@{/unit/tree}]];  
 var edit_url = [[@{/vendor/}]];
 var account_state = [[${accountState}]];
@@ -156,7 +157,7 @@ var account_state = [[${accountState}]];
 $(document).ready(function() {
 
 	var vendor_table;
-	$("#provideclasses").select2(App.getSelect2TagOptions(search_url));
+	$("#provideclasses").select2(App.getSelect2TagOptions(is_admin?search_admin_url:search_url));
 	$("#account_state").select2({ data: [{id:2, text:"  "}, ...App.getAccountStateData()],minimumResultsForSearch: -1}).select2("val", account_state.toString());
 	var data = $.parseJSON(/*[[${provideClassList}]]*/'');
 	$.each(data, function(key, item){

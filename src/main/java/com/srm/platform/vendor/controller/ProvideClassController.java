@@ -191,7 +191,17 @@ public class ProvideClassController extends CommonController {
 	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
 
-		return provideClassRepository.findForSelect(search, request);
+		return provideClassRepository.findForSelect(this.getDefaultUnitList(), search, request);
+
+	}
+	
+	@ResponseBody
+	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
+	@RequestMapping(value = "/search/admin", produces = "application/json")
+	public Page<SearchItem> search_for_admin_ajax(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
+
+		return provideClassRepository.findForSelectAdmin(search, request);
 
 	}
 }
