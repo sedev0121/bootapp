@@ -179,16 +179,6 @@ public class VendorController extends CommonController {
 	@PostMapping("/update")
 	public @ResponseBody Vendor update_ajax(VendorSaveForm vendorSaveForm) {
 		Vendor vendor = vendorRepository.findOneByCode(vendorSaveForm.getCode());
-		vendorProvideRepository.deleteByVendorCode(vendorSaveForm.getCode());
-
-		List<Long> provideClassIdList = vendorSaveForm.getProvideclasses();
-		if (provideClassIdList != null) {
-			for (Long id : provideClassIdList) {
-				VendorProvide temp = new VendorProvide(id, vendorSaveForm.getCode());
-				vendorProvideRepository.save(temp);
-			}
-		}
-
 		Account account = accountRepository.findOneByUsername(vendor.getCode());
 
 		if (account == null) {
@@ -208,9 +198,19 @@ public class VendorController extends CommonController {
 			account.setState(1);
 			account.setStartDate(new Date());
 			account.setStopDate(null);
-		} else {
+		} else if (vendorSaveForm.getState() == 0) {
 			account.setState(0);
-			account.setStopDate(new Date());
+			account.setStopDate(new Date());	
+		} else {
+			vendorProvideRepository.deleteByVendorCode(vendorSaveForm.getCode());
+
+			List<Long> provideClassIdList = vendorSaveForm.getProvideclasses();
+			if (provideClassIdList != null) {
+				for (Long id : provideClassIdList) {
+					VendorProvide temp = new VendorProvide(id, vendorSaveForm.getCode());
+					vendorProvideRepository.save(temp);
+				}
+			}
 		}
 
 		account = accountRepository.save(account);

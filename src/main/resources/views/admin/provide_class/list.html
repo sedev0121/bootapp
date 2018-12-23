@@ -70,6 +70,12 @@
 				data : 'name',
 				className : 'dt-center',
 				title : '供货类别名称',
+				render : function(data, display, record) {
+					var edit_url = /*[[@{/provideclass/}]]*/'';
+					edit_url += record.id + '/edit';
+					var html = '<a href="' + edit_url + '">' + data + '</a>';
+					return html;
+				},
 			} ],
 		});
 
