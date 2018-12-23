@@ -156,8 +156,8 @@ var account_state = [[${accountState}]];
 
 $(document).ready(function() {
 	
-	if ($('#modify').length == 0) {
-		is_readonly = 1;
+	if ($('#modify').length > 0) {
+		is_readonly = 0;
 	}
 	
 	var vendor_table;
@@ -285,9 +285,13 @@ $(document).ready(function() {
 	        App.unblockUI();
 	      },
 	      success: function(res, status, xhr, form) {
-	        App.showSuccessDialog("操作成功", function(){
-	          window.location.href = edit_url + res.code + "/edit";
-	        });
+	    	  if (res.success) {
+	    		  App.showSuccessDialog("操作成功", function() {
+	    			  window.location.href = edit_url + res.data.code + "/edit";
+    			  });
+    		  } else {
+    			  App.showErrorDialog("操作失败", res.errmsg);
+   			  }
 	      },
 	      error: function (res, status, xhr, form) {
 	        App.showErrorDialog("操作失败", "请输入正确的值");

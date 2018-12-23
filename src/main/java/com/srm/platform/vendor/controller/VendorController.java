@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.ProvideClass;
+import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.model.UnitProvide;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.model.VendorProvide;
@@ -176,10 +177,13 @@ public class VendorController extends CommonController {
 	// 修改
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody Vendor update_ajax(VendorSaveForm vendorSaveForm) {
+	public @ResponseBody GenericJsonResponse<Vendor> update_ajax(VendorSaveForm vendorSaveForm) {
 		Vendor vendor = vendorRepository.findOneByCode(vendorSaveForm.getCode());
 		Account account = accountRepository.findOneByUsername(vendor.getCode());
 
+		GenericJsonResponse<Vendor> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
+				vendor);
+		
 		if (account == null) {
 			account = new Account();
 			account.setUsername(vendor.getCode());
@@ -198,6 +202,14 @@ public class VendorController extends CommonController {
 			account.setStartDate(new Date());
 			account.setStopDate(null);
 		} else if (vendorSaveForm.getState() == 0) {
+			if (!this.isAdmin()) {
+				List<Unit> otherUnits = unitRepository.findOtherUnitsUsingVendor(this.getLoginAccount().getUnit().getId(), vendor.getCode());
+				if (otherUnits.size() > 0) {
+					jsonResponse.setSuccess(GenericJsonResponse.FAILED);
+					jsonResponse.setErrmsg("供货类别正在被别的组织使用。若要停用，请联系管理员。");
+					return jsonResponse;
+				}
+			}
 			account.setState(0);
 			account.setStopDate(new Date());	
 		} else {
@@ -214,7 +226,7 @@ public class VendorController extends CommonController {
 
 		account = accountRepository.save(account);
 
-		return vendor;
+		return jsonResponse;
 	}
 
 	// 修改

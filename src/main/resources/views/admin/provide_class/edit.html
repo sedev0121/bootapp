@@ -95,9 +95,9 @@
 				var del_url = edit_url + $("#id").val() + "/delete";
 				$.get(del_url, function(res, status) {
 					if (res.success) {
-	          App.showSuccessDialog("操作成功", function() {
-              window.location.href = edit_url;
-            });
+			          	App.showSuccessDialog("操作成功", function() {
+			              window.location.href = edit_url;
+		            	});
 					} else {
 						App.showErrorDialog("操作失败", res.data.errmsg);
 					}

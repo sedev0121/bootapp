@@ -34,5 +34,8 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
 	
 	@Query(value = "select GROUP_CONCAT(id) units from unit where parent_id in :parentIds", nativeQuery = true)
 	List<PermissionUnit> findChildrenByParentId(String[] parentIds);
+	
+	@Query(value = "select * from unit where id <> ?1 and id in (select unit_id from unit_provide where provide_id in (select provide_id from vendor_provide where vendor_code=?2))", nativeQuery = true)
+	List<Unit> findOtherUnitsUsingVendor(Long unitId, String vendorCode);
 
 }
