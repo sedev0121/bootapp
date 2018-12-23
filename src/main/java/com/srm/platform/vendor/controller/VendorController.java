@@ -62,7 +62,6 @@ public class VendorController extends CommonController {
 	private PasswordEncoder passwordEncoder;
 
 	// 查询列表
-	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
 	@GetMapping({ "", "/" })
 	public String index() {
 		return "vendor/index";
@@ -81,7 +80,6 @@ public class VendorController extends CommonController {
 	}
 
 	// 详细
-	@PreAuthorize("hasAuthority('基础资料-新建供应商')")
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
 		Vendor vendor = vendorRepository.findOneByCode(code);

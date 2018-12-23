@@ -155,7 +155,11 @@ var account_state = [[${accountState}]];
 
 
 $(document).ready(function() {
-
+	
+	if ($('#modify').length == 0) {
+		is_readonly = 1;
+	}
+	
 	var vendor_table;
 	$("#provideclasses").select2(App.getSelect2TagOptions(is_admin?search_admin_url:search_url));
 	$("#account_state").select2({ data: [{id:2, text:"  "}, ...App.getAccountStateData()],minimumResultsForSearch: -1}).select2("val", account_state.toString());
@@ -166,6 +170,9 @@ $(document).ready(function() {
 	})
 	$("#provideclasses").trigger('change');
   
+	if (is_readonly) {
+		$("#provideclasses").select2("enable", false);
+	}
 	$('.modal').on('shown.bs.modal', function () {
 	  if (vendor_table) {
 		  return;
