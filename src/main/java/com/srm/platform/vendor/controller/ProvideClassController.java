@@ -140,16 +140,30 @@ public class ProvideClassController extends CommonController {
 
 		Long idKey = (id != null && !id.isEmpty()) ? Long.valueOf(id) : 0L;
 
+		ProvideClass item = new ProvideClass();
+
+		if (id != null && !id.isEmpty()) {
+			item = provideClassRepository.findOneById(Long.parseLong(id));
+		}
+		
+		boolean isChangeCode = false;
+		if (item.getId() != null && item.getCode() != Long.valueOf(code)) {
+			isChangeCode = true;
+		}
+		
 		List<ProvideClass> duplicatedItems = provideClassRepository.findDuplicatedCode(Long.valueOf(code), idKey);
+		List<ProvideClass> usingItemsByUnit = provideClassRepository.checkUnitsUsingId(idKey);
+		List<ProvideClass> usingItemsByVendor = provideClassRepository.checkVendorsUsingId(idKey);
 		if (duplicatedItems.size() > 0) {
 			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
 			jsonResponse.setErrmsg("供货类别编码重复");
+		} else if (isChangeCode && usingItemsByUnit.size() > 0) {
+			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
+			jsonResponse.setErrmsg("供货类别已经使用，不允许更改编号");
+		} else if (isChangeCode && usingItemsByVendor.size() > 0) {
+			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
+			jsonResponse.setErrmsg("供货类别已经使用，不允许更改编号");
 		} else {
-			ProvideClass item = new ProvideClass();
-
-			if (id != null && !id.isEmpty()) {
-				item = provideClassRepository.findOneById(Long.parseLong(id));
-			}
 
 			item.setCode(Long.parseLong(code));
 			item.setName(name);
@@ -166,25 +180,24 @@ public class ProvideClassController extends CommonController {
 	@GetMapping("/{id}/delete")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public @ResponseBody GenericJsonResponse<ProvideClass> delete(@PathVariable("id") Long id, Model model) {
-		
+
 		GenericJsonResponse<ProvideClass> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
 				null);
-		
+
 		List<ProvideClass> usingList = provideClassRepository.findListUsingId(id);
 		if (usingList.size() > 0) {
 			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
 			jsonResponse.setErrmsg("供货类别正在使用当中");
-		}else {
+		} else {
 			ProvideClass item = provideClassRepository.findOneById(id);
 			provideClassRepository.delete(item);
 
 			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, item);
 		}
-		
 
 		return jsonResponse;
 	}
-	
+
 	@ResponseBody
 	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/search", produces = "application/json")
@@ -194,7 +207,7 @@ public class ProvideClassController extends CommonController {
 		return provideClassRepository.findForSelect(this.getDefaultUnitList(), search, request);
 
 	}
-	
+
 	@ResponseBody
 	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/search/admin", produces = "application/json")
