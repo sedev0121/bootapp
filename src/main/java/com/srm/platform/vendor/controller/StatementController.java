@@ -208,7 +208,6 @@ public class StatementController extends CommonController {
 				+ "left join account d on a.verifier_id=d.id left join account e on a.confirmer_id=e.id left join account f on a.invoicenummaker_id=f.id "
 				+ "left join account g on a.u8invoicemaker_id=g.id where 1=1 ";
 
-		List<String> vendorList = this.getVendorListOfUser();
 		Map<String, Object> params = new HashMap<>();
 
 		if (isVendor()) {
@@ -220,6 +219,7 @@ public class StatementController extends CommonController {
 			bodyQuery += " and a.state>=" + Constants.STATEMENT_STATE_REVIEW;
 
 		} else {
+			List<String> vendorList = this.getVendorListOfUser();
 			bodyQuery += " and b.code in :vendorList";
 			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {

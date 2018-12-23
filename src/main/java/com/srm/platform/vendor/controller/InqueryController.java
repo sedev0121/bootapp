@@ -191,7 +191,6 @@ public class InqueryController extends CommonController {
 					+ "left join account e on a.maker_id=e.id left join account f on a.cverifier_id=f.id "
 					+ "where c.code in :vendorList and a.createtype= :createType ";
 		}
-		List<String> vendorList = this.getVendorListOfUser();
 		Map<String, Object> params = new HashMap<>();
 
 		if (isVendor()) {
@@ -201,6 +200,7 @@ public class InqueryController extends CommonController {
 			params.put("vendor", vendorStr);
 			params.put("createType", Constants.CREATE_TYPE_VENDOR);
 		} else {
+			List<String> vendorList = this.getVendorListOfUser();
 			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {
 				bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";

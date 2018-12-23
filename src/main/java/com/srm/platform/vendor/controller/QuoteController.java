@@ -137,7 +137,6 @@ public class QuoteController extends CommonController {
 				+ "left join account e on a.maker_id=e.id left join account f on a.cverifier_id=f.id "
 				+ "where a.iverifystate>1 and a.createtype= :createType ";
 
-		List<String> vendorList = this.getVendorListOfUser();
 		Map<String, Object> params = new HashMap<>();
 
 		if (isVendor()) {
@@ -147,6 +146,7 @@ public class QuoteController extends CommonController {
 			params.put("vendor", vendorStr);
 			params.put("createType", Constants.CREATE_TYPE_BUYER);
 		} else {
+			List<String> vendorList = this.getVendorListOfUser();
 			bodyQuery += " and c.code in :vendorList";
 			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {

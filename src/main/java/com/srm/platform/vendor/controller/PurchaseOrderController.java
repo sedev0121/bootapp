@@ -129,7 +129,6 @@ public class PurchaseOrderController extends CommonController {
 				+ "left join (select code, sum(prepaymoney) prepaymoney, sum(money) money, sum(sum) sum from purchase_order_detail group by code) e on a.code=e.code "
 				+ "WHERE a.state='审核' ";
 
-		List<String> vendorList = this.getVendorListOfUser();
 		Map<String, Object> params = new HashMap<>();
 
 		if (isVendor()) {
@@ -141,6 +140,7 @@ public class PurchaseOrderController extends CommonController {
 			bodyQuery += " and a.srmstate>0 ";
 
 		} else {
+			List<String> vendorList = this.getVendorListOfUser();
 			bodyQuery += " and b.code in :vendorList";
 			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {

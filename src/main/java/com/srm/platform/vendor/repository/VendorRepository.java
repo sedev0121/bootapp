@@ -30,9 +30,12 @@ public interface VendorRepository extends JpaRepository<Vendor, Long> {
 
 	Vendor findOneByCode(String code);
 
-	@Query(value = "SELECT distinct a.* FROM vendor a left join vendor_provide b on a.code=b.vendor_code where b.provide_id in (select provide_id from unit_provide where unit_id in ?2) and (a.code LIKE %?1% or a.name LIKE %?1%) ", countQuery = "SELECT count(distinct a.code) FROM vendor a left join vendor_provide b on a.code=b.vendor_code where b.provide_id in (select provide_id from unit_provide where unit_id in ?2) and (a.code LIKE %?1% or a.name LIKE %?1%) ", nativeQuery = true)
+	@Query(value = "SELECT a.*, group_concat(concat(p.name, '(', p.code, ')'), ' ') provide_name FROM vendor a left join vendor_provide b on a.code=b.vendor_code left join provide_class p on b.provide_id=p.id where p.id is not null and b.provide_id in (select provide_id from unit_provide where unit_id in ?2) and (a.code LIKE %?1% or a.name LIKE %?1%) group by a.code", countQuery = "SELECT count(a.code) FROM vendor a left join vendor_provide b on a.code=b.vendor_code left join provide_class p on b.provide_id=p.id where p.id is not null and b.provide_id in (select provide_id from unit_provide where unit_id in ?2) and (a.code LIKE %?1% or a.name LIKE %?1%) group by a.code", nativeQuery = true)
 	Page<VendorSearchItem> findBySearchTerm(String search, List<String> unitList, Pageable pageable);
 
+	@Query(value = "SELECT a.*, group_concat(concat(p.name, '(', p.code, ')'), ' ') provide_name FROM vendor a left join vendor_provide b on a.code=b.vendor_code left join provide_class p on b.provide_id=p.id where p.id is not null and (a.code LIKE %?1% or a.name LIKE %?1%) group by a.code", countQuery = "SELECT count(a.code) FROM vendor a left join vendor_provide b on a.code=b.vendor_code left join provide_class p on b.provide_id=p.id where p.id is not null and (a.code LIKE %?1% or a.name LIKE %?1%) group by a.code", nativeQuery = true)
+	Page<VendorSearchItem> findBySearchTermForAdmin(String search, Pageable pageable);
+	
 	@Query(value = "SELECT a.* FROM vendor a left join vendor_provide b on a.code=b.vendor_code where b.provide_id in (select provide_id from unit_provide where unit_id in ?1)", nativeQuery = true)
 	List<Vendor> findVendorsByUnitIdList(List<String> unitIdList);
 

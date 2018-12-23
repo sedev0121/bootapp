@@ -120,6 +120,8 @@ public class VendorController extends CommonController {
 
 		if (order.equals("unitname")) {
 			order = "b.name";
+//		} else if (order.equals("provide_name")) {
+//			order = "group_concat(concat(p.name, '(', p.code, ')'), ' ')";
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
@@ -127,7 +129,7 @@ public class VendorController extends CommonController {
 
 		Page<VendorSearchItem> result = null;
 		if (isAdmin())
-			result = vendorRepository.findBySearchTerm(search, request);
+			result = vendorRepository.findBySearchTermForAdmin(search, request);
 		else
 			result = vendorRepository.findBySearchTerm(search, unitList, request);
 
