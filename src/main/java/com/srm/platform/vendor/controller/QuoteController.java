@@ -41,6 +41,7 @@ import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.InquerySearchResult;
+import com.srm.platform.vendor.utility.PurchaseOrderSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 import com.srm.platform.vendor.utility.VenPriceSaveForm;
 
@@ -147,6 +148,11 @@ public class QuoteController extends CommonController {
 			params.put("createType", Constants.CREATE_TYPE_BUYER);
 		} else {
 			List<String> vendorList = this.getVendorListOfUser();
+			
+			if (vendorList.size() == 0) {
+				return new PageImpl<InquerySearchResult>(new ArrayList(), request, 0);
+			}
+			
 			bodyQuery += " and c.code in :vendorList";
 			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {

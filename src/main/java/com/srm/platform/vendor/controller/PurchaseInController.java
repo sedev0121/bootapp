@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.utility.InquerySearchResult;
 import com.srm.platform.vendor.utility.PurchaseInDetailItem;
 import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 import com.srm.platform.vendor.utility.Utils;
@@ -126,6 +128,10 @@ public class PurchaseInController extends CommonController {
 		Map<String, Object> params = new HashMap<>();
 
 		List<String> vendorList = this.getVendorListOfUser();
+		
+		if (vendorList.size() == 0) {
+			return new PageImpl<PurchaseInDetailResult>(new ArrayList(), request, 0);
+		}
 		
 		params.put("vendorList", vendorList);
 

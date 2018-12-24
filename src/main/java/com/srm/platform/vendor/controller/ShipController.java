@@ -54,6 +54,7 @@ import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.ExportShipForm;
+import com.srm.platform.vendor.utility.InquerySearchResult;
 import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchResult;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
@@ -156,6 +157,11 @@ public class ShipController extends CommonController {
 			params.put("vendor", vendorStr);
 		} else {
 			List<String> vendorList = this.getVendorListOfUser();
+			
+			if (vendorList.size() == 0) {
+				return new PageImpl<PurchaseOrderDetailSearchResult>(new ArrayList(), request, 0);
+			}
+			
 			bodyQuery += " and d.code in :vendorList";
 			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {

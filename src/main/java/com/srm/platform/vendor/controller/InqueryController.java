@@ -201,6 +201,9 @@ public class InqueryController extends CommonController {
 			params.put("createType", Constants.CREATE_TYPE_VENDOR);
 		} else {
 			List<String> vendorList = this.getVendorListOfUser();
+			if (vendorList.size() == 0) {
+				return new PageImpl<InquerySearchResult>(new ArrayList(), request, 0);
+			}
 			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {
 				bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";

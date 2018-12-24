@@ -52,6 +52,7 @@ import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
+import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchResult;
 import com.srm.platform.vendor.utility.StatementDetailItem;
 import com.srm.platform.vendor.utility.StatementSaveForm;
 import com.srm.platform.vendor.utility.StatementSearchResult;
@@ -220,6 +221,11 @@ public class StatementController extends CommonController {
 
 		} else {
 			List<String> vendorList = this.getVendorListOfUser();
+			
+			if (vendorList.size() == 0) {
+				return new PageImpl<StatementSearchResult>(new ArrayList(), request, 0);
+			}
+			
 			bodyQuery += " and b.code in :vendorList";
 			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {

@@ -37,6 +37,7 @@ import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.PurchaseOrderSearchResult;
 import com.srm.platform.vendor.utility.Utils;
@@ -141,6 +142,11 @@ public class PurchaseOrderController extends CommonController {
 
 		} else {
 			List<String> vendorList = this.getVendorListOfUser();
+			
+			if (vendorList.size() == 0) {
+				return new PageImpl<PurchaseOrderSearchResult>(new ArrayList(), request, 0);
+			}
+			
 			bodyQuery += " and b.code in :vendorList";
 			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {
