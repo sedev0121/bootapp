@@ -30,6 +30,8 @@ public class VendorProvide implements Serializable {
 	@Column(name = "vendor_code")
 	private String vendorCode;
 
+	@Column(name = "unit_id")
+	private Long unitId;
 	
 	public Long getId() {
 		return id;
@@ -37,6 +39,19 @@ public class VendorProvide implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	
+	public String getVendorCode() {
+		return vendorCode;
+	}
+
+	public void setVendorCode(String vendorCode) {
+		this.vendorCode = vendorCode;
+	}
+
+	public void setUnitId(Long unitId) {
+		this.unitId = unitId;
 	}
 
 	public Long getProvideId() {
@@ -59,8 +74,9 @@ public class VendorProvide implements Serializable {
 
 	}
 
-	public VendorProvide(Long provideId, String vendorCode) {
+	public VendorProvide(Long provideId, String vendorCode, Long unitId) {
 		this.provideId = provideId;
 		this.vendorCode = vendorCode;
+		this.unitId = unitId;
 	}
 }

@@ -43,15 +43,6 @@ CREATE TABLE `unit_provide`  (
 ) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Fixed;
 
 
-DROP TABLE IF EXISTS `vendor_provide`;
-CREATE TABLE `vendor_provide`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `vendor_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `provide_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
-
-
 DROP TABLE IF EXISTS `notice_vendor`;
 DROP TABLE IF EXISTS `permission_group_function_unit`;
 
@@ -139,3 +130,14 @@ INSERT INTO `function_action` VALUES (23, 9, 8);
 INSERT INTO `function_action` VALUES (24, 7, 10);
 INSERT INTO `function_action` VALUES (25, 7, 11);
 INSERT INTO `function_action` VALUES (26, 7, 12);
+
+
+
+DROP TABLE IF EXISTS `vendor_provide`;
+CREATE TABLE `vendor_provide`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `vendor_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `provide_id` int(11) NOT NULL,
+  `unit_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = MyISAM AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;

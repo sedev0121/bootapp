@@ -87,7 +87,7 @@ public class VendorController extends CommonController {
 		if (vendor == null)
 			show404();
 
-		List<ProvideClass> provideClassList = provideClassRepository.findProvideClassesByVendorCode(code);
+		List<ProvideClass> provideClassList = provideClassRepository.findProvideClassesByVendorCodeAndUnitId(code, this.getLoginAccount().getUnit().getId());
 
 		Account account = accountRepository.findOneByUsername(code);
 
@@ -213,12 +213,12 @@ public class VendorController extends CommonController {
 			account.setState(0);
 			account.setStopDate(new Date());	
 		} else {
-			vendorProvideRepository.deleteByVendorCode(vendorSaveForm.getCode());
+			vendorProvideRepository.deleteByVendorCodeAndUnitId(vendorSaveForm.getCode(), this.getLoginAccount().getUnit().getId());
 
 			List<Long> provideClassIdList = vendorSaveForm.getProvideclasses();
 			if (provideClassIdList != null) {
 				for (Long id : provideClassIdList) {
-					VendorProvide temp = new VendorProvide(id, vendorSaveForm.getCode());
+					VendorProvide temp = new VendorProvide(id, vendorSaveForm.getCode(), this.getLoginAccount().getUnit().getId());
 					vendorProvideRepository.save(temp);
 				}
 			}
