@@ -34,7 +34,7 @@ import com.srm.platform.vendor.view.ExcelDeliveryReportView;
 
 @Controller
 @RequestMapping(path = "/delivery")
-@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('报表中心-查看列表')")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('报表中心-查看列表')")
 public class DeliveryController extends CommonController {
 	@Autowired
 	private VendorRepository vendorRepository;

@@ -30,7 +30,7 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/message")
-@PreAuthorize("hasAuthority('公告通知-查看列表')")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('公告通知-查看列表')")
 public class MessageController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

@@ -32,7 +32,7 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/alert")
-@PreAuthorize("hasAuthority('公告通知-查看列表')")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('公告通知-查看列表')")
 public class AlertController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

@@ -54,7 +54,7 @@ import com.srm.platform.vendor.utility.VendorSearchItem;
 
 @Controller
 @RequestMapping(path = "/notice")
-@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('公告通知-查看列表')")
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_VENDOR') or hasAuthority('公告通知-查看列表')")
 public class NoticeController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
