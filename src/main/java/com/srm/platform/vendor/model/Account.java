@@ -17,6 +17,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.srm.platform.vendor.utility.AccountSearchResult;
 
@@ -60,7 +63,8 @@ public class Account implements Serializable {
 	private Unit unit;
 
 	@OneToOne()
-	@JoinColumn(name = "vendor_code", referencedColumnName = "code")
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "vendor_code", referencedColumnName = "code", nullable=true)
 	private Vendor vendor;
 
 	private String email;
