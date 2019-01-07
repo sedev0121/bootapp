@@ -129,7 +129,7 @@ public class InqueryController extends CommonController {
 	}
 
 	// 删除API
-	@PreAuthorize("hasAuthority('询价管理-删除')")
+	@PreAuthorize("hasAuthority('询价管理-删除') or hasRole('ROLE_VENDOR')")
 	@GetMapping("/{ccode}/delete")
 	@Transactional
 	public @ResponseBody Boolean delete_ajax(@PathVariable("ccode") String ccode) {
