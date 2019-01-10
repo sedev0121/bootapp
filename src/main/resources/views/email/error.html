@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/mail}">
+<head>
+ 
+</head>
+<body>
+  <div class="mail" layout:fragment="content">
+    <div>
+        <div>
+
+         <p>
+                            您好!<br/><br/><br/>
+                            同步过程当中出现错误，请及时确认日志文件<br/><br/>
+            <p th:text="${error}"></p><br/>
+                            谢谢！<br/><br/><br/>
+                            云链信息SRM团队<br/>
+            <a href="http://www.cnyunl.com">http://www.cnyunl.com</a><br/><br/><br/>
+                            （这是一封自动产生的email，请勿回复。）<br/>
+
+         </p>
+        </div>
+        
+    </div>
+
+  </div>  
+</body>
+</html>

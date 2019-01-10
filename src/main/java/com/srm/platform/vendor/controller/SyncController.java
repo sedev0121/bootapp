@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +41,7 @@ import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.service.EmailService;
 import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.u8api.AppProperties;
 import com.srm.platform.vendor.utility.Constants;
@@ -83,6 +85,9 @@ public class SyncController {
 	@Autowired
 	private InventoryClassRepository inventoryClassRepository;
 
+	@Autowired
+	private EmailService emailService;
+	
 	@ResponseBody
 	@GetMapping({ "", "/", "/daily" })
 	public boolean index() {
@@ -91,7 +96,8 @@ public class SyncController {
 		this.inventoryDaily();
 		this.vendorDaily();
 		this.purchaseInDaily();
-		this.purchaseorderDaily();
+		this.purchaseorderDaily();	
+		
 
 		return true;
 	}
@@ -198,9 +204,10 @@ public class SyncController {
 
 			} while (i < total_page);
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.info(e.getMessage());
+			sendSyncErrorEmail("供应商", e);
 			return false;
 		}
 
@@ -335,9 +342,9 @@ public class SyncController {
 
 			} while (i < total_page);
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-
+			sendSyncErrorEmail("物料", e);
 			logger.info(e.getMessage());
 			return false;
 		}
@@ -395,9 +402,9 @@ public class SyncController {
 
 			} while (i < total_page);
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-
+			sendSyncErrorEmail("单位", e);
 			logger.info(e.getMessage());
 			return false;
 		}
@@ -455,9 +462,9 @@ public class SyncController {
 
 			} while (i < total_page);
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-
+			sendSyncErrorEmail("物料种类", e);
 			logger.info(e.getMessage());
 			return false;
 		}
@@ -642,8 +649,9 @@ public class SyncController {
 
 			} while (i < total_page);
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			sendSyncErrorEmail("订单", e);
 			logger.info(e.getMessage());
 			return false;
 		}
@@ -910,14 +918,22 @@ public class SyncController {
 
 			} while (i < total_page);
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-
+			sendSyncErrorEmail("入库单", e);
 			logger.info(e.getMessage());
 			return false;
 		}
 
 		return true;
+	}
+	
+	private void sendSyncErrorEmail(String syncName, Exception e) {
+
+		Map<String, Object> model = new HashMap<>();
+		model.put("error", e.getMessage());
+		
+		emailService.sendSyncErrorEmail(syncName, model);
 	}
 
 }

@@ -46,5 +46,26 @@ public class EmailService {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public void sendSyncErrorEmail(String syncName, Map<String, Object> model) {
+		try {
+			MimeMessage message = emailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+					StandardCharsets.UTF_8.name());
+
+			Context context = new Context();
+			context.setVariables(model);
+			String html = templateEngine.process("email/error", context);
+
+			helper.setTo("w249043358@126.com");			
+			helper.setText(html, true);
+			helper.setSubject(syncName + "同步错误");
+			helper.setFrom(from);
+
+			emailSender.send(message);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 }
