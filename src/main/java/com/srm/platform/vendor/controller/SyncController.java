@@ -162,7 +162,8 @@ public class SyncController {
 				});
 
 				int errorCode = Integer.parseInt((String) map.get("errcode"));
-
+				String errMsg = (String) map.get("errmsg");
+				
 				if (errorCode == appProperties.getError_code_success()) {
 					total_page = Integer.parseInt((String) map.get("page_count"));
 					vendorList = (List<LinkedHashMap<String, String>>) map.get("vendor");
@@ -199,6 +200,7 @@ public class SyncController {
 				} else if (errorCode == 20002) {
 					return true;
 				} else {
+					sendSyncErrorEmail("供应商", errMsg);
 					return false;
 				}
 
@@ -207,7 +209,7 @@ public class SyncController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.info(e.getMessage());
-			sendSyncErrorEmail("供应商", e);
+			sendSyncErrorEmail("供应商", e.getMessage());
 			return false;
 		}
 
@@ -260,7 +262,8 @@ public class SyncController {
 				});
 
 				int errorCode = Integer.parseInt((String) map.get("errcode"));
-
+				String errMsg = (String) map.get("errmsg");
+				
 				if (errorCode == appProperties.getError_code_success()) {
 					total_page = Integer.parseInt((String) map.get("page_count"));
 					tempList = (List<LinkedHashMap<String, String>>) map.get("inventory");
@@ -337,6 +340,7 @@ public class SyncController {
 						inventoryRepository.save(inventory);
 					}
 				} else {
+					sendSyncErrorEmail("物料", errMsg);
 					return false;
 				}
 
@@ -344,7 +348,7 @@ public class SyncController {
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			sendSyncErrorEmail("物料", e);
+			sendSyncErrorEmail("物料", e.getMessage());
 			logger.info(e.getMessage());
 			return false;
 		}
@@ -383,7 +387,8 @@ public class SyncController {
 				});
 
 				int errorCode = Integer.parseInt((String) map.get("errcode"));
-
+				String errMsg = (String) map.get("errmsg");
+				
 				if (errorCode == appProperties.getError_code_success()) {
 					total_page = Integer.parseInt((String) map.get("page_count"));
 					tempList = (List<LinkedHashMap<String, String>>) map.get("unit");
@@ -397,6 +402,7 @@ public class SyncController {
 						measurementUnitRepository.save(unit);
 					}
 				} else {
+					sendSyncErrorEmail("单位", errMsg);
 					return false;
 				}
 
@@ -404,7 +410,7 @@ public class SyncController {
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			sendSyncErrorEmail("单位", e);
+			sendSyncErrorEmail("单位", e.getMessage());
 			logger.info(e.getMessage());
 			return false;
 		}
@@ -443,7 +449,8 @@ public class SyncController {
 				});
 
 				int errorCode = Integer.parseInt((String) map.get("errcode"));
-
+				String errorMsg = (String) map.get("errmsg");
+				
 				if (errorCode == appProperties.getError_code_success()) {
 					total_page = Integer.parseInt((String) map.get("page_count"));
 					tempList = (List<LinkedHashMap<String, String>>) map.get("inventoryclass");
@@ -457,6 +464,7 @@ public class SyncController {
 						inventoryClassRepository.save(inventoryClass);
 					}
 				} else {
+					sendSyncErrorEmail("物料种类", errorMsg);
 					return false;
 				}
 
@@ -464,7 +472,7 @@ public class SyncController {
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			sendSyncErrorEmail("物料种类", e);
+			sendSyncErrorEmail("物料种类", e.getMessage());
 			logger.info(e.getMessage());
 			return false;
 		}
@@ -651,7 +659,7 @@ public class SyncController {
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			sendSyncErrorEmail("订单", e);
+			sendSyncErrorEmail("订单", e.getMessage());
 			logger.info(e.getMessage());
 			return false;
 		}
@@ -920,7 +928,7 @@ public class SyncController {
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			sendSyncErrorEmail("入库单", e);
+			sendSyncErrorEmail("入库单", e.getMessage());
 			logger.info(e.getMessage());
 			return false;
 		}
@@ -928,10 +936,10 @@ public class SyncController {
 		return true;
 	}
 	
-	private void sendSyncErrorEmail(String syncName, Exception e) {
+	private void sendSyncErrorEmail(String syncName, String errorMsg) {
 
 		Map<String, Object> model = new HashMap<>();
-		model.put("error", e.getMessage());
+		model.put("error", errorMsg);
 		
 		emailService.sendSyncErrorEmail(syncName, model);
 	}
