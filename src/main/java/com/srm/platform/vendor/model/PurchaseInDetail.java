@@ -66,20 +66,20 @@ public class PurchaseInDetail {
 	private Inventory inventory;
 
 	private Integer rowno;
-	private Float quantity;
+	private Double quantity;
 
 	private Double price;
-	private Float cost;
-	private Float tax;
+	private Double cost;
+	private Double tax;
 
 	private Double taxPrice;
-	private Float taxRate;
+	private Double taxRate;
 	private Double taxCost;
 	private String memo;
 
 	private Double natPrice;
 	private Double natCost;
-	private Float natTaxRate;
+	private Double natTaxRate;
 	private Double natTax;
 	private Double natTaxPrice;
 	private Double natTaxCost;
@@ -87,7 +87,7 @@ public class PurchaseInDetail {
 	private String materialCode;
 	private String materialName;
 	private String materialUnitname;
-	private Float materialQuantity;
+	private Double materialQuantity;
 
 	private Double materialPrice;
 	private Double materialTaxPrice;
@@ -130,11 +130,11 @@ public class PurchaseInDetail {
 		this.poCode = poCode;
 	}
 
-	public Float getTaxRate() {
+	public Double getTaxRate() {
 		return taxRate;
 	}
 
-	public void setTaxRate(Float taxRate) {
+	public void setTaxRate(Double taxRate) {
 		this.taxRate = taxRate;
 	}
 
@@ -170,11 +170,11 @@ public class PurchaseInDetail {
 		this.rowno = rowno;
 	}
 
-	public Float getQuantity() {
+	public Double getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Float quantity) {
+	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
 	}
 
@@ -186,19 +186,19 @@ public class PurchaseInDetail {
 		this.price = price;
 	}
 
-	public Float getCost() {
+	public Double getCost() {
 		return cost;
 	}
 
-	public void setCost(Float cost) {
+	public void setCost(Double cost) {
 		this.cost = cost;
 	}
 
-	public Float getTax() {
+	public Double getTax() {
 		return tax;
 	}
 
-	public void setTax(Float tax) {
+	public void setTax(Double tax) {
 		this.tax = tax;
 	}
 
@@ -234,11 +234,11 @@ public class PurchaseInDetail {
 		this.natCost = natCost;
 	}
 
-	public Float getNatTaxRate() {
+	public Double getNatTaxRate() {
 		return natTaxRate;
 	}
 
-	public void setNatTaxRate(Float natTaxRate) {
+	public void setNatTaxRate(Double natTaxRate) {
 		this.natTaxRate = natTaxRate;
 	}
 
@@ -290,11 +290,11 @@ public class PurchaseInDetail {
 		this.materialUnitname = materialUnitname;
 	}
 
-	public Float getMaterialQuantity() {
+	public Double getMaterialQuantity() {
 		return materialQuantity;
 	}
 
-	public void setMaterialQuantity(Float materialQuantity) {
+	public void setMaterialQuantity(Double materialQuantity) {
 		this.materialQuantity = materialQuantity;
 	}
 

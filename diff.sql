@@ -24,3 +24,16 @@ ALTER TABLE statement_detail MODIFY closed_tax_price DOUBLE;
 ALTER TABLE statement_detail MODIFY closed_tax_money DOUBLE;
 ALTER TABLE statement_detail MODIFY closed_price DOUBLE;
 ALTER TABLE statement_detail MODIFY closed_money DOUBLE;
+
+
+
+ALTER TABLE purchase_in_detail MODIFY quantity DOUBLE;
+ALTER TABLE purchase_in_detail MODIFY cost DOUBLE;
+ALTER TABLE purchase_in_detail MODIFY tax DOUBLE;
+ALTER TABLE purchase_in_detail MODIFY nat_tax DOUBLE;
+ALTER TABLE purchase_in_detail MODIFY tax_cost DOUBLE;
+ALTER TABLE purchase_in_detail MODIFY nat_cost DOUBLE;
+ALTER TABLE purchase_in_detail MODIFY nat_tax_cost DOUBLE;
+ALTER TABLE purchase_in_detail MODIFY tax_rate DOUBLE;
+ALTER TABLE purchase_in_detail MODIFY nat_tax_rate DOUBLE;
+ALTER TABLE purchase_in_detail MODIFY material_quantity DOUBLE;

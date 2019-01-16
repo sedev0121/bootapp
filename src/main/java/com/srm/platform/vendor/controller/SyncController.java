@@ -768,29 +768,29 @@ public class SyncController {
 
 					String inventory_code = temp.get("cInvCode");
 
-					Float quantity = 0F;
+					Double quantity = 0D;
 					if (temp.get("iQuantity") != null && temp.get("iQuantity").length() > 0)
-						quantity = Float.valueOf(String.valueOf(temp.get("iQuantity")));
+						quantity = Double.valueOf(String.valueOf(temp.get("iQuantity")));
 
 					Double price = 0d;
 					if (temp.get("iUnitCost") != null && temp.get("iUnitCost").length() > 0)
 						price = Double.valueOf(String.valueOf(temp.get("iUnitCost")));
 
-					Float cost = 0F;
+					Double cost = 0D;
 					if (temp.get("iPrice") != null && temp.get("iPrice").length() > 0)
-						cost = Float.valueOf(String.valueOf(temp.get("iPrice")));
+						cost = Double.valueOf(String.valueOf(temp.get("iPrice")));
 
-					Float tax = 0F;
+					Double tax = 0D;
 					if (temp.get("iTaxPrice") != null && temp.get("iTaxPrice").length() > 0)
-						tax = Float.valueOf(String.valueOf(temp.get("iTaxPrice")));
+						tax = Double.valueOf(String.valueOf(temp.get("iTaxPrice")));
 
 					Double tax_price = 0d;
 					if (temp.get("iTaxUnitCost") != null && temp.get("iTaxUnitCost").length() > 0)
 						tax_price = Double.valueOf(String.valueOf(temp.get("iTaxUnitCost")));
 
-					Float tax_rate = 0F;
+					Double tax_rate = 0D;
 					if (temp.get("iTaxRate") != null && temp.get("iTaxRate").length() > 0)
-						tax_rate = Float.valueOf(String.valueOf(temp.get("iTaxRate")));
+						tax_rate = Double.valueOf(String.valueOf(temp.get("iTaxRate")));
 
 					Double tax_cost = 0d;
 					if (temp.get("iSum") != null && temp.get("iSum").length() > 0)
@@ -806,9 +806,9 @@ public class SyncController {
 					if (temp.get("iNatMoney") != null && temp.get("iNatMoney").length() > 0)
 						nat_cost = Double.valueOf(String.valueOf(temp.get("iNatMoney")));
 
-					Float nat_tax_rate = 0F;
+					Double nat_tax_rate = 0D;
 					if (temp.get("iPerTaxRate") != null && temp.get("iPerTaxRate").length() > 0)
-						nat_tax_rate = Float.valueOf(String.valueOf(temp.get("iPerTaxRate")));
+						nat_tax_rate = Double.valueOf(String.valueOf(temp.get("iPerTaxRate")));
 
 					Double nat_tax = 0d;
 					if (temp.get("iNatTax") != null && temp.get("iNatTax").length() > 0)
@@ -836,9 +836,9 @@ public class SyncController {
 					if (temp.get("pOAutoID") != null && temp.get("pOAutoID").length() > 0)
 						purchaseOrderDetailId = Long.valueOf(String.valueOf(temp.get("pOAutoID")));
 
-					Float material_quantity = null;
+					Double material_quantity = null;
 					if (temp.get("iQuantityMat") != null && temp.get("iQuantityMat").length() > 0)
-						material_quantity = Float.valueOf(String.valueOf(temp.get("iQuantityMat")));
+						material_quantity = Double.valueOf(String.valueOf(temp.get("iQuantityMat")));
 
 					Double material_price = null;
 					if (temp.get("iNatUnitPriceMat") != null && temp.get("iNatUnitPriceMat").length() > 0)
