@@ -102,7 +102,7 @@ public class VendorController extends CommonController {
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
 
 		if (isAdmin()) {
-			return vendorRepository.findForSelect(search, request);
+			return vendorRepository.findVendorNotCreatAccount(search, request);
 		} else {
 			List<String> unitList = this.getDefaultUnitList();
 			return vendorRepository.findForSelect(unitList, search, request);
