@@ -43,20 +43,8 @@ public class Vendor implements Serializable {
 	private String email;
 
 	
-	@JoinColumn(name = "unit_id")
-	@ManyToOne()
-	private Unit unit;
-
 	public Vendor() {
 
-	}
-
-	public Unit getUnit() {
-		return unit;
-	}
-
-	public void setUnit(Unit unit) {
-		this.unit = unit;
 	}
 
 	public String getPhone() {

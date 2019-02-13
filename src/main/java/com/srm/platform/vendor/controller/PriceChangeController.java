@@ -65,7 +65,7 @@ public class PriceChangeController extends CommonController {
 		String bodyQuery = "FROM price a left join vendor b on a.fsupplyno=b.code left join inventory c on a.cinvcode=c.code "
 						 + "left join account d on a.createby=d.id " 
 						 + "left join measurement_unit e on e.code = c.main_measure "
-						 + "WHERE b.unit_id in :unitList ";
+						 + "WHERE b.code in :vendorList ";
 		
 		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 		String priceQuery = "SELECT a.fprice, MAX(a.createdate) ";
@@ -73,10 +73,10 @@ public class PriceChangeController extends CommonController {
 		String lastYear = String.format("and a.createdate between '%d/01/01' and '%d/12/31' ", currentYear - 1, currentYear - 1);
 		String currentDate = String.format("and a.createdate between '%d/01/01' and '%s' ", currentYear, new SimpleDateFormat("yyyy/MM/dd").format(Calendar.getInstance().getTime()));
 		
-		List<String> unitList = this.getDefaultUnitList();
+		List<String> vendorList = this.getVendorListOfUser();
 		Map<String, Object> params = new HashMap<>();
 
-		params.put("unitList", unitList);
+		params.put("vendorList", vendorList);
 		
 		if (!start_inventory.trim().isEmpty()) {
 			bodyQuery += " and c.code>=:startCode";

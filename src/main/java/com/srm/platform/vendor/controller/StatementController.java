@@ -354,9 +354,7 @@ public class StatementController extends CommonController {
 		List<Account> toList = new ArrayList<>();
 		switch (form.getState()) {
 		case Constants.STATEMENT_STATE_SUBMIT:
-			List<String> idList = new ArrayList();
-			idList.add(String.valueOf(main.getVendor().getUnit().getId()));
-			toList.addAll(accountRepository.findAllBuyersByUnitIdList(idList));
+			toList.addAll(accountRepository.findAllBuyersByVendorCode(main.getVendor().getCode()));
 			action = "提交";
 			break;
 		case Constants.STATEMENT_STATE_REVIEW:

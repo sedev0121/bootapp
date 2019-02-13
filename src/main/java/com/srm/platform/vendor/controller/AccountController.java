@@ -235,11 +235,6 @@ public class AccountController extends CommonController {
 			return jsonResponse;
 		}
 
-		if (account.getVendor() != null) {
-			account.getVendor().setUnit(null);
-			vendorRepository.save(account.getVendor());
-		}
-
 		if (accountSaveForm.getState() != null) {
 			account.setState(1);
 			account.setStartDate(new Date());
@@ -251,7 +246,6 @@ public class AccountController extends CommonController {
 
 		if (accountSaveForm.getVendor() != null && !accountSaveForm.getVendor().isEmpty()) {
 			Vendor newVendor = vendorRepository.findOneByCode(accountSaveForm.getVendor());
-			newVendor.setUnit(account.getUnit());
 			vendorRepository.save(newVendor);
 			account.setVendor(newVendor);
 		} else {

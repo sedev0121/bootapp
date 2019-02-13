@@ -335,9 +335,7 @@ public class InqueryController extends CommonController {
 		case Constants.STATE_SUBMIT:
 			action = "提交";
 			if (venPriceAdjustMain.getCreatetype() == Constants.CREATE_TYPE_VENDOR) {
-				List<String> idList = new ArrayList();
-				idList.add(String.valueOf(venPriceAdjustMain.getVendor().getUnit().getId()));
-				toList.addAll(accountRepository.findAccountsByUnitIdList(idList));
+				toList.addAll(accountRepository.findAllBuyersByVendorCode(venPriceAdjustMain.getVendor().getCode()));
 				type = "报价单";
 			} else {
 				toList.addAll(accountRepository.findAccountsByVendor(venPriceAdjustMain.getVendor().getCode()));

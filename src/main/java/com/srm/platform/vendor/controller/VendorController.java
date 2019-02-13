@@ -236,22 +236,4 @@ public class VendorController extends CommonController {
 		return jsonResponse;
 	}
 
-	// 修改
-	@Transactional
-	@PostMapping("/set_unit")
-	public @ResponseBody Integer setUnit(@RequestParam Map<String, String> requestParams) {
-		String vendorList = requestParams.get("vendor_list");
-
-		String unitId = requestParams.get("unit_id");
-
-		String[] vendorCodeList = StringUtils.split(vendorList, ",");
-
-		for (String vendorCode : vendorCodeList) {
-			Vendor vendor = vendorRepository.findOneByCode(vendorCode);
-			vendor.setUnit(unitRepository.findOneById(Long.parseLong(unitId)));
-			vendorRepository.save(vendor);
-		}
-
-		return 1;
-	}
 }

@@ -145,3 +145,4 @@ CREATE TABLE `vendor_provide`  (
 
 ### 2019-02-14 ###
 alter table vendor_provide DROP column unit_id;
+alter table vendor DROP column unit_id;
