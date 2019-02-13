@@ -204,7 +204,7 @@ public class ProvideClassController extends CommonController {
 	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
 
-		return provideClassRepository.findForSelect(this.getDefaultUnitList(), search, request);
+		return provideClassRepository.findForSelect(search, request);
 
 	}
 
