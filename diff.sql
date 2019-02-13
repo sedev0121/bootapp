@@ -141,3 +141,7 @@ CREATE TABLE `vendor_provide`  (
   `unit_id` int(11) NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = MyISAM AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+### 2019-02-14 ###
+alter table vendor_provide DROP column unit_id;

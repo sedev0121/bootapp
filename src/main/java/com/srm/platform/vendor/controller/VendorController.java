@@ -220,7 +220,7 @@ public class VendorController extends CommonController {
 			account.setState(0);
 			account.setStopDate(new Date());	
 		} else {
-			vendorProvideRepository.deleteByVendorCodeAndUnitId(vendorSaveForm.getCode(), this.getLoginAccount().getUnit().getId());
+			vendorProvideRepository.deleteByVendorCodeAndUnitId(vendorSaveForm.getCode());
 
 			List<Long> provideClassIdList = vendorSaveForm.getProvideclasses();
 			if (provideClassIdList != null) {

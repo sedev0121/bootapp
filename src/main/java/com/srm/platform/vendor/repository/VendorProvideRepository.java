@@ -22,8 +22,8 @@ public interface VendorProvideRepository extends JpaRepository<VendorProvide, Lo
 
 	@Transactional
 	@Modifying(clearAutomatically = true)
-	@Query(value = "delete from vendor_provide where vendor_code = ?1 and unit_id=?2", nativeQuery = true)
-	void deleteByVendorCodeAndUnitId(String vendorCode, Long unitId);
+	@Query(value = "delete from vendor_provide where vendor_code = ?1", nativeQuery = true)
+	void deleteByVendorCodeAndUnitId(String vendorCode);
 	
 
 }
