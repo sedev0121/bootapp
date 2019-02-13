@@ -28,7 +28,7 @@
               <legend>基本信息</legend>
               <div class="col-lg-2 col-md-2 form-group">
                 <label for="realname">真实姓名: </label>
-                <input type="text" name="realname" class="form-control" th:value="${account.realname}">
+                <input type="text" id="realname" name="realname" class="form-control" th:value="${account.realname}">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
                 <label for="unit_name">所属组织: </label>
@@ -37,11 +37,7 @@
               </div>
               <div class="col-lg-2 col-md-2 form-group">
                 <label for="duty">职位: </label>
-                <input type="text" name="duty" th:value="${account.duty}" class="form-control">
-              </div>
-              <div class="col-lg-2 col-md-2 form-group hidden">
-                <label for="entry_date">入职日期: </label>
-                <input type="text" class="form-control datepicker" name="entry_date" id="entry_date" th:value="${#dates.format(account.entryTime, 'yyyy-MM-dd')}">
+                <input type="text" id="duty" name="duty" th:value="${account.duty}" class="form-control">
               </div>
             </fieldset>
             <fieldset>
@@ -58,14 +54,8 @@
                   <option value="ROLE_ADMIN"  th:selected="(${account.role}=='ROLE_ADMIN')">管理员</option>
                 </select>
               </div>
-              <div class="col-lg-6 col-md-6 form-group" id="vendor_div">
-                <label for="vendor">供应商:</label>
-                <select id="vendor" name="vendor" class="form-control">
-                  <option th:if="${account.vendor != null}" th:value="${account.vendor.code}" th:text="${account.vendor.name}" selected="selected"></option>
-                </select>
-              </div>
               <div class="col-lg-8 col-md-8 form-group" id="permission_div">
-                <label for="vendor">权限组:</label>
+                <label for="permission">权限组:</label>
                 <select multiple="true" name="permission" id="permission" class="form-control">
                 </select>
               </div>              
@@ -169,7 +159,6 @@ var checkuser_url = /*[[@{/account/checkuser/}]]*/'';
 var checkemail_url = /*[[@{/profile/checkemail}]]*/'';
 var checkmobile_url = /*[[@{/profile/checkmobile}]]*/'';
 var checkweixin_url = /*[[@{/profile/checkweixin}]]*/'';
-var vendor_search_url = /*[[@{/vendor/search}]]*/'';
 var perm_search_url = /*[[@{/permission_group/search}]]*/'';
 
 
@@ -177,7 +166,6 @@ var perm_search_url = /*[[@{/permission_group/search}]]*/'';
 jQuery(document).ready(function() {   
   $('.datepicker').datepicker();
   $('#role').select2({minimumResultsForSearch: -1});
-  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
   $("#permission").select2(App.getSelect2TagOptions(perm_search_url));
   
   var data = $.parseJSON(/*[[${groupList}]]*/'');
@@ -187,17 +175,33 @@ jQuery(document).ready(function() {
   })
   $("#permission").trigger('change');
   
+  function onCheckVendor(isVendor) {
+	  if (isVendor) {
+		  $('#username').prop('readonly', true);
+		  $('#realname').prop('readonly', true);
+		  $('#duty').prop('readonly', true);
+		  $('#unit_name').prop('disabled', true);
+		  $('#form').validate().settings.rules.email.required = true;
+	      $('#form').validate().settings.rules.mobile.required = true;
+	      $('#form').validate().settings.rules.weixin.required = true;
+	  } else {
+		  $('#username').prop('readonly', false);
+		  $('#realname').prop('readonly', false);
+		  $('#duty').prop('readonly', false);
+		  $('#unit_name').prop('disabled', false);
+		  $('#form').validate().settings.rules.email.required = false;
+	      $('#form').validate().settings.rules.mobile.required = false;
+	      $('#form').validate().settings.rules.weixin.required = false;
+		  
+	  }
+  }
   
   $('#role').change(function() {
-    $('#vendor_div').addClass('hidden');
     $('#permission_div').addClass('hidden');
-    $('#vendor').prop('disabled', true);
     $('#del').addClass('hidden');
 
     switch($('#role').val()){
       case 'ROLE_VENDOR':
-        $('#vendor_div').removeClass('hidden');
-        $('#vendor').prop('disabled', false);
         $('#del').removeClass('hidden');
         break;
       case 'ROLE_BUYER':
@@ -206,15 +210,8 @@ jQuery(document).ready(function() {
         break;
     }
     
-    if ($('#role').val() == 'ROLE_VENDOR'){
-      $('#form').validate().settings.rules.email.required = true;
-      $('#form').validate().settings.rules.mobile.required = true;
-      $('#form').validate().settings.rules.weixin.required = true;
-    }else{
-      $('#form').validate().settings.rules.email.required = false;
-      $('#form').validate().settings.rules.mobile.required = false;
-      $('#form').validate().settings.rules.weixin.required = false;
-    }
+    onCheckVendor($('#role').val() == 'ROLE_VENDOR');
+
   });
   
   

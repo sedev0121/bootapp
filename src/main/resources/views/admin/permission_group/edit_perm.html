@@ -25,16 +25,14 @@
         <div class="panel-body"> 
           <div class="row">
             <fieldset class="perm col-lg-4 col-md-4 margin-top-10" th:each="item : ${function_list}">
-              <input type="hidden" th:id="'function_' + ${item.id}" th:name="'units_' + ${item.id}" th:value="${item.units}">
               <legend><label th:text="${item.name}">供应商档案管理 </label>- 
                 <input type="checkbox" class="select-all" th:attrappend="subclass=${item.id}?'class_' + ${item.id}">
-                <label class="small active margin-right-10">全选 </label><a class="btn btn-sm btn-primary select-units hidden" th:attrappend="data=${item.id}?'function_' + ${item.id}"> 数据范围</a>
+                <label class="small active margin-right-10">全选 </label>
               </legend>
    
-              <div class="col-lg-4 col-md-4" th:each="action : ${item.Actions}">
+              <div class="col-lg-4 col-md-4" style="padding-left: 0px" th:each="action : ${item.Actions}">
                 <input type="checkbox" th:classappend="${item.id}?'class_' + ${item.id}" th:attrappend="checked=${action.available}?true" name="functions[]" th:value="${action.functionActionId}"><label th:text="${action.name}"> </label>
-              </div>
-   
+              </div>  
               
             </fieldset>
           </div>
@@ -42,28 +40,6 @@
 
       </div>
     </form>
-    <div class="modal fade" id="tree_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">
-                                                    选择数据范围
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="current_function" />
-                    <i class="fa fa-sitemap"></i> 组织结构
-                    <div id="tree_3"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="save_range">保存</button>
-                </div>
-            </div>
-        </div>
-    </div>
   </div>
 
 </body>
@@ -100,48 +76,9 @@ $(function () {
 	    $(sub_class).uniform();
 	});
 	
-	$(".select-units").click(function(){  //"select all" change
-		$('#tree_3').jstree(true).deselect_all();
-	    var selected_function_id = $(this).attr('data');
-		$('#current_function').val(selected_function_id);
-		
-		$('#tree_3').jstree(true).select_node($('#' + selected_function_id).val().split(','));
-		$('#tree_dialog').modal('show');
-    });
-	
-	$("#tree_3").jstree({
-		'plugins': ["checkbox", "types"],
-        'core': {
-            'data' : {
-              'url' : function (node) {
-                return tree_url;
-              }
-            }
-        },
-        "checkbox" : {
-            "three_state" : true,
-      	},
-        "types" : {
-            "default" : {
-                "icon" : "fa fa-folder m--font-warning"
-            },
-            "file" : {
-                "icon" : "fa fa-file  m--font-warning"
-            }
-        },
-      }).on('loaded.jstree', function() {
-    	  $(this).jstree("open_all");
-      });
 
-      $('#save_range').click(function(){
-    	  var checked_ids = []; 
-    	  $.each($("#tree_3").jstree("get_checked",true),function(){
-    		  checked_ids.push(this.id);
-  		  });
-          console.log(checked_ids);
-          $('#' + $('#current_function').val()).val(checked_ids.join(','));
-    	  $('#tree_dialog').modal('hide');//modal_1 is the id 1
-  	   });
+	
+	
 });
 </script>
 

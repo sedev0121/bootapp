@@ -34,6 +34,7 @@ import com.srm.platform.vendor.view.ExcelDeliveryReportView;
 
 @Controller
 @RequestMapping(path = "/delivery")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('报表中心-查看列表')")
 public class DeliveryController extends CommonController {
 	@Autowired
 	private VendorRepository vendorRepository;
@@ -57,7 +58,7 @@ public class DeliveryController extends CommonController {
 		if (vendor == null) {
 			List<String> unitList = this.getDefaultUnitList();
 			PageRequest request = PageRequest.of(0, 999,
-					dir.equals("asc") ? Direction.ASC : Direction.DESC, "b.name");
+					dir.equals("asc") ? Direction.ASC : Direction.DESC, "name");
 			
 			Page<VendorSearchItem> result = null;
 			result = vendorRepository.findBySearchTerm("", unitList, request);

@@ -26,4 +26,10 @@ public interface VendorSearchItem {
 
 	String getEnd_date();
 
+	String getContact();
+	String getIndustry();
+	String getTimestamp();
+	String getSort_code();
+	String getState();
+	String getProvide_name();
 }

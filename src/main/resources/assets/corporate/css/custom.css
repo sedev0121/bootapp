@@ -35,6 +35,10 @@ body {
     background-color:#fff !important
 }
 
+.select-unit:disabled {
+    background-color:#eee !important
+}
+
 .select2 {
     width:100%!important;
 }

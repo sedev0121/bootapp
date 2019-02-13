@@ -37,6 +37,7 @@ import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 import com.srm.platform.vendor.utility.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.utility.PurchaseOrderSearchResult;
 import com.srm.platform.vendor.utility.Utils;
@@ -71,7 +72,7 @@ public class PurchaseOrderController extends CommonController {
 		if (main == null)
 			show404();
 
-		checkVendor(main.getVendor());
+//		checkVendor(main.getVendor());
 
 		model.addAttribute("main", main);
 		return "purchaseorder/edit";
@@ -129,7 +130,6 @@ public class PurchaseOrderController extends CommonController {
 				+ "left join (select code, sum(prepaymoney) prepaymoney, sum(money) money, sum(sum) sum from purchase_order_detail group by code) e on a.code=e.code "
 				+ "WHERE a.state='审核' ";
 
-		List<String> unitList = this.getDefaultUnitList();
 		Map<String, Object> params = new HashMap<>();
 
 		if (isVendor()) {
@@ -141,8 +141,14 @@ public class PurchaseOrderController extends CommonController {
 			bodyQuery += " and a.srmstate>0 ";
 
 		} else {
-			bodyQuery += " and b.unit_id in :unitList";
-			params.put("unitList", unitList);
+			List<String> vendorList = this.getVendorListOfUser();
+			
+			if (vendorList.size() == 0) {
+				return new PageImpl<PurchaseOrderSearchResult>(new ArrayList(), request, 0);
+			}
+			
+			bodyQuery += " and b.code in :vendorList";
+			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {
 				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
 				params.put("vendor", vendorStr.trim());

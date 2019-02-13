@@ -1,5 +1,7 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -19,19 +22,30 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.util.StringUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.ProvideClass;
+import com.srm.platform.vendor.model.Unit;
+import com.srm.platform.vendor.model.UnitProvide;
 import com.srm.platform.vendor.model.Vendor;
+import com.srm.platform.vendor.model.VendorProvide;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
+import com.srm.platform.vendor.repository.VendorProvideRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.SearchItem;
+import com.srm.platform.vendor.utility.VendorSaveForm;
 import com.srm.platform.vendor.utility.VendorSearchItem;
 
 // 供应商管理
 @Controller
 @RequestMapping(path = "/vendor")
-
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('基础资料-供应商档案')")
 public class VendorController extends CommonController {
+
+	private static String DEFAULT_PASSWORD = "111";
 
 	@Autowired
 	private VendorRepository vendorRepository;
@@ -42,28 +56,53 @@ public class VendorController extends CommonController {
 	@Autowired
 	private UnitRepository unitRepository;
 
+	@Autowired
+	private VendorProvideRepository vendorProvideRepository;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
 	// 查询列表
-	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
 	@GetMapping({ "", "/" })
 	public String index() {
 		return "vendor/index";
 	}
 
+	
 	// 详细
-	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAuthority('基础资料-新建供应商')")
+	@GetMapping("/add")
+	public String add(Model model) {
+		Vendor vendor = new Vendor();
+		model.addAttribute("data", vendor);
+		model.addAttribute("provideClassList", "[]");
+		model.addAttribute("accountState", "2");
+		return "vendor/edit";
+	}
+
+	// 详细
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
 		Vendor vendor = vendorRepository.findOneByCode(code);
 		if (vendor == null)
 			show404();
 
-		if (!isAdmin()) {
-			checkVendor(vendor);
+		List<ProvideClass> provideClassList = provideClassRepository.findProvideClassesByVendorCodeAndUnitId(code, this.getLoginAccount().getUnit().getId());
+
+		Account account = accountRepository.findOneByUsername(code);
+
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonGroupString = "";
+		try {
+			jsonGroupString = mapper.writeValueAsString(provideClassList);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
-		List<Account> accountList = accountRepository.findAccountsByVendor(vendor.getCode());
 		model.addAttribute("data", vendor);
-		model.addAttribute("accounts", accountList);
+		model.addAttribute("provideClassList", jsonGroupString);
+		model.addAttribute("accountState", account == null ? 2 : account.getState());
 		return "vendor/edit";
 	}
 
@@ -81,6 +120,8 @@ public class VendorController extends CommonController {
 
 		if (order.equals("unitname")) {
 			order = "b.name";
+//		} else if (order.equals("provide_name")) {
+//			order = "group_concat(concat(p.name, '(', p.code, ')'), ' ')";
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
@@ -88,9 +129,32 @@ public class VendorController extends CommonController {
 
 		Page<VendorSearchItem> result = null;
 		if (isAdmin())
-			result = vendorRepository.findBySearchTerm(search, request);
+			result = vendorRepository.findBySearchTermForAdmin(search, request);
 		else
 			result = vendorRepository.findBySearchTerm(search, unitList, request);
+
+		return result;
+	}
+
+	// 查询列表API
+	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
+	@RequestMapping(value = "/listall", produces = "application/json")
+	public @ResponseBody Page<VendorSearchItem> list_all_ajax(@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "name");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String search = requestParams.getOrDefault("search", "");
+
+		if (order.equals("unitname")) {
+			order = "b.name";
+		}
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		Page<VendorSearchItem> result = null;
+		result = vendorRepository.findBySearchTerm(search, request);
 
 		return result;
 	}
@@ -110,32 +174,59 @@ public class VendorController extends CommonController {
 
 	}
 
-	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR') or hasRole('ROLE_ADMIN')")
-	@ResponseBody
-	@RequestMapping(value = "/select", produces = "application/json")
-	public Page<SearchItem> select_ajax(@RequestParam(value = "q") String search) {
-		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "b.name");
-
-		List<String> unitList = this.getDefaultUnitList();
-		return vendorRepository.findForNotice(unitList, search, request);
-
-	}
-
 	// 修改
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody Vendor update_ajax(@RequestParam Map<String, String> requestParams) {
-		String code = requestParams.get("code");
+	public @ResponseBody GenericJsonResponse<Vendor> update_ajax(VendorSaveForm vendorSaveForm) {
+		Vendor vendor = vendorRepository.findOneByCode(vendorSaveForm.getCode());
+		Account account = accountRepository.findOneByUsername(vendor.getCode());
 
-		String unit = requestParams.get("unit");
+		GenericJsonResponse<Vendor> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
+				vendor);
+		
+		if (account == null) {
+			account = new Account();
+			account.setUsername(vendor.getCode());
+			account.setRealname(vendor.getAbbrname());
+			account.setMobile(vendor.getMobile());
+			account.setAddress(vendor.getAddress());
+			account.setEmail(vendor.getEmail());
+			account.setRole("ROLE_VENDOR");
+			account.setVendor(vendor);
+			account.setDuty("供应商");
+			account.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
+		}
 
-		Vendor vendor = vendorRepository.findOneByCode(code);
+		if (vendorSaveForm.getState() == 1) {
+			account.setState(1);
+			account.setStartDate(new Date());
+			account.setStopDate(null);
+		} else if (vendorSaveForm.getState() == 0) {
+			if (!this.isAdmin()) {
+				List<Unit> otherUnits = unitRepository.findOtherUnitsUsingVendor(this.getLoginAccount().getUnit().getId(), vendor.getCode());
+				if (otherUnits.size() > 0) {
+					jsonResponse.setSuccess(GenericJsonResponse.FAILED);
+					jsonResponse.setErrmsg("供货类别正在被别的组织使用。若要停用，请联系管理员。");
+					return jsonResponse;
+				}
+			}
+			account.setState(0);
+			account.setStopDate(new Date());	
+		} else {
+			vendorProvideRepository.deleteByVendorCodeAndUnitId(vendorSaveForm.getCode(), this.getLoginAccount().getUnit().getId());
 
-		vendor.setUnit(unitRepository.findOneById(Long.parseLong(unit)));
+			List<Long> provideClassIdList = vendorSaveForm.getProvideclasses();
+			if (provideClassIdList != null) {
+				for (Long id : provideClassIdList) {
+					VendorProvide temp = new VendorProvide(id, vendorSaveForm.getCode(), this.getLoginAccount().getUnit().getId());
+					vendorProvideRepository.save(temp);
+				}
+			}
+		}
 
-		vendorRepository.save(vendor);
+		account = accountRepository.save(account);
 
-		return vendor;
+		return jsonResponse;
 	}
 
 	// 修改

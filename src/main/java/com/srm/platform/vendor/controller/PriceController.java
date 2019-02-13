@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,7 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/baseprice")
-@PreAuthorize("hasRole('ROLE_BUYER')")
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('基础资料-物料价格查询')")
 public class PriceController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -82,58 +83,63 @@ public class PriceController extends CommonController {
 			break;
 		}
 
-		page_index--;
+		page_index--;		
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+		
+		List<String> vendorList = this.getVendorListOfUser();
+		if (vendorList.size() == 0) {
+			return new PageImpl<PriceSearchResult>(new ArrayList<>(), request, 0);
+		} else {		
 
-		String selectQuery = "SELECT a.*, d.realname createname, b.name vendorname, b.code vendorcode, c.name inventoryname, c.code inventorycode ";
-		String countQuery = "select count(*) ";
-		String orderBy = " order by " + order + " " + dir;
+			String selectQuery = "SELECT distinct a.*, d.realname createname, b.name vendorname, b.code vendorcode, c.name inventoryname, c.code inventorycode ";
+			String countQuery = "select count(DISTINCT a.id, d.realname , b.name, b.code, c.name, c.code) ";
+			String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM price a left join vendor b on a.fsupplyno=b.code left join inventory c on a.cinvcode=c.code "
-				+ "left join account d on a.createby=d.id WHERE b.unit_id in :unitList ";
+			String bodyQuery = "FROM price a left join vendor b on a.fsupplyno=b.code left join inventory c on a.cinvcode=c.code "
+					+ "left join account d on a.createby=d.id WHERE b.code in :vendorList ";
 
-		List<String> unitList = this.getDefaultUnitList();
-		Map<String, Object> params = new HashMap<>();
+			Map<String, Object> params = new HashMap<>();
+			params.put("vendorList", vendorList);
+			if (!vendorStr.trim().isEmpty()) {
+				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
+				params.put("vendor", vendorStr.trim());
+			}
 
-		params.put("unitList", unitList);
-		if (!vendorStr.trim().isEmpty()) {
-			bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
-			params.put("vendor", vendorStr.trim());
+			if (!inventory.trim().isEmpty()) {
+				bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
+				params.put("inventory", inventory.trim());
+			}
+
+			if (startDate != null) {
+				bodyQuery += " and a.cinvdate>=:startDate";
+				params.put("startDate", startDate);
+			}
+			if (endDate != null) {
+				bodyQuery += " and a.cinvdate<:endDate";
+				params.put("endDate", endDate);
+			}
+
+			countQuery += bodyQuery;
+			Query q = em.createNativeQuery(countQuery);
+
+			for (Map.Entry<String, Object> entry : params.entrySet()) {
+				q.setParameter(entry.getKey(), entry.getValue());
+			}
+
+			BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+			selectQuery += bodyQuery + orderBy;
+			q = em.createNativeQuery(selectQuery, "PriceSearchResult");
+			for (Map.Entry<String, Object> entry : params.entrySet()) {
+				q.setParameter(entry.getKey(), entry.getValue());
+			}
+
+			List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+			return new PageImpl<PriceSearchResult>(list, request, totalCount.longValue());
 		}
-
-		if (!inventory.trim().isEmpty()) {
-			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
-			params.put("inventory", inventory.trim());
-		}
-
-		if (startDate != null) {
-			bodyQuery += " and a.cinvdate>=:startDate";
-			params.put("startDate", startDate);
-		}
-		if (endDate != null) {
-			bodyQuery += " and a.cinvdate<:endDate";
-			params.put("endDate", endDate);
-		}
-
-		countQuery += bodyQuery;
-		Query q = em.createNativeQuery(countQuery);
-
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			q.setParameter(entry.getKey(), entry.getValue());
-		}
-
-		BigInteger totalCount = (BigInteger) q.getSingleResult();
-
-		selectQuery += bodyQuery + orderBy;
-		q = em.createNativeQuery(selectQuery, "PriceSearchResult");
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			q.setParameter(entry.getKey(), entry.getValue());
-		}
-
-		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
-
-		return new PageImpl<PriceSearchResult>(list, request, totalCount.longValue());
+		
 
 	}
 }

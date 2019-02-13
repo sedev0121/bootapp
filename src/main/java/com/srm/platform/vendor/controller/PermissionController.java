@@ -32,18 +32,15 @@ import com.srm.platform.vendor.model.Action;
 import com.srm.platform.vendor.model.Function;
 import com.srm.platform.vendor.model.FunctionAction;
 import com.srm.platform.vendor.model.PermissionGroup;
-import com.srm.platform.vendor.model.PermissionGroupFunctionUnit;
 import com.srm.platform.vendor.model.PermissionGroupUser;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.FunctionActionRepository;
 import com.srm.platform.vendor.repository.FunctionRepository;
 import com.srm.platform.vendor.repository.PermissionGroupFunctionActionRepository;
-import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.utility.AccountSearchItem;
 import com.srm.platform.vendor.utility.AccountSearchResult;
-import com.srm.platform.vendor.utility.IGroupFunctionUnit;
 import com.srm.platform.vendor.utility.SearchItem;
 
 @Controller
@@ -64,8 +61,6 @@ public class PermissionController extends CommonController {
 	@Autowired
 	private FunctionActionRepository functionActionRepository;
 
-	@Autowired
-	private PermissionGroupFunctionUnitRepository permissionGroupFunctionUnitRepository;
 
 	@Autowired
 	private PermissionGroupFunctionActionRepository permissionGroupFunctionActionRepository;
@@ -126,7 +121,6 @@ public class PermissionController extends CommonController {
 
 		List<Function> functionList = functionRepository.findAll();
 		List<FunctionAction> functionActionList = functionActionRepository.findAll();
-		List<IGroupFunctionUnit> unitList = permissionGroupFunctionUnitRepository.findUnitsByGroupId(id);
 
 		for (int i = 0; i < functionList.size(); i++) {
 			Function tempF = functionList.get(i);
@@ -155,13 +149,6 @@ public class PermissionController extends CommonController {
 			}
 			tempF.setActions(newActionList);
 
-			for (int j = 0; j < unitList.size(); j++) {
-				IGroupFunctionUnit tempU = unitList.get(j);
-				if (tempU.getFunctionId() == tempF.getId()) {
-					tempF.setUnits(tempU.getUnits());
-					break;
-				}
-			}
 		}
 
 		model.addAttribute("permission_group", temp);
@@ -233,26 +220,6 @@ public class PermissionController extends CommonController {
 			List<FunctionAction> list = functionActionRepository.findAllById(Arrays.asList(functions));
 			group.setFunctionActions(list);
 			group = permissionGroupRepository.save(group);
-		}
-
-		permissionGroupFunctionUnitRepository.deleteByGroupId(groupId);
-
-		PermissionGroupFunctionUnit tempUnit;
-		Iterator<Entry<String, String>> it = units.entrySet().iterator();
-		while (it.hasNext()) {
-			Entry<String, String> temp = it.next();
-			if (temp.getKey().startsWith("units_") && temp.getValue() != null && !temp.getValue().isEmpty()) {
-				String function_id = temp.getKey().substring("units_".length());
-				String[] unit_ids = temp.getValue().split(",");
-
-				for (int i = 0; i < unit_ids.length; i++) {
-					if (unit_ids[i] != null && !unit_ids[i].isEmpty()) {
-						tempUnit = new PermissionGroupFunctionUnit(groupId, Long.parseLong(function_id),
-								Long.parseLong(unit_ids[i]));
-						permissionGroupFunctionUnitRepository.save(tempUnit);
-					}
-				}
-			}
 		}
 
 		return group;

@@ -44,16 +44,16 @@ public class StockReportController extends CommonController {
 
 	@PersistenceContext
 	private EntityManager em;
-	
-	@Autowired
+
+	// @Autowired
 	// private StockReportRepository stockRepository;
-	
+
 	@PreAuthorize("hasRole('ROLE_VENDOR')")
 	@GetMapping({ "/", "" })
 	public String index() {
 		return "report/stock";
 	}
-	
+
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<StockReportItem> list_ajax(@RequestParam Map<String, String> requestParams) {
@@ -67,44 +67,40 @@ public class StockReportController extends CommonController {
 		List<StockReportItem> resultList = new ArrayList();
 		int totalResult = 0;
 		Query q;
-		
+
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 		page_index++;
 		String whcode_max = "";
 		String whcode_min = "";
-		
-		if (whcode_min == "")
-		{
+
+		if (whcode_min == "") {
 			String selectMinQuery = "SELECT MIN(a.inventorycode) from purchase_order_detail a "
-					 			  + "left join purchase_order_main b on b.code=a.code where b.vencode = '" + vendorCode + "'";
+					+ "left join purchase_order_main b on b.code=a.code where b.vencode = '" + vendorCode + "'";
 			q = em.createNativeQuery(selectMinQuery);
 			if (q.getSingleResult() != null) {
 				whcode_min = q.getSingleResult().toString();
-			}
-			else {
+			} else {
 				return new PageImpl<StockReportItem>(resultList, request, totalResult);
 			}
 		}
-		
-		if (whcode_max == "")
-		{
+
+		if (whcode_max == "") {
 			String selectMaxQuery = "SELECT MAX(a.inventorycode) from purchase_order_detail a "
-		 			  + "left join purchase_order_main b on b.code=a.code where b.vencode = '" + vendorCode + "'";
+					+ "left join purchase_order_main b on b.code=a.code where b.vencode = '" + vendorCode + "'";
 			q = em.createNativeQuery(selectMaxQuery);
 			if (q.getSingleResult() != null) {
 				whcode_max = q.getSingleResult().toString();
-			}
-			else {
+			} else {
 				return new PageImpl<StockReportItem>(resultList, request, totalResult);
 			}
 		}
-		
+
 		if (whcode_begin == "") {
 			whcode_begin = whcode_min;
 		}
-		
+
 		if (whcode_end == "") {
 			whcode_end = whcode_max;
 		}
@@ -112,15 +108,15 @@ public class StockReportController extends CommonController {
 		if (whcode_begin.compareTo(whcode_min) < 0) {
 			whcode_begin = whcode_min;
 		}
-		
+
 		if (whcode_begin.compareTo(whcode_max) > 0) {
 			whcode_begin = whcode_max;
 		}
-		
+
 		if (whcode_end.compareTo(whcode_min) < 0) {
 			whcode_end = whcode_min;
 		}
-		
+
 		if (whcode_end.compareTo(whcode_max) > 0) {
 			whcode_end = whcode_max;
 		}
@@ -128,7 +124,7 @@ public class StockReportController extends CommonController {
 		ObjectMapper objectMapper = new ObjectMapper();
 		List<LinkedHashMap<String, String>> entryList;
 		Map<String, Object> map = new HashMap<>();
-		
+
 		try {
 			map = new HashMap<>();
 			Map<String, String> params = new HashMap<>();
@@ -136,38 +132,35 @@ public class StockReportController extends CommonController {
 			params.put("invcode_end", whcode_end);
 			params.put("rows_per_page", String.format("%d", rows_per_page));
 			params.put("page_index", String.format("%d", page_index));
-			
+
 			String response = apiClient.getCurrentStock(params);
-			
+
 			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
 			});
-			
+
 			String unitQuery = "";
 			String measureUnit = "";
-			
+
 			int errorCode = Integer.parseInt((String) map.get("errcode"));
 			if (errorCode == appProperties.getError_code_success()) {
-				List<LinkedHashMap<String, String>> stockArray = (List<LinkedHashMap<String, String>>)map.get("currentstock");
+				List<LinkedHashMap<String, String>> stockArray = (List<LinkedHashMap<String, String>>) map
+						.get("currentstock");
 				totalResult = Integer.parseInt((String) map.get("row_count"));
-				
+
 				for (LinkedHashMap<String, String> entryMap : stockArray) {
 					measureUnit = entryMap.get("massunitname");
-					
+
 					if (measureUnit == "") {
-						unitQuery = "SELECT a.name from measurement_unit a " +
-									"left join inventory b on b.main_measure=a.code " + 
-								    "WHERE b.code='" + entryMap.get("invcode") + "'";
+						unitQuery = "SELECT a.name from measurement_unit a "
+								+ "left join inventory b on b.main_measure=a.code " + "WHERE b.code='"
+								+ entryMap.get("invcode") + "'";
 						q = em.createNativeQuery(unitQuery);
 						measureUnit = q.getSingleResult().toString();
 					}
-					
-					StockReportItem stockItem = new StockReportItem(entryMap.get("invcode"),
-												entryMap.get("invname"),
-												entryMap.get("invstd"),
-												measureUnit,
-												entryMap.get("whname"),
-												entryMap.get("qty"),
-												entryMap.get("availqty"));
+
+					StockReportItem stockItem = new StockReportItem(entryMap.get("invcode"), entryMap.get("invname"),
+							entryMap.get("invstd"), measureUnit, entryMap.get("whname"), entryMap.get("qty"),
+							entryMap.get("availqty"));
 					resultList.add(stockItem);
 				}
 			}
@@ -175,15 +168,12 @@ public class StockReportController extends CommonController {
 			// TODO Auto-generated catch block
 			logger.info(e.getMessage());
 		}
-		
+
 		return new PageImpl<StockReportItem>(resultList, request, totalResult);
 	}
-/*
-	private Object[] appendValue(Object[] obj, Object newObj) {
-		ArrayList<Object> temp = new ArrayList<Object>(Arrays.asList(obj));
-		temp.add(newObj);
-		return temp.toArray();
-	}
-	*/
+	/*
+	 * private Object[] appendValue(Object[] obj, Object newObj) { ArrayList<Object>
+	 * temp = new ArrayList<Object>(Arrays.asList(obj)); temp.add(newObj); return
+	 * temp.toArray(); }
+	 */
 }
-

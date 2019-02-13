@@ -15,10 +15,29 @@
     <div class="panel panel-default">
       <div class="panel-body"> 
         <div class="row">
-          <div class="col-md-12">
-                <i class="fa fa-sitemap"></i> 组织结构
-                <div id="tree_3"></div>
-          </div>      
+          <div class="col-md-6" style="margin-bottom: 20px;">
+	          <i class="fa fa-sitemap"></i> 组织结构
+	          <div id="tree_3"></div>
+          </div>   
+          <div class="col-md-6">
+            <form id="form" th:action="@{/unit/update}" method="post">  
+              <input type="hidden" id="id" name="id">
+          	  <h3>组织信息</h3>
+	          <div class="col-md-12 form-group">
+	             <label for="vendor">组织名称:</label>
+	             <input type="text" name="name" id="name" class="form-control">
+           	   </div>
+           	   <div class="col-md-12 form-group">
+	             <label for="vendor">供货类别:</label>
+	             <select multiple="true" name="provideclasses" id="provideclasses" class="form-control">
+	             </select>
+           	   </div>
+           	   <div class="text-center">
+		          <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
+		          <a class="btn btn-danger" id="del"><i class="fa fa-remove"></i> 删除</a>
+		       </div>
+	         </form>
+           </div>          
         </div>
       </div>
     </div>
@@ -28,106 +47,197 @@
 
 <script th:inline="javascript">
 var url = /*[[@{/unit/}]]*/'';
+var search_url = /*[[@{/provideclass/search/admin}]]*/'';
+var get_url = /*[[@{/unit/get}]]*/'';
 
-    jQuery(document).ready(function() {
-        jQuery("#tree_3").jstree({
-          core:{
-            check_callback: function (operation, node, node_parent, node_position, more) {
-      	
-            },
-            data: function (node, cb) {
-            	$.ajax({
-                    url: url + (node.id === "#" ? 0 : node.id) + "/children"
-                })
-                .done(function (data) {
-                    cb(data);
-                });
-            }
-          },
-          dnd : {
-              "is_draggable" : function(node) {
-            	  if (node[0].id == 1) {
-            		  return false;
-            	  }
-                  return true;
-              },
-              drop_check      : function (data) { return false; }
-          
-          },
-          contextmenu: {
-              'items': function(node) {
-                  var tmp = $.jstree.defaults.contextmenu.items();
-                  tmp.create.label = '新建';
-                  tmp.rename.label = '改名';
-                  tmp.remove.label = '删除';
-                  tmp.ccp = false;
-                  if (node.id == 1) {
-                      tmp.remove = false;
-                  }
-                  return tmp;
-              }
-          },
-          state:{key:"demo1"},
-          plugins:["contextmenu","state","types"]
-        }).on('create_node.jstree', function (e, data) {
-        	$.get(url + "add/" + data.node.parent + "/" + data.node.text).done(function (d) {
-              data.instance.set_id(data.node, d.id);
+jQuery(document).ready(function() {
+	
+	$("#provideclasses").select2(App.getSelect2TagOptions(search_url));
+	
+	
+	  
+    jQuery("#tree_3").jstree({
+      core:{
+        check_callback: function (operation, node, node_parent, node_position, more) {
+  	
+        },
+        data: function (node, cb) {
+        	$.ajax({
+                url: url + (node.id === "#" ? 0 : node.id) + "/children"
             })
-            .fail(function () {
-              data.instance.refresh();
+            .done(function (data) {
+                cb(data);
             });
-        }).on('rename_node.jstree', function (e, data) {
-        	$.get(url + data.node.id + "/rename/" + data.node.text).done(function (d) {
-
-            })
-            .fail(function () {
-              data.instance.refresh();
-            });
-        }).on('delete_node.jstree', function (e, data) {
-          App.showConfirmDialog('确定要删除吗?', function(){
-            $.get(url + data.node.id + "/delete").done(function (d) {
-              if (d.success == 1){
-                App.showSuccessDialog("操作成功！");
-              }else{
-                App.showErrorDialog(d.errmsg);
+        }
+      },
+      dnd : {
+          "is_draggable" : function(node) {
+        	  if (node[0].id == 1) {
+        		  return false;
+        	  }
+              return true;
+          },
+          drop_check      : function (data) { return false; }
+      
+      },
+      contextmenu: {
+          'items': function(node) {
+              var tmp = $.jstree.defaults.contextmenu.items();
+              tmp.create.label = '新建';
+              tmp.rename.label = '改名';
+              tmp.remove.label = '删除';
+              tmp.ccp = false;
+              tmp.rename = false;
+              if (node.id == 1) {
+                  tmp.remove = false;
               }
-              $("#tree_3").jstree("refresh");
-            })
-            .fail(function () {
-              $("#tree_3").jstree("refresh");
-              App.showErrorDialog("操作失败！");
-            });  
-          }, function(){
-            $("#tree_3").jstree("refresh");
-          });        	
-        });
+              return tmp;
+          }
+      },
+      state:{key:"demo1"},
+      plugins:["contextmenu","state","types"]
+    }).on('create_node.jstree', function (e, data) {
+    	$('#provideclasses').empty();
+        $('#id').val(null);
+        $('#name').val(null);
         
-        $(document).bind("dnd_start.vakata", function(e, data) {
-            
+    	$.get(url + "add/" + data.node.parent + "/" + data.node.text).done(function (d) {
+          data.instance.set_id(data.node, d.id);
+          $('#id').val(d.id);
+          $('#name').val(d.name);
         })
-        .bind("dnd_move.vakata", function(e, data) {
-            
-        })
-        .bind("dnd_stop.vakata", function(e, data) {
-        	var dnd_node_id = data.data.nodes[0];
-            var parent_node = $('#tree_3').jstree(true).get_node($(data.event.target));
-            var parent_node_id = parent_node.id;
-            
-            if (parent_node_id == undefined || dnd_node_id == parent_node_id)
-            	return;
-            else {
-            	$.get(url + dnd_node_id + "/move/" + parent_node_id).done(function (d) {
-
-                })
-                .fail(function () {
-                  data.instance.refresh();
-                });
-            }
-            
-            
+        .fail(function () {
+          data.instance.refresh();
         });
+    }).on("select_node.jstree", function(e, data){
+        console.log(data);
+        $('#provideclasses').empty();
+        $('#id').val(null);
+        $('#name').val(null);
+        $.ajax({
+            url: get_url + "/" + data.selected[0]
+        })
+        .done(function (response) {
+            var responseData = response;
+            $('#id').val(responseData.unit.id);
+            $('#name').val(responseData.unit.name);
+        	$.each(responseData.provide_classes, function(key, item){
+        	  var option = new Option(item.name + '(' + item.code +')', item.id.toString(), true, true);
+        	  $("#provideclasses").append(option);
+        	});
+        	
+        	$("#provideclasses").trigger('change');
+        });
+    }).on('rename_node.jstree', function (e, data) {
+    	$.get(url + data.node.id + "/rename/" + data.node.text).done(function (d) {
+    		$('#name').val(d.name);
+        })
+        .fail(function () {
+          data.instance.refresh();
+        });
+    }).on('delete_node.jstree', function (e, data) {
+    	deleteUnit(data.node.id);         	
+    });
+    
+    $(document).bind("dnd_start.vakata", function(e, data) {
+        
+    })
+    .bind("dnd_move.vakata", function(e, data) {
+        
+    })
+    .bind("dnd_stop.vakata", function(e, data) {
+    	var dnd_node_id = data.data.nodes[0];
+        var parent_node = $('#tree_3').jstree(true).get_node($(data.event.target));
+        var parent_node_id = parent_node.id;
+        
+        if (parent_node_id == undefined || dnd_node_id == parent_node_id)
+        	return;
+        else {
+        	$.get(url + dnd_node_id + "/move/" + parent_node_id).done(function (d) {
+
+            })
+            .fail(function () {
+              data.instance.refresh();
+            });
+        }
+        
         
     });
+    
+    function deleteUnit(id) {
+   		App.showConfirmDialog('确定要删除吗?', function(){
+           $.get(url + id + "/delete").done(function (d) {
+             if (d.success == 1){
+   			$('#provideclasses').empty();
+   			$('#id').val(null);
+   			$('#name').val(null);
+               App.showSuccessDialog("操作成功！");
+             }else{
+               App.showErrorDialog(d.errmsg);
+             }
+             $("#tree_3").jstree("refresh");
+           })
+           .fail(function () {
+             $("#tree_3").jstree("refresh");
+             App.showErrorDialog("操作失败！");
+           });  
+         }, function(){
+           $("#tree_3").jstree("refresh");
+         }); 
+    }
+    $("#form" ).validate({
+      // define validation rules
+      rules: {
+        name: {
+          required: true
+        }, 
+      },
+     
+      //display error alert on form submit  
+      invalidHandler: function(event, validator) {
+        App.showErrorDialog("输入有误", "请输入正确的值");
+      },
+
+      submitHandler: function (form) {
+          jQuery(form).ajaxSubmit({
+            beforeSend: function(){
+              App.blockUI();
+            },
+            complete: function(){
+              App.unblockUI();
+            }, 
+            success: function(res, status, xhr, form) {
+	  			if (res.success == 1){
+	  			  App.showSuccessDialog("操作成功", function(){
+	  				  $("#tree_3").jstree("refresh");
+	  			  });
+	  			}else{
+	  			  App.showErrorDialog("操作失败", res.errmsg);
+	  			}            
+            },
+            error: function (res, status, xhr, form) {
+              App.showErrorDialog("操作失败", "请输入正确的值");
+            }
+          });
+      }
+    }); 
+    
+    $("#save").click(function() {
+    	if (!$('#id').val()) {
+    		App.showErrorDialog("操作失败", "请选择一个组织");
+    		return;
+    	}
+        $("#form").submit();            
+    });
+    
+    $("#del").click(function(){
+    	if (!$('#id').val()) {
+    		App.showErrorDialog("操作失败", "请选择一个组织");
+    		return;
+    	}
+    	deleteUnit($('#id').val());
+    });
+});
 
 </script>
 

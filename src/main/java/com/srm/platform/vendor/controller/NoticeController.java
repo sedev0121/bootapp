@@ -40,12 +40,13 @@ import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
-import com.srm.platform.vendor.repository.PermissionGroupFunctionUnitRepository;
+import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.AccountSearchResult;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.NoticeReadSearchResult;
 import com.srm.platform.vendor.utility.NoticeSearchResult;
+import com.srm.platform.vendor.utility.PermissionUnit;
 import com.srm.platform.vendor.utility.SearchItem;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
@@ -53,6 +54,7 @@ import com.srm.platform.vendor.utility.VendorSearchItem;
 
 @Controller
 @RequestMapping(path = "/notice")
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_VENDOR') or hasAuthority('公告通知-查看列表')")
 public class NoticeController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -67,9 +69,10 @@ public class NoticeController extends CommonController {
 
 	@Autowired
 	private VendorRepository vendorRepository;
-
+	
 	@Autowired
-	private PermissionGroupFunctionUnitRepository permissionGroupFunctionUnitRepository;
+	private UnitRepository unitRepository;
+
 
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
@@ -295,8 +298,7 @@ public class NoticeController extends CommonController {
 			if (state == 3) {
 				List<Account> toAccountList = new ArrayList<>();
 				if (notice.getToAllVendor() == 1) {
-					List<String> unitIdList = Utils.getAllUnitsOfId(notice.getUnit().getId(),
-							permissionGroupFunctionUnitRepository);
+					List<String> unitIdList = getAllUnitsOfId(notice.getUnit().getId());
 
 					toAccountList.addAll(accountRepository.findAllVendorsByUnitIdList(unitIdList));
 
@@ -546,6 +548,30 @@ public class NoticeController extends CommonController {
 		if (!isVisible)
 			show403();
 
+	}
+	
+	
+	public List<String> getAllUnitsOfId(Long unitId) {
+		String unitList = String.valueOf(unitId);
+		unitList = StringUtils.append(unitList, "," + searchChildren(unitList));
+
+		return Arrays.asList(StringUtils.split(unitList, ","));
+	}
+
+	private String searchChildren(String parentIdList) {
+		String childList = "";
+		List<PermissionUnit> unitList = unitRepository.findChildrenByParentId(StringUtils.split(parentIdList, ","));
+		for (PermissionUnit unit : unitList) {
+			if (unit != null)
+				childList = StringUtils.append(childList, "," + unit.getUnits());
+		}
+
+		if (childList.isEmpty()) {
+			return childList;
+		} else {
+			childList = StringUtils.append(childList, "," + searchChildren(childList));
+			return childList;
+		}
 	}
 
 }

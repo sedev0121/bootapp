@@ -198,7 +198,6 @@ is_vendor = 1;
 <script th:inline="javascript">
 var edit_url = /*[[@{/notice/}]]*/'';
 var state = /*[[${notice.state}]]*/'';
-var account_url = /*[[@{/vendor/select/}]]*/'';
 var account_table, import_table, editor, vendor_table, import_vendor_table, vendor_editor;
 /*[+
 var isEditable = [[${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}?true:false]];

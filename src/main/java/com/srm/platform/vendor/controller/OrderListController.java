@@ -35,6 +35,7 @@ import com.srm.platform.vendor.view.ExcelOrderlistReportView;
 //库存报表
 @Controller
 @RequestMapping(path = "/orderlist")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('报表中心-查看列表')")
 public class OrderListController extends CommonController {
 	@Autowired
 	private VendorRepository vendorRepository;
@@ -58,7 +59,7 @@ public class OrderListController extends CommonController {
 		if (vendor == null) {
 			List<String> unitList = this.getDefaultUnitList();
 			PageRequest request = PageRequest.of(0, 999,
-					dir.equals("asc") ? Direction.ASC : Direction.DESC, "b.name");
+					dir.equals("asc") ? Direction.ASC : Direction.DESC, "name");
 			
 			Page<VendorSearchItem> result = null;
 			result = vendorRepository.findBySearchTerm("", unitList, request);

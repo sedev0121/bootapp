@@ -1,39 +1,66 @@
 package com.srm.platform.vendor.controller;
 
+import java.io.File;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.Notice;
+import com.srm.platform.vendor.model.NoticeRead;
+import com.srm.platform.vendor.model.PermissionGroupUser;
+import com.srm.platform.vendor.model.ProvideClass;
 import com.srm.platform.vendor.model.Unit;
+import com.srm.platform.vendor.model.UnitProvide;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.UnitProvideRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.utility.AccountSaveForm;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
+import com.srm.platform.vendor.utility.SearchItem;
 import com.srm.platform.vendor.utility.UnitNode;
+import com.srm.platform.vendor.utility.UnitSaveForm;
+import com.srm.platform.vendor.utility.UploadFileHelper;
+import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/unit")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
-public class UnitController {
+public class UnitController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private UnitRepository unitRepository;
+
+	@Autowired
+	private UnitProvideRepository unitProvideRepository;
 
 	@Autowired
 	private VendorRepository vendorRepository;
@@ -91,18 +118,13 @@ public class UnitController {
 			return response;
 		}
 
-		List<Vendor> vendorList = vendorRepository.findVendorsByUnitIdList(childUnitList);
-		if (vendorList.size() > 0) {
-			GenericJsonResponse<Unit> response = new GenericJsonResponse<>(GenericJsonResponse.FAILED,
-					vendorList.size() + "个供应商被属于该组织。", null);
-			return response;
-		}
-
+		unitProvideRepository.deleteByUnitId(unit.getId());
 		unitRepository.delete(unit);
 		if (childrenUnitIds != null) {
 			unitRepository.deleteByChildIds(childrenUnitIds.split(","));
 		}
 
+		
 		return new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
 	}
 
@@ -159,6 +181,41 @@ public class UnitController {
 		}
 		return node;
 
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/get/{id}", produces = "application/json")
+	public Map<String, Object> get_ajax(@PathVariable("id") Long id) {
+		Unit unit = unitRepository.findOneById(id);
+		List<ProvideClass> provideClassList = provideClassRepository.findProvideClassesByUnitId(id);
+		Map<String, Object> response = new HashMap();
+		response.put("unit", unit);
+		response.put("provide_classes", provideClassList);
+		return response;
+
+	}
+
+	// 用户修改
+	@Transactional
+	@PostMapping("/update")
+	public @ResponseBody GenericJsonResponse<Unit> update_ajax(UnitSaveForm unitSaveForm) {
+		Unit unit = unitRepository.findOneById(unitSaveForm.getId());
+		unit.setName(unitSaveForm.getName());
+		unitRepository.save(unit);
+
+		unitProvideRepository.deleteByUnitId(unit.getId());
+
+		List<Long> provideClassIdList = unitSaveForm.getProvideclasses();
+		if (provideClassIdList != null) {
+			for (Long id : provideClassIdList) {
+				UnitProvide temp = new UnitProvide(id, unit.getId());
+				unitProvideRepository.save(temp);
+			}
+		}
+
+		GenericJsonResponse<Unit> response = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, unit);
+
+		return response;
 	}
 
 }

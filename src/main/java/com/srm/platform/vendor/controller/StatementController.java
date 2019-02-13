@@ -52,6 +52,7 @@ import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
+import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchResult;
 import com.srm.platform.vendor.utility.StatementDetailItem;
 import com.srm.platform.vendor.utility.StatementSaveForm;
 import com.srm.platform.vendor.utility.StatementSearchResult;
@@ -208,7 +209,6 @@ public class StatementController extends CommonController {
 				+ "left join account d on a.verifier_id=d.id left join account e on a.confirmer_id=e.id left join account f on a.invoicenummaker_id=f.id "
 				+ "left join account g on a.u8invoicemaker_id=g.id where 1=1 ";
 
-		List<String> unitList = this.getDefaultUnitList();
 		Map<String, Object> params = new HashMap<>();
 
 		if (isVendor()) {
@@ -220,8 +220,14 @@ public class StatementController extends CommonController {
 			bodyQuery += " and a.state>=" + Constants.STATEMENT_STATE_REVIEW;
 
 		} else {
-			bodyQuery += " and b.unit_id in :unitList";
-			params.put("unitList", unitList);
+			List<String> vendorList = this.getVendorListOfUser();
+			
+			if (vendorList.size() == 0) {
+				return new PageImpl<StatementSearchResult>(new ArrayList(), request, 0);
+			}
+			
+			bodyQuery += " and b.code in :vendorList";
+			params.put("vendorList", vendorList);
 			if (!vendorStr.trim().isEmpty()) {
 				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
 				params.put("vendor", vendorStr.trim());

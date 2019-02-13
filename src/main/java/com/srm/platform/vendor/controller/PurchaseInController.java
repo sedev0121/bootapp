@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +28,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.PurchaseInMain;
+import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
+import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.utility.InquerySearchResult;
 import com.srm.platform.vendor.utility.PurchaseInDetailItem;
 import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 import com.srm.platform.vendor.utility.Utils;
@@ -48,6 +52,7 @@ public class PurchaseInController extends CommonController {
 	@Autowired
 	private PurchaseInDetailRepository purchaseInDetailRepository;
 
+
 	// 查询列表
 	@GetMapping({ "/", "" })
 	public String index() {
@@ -60,7 +65,7 @@ public class PurchaseInController extends CommonController {
 		if (main == null)
 			show404();
 
-		checkVendor(main.getVendor());
+//		checkVendor(main.getVendor());
 
 		model.addAttribute("main", main);
 		return "purchasein/edit";
@@ -112,18 +117,23 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select distinct a.*, m.name unitname, b.date, b.verify_date, c.name inventoryname,c.specs, v.name vendorname, v.code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
-		String countQuery = "select count(distinct a.id) ";
+		String selectQuery = "select a.*, m.name unitname, b.date, b.verify_date, c.name inventoryname,c.specs, v.name vendorname, v.code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
+		String countQuery = "select count(a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventory_code=c.code "
-				+ "left join measurement_unit m on c.main_measure=m.code left join vendor v on b.vendor_code=v.code "
-				+ "where v.unit_id in :unitList ";
+				+ "left join measurement_unit m on c.main_measure=m.code left join vendor v on b.vendor_code=v.code  "
+				+ "where v.code in :vendorList ";
 
 		Map<String, Object> params = new HashMap<>();
 
-		List<String> unitList = this.getDefaultUnitList();
-		params.put("unitList", unitList);
+		List<String> vendorList = this.getVendorListOfUser();
+		
+		if (vendorList.size() == 0) {
+			return new PageImpl<PurchaseInDetailResult>(new ArrayList(), request, 0);
+		}
+		
+		params.put("vendorList", vendorList);
 
 		if (!inventory.trim().isEmpty()) {
 			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";

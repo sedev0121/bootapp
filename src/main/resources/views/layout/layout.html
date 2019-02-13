@@ -124,7 +124,7 @@
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
                 
               <ul class="dropdown-menu">
-                <li><a th:href="@{/vendor}">供应商档案表</a></li>
+                <li><a th:href="@{/vendor}">供应商管理</a></li>
                 <li><a th:href="@{/inventory}">物料档案表</a></li>
                 <li><a th:href="@{/baseprice}">物料价格查询</a></li>
               </ul>
@@ -170,6 +170,9 @@
             </li>
             <li th:classappend="${#strings.startsWith(#request.requestURI,'/vendor')} ? active : ''" >
               <a th:href="@{/vendor}">供应商管理</a>
+            </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/provideclass')} ? active : ''" >
+              <a th:href="@{/provideclass}">供货类别</a>
             </li>
             <li th:classappend="${#strings.startsWith(#request.requestURI,'/notice')} ? active : ''" >
               <a th:href="@{/notice}">公告通知</a>
@@ -239,7 +242,7 @@
         <div class="row">
           <!-- BEGIN COPYRIGHT -->
           <div class="col-md-6 col-sm-6">
-             <p class="powered"> Copyright © 嘉兴市<a href="http://www.cnyunl.com">云链</a>信息技术有限公司<span class="version" th:text="' (版本:' + ${session.version} + ')'"></span></p> 
+             <p class="powered"> Copyright © 嘉兴市<a href="http://www.cnyunl.com">云链</a>信息技术有限公司</p> 
           </div>
           <!-- END COPYRIGHT -->
 

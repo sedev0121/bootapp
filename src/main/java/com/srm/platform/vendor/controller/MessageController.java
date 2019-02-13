@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,7 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/message")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('公告通知-查看列表')")
 public class MessageController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

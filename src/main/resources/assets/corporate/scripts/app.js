@@ -181,7 +181,7 @@ var App = function() {
     },
     getSelect2TagOptions: function(search_url) {
       return $.extend(true, {
-        maximumSelectionLength: 5,
+        maximumSelectionLength: 15,
         ajax:{
           url:search_url
         },  
