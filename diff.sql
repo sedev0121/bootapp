@@ -146,3 +146,12 @@ CREATE TABLE `vendor_provide`  (
 ### 2019-02-14 ###
 alter table vendor_provide DROP column unit_id;
 alter table vendor DROP column unit_id;
+
+DROP TABLE IF EXISTS `master`;
+CREATE TABLE `master`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `item_key` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `item_value` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `key_index`(`item_key`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;

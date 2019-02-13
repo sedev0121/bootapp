@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.InventoryClass;
+import com.srm.platform.vendor.model.Master;
 import com.srm.platform.vendor.model.MeasurementUnit;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.PurchaseInMain;
@@ -35,6 +36,7 @@ import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
+import com.srm.platform.vendor.repository.MasterRepository;
 import com.srm.platform.vendor.repository.MeasurementUnitRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
@@ -88,6 +90,9 @@ public class SyncController {
 	@Autowired
 	private EmailService emailService;
 	
+	@Autowired
+	private MasterRepository masterRepository;
+	
 	@ResponseBody
 	@GetMapping({ "", "/", "/daily" })
 	public boolean index() {
@@ -107,10 +112,24 @@ public class SyncController {
 	public boolean initAll() {
 		this.measurementunit();
 		this.inventoryClass();
-		this.inventoryInit();
+		
+		boolean result = false;
+		result = this.inventoryInit();
+		if (result) {
+			this.saveLastSyncDate(Constants.KEY_SYNC_INVENTORY);
+		}
+		
 		this.vendorInit();
-		this.purchaseInInit();
-		this.purchaseorderInit();
+		
+		result = this.purchaseInInit();
+		if (result) {
+			this.saveLastSyncDate(Constants.KEY_SYNC_PURCHASE_IN);
+		}
+		
+		result = this.purchaseorderInit();
+		if (result) {
+			this.saveLastSyncDate(Constants.KEY_SYNC_PURCHASE_ORDER);
+		}
 
 		return true;
 	}
@@ -219,17 +238,24 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = { "/inventory/init", "/inventory", "/inventory/" })
 	public boolean inventoryInit() {
-
 		inventoryRepository.deleteAllInBatch();
-		inventory(null);
-		return true;
+		boolean result = inventory(null);
+		if (result) {
+			saveLastSyncDate(Constants.KEY_SYNC_INVENTORY);
+		}
+		return result;
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/inventory/daily")
 	public boolean inventoryDaily() {
-		inventory(new Date());
-		return true;
+		Date lastSyncDate = getLastSyncDate(Constants.KEY_SYNC_INVENTORY);
+		boolean result = inventory(lastSyncDate);
+		if (result) {
+			saveLastSyncDate(Constants.KEY_SYNC_INVENTORY);
+		}
+		
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -490,8 +516,13 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = "/purchaseorder/daily")
 	public boolean purchaseorderDaily() {
-		purchaseOrder(new Date(), null);
-		return true;
+		Date lastSyncDate = getLastSyncDate(Constants.KEY_SYNC_PURCHASE_ORDER);
+		boolean result = purchaseOrder(lastSyncDate, null);
+		if (result) {
+			saveLastSyncDate(Constants.KEY_SYNC_PURCHASE_ORDER);
+		}
+		
+		return result;
 	}
 
 	@ResponseBody
@@ -683,9 +714,18 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = "/purchasein/daily")
 	public boolean purchaseInDaily() {
-		purchaseIn(new Date(), null, false);
-		purchaseIn(new Date(), null, true);
-		return true;
+		Date lastSyncDate = getLastSyncDate(Constants.KEY_SYNC_PURCHASE_IN);
+		boolean result = purchaseIn(lastSyncDate, null, false);
+		
+		if (result) {
+			result = purchaseIn(lastSyncDate, null, true);	
+		}
+		
+		if (result) {
+			saveLastSyncDate(Constants.KEY_SYNC_PURCHASE_IN);
+		}
+		
+		return result;
 	}
 
 	@ResponseBody
@@ -941,7 +981,32 @@ public class SyncController {
 		Map<String, Object> model = new HashMap<>();
 		model.put("error", errorMsg);
 		
-		emailService.sendSyncErrorEmail(syncName, model);
+//		emailService.sendSyncErrorEmail(syncName, model);
 	}
 
+	private Date getLastSyncDate(String key) {
+		Date lastSyncDate = new Date();
+		Master master = masterRepository.findOneByItemKey(key);
+		
+		if (master != null) {
+			String lastSyncDateStr = master.getItemValue();
+			lastSyncDate = Utils.parseDate(lastSyncDateStr);
+		}
+		return Utils.getStartSyncDate(lastSyncDate);
+	}
+	
+	private void saveLastSyncDate(String key) {
+		Date today = new Date();
+		String value = Utils.formatDate(today);
+		
+		Master master = masterRepository.findOneByItemKey(key);
+		if (master == null) {
+			master = new Master();
+			master.setItemKey(key);
+		}
+		master.setItemValue(value);
+		
+		masterRepository.save(master);
+		
+	}
 }

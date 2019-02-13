@@ -78,6 +78,13 @@ public class Utils {
 		return cal.getTime();
 	}
 
+	public static Date getStartSyncDate(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DATE, -2);
+		return cal.getTime();
+	}
+	
 	public static Date getAlertDate(Date date) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);

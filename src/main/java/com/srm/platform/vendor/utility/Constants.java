@@ -52,5 +52,10 @@ public class Constants {
 	public final static String PATH_UPLOADS_NOTICE = "notice";
 	public final static String PATH_UPLOADS_STATEMENT = "statement";
 	public final static String PATH_UPLOADS_INQUERY = "inquery";
+	
+	public final static String KEY_SYNC_INVENTORY = "last_sync_inventory_date";
+	public final static String KEY_SYNC_PURCHASE_IN = "last_sync_purchase_in_date";
+	public final static String KEY_SYNC_VENDOR = "last_sync_vendor_date";
+	public final static String KEY_SYNC_PURCHASE_ORDER = "last_sync_purchase_order_date";
 
 }
