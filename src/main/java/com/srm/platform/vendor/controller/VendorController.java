@@ -87,7 +87,14 @@ public class VendorController extends CommonController {
 		if (vendor == null)
 			show404();
 
-		List<ProvideClass> provideClassList = provideClassRepository.findProvideClassesByVendorCodeAndUnitId(code, this.getLoginAccount().getUnit().getId());
+		List<ProvideClass> provideClassList = null;
+		
+		if (isAdmin() || hasAuthority("基础资料-新建供应商")) {
+			provideClassList = provideClassRepository.findProvideClassesByVendorCode(code);	
+		} else {
+			provideClassList = provideClassRepository.findProvideClassesByVendorCodeAndUnitId(code, this.getDefaultUnitList());
+		}
+		
 
 		Account account = accountRepository.findOneByUsername(code);
 
@@ -128,11 +135,11 @@ public class VendorController extends CommonController {
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
 		Page<VendorSearchItem> result = null;
-		if (isAdmin())
+		if (isAdmin() || hasAuthority("基础资料-新建供应商")) {
 			result = vendorRepository.findBySearchTermForAdmin(search, request);
-		else
+		} else {
 			result = vendorRepository.findBySearchTerm(search, unitList, request);
-
+		}
 		return result;
 	}
 
