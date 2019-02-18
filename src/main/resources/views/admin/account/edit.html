@@ -31,13 +31,14 @@
                 <input type="text" id="realname" name="realname" class="form-control" th:value="${account.realname}">
               </div>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="unit_name">所属组织: </label>
-                <input type="hidden" id="unit" name="unit" th:value="${account.unit==null?'':account.unit.id}">
-                <input type="text" id="unit_name" name="unit_name" class="form-control select-unit" th:value="${account.unit==null?'':account.unit.name}" readonly>
-              </div>
-              <div class="col-lg-2 col-md-2 form-group">
                 <label for="duty">职位: </label>
                 <input type="text" id="duty" name="duty" th:value="${account.duty}" class="form-control">
+              </div>
+              <div class="col-lg-8 col-md-8 form-group">
+                <label for="unit_name">所属组织: </label>
+                <input type="hidden" id="unit" name="unit" th:value="${account.unit==null?'':account.unit.id}">
+                <input type="text" id="unit_name" name="unit_name" th:if="${account.role!='ROLE_VENDOR'}" class="form-control select-unit" th:value="${account.unit==null?'':account.unit.name}" readonly>
+                <input type="text" id="unit_name" name="unit_name" th:if="${account.role=='ROLE_VENDOR'}" class="form-control select-unit" th:value="${unitname}" readonly>
               </div>
             </fieldset>
             <fieldset>

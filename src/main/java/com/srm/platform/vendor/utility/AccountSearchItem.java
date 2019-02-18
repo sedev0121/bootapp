@@ -7,5 +7,7 @@ public interface AccountSearchItem {
 	String getUsername();
 
 	String getRealname();
+	
+	String getUnitname();
 
 }

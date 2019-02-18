@@ -55,4 +55,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	@Query(value = "SELECT * FROM account where id in ?1", nativeQuery = true)
 	List<Account> findAllByIdList(List<Long> idList);
+	
+	@Query(value = "select t.*, case t.role when 'ROLE_VENDOR' then p.name else u.name end as unitname from account t left join unit u on t.unit_id=u.id left join vendor v on t.vendor_code=v.code left join (select group_concat(a.name) name, c.vendor_code from unit a left join unit_provide b on a.id=b.unit_id left join vendor_provide c on b.provide_id=c.provide_id where c.vendor_code is not null GROUP BY c.vendor_code) p on t.vendor_code=p.vendor_code where t.id=?1 limit 1", nativeQuery = true)
+	AccountSearchItem findOneVendorById(Long id);
+	
 }

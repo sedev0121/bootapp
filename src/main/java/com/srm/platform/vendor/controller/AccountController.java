@@ -95,16 +95,19 @@ public class AccountController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT t.*, u.name unitname, v.name vendorname ";
+		String selectQuery = "SELECT t.*, case t.role when 'ROLE_VENDOR' then p.name else u.name end as unitname, v.name vendorname ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM account t left join unit u on t.unit_id=u.id left join vendor v on t.vendor_code=v.code where 1=1 ";
+		String bodyQuery = "FROM account t left join unit u on t.unit_id=u.id left join vendor v on t.vendor_code=v.code "
+				+ "left join (select group_concat(a.name) name, c.vendor_code from unit a left join unit_provide b on a.id=b.unit_id left join vendor_provide c on b.provide_id=c.provide_id \r\n" + 
+				"where c.vendor_code is not null GROUP BY c.vendor_code) p on t.vendor_code=p.vendor_code "
+				+ "where 1=1 ";
 
 		Map<String, Object> params = new HashMap<>();
 
 		if (!search.trim().isEmpty()) {
-			bodyQuery += " and (u.name LIKE CONCAT('%',:search, '%') or t.username LIKE CONCAT('%',:search, '%') or t.realname LIKE CONCAT('%',:search, '%') or t.duty LIKE CONCAT('%',:search, '%') or t.email LIKE CONCAT('%',:search, '%')) ";
+			bodyQuery += " and (p.name LIKE CONCAT('%',:search, '%') or u.name LIKE CONCAT('%',:search, '%') or t.username LIKE CONCAT('%',:search, '%') or t.realname LIKE CONCAT('%',:search, '%') or t.duty LIKE CONCAT('%',:search, '%') or t.email LIKE CONCAT('%',:search, '%')) ";
 			params.put("search", search.trim());
 		}
 
@@ -172,8 +175,15 @@ public class AccountController extends CommonController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		AccountSearchItem vendorUnitResult = accountRepository.findOneVendorById(id);
+		String unitname = "";
+		if (vendorUnitResult != null) {
+			unitname = vendorUnitResult.getUnitname();			
+		}
 		model.addAttribute("account", account);
 		model.addAttribute("groupList", jsonGroupString);
+		model.addAttribute("unitname", unitname);
 		return "admin/account/edit";
 	}
 
