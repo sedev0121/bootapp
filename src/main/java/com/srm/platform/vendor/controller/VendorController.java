@@ -70,7 +70,7 @@ public class VendorController extends CommonController {
 
 	
 	// 详细
-	@PreAuthorize("hasAuthority('基础资料-新建供应商')")
+	@PreAuthorize("hasAuthority('基础资料-新建供应商') or hasRole('ROLE_ADMIN')")
 	@GetMapping("/add")
 	public String add(Model model) {
 		Vendor vendor = new Vendor();
@@ -135,7 +135,9 @@ public class VendorController extends CommonController {
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
 		Page<VendorSearchItem> result = null;
-		if (isAdmin() || hasAuthority("基础资料-新建供应商")) {
+		if (isAdmin()) {
+			result = vendorRepository.findBySearchTerm(search, request);
+		} else if (hasAuthority("基础资料-新建供应商")) {
 			result = vendorRepository.findBySearchTermForAdmin(search, request);
 		} else {
 			result = vendorRepository.findBySearchTerm(search, unitList, request);
