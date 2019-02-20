@@ -58,25 +58,29 @@ public class PriceChangeController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				Direction.ASC, order);
 
-		String selectQuery = "SELECT d.realname createname, b.name vendorname, b.code vendorcode, c.name inventoryname, c.code inventorycode, e.name fauxunit, a.*";
+		String selectQuery = "SELECT d.realname createname, b.name vendorname, b.code vendorcode, c.name inventoryname, c.code inventorycode, e.name fauxunit, a.* ";
 		String groupBy = " group by c.code";
 		String orderBy = " order by " + order + " ";
 
 		String bodyQuery = "FROM price a left join vendor b on a.fsupplyno=b.code left join inventory c on a.cinvcode=c.code "
 						 + "left join account d on a.createby=d.id " 
 						 + "left join measurement_unit e on e.code = c.main_measure "
-						 + "WHERE b.code in :vendorList ";
+						 + "WHERE 1=1 ";
 		
 		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 		String priceQuery = "SELECT a.fprice, MAX(a.createdate) ";
 		String avgPriceQuery = "SELECT AVG(a.fprice) ";
-		String lastYear = String.format("and a.createdate between '%d/01/01' and '%d/12/31' ", currentYear - 1, currentYear - 1);
-		String currentDate = String.format("and a.createdate between '%d/01/01' and '%s' ", currentYear, new SimpleDateFormat("yyyy/MM/dd").format(Calendar.getInstance().getTime()));
+		String lastYear = String.format(" and a.createdate between '%d/01/01' and '%d/12/31' ", currentYear - 1, currentYear - 1);
+		String currentDate = String.format(" and a.createdate between '%d/01/01' and '%s' ", currentYear, new SimpleDateFormat("yyyy/MM/dd").format(Calendar.getInstance().getTime()));
 		
 		List<String> vendorList = this.getVendorListOfUser();
 		Map<String, Object> params = new HashMap<>();
 
-		params.put("vendorList", vendorList);
+		if (vendorList.size() > 0) {
+			bodyQuery += " and b.code in :vendorList ";
+			params.put("vendorList", vendorList);	
+		}
+		
 		
 		if (!start_inventory.trim().isEmpty()) {
 			bodyQuery += " and c.code>=:startCode";
