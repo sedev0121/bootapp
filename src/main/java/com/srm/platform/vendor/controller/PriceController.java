@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.repository.PriceRepository;
-import com.srm.platform.vendor.utility.PriceSearchResult;
+import com.srm.platform.vendor.searchitem.PriceSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller

@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.utility.SearchItem;
-import com.srm.platform.vendor.utility.VendorSearchItem;
+import com.srm.platform.vendor.searchitem.SearchItem;
+import com.srm.platform.vendor.searchitem.VendorSearchItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete

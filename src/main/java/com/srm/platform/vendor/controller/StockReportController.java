@@ -32,8 +32,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.StockReportItem;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.StockReportRepository;
+import com.srm.platform.vendor.searchitem.StockReportSearchItem;
 import com.srm.platform.vendor.utility.Constants;
-import com.srm.platform.vendor.utility.StockReportSearchItem;
 import com.srm.platform.vendor.utility.Utils;
 
 // 库存报表

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.Inventory;
-import com.srm.platform.vendor.utility.StockReportSearchItem;
+import com.srm.platform.vendor.searchitem.StockReportSearchItem;
 
 public interface StockReportRepository extends JpaRepository<Inventory, Long> {
 	@Query (value = "SELECT a.code, a.name, a.specs, b.name unitname from inventory a left join measurement_unit b on a.main_measure=b.code ",

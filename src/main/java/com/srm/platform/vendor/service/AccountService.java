@@ -33,9 +33,9 @@ import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PasswordResetTokenRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
+import com.srm.platform.vendor.searchitem.PermissionItem;
+import com.srm.platform.vendor.searchitem.PermissionUnit;
 import com.srm.platform.vendor.utility.Constants;
-import com.srm.platform.vendor.utility.PermissionItem;
-import com.srm.platform.vendor.utility.PermissionUnit;
 
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)

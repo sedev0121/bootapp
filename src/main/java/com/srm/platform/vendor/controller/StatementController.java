@@ -50,17 +50,17 @@ import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.saveform.StatementSaveForm;
+import com.srm.platform.vendor.searchitem.PurchaseOrderDetailSearchResult;
+import com.srm.platform.vendor.searchitem.StatementDetailItem;
+import com.srm.platform.vendor.searchitem.StatementSearchResult;
+import com.srm.platform.vendor.searchitem.VenPriceDetailItem;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
-import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchResult;
-import com.srm.platform.vendor.utility.StatementDetailItem;
-import com.srm.platform.vendor.utility.StatementSaveForm;
-import com.srm.platform.vendor.utility.StatementSearchResult;
 import com.srm.platform.vendor.utility.U8InvoicePostData;
 import com.srm.platform.vendor.utility.U8InvoicePostEntry;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
-import com.srm.platform.vendor.utility.VenPriceDetailItem;
 
 @Controller
 @RequestMapping(path = "/statement")

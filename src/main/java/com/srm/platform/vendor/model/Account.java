@@ -21,7 +21,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.srm.platform.vendor.utility.AccountSearchResult;
+import com.srm.platform.vendor.searchitem.AccountSearchResult;
 
 @Entity
 

@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.searchitem.NoticeSearchResult;
 import com.srm.platform.vendor.utility.Constants;
-import com.srm.platform.vendor.utility.NoticeSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller

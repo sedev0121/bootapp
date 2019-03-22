@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.repository.InventoryRepository;
-import com.srm.platform.vendor.utility.InventorySearchItem;
+import com.srm.platform.vendor.searchitem.InventorySearchItem;
 
 //商品档案表
 @Controller

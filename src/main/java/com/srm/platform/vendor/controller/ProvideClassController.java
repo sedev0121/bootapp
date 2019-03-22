@@ -35,11 +35,11 @@ import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.model.ProvideClass;
 import com.srm.platform.vendor.model.StatementMain;
+import com.srm.platform.vendor.searchitem.NoticeSearchResult;
+import com.srm.platform.vendor.searchitem.ProvideClassSearchResult;
+import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
-import com.srm.platform.vendor.utility.NoticeSearchResult;
-import com.srm.platform.vendor.utility.ProvideClassSearchResult;
-import com.srm.platform.vendor.utility.SearchItem;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 

@@ -14,7 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.srm.platform.vendor.utility.NoticeSearchResult;
+import com.srm.platform.vendor.searchitem.NoticeSearchResult;
 
 @Controller
 @RequestMapping(path = "/")

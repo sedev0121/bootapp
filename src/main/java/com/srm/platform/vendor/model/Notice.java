@@ -14,7 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
-import com.srm.platform.vendor.utility.NoticeSearchResult;
+import com.srm.platform.vendor.searchitem.NoticeSearchResult;
 
 @Entity
 @Table(name = "notice")

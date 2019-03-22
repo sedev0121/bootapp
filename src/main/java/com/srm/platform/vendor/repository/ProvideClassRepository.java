@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import com.srm.platform.vendor.model.ProvideClass;
-import com.srm.platform.vendor.utility.SearchItem;
+import com.srm.platform.vendor.searchitem.SearchItem;
 
 @Repository
 public interface ProvideClassRepository extends JpaRepository<ProvideClass, Long> {

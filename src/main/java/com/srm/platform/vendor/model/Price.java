@@ -15,7 +15,7 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.srm.platform.vendor.utility.PriceSearchResult;
+import com.srm.platform.vendor.searchitem.PriceSearchResult;
 
 @Entity
 

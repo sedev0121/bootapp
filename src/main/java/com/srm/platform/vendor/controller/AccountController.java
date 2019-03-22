@@ -41,10 +41,11 @@ import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
-import com.srm.platform.vendor.utility.AccountSaveForm;
-import com.srm.platform.vendor.utility.AccountSearchItem;
-import com.srm.platform.vendor.utility.AccountSearchResult;
+import com.srm.platform.vendor.saveform.AccountSaveForm;
+import com.srm.platform.vendor.searchitem.AccountSearchItem;
+import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
+import com.srm.platform.vendor.utility.PermissionRecord;
 
 @Controller
 @RequestMapping(path = "/account")
@@ -216,14 +217,8 @@ public class AccountController extends CommonController {
 
 		account.setUsername(accountSaveForm.getUsername());
 		account.setRealname(accountSaveForm.getRealname());
-		account.setWeixin(accountSaveForm.getWeixin());
-		account.setQq(accountSaveForm.getQq());
-		account.setYahoo(accountSaveForm.getYahoo());
-		account.setWangwang(accountSaveForm.getWangwang());
 		account.setMobile(accountSaveForm.getMobile());
 		account.setTel(accountSaveForm.getTel());
-		account.setAddress(accountSaveForm.getAddress());
-		account.setGtalk(accountSaveForm.getGtalk());
 		account.setEmail(accountSaveForm.getEmail());
 		account.setRole(accountSaveForm.getRole());
 		account.setDuty(accountSaveForm.getDuty());
@@ -268,12 +263,12 @@ public class AccountController extends CommonController {
 		permissionGroupUserRepository.deleteByAccountId(account.getId());
 
 		if ("ROLE_BUYER".equals(account.getRole())) {
-			List<Long> permissionList = accountSaveForm.getPermission();
+			List<PermissionRecord> permissionList = accountSaveForm.getPermission();
 			if (permissionList != null) {
-				for (Long id : permissionList) {
+				for (PermissionRecord record : permissionList) {
 					PermissionGroupUser temp = new PermissionGroupUser();
 					temp.setAccountId(account.getId());
-					temp.setGroupId(id);
+					temp.setGroupId(record.getPermissionGroupId());
 
 					Example<PermissionGroupUser> example = Example.of(temp);
 					Optional<PermissionGroupUser> result = permissionGroupUserRepository.findOne(example);

@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.srm.platform.vendor.model.ProvideClass;
 import com.srm.platform.vendor.model.Unit;
 import com.srm.platform.vendor.model.UnitProvide;
-import com.srm.platform.vendor.utility.PermissionItem;
+import com.srm.platform.vendor.searchitem.PermissionItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
