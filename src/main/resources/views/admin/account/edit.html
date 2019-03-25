@@ -66,20 +66,35 @@
 			</div>
 		</form>
 		<div class="row permission-scope">
-			<div class="col-md-4 form-group">
-				<table id="permission_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-				</table>
+			<div class="col-md-4 tab-style-1">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#permission_list">权限列表</a></li>
+				</ul>
+				<div class="tab-content">
+					<div id="permission_list" class="tab-pane fade active in">
+						<table id="permission_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+						</table>
+					</div>
+				</div>
 			</div>
 			<!-- TABS -->
 			<div class="col-md-8 tab-style-1" id="scope_tabs">
 				<ul class="nav nav-tabs">
+					<li class=""><a data-toggle="tab" href="#company_scope" id="company_tab">公司</a></li>
+					<li class=""><a data-toggle="tab" href="#account_scope" id="account_tab">采购员</a></li>
 					<li class=""><a data-toggle="tab" href="#store_scope" id="store_tab">库房</a></li>
 					<li class=""><a data-toggle="tab" href="#vendor_scope" id="vendor_tab">供应商</a></li>
 					<li class=""><a data-toggle="tab" href="#inventory_scope" id="inventory_tab">商品分类</a></li>
-					<li class="active"><a data-toggle="tab" href="#company_scope" id="company_tab">公司</a></li>
-					<li class=""><a data-toggle="tab" href="#account_scope" id="account_tab">采购员</a></li>
 				</ul>
 				<div class="tab-content">
+					<div id="company_scope" class="tab-pane fade">
+						<table id="company_scope_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+						</table>
+					</div>
+					<div id="account_scope" class="tab-pane fade">
+						<table id="account_scope_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+						</table>
+					</div>
 					<div id="store_scope" class="tab-pane fade">
 						<table id="store_scope_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
 						</table>
@@ -90,14 +105,6 @@
 					</div>
 					<div id="inventory_scope" class="tab-pane fade">
 						<table id="inventory_scope_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-						</table>
-					</div>
-					<div id="company_scope" class="tab-pane fade">
-						<table id="company_scope_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-						</table>
-					</div>
-					<div id="account_scope" class="tab-pane fade">
-						<table id="account_scope_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
 						</table>
 					</div>
 				</div>
@@ -285,6 +292,7 @@
 	    ordering : true,
 	    serverSide : false,
 	    processing : false,
+	    scrollY: '350px',
 	    select : {
 	      style : 'multi',
 	      selector : 'td:first-child'
@@ -372,6 +380,7 @@
 		  	ordering : true,
 		    serverSide : false,
 		    processing : false,
+		    scrollY: '350px',
 		    select : {
 		      style : 'multi',
 		      selector : 'td:first-child'
@@ -417,6 +426,7 @@
 		  	ordering : true,
 		    serverSide : false,
 		    processing : false,
+		    scrollY: '350px',
 		    select : {
 		      style : 'multi',
 		      selector : 'td:first-child'
@@ -471,6 +481,7 @@
 		  	ordering : true,
 		    serverSide : false,
 		    processing : false,
+		    scrollY: '350px',
 		    select : {
 		      style : 'multi',
 		      selector : 'td:first-child'
@@ -518,6 +529,7 @@
 		  	ordering : true,
 		    serverSide : false,
 		    processing : false,
+		    scrollY: '350px',
 		    select : {
 		      style : 'multi',
 		      selector : 'td:first-child'
@@ -566,6 +578,7 @@
 		  	ordering : true,
 		    serverSide : false,
 		    processing : false,
+		    scrollY: '350px',
 		    select : {
 		      style : 'multi',
 		      selector : 'td:first-child'
