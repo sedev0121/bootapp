@@ -135,6 +135,7 @@
 
   	var permission_scope_list = JSON.parse(scope_list);
   	var account_permission_groups = [];
+  	var permission_dimensions = {};
   	
   	function getScopeOf(group_id, dimension_id) {
   		var result = [];
@@ -149,6 +150,10 @@
   	
   	$.map(permission_scope_list, function(row, index) {
 			account_permission_groups.push(row.group_id);
+			var key = row.group_id.toString();
+			if (!permission_dimensions[key] && row.dimensions) {				
+				permission_dimensions[key] = row.dimensions.split(",");
+			}			
 		});
   	
 	  function onCheckVendor(isVendor) {
@@ -328,22 +333,66 @@
       }
 	  });
 
-	  var currentPermissionGroupId;
+	  var currentPermissionGroupId, currentPermissionDimensions;
 	  $('#permission_table tbody').on('click', 'tr', function() {
-		  /*
-	  	$("#company_tab").hide();
-		  $("#account_tab").hide();
-		  $("#store_tab").hide();
-		  $("#vendor_tab").hide();
-		  $("#inventory_tab").hide();
-		  $("#company_tab").show();
-		  $("#account_tab").show();
-			*/
 
 		  var clicked_row_data = table.row(this).data();
-
+			var firstTabId = null;
+			
 		  currentPermissionGroupId = clicked_row_data.id;
+		  currentPermissionDimensions = permission_dimensions[currentPermissionGroupId];
+		  
+		  if (!currentPermissionDimensions) {
+		  	$('#scope_tabs').hide();
+		  	App.showErrorDialog("操作失败", "该权限没有设置权限维度。请先在【应用权限】设置该权限的维度。");
+		  	return;
+		  } else {
+		  	$('#scope_tabs').show();
+		  }
+		  
+		  if (currentPermissionDimensions.indexOf(SCOPE_COMPANY.toString()) > -1) {
+		  	$("#company_tab").show();
+		  	if (!firstTabId)
+		  		firstTabId = "#company_tab";
+		  } else {
+		  	$("#company_tab").hide();
+		  }
+		  
+		  if (currentPermissionDimensions.indexOf(SCOPE_ACCOUNT.toString()) > -1) {
+		  	$("#account_tab").show();
+		  	if (!firstTabId)
+		  		firstTabId = "#account_tab";
+		  } else {
+		  	$("#account_tab").hide();
+		  }
+		  
+		  if (currentPermissionDimensions.indexOf(SCOPE_STORE.toString()) > -1) {
+		  	$("#store_tab").show();
+		  	if (!firstTabId)
+		  		firstTabId = "#store_tab";
+		  } else {
+		  	$("#store_tab").hide();
+		  }
+		  
+		  if (currentPermissionDimensions.indexOf(SCOPE_VENDOR.toString()) > -1) {
+		  	$("#vendor_tab").show();
+		  	if (!firstTabId)
+		  		firstTabId = "#vendor_tab";
+		  } else {
+		  	$("#vendor_tab").hide();
+		  }
+		  
+		  if (currentPermissionDimensions.indexOf(SCOPE_INVENTORY.toString()) > -1) {
+		  	$("#inventory_tab").show();
+		  	if (!firstTabId)
+		  		firstTabId = "#inventory_tab";
+		  } else {
+		  	$("#inventory_tab").hide();
+		  }
+		  
 		  loadScopeTab();
+		  
+		  $(firstTabId).click();
 	  });
 
 	  $('#scope_tabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -615,8 +664,7 @@
 		  });
 
 		  $('#scope_tabs').tabs();
-		  
-		  $('#store_tab').click();
+
 	  }
 
   });
