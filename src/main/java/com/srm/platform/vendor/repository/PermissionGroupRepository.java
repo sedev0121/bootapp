@@ -10,7 +10,10 @@ import org.springframework.data.repository.query.Param;
 
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.searchitem.AccountSearchItem;
+import com.srm.platform.vendor.searchitem.ScopeCompanyItem;
 import com.srm.platform.vendor.searchitem.PermissionItem;
+import com.srm.platform.vendor.searchitem.PermissionScopeOfAccount;
+import com.srm.platform.vendor.searchitem.ScopeAccountItem;
 import com.srm.platform.vendor.searchitem.SearchItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
@@ -37,5 +40,23 @@ public interface PermissionGroupRepository extends JpaRepository<PermissionGroup
 	
 	@Query(value = "select a.* from permission_group a left join permission_group_user b on a.id=b.group_id where b.account_id=:accountId", nativeQuery = true)
 	List<PermissionGroup> findGroupListOfAccount(@Param("accountId") Long accountId);
+	
+	@Query(value = "select a.*, b.dimensions from permission_user_scope a left join (select group_id, GROUP_CONCAT(dimension_id) dimensions from permission_group_dimension GROUP BY group_id) b on a.group_id=b.group_id where a.account_id=:accountId", nativeQuery = true)
+	List<PermissionScopeOfAccount> findScopeListOfAccount(@Param("accountId") Long accountId);
+	
+	@Query(value = "select * from company", nativeQuery = true)
+	List<ScopeCompanyItem> findCompanyList();
+	
+	@Query(value = "select * from account", nativeQuery = true)
+	List<ScopeAccountItem> findAccountList();
+	
+	@Query(value = "select * from company", nativeQuery = true)
+	List<ScopeCompanyItem> findStoreList();
+	
+	@Query(value = "select * from company", nativeQuery = true)
+	List<ScopeCompanyItem> findVendorList();
+	
+	@Query(value = "select * from company", nativeQuery = true)
+	List<ScopeCompanyItem> findInventoryList();
 
 }

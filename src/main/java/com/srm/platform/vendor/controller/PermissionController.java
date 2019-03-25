@@ -42,6 +42,8 @@ import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.searchitem.AccountSearchItem;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
+import com.srm.platform.vendor.searchitem.ScopeAccountItem;
+import com.srm.platform.vendor.searchitem.ScopeCompanyItem;
 import com.srm.platform.vendor.searchitem.SearchItem;
 
 @Controller
@@ -277,6 +279,37 @@ public class PermissionController extends CommonController {
 
 		return q.getResultList();
 
+	}
+	
+	@ResponseBody
+	@RequestMapping("/list_of_company")
+	public List<ScopeCompanyItem> getCompanyList() {
+		return permissionGroupRepository.findCompanyList();
+	}
+	
+	@ResponseBody
+	@RequestMapping("/list_of_account")
+	public List<ScopeAccountItem> getAccountList() {
+		return permissionGroupRepository.findAccountList();
+	}
+	
+	@ResponseBody
+	@RequestMapping("/list_of_store")
+	public List<ScopeCompanyItem> getStoreList() {
+		return permissionGroupRepository.findCompanyList();
+	}
+		
+	@ResponseBody
+	@RequestMapping("/list_of_vendor")
+	public List<ScopeCompanyItem> getVendorList() {
+		return permissionGroupRepository.findCompanyList();
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping("/list_of_inventory")
+	public List<ScopeCompanyItem> getInventoryList() {
+		return permissionGroupRepository.findCompanyList();
 	}
 
 }

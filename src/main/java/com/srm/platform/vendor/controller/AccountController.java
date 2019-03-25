@@ -44,6 +44,7 @@ import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.saveform.AccountSaveForm;
 import com.srm.platform.vendor.searchitem.AccountSearchItem;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
+import com.srm.platform.vendor.searchitem.PermissionScopeOfAccount;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.PermissionRecord;
 
@@ -168,23 +169,25 @@ public class AccountController extends CommonController {
 				groupList.add(item);
 		}
 
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonGroupString = "";
-		try {
-			jsonGroupString = mapper.writeValueAsString(groupList);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		AccountSearchItem vendorUnitResult = accountRepository.findOneVendorById(id);
 		String unitname = "";
 		if (vendorUnitResult != null) {
 			unitname = vendorUnitResult.getUnitname();			
 		}
+		
+		List<PermissionScopeOfAccount> scopeList = this.permissionGroupRepository.findScopeListOfAccount(id);
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonScopeListString = "";
+		try {
+			jsonScopeListString = mapper.writeValueAsString(scopeList);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		model.addAttribute("account", account);
-		model.addAttribute("groupList", jsonGroupString);
 		model.addAttribute("unitname", unitname);
+		model.addAttribute("permission_scope", jsonScopeListString);
 		return "admin/account/edit";
 	}
 
