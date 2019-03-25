@@ -44,6 +44,9 @@ import com.srm.platform.vendor.searchitem.AccountSearchItem;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.ScopeAccountItem;
 import com.srm.platform.vendor.searchitem.ScopeCompanyItem;
+import com.srm.platform.vendor.searchitem.ScopeInventoryItem;
+import com.srm.platform.vendor.searchitem.ScopeStoreItem;
+import com.srm.platform.vendor.searchitem.ScopeVendorItem;
 import com.srm.platform.vendor.searchitem.SearchItem;
 
 @Controller
@@ -295,21 +298,21 @@ public class PermissionController extends CommonController {
 	
 	@ResponseBody
 	@RequestMapping("/list_of_store")
-	public List<ScopeCompanyItem> getStoreList() {
-		return permissionGroupRepository.findCompanyList();
+	public List<ScopeStoreItem> getStoreList() {
+		return permissionGroupRepository.findStoreList();
 	}
 		
 	@ResponseBody
 	@RequestMapping("/list_of_vendor")
-	public List<ScopeCompanyItem> getVendorList() {
-		return permissionGroupRepository.findCompanyList();
+	public List<ScopeVendorItem> getVendorList() {
+		return permissionGroupRepository.findVendorList();
 	}
 	
 	
 	@ResponseBody
 	@RequestMapping("/list_of_inventory")
-	public List<ScopeCompanyItem> getInventoryList() {
-		return permissionGroupRepository.findCompanyList();
+	public List<ScopeInventoryItem> getInventoryList() {
+		return permissionGroupRepository.findInventoryList();
 	}
 
 }

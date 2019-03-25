@@ -11,6 +11,9 @@ import org.springframework.data.repository.query.Param;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.searchitem.AccountSearchItem;
 import com.srm.platform.vendor.searchitem.ScopeCompanyItem;
+import com.srm.platform.vendor.searchitem.ScopeInventoryItem;
+import com.srm.platform.vendor.searchitem.ScopeStoreItem;
+import com.srm.platform.vendor.searchitem.ScopeVendorItem;
 import com.srm.platform.vendor.searchitem.PermissionItem;
 import com.srm.platform.vendor.searchitem.PermissionScopeOfAccount;
 import com.srm.platform.vendor.searchitem.ScopeAccountItem;
@@ -47,16 +50,16 @@ public interface PermissionGroupRepository extends JpaRepository<PermissionGroup
 	@Query(value = "select * from company", nativeQuery = true)
 	List<ScopeCompanyItem> findCompanyList();
 	
-	@Query(value = "select * from account", nativeQuery = true)
+	@Query(value = "select * from account where role='ROLE_BUYER'", nativeQuery = true)
 	List<ScopeAccountItem> findAccountList();
 	
-	@Query(value = "select * from company", nativeQuery = true)
-	List<ScopeCompanyItem> findStoreList();
+	@Query(value = "select a.*, b.name company_name from store a left join company b on a.company_id=b.id", nativeQuery = true)
+	List<ScopeStoreItem> findStoreList();
 	
-	@Query(value = "select * from company", nativeQuery = true)
-	List<ScopeCompanyItem> findVendorList();
+	@Query(value = "select * from vendor", nativeQuery = true)
+	List<ScopeVendorItem> findVendorList();
 	
-	@Query(value = "select * from company", nativeQuery = true)
-	List<ScopeCompanyItem> findInventoryList();
+	@Query(value = "select * from inventory_class", nativeQuery = true)
+	List<ScopeInventoryItem> findInventoryList();
 
 }

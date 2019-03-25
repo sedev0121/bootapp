@@ -6,6 +6,4 @@ public interface ScopeInventoryItem {
 
 	String getName();
 
-	String getErp_id();
-
 }

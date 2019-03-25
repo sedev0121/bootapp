@@ -320,13 +320,15 @@
 
 	  var currentPermissionGroupId;
 	  $('#permission_table tbody').on('click', 'tr', function() {
-		  $("#company_tab").hide();
+		  /*
+	  	$("#company_tab").hide();
 		  $("#account_tab").hide();
 		  $("#store_tab").hide();
 		  $("#vendor_tab").hide();
 		  $("#inventory_tab").hide();
 		  $("#company_tab").show();
 		  $("#account_tab").show();
+			*/
 
 		  var clicked_row_data = table.row(this).data();
 
@@ -442,7 +444,7 @@
 		    }],
 		    drawCallback: function( settings ) {
 		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
-		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_COMPANY);
+		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_ACCOUNT);
 		    	  if (scope_list.indexOf(this.data().id.toString()) > -1) {
 		    	    this.select();
 		    	  }
@@ -482,11 +484,14 @@
 		      className : 'select-checkbox',
 		    }, {
 		      data : 'name',
+		      title : '仓库名称',
+		    }, {
+		      data : 'company_name',
 		      title : '业务实体',
 		    }],
 		    drawCallback: function( settings ) {
 		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
-		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_COMPANY);
+		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_STORE);
 		    	  if (scope_list.indexOf(this.data().id.toString()) > -1) {
 		    	    this.select();
 		    	  }
@@ -524,12 +529,18 @@
 		      orderable : false,
 		      className : 'select-checkbox',
 		    }, {
+		      data : 'code',
+		      title : '编号',
+		    }, {
 		      data : 'name',
-		      title : '业务实体',
+		      title : '名称',
+		    }, {
+		      data : 'abbrname',
+		      title : '简称',
 		    }],
 		    drawCallback: function( settings ) {
 		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
-		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_COMPANY);
+		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_VENDOR);
 		    	  if (scope_list.indexOf(this.data().id.toString()) > -1) {
 		    	    this.select();
 		    	  }
@@ -569,11 +580,11 @@
 		      className : 'select-checkbox',
 		    }, {
 		      data : 'name',
-		      title : '业务实体',
+		      title : '名称',
 		    }],
 		    drawCallback: function( settings ) {
 		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
-		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_COMPANY);
+		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_INVENTORY);
 		    	  if (scope_list.indexOf(this.data().id.toString()) > -1) {
 		    	    this.select();
 		    	  }

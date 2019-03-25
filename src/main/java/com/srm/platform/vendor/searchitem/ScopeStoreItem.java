@@ -6,6 +6,10 @@ public interface ScopeStoreItem {
 
 	String getName();
 
-	String getErp_id();
+	String getMemo();
+	
+	String getStoreName();
+	
+	String getCompany_name();
 
 }
