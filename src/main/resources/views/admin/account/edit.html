@@ -130,12 +130,53 @@
   const SCOPE_INVENTORY = 5;
   
   var table, company_table, account_table, store_table, vendor_table, inventory_table;
-
+  var currentPermissionGroupId, currentPermissionDimensions;
+  
   jQuery(document).ready(function() {
 
   	var permission_scope_list = JSON.parse(scope_list);
   	var account_permission_groups = [];
   	var permission_dimensions = {};
+  	
+  	function contains(scope_list, item) {
+  		return scope_list.indexOf(item.toString()) > -1;
+  	}
+  	
+  	function addScope(group_id, dimension_id, target_id) {
+  		console.log(permission_scope_list);
+  		removeScope(group_id, dimension_id, target_id);
+  		permission_scope_list.push({
+  			group_id: currentPermissionGroupId,
+  			dimension_id: dimension_id,
+  			target_id: target_id.toString(),
+  		});  		
+  		
+  		console.log(permission_scope_list);
+  	}
+  	
+  	function removeScope(group_id, dimension_id, target_id) {
+  		console.log(permission_scope_list);
+  		permission_scope_list = permission_scope_list.filter( scope => {
+				return !(scope.group_id == group_id && scope.dimension_id == dimension_id && scope.target_id == target_id.toString());
+			});
+  		console.log(permission_scope_list);
+  	}
+  	
+		function addPermission(group_id) {
+			account_permission_groups.push(group_id); 		
+  	}
+		
+		function removePermission(group_id) {
+			/*
+			permission_scope_list = permission_scope_list.filter( scope => {
+				scope.group_id != group_id;
+			});
+			*/
+			
+			account_permission_groups = account_permission_groups.filter( permission_group_id => {
+				permission_group_id != group_id;
+			}); 
+  	}
   	
   	function getScopeOf(group_id, dimension_id) {
   		var result = [];
@@ -150,9 +191,12 @@
   	
   	$.map(permission_scope_list, function(row, index) {
 			account_permission_groups.push(row.group_id);
-			var key = row.group_id.toString();
+			var key = row.group_id;
 			if (!permission_dimensions[key] && row.dimensions) {				
 				permission_dimensions[key] = row.dimensions.split(",");
+				permission_dimensions[key] = permission_dimensions[key].map(dimension_id => {
+					return parseInt(dimension_id);
+				});
 			}			
 		});
   	
@@ -316,6 +360,7 @@
 	    columns : [ {
 	      data : null,
 	      defaultContent : '',
+	      width: "50px",
 	      orderable : false,
 	      className : 'select-checkbox',
 	    }, {
@@ -324,7 +369,7 @@
 	    }],
 	    drawCallback: function( settings ) {
     		this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
-	    	  if (account_permission_groups.indexOf(this.data().id.toString()) > -1) {
+	    	  if (account_permission_groups.indexOf(this.data().id) > -1) {
 	    	    this.select();
 	    	  }
 	    	});
@@ -333,11 +378,30 @@
       }
 	  });
 
-	  var currentPermissionGroupId, currentPermissionDimensions;
+	  table.on('select', function ( e, dt, type, indexes ) {			    
+	  	if ( type === 'row' ) {			  
+	  		var data = table.row(indexes[0]).data(); 
+	  		addPermission(data.id);
+	  	}
+	  });
+	  
+	  table.on('deselect', function ( e, dt, type, indexes ) {			    
+	  	if ( type === 'row' ) {			  
+	  		var data = table.row(indexes[0]).data(); 
+	  		removePermission(data.id);
+	  	}
+	  });
+	  
 	  $('#permission_table tbody').on('click', 'tr', function() {
 
+	  	$('.clicked').removeClass("clicked");
+	  	$(this).addClass("clicked");
 		  var clicked_row_data = table.row(this).data();
 			var firstTabId = null;
+			
+			if (currentPermissionGroupId == clicked_row_data.id) {
+				return;
+			}
 			
 		  currentPermissionGroupId = clicked_row_data.id;
 		  currentPermissionDimensions = permission_dimensions[currentPermissionGroupId];
@@ -350,7 +414,7 @@
 		  	$('#scope_tabs').show();
 		  }
 		  
-		  if (currentPermissionDimensions.indexOf(SCOPE_COMPANY.toString()) > -1) {
+		  if (currentPermissionDimensions.indexOf(SCOPE_COMPANY) > -1) {
 		  	$("#company_tab").show();
 		  	if (!firstTabId)
 		  		firstTabId = "#company_tab";
@@ -358,7 +422,7 @@
 		  	$("#company_tab").hide();
 		  }
 		  
-		  if (currentPermissionDimensions.indexOf(SCOPE_ACCOUNT.toString()) > -1) {
+		  if (currentPermissionDimensions.indexOf(SCOPE_ACCOUNT) > -1) {
 		  	$("#account_tab").show();
 		  	if (!firstTabId)
 		  		firstTabId = "#account_tab";
@@ -366,7 +430,7 @@
 		  	$("#account_tab").hide();
 		  }
 		  
-		  if (currentPermissionDimensions.indexOf(SCOPE_STORE.toString()) > -1) {
+		  if (currentPermissionDimensions.indexOf(SCOPE_STORE) > -1) {
 		  	$("#store_tab").show();
 		  	if (!firstTabId)
 		  		firstTabId = "#store_tab";
@@ -374,7 +438,7 @@
 		  	$("#store_tab").hide();
 		  }
 		  
-		  if (currentPermissionDimensions.indexOf(SCOPE_VENDOR.toString()) > -1) {
+		  if (currentPermissionDimensions.indexOf(SCOPE_VENDOR) > -1) {
 		  	$("#vendor_tab").show();
 		  	if (!firstTabId)
 		  		firstTabId = "#vendor_tab";
@@ -382,7 +446,7 @@
 		  	$("#vendor_tab").hide();
 		  }
 		  
-		  if (currentPermissionDimensions.indexOf(SCOPE_INVENTORY.toString()) > -1) {
+		  if (currentPermissionDimensions.indexOf(SCOPE_INVENTORY) > -1) {
 		  	$("#inventory_tab").show();
 		  	if (!firstTabId)
 		  		firstTabId = "#inventory_tab";
@@ -458,13 +522,26 @@
 		    drawCallback: function( settings ) {
 		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
 		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_COMPANY);
-		    	  if (scope_list.indexOf(this.data().id.toString()) > -1) {
+		    	  if (contains(scope_list, this.data().id)) {
 		    	    this.select();
 		    	  }
 		    	});
 	      }
 		  });
 
+		  company_table.on('select', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = company_table.row(indexes[0]).data(); 
+		  		addScope(currentPermissionGroupId, SCOPE_COMPANY, data.id);
+		  	}
+		  });
+		  
+		  company_table.on('deselect', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = company_table.row(indexes[0]).data(); 
+		  		removeScope(currentPermissionGroupId, SCOPE_COMPANY, data.id);
+		  	}
+		  });
 		  
 			//Account Scope Table	  
 		  if (account_table) {
@@ -513,13 +590,26 @@
 		    drawCallback: function( settings ) {
 		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
 		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_ACCOUNT);
-		    	  if (scope_list.indexOf(this.data().id.toString()) > -1) {
+		    		if (contains(scope_list, this.data().id)) {
 		    	    this.select();
 		    	  }
 		    	});
 	      }
 		  });
 
+		  account_table.on('select', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = account_table.row(indexes[0]).data(); 
+		  		addScope(currentPermissionGroupId, SCOPE_ACCOUNT, data.id);
+		  	}
+		  });
+		  
+		  account_table.on('deselect', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = account_table.row(indexes[0]).data(); 
+		  		removeScope(currentPermissionGroupId, SCOPE_ACCOUNT, data.id);
+		  	}
+		  });
 		  
 			//Store Scope Table	  
 		  if (store_table) {
@@ -562,13 +652,27 @@
 		    drawCallback: function( settings ) {
 		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
 		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_STORE);
-		    	  if (scope_list.indexOf(this.data().id.toString()) > -1) {
+		    		if (contains(scope_list, this.data().id)) {
 		    	    this.select();
 		    	  }
 		    	});
 	      }
 		  });
 
+		  store_table.on('select', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = store_table.row(indexes[0]).data(); 
+		  		addScope(currentPermissionGroupId, SCOPE_STORE, data.id);
+		  	}
+		  });
+		  
+		  store_table.on('deselect', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = store_table.row(indexes[0]).data(); 
+		  		removeScope(currentPermissionGroupId, SCOPE_STORE, data.id);
+		  	}
+		  });
+		  
 			//Vendor Scope Table	 
 		  if (vendor_table) {
 		  	vendor_table.clear().destroy();
@@ -610,13 +714,27 @@
 		    drawCallback: function( settings ) {
 		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
 		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_VENDOR);
-		    	  if (scope_list.indexOf(this.data().code) > -1) {
+		    		if (contains(scope_list, this.data().code)) {
 		    	    this.select();
 		    	  }
 		    	});
 	      }
 		  });
 
+		  vendor_table.on('select', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = vendor_table.row(indexes[0]).data(); 
+		  		addScope(currentPermissionGroupId, SCOPE_VENDOR, data.code);
+		  	}
+		  });
+		  
+		  vendor_table.on('deselect', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = vendor_table.row(indexes[0]).data(); 
+		  		removeScope(currentPermissionGroupId, SCOPE_VENDOR, data.code);
+		  	}
+		  });
+		  
 		  
 			//Inventory Scope Table	 
 		  if (inventory_table) {
@@ -656,11 +774,25 @@
 		    drawCallback: function( settings ) {
 		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
 		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_INVENTORY);
-		    	  if (scope_list.indexOf(this.data().code.toString()) > -1) {
+		    		if (contains(scope_list, this.data().code)) {
 		    	    this.select();
 		    	  }
 		    	});
 	      }
+		  });
+		  
+		  inventory_table.on('select', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = inventory_table.row(indexes[0]).data(); 
+		  		addScope(currentPermissionGroupId, SCOPE_INVENTORY, data.code);
+		  	}
+		  });
+		  
+		  inventory_table.on('deselect', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = inventory_table.row(indexes[0]).data(); 
+		  		removeScope(currentPermissionGroupId, SCOPE_INVENTORY, data.code);
+		  	}
 		  });
 
 		  $('#scope_tabs').tabs();

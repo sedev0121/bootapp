@@ -2,8 +2,8 @@ package com.srm.platform.vendor.searchitem;
 
 public interface PermissionScopeOfAccount {
 
-	String getGroup_id();
-	String getDimension_id();
+	Long getGroup_id();
+	Long getDimension_id();
 	String getTarget_id();
 	String getDimensions();
 
