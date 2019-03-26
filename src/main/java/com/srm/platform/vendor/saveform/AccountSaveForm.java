@@ -19,7 +19,7 @@ public class AccountSaveForm {
 	private Integer state;
 
 	private List<Map<String, String>> permission_scope_list;
-//	private List<Long> permissiongroupids;
+	private List<Map<String, Long>> permission_group_ids;
 
 	public Long getId() {
 		return id;
@@ -124,6 +124,13 @@ public class AccountSaveForm {
 	public void setPermission_scope_list(List<Map<String, String>> permission_scope_list) {
 		this.permission_scope_list = permission_scope_list;
 	}
-	
-	
+
+	public List<Map<String, Long>> getPermission_group_ids() {
+		return permission_group_ids;
+	}
+
+	public void setPermission_group_ids(List<Map<String, Long>> permission_group_ids) {
+		this.permission_group_ids = permission_group_ids;
+	}
+
 }

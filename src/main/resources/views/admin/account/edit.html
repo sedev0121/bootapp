@@ -135,7 +135,7 @@
   jQuery(document).ready(function() {
 
   	var permission_scope_list = JSON.parse(scope_list);
-  	var account_permission_groups = [];
+  	
   	var permission_dimensions = {};
   	
   	function contains(scope_list, item) {
@@ -161,16 +161,6 @@
 
   	}
   	
-		function addPermission(group_id) {
-			account_permission_groups.push(group_id); 		
-  	}
-		
-		function removePermission(group_id) {
-			account_permission_groups = account_permission_groups.filter( permission_group_id => {
-				return permission_group_id != group_id;
-			}); 
-  	}
-  	
   	function getScopeOf(group_id, dimension_id) {
   		var result = [];
   		$.map(permission_scope_list, function(row, index) {
@@ -183,7 +173,6 @@
   	}
   	
   	$.map(permission_scope_list, function(row, index) {
-			account_permission_groups.push(row.group_id);
 			var key = row.group_id;
 			if (!permission_dimensions[key] && row.dimensions) {				
 				permission_dimensions[key] = row.dimensions.split(",");
@@ -286,9 +275,15 @@
 	    },
 
 	    submitHandler : function(form) {
+	    	var selectedGroupIds = [];
+	      var selectedGroupRows = table.rows('.selected').data().toArray();
+	      $.each(selectedGroupRows, function(key, item){
+	      	selectedGroupIds.push({group_id:item.id});
+	      });
+	      
 		    jQuery(form).ajaxSubmit({
 		      data : {
-		      	permissiongroupids: [1, 2, 3],
+		      	permission_group_ids: selectedGroupIds,
 		      	permission_scope_list: permission_scope_list,		      	
 		      },
 		      beforeSend : function() {
@@ -361,7 +356,7 @@
 	    }],
 	    drawCallback: function( settings ) {
     		this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
-	    	  if (account_permission_groups.indexOf(this.data().id) > -1) {
+	    	  if (this.data().account_id) {
 	    	    this.select();
 	    	  }
 	    	});
@@ -373,14 +368,12 @@
 	  table.on('select', function ( e, dt, type, indexes ) {			    
 	  	if ( type === 'row' ) {			  
 	  		var data = table.row(indexes[0]).data(); 
-	  		addPermission(data.id);
 	  	}
 	  });
 	  
 	  table.on('deselect', function ( e, dt, type, indexes ) {			    
 	  	if ( type === 'row' ) {			  
 	  		var data = table.row(indexes[0]).data(); 
-	  		removePermission(data.id);
 	  	}
 	  });
 	  

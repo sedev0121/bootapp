@@ -3,10 +3,8 @@ package com.srm.platform.vendor.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.persistence.Query;
 
@@ -42,6 +40,7 @@ import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.searchitem.AccountSearchItem;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
+import com.srm.platform.vendor.searchitem.PermissionAccount;
 import com.srm.platform.vendor.searchitem.ScopeAccountItem;
 import com.srm.platform.vendor.searchitem.ScopeCompanyItem;
 import com.srm.platform.vendor.searchitem.ScopeInventoryItem;
@@ -255,7 +254,7 @@ public class PermissionController extends CommonController {
 	
 	@ResponseBody
 	@RequestMapping("/list_of_account/{accountId}")
-	public List<PermissionGroup> getGroupListOfAccount(@PathVariable("accountId") Long accountId) {
+	public List<PermissionAccount> getGroupListOfAccount(@PathVariable("accountId") Long accountId) {
 		return permissionGroupRepository.findGroupListOfAccount(accountId);
 	}
 	
