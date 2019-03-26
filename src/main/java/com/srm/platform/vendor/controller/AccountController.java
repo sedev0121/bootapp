@@ -268,9 +268,9 @@ public class AccountController extends CommonController {
 		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, account);
 
 //		permissionGroupUserRepository.deleteByAccountId(account.getId());
-//		permissionUserScopeRepository.deleteByAccountId(account.getId());
-//		
-//		if ("ROLE_BUYER".equals(account.getRole())) {
+		permissionUserScopeRepository.deleteByAccountId(account.getId());
+		
+		if ("ROLE_BUYER".equals(account.getRole())) {
 //			List<Long> permissionGroupIdList = accountSaveForm.getPermission_group_ids();
 //			if (permissionGroupIdList != null) {
 //				for (Long groupId : permissionGroupIdList) {
@@ -281,18 +281,19 @@ public class AccountController extends CommonController {
 //				}
 //			}
 //			
-//			List<PermissionScopeRecord> permissionScopeList = accountSaveForm.getPermission_scope_list();
-//			if (permissionScopeList != null) {
-//				for (PermissionScopeRecord scope : permissionScopeList) {
-//					PermissionUserScope temp = new PermissionUserScope();
-//					temp.setAccountId(account.getId());
-//					temp.setGroupId(scope.getGroup_id());
-//					temp.setDimensionId(scope.getDimesion_id());
-//					temp.setTargetId(scope.getTarget_id());
-//					permissionUserScopeRepository.save(temp);
-//				}
-//			}
-//		}
+			List<Map<String, String>> permissionScopeList = accountSaveForm.getPermission_scope_list();
+			if (permissionScopeList != null) {
+				for (Map<String, String> scope : permissionScopeList) {
+					logger.info(String.format("%s %s %s", scope.get("group_id"), scope.get("dimension_id"), scope.get("target_id")));
+					PermissionUserScope temp = new PermissionUserScope();
+					temp.setAccountId(account.getId());
+					temp.setGroupId(Long.valueOf(scope.get("group_id")));
+					temp.setDimensionId(Long.valueOf(scope.get("dimension_id")));
+					temp.setTargetId(scope.get("target_id"));
+					permissionUserScopeRepository.save(temp);
+				}
+			}
+		}
 
 		return jsonResponse;
 	}

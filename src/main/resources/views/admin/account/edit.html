@@ -143,7 +143,7 @@
   	}
   	
   	function addScope(group_id, dimension_id, target_id) {
-  		console.log(permission_scope_list);
+  		
   		removeScope(group_id, dimension_id, target_id);
   		permission_scope_list.push({
   			group_id: currentPermissionGroupId,
@@ -151,29 +151,21 @@
   			target_id: target_id.toString(),
   		});  		
   		
-  		console.log(permission_scope_list);
   	}
   	
   	function removeScope(group_id, dimension_id, target_id) {
-  		console.log(permission_scope_list);
+
   		permission_scope_list = permission_scope_list.filter( scope => {
 				return !(scope.group_id == group_id && scope.dimension_id == dimension_id && scope.target_id == target_id.toString());
 			});
-  		console.log(permission_scope_list);
+
   	}
   	
 		function addPermission(group_id) {
-			removePermission(group_id);
 			account_permission_groups.push(group_id); 		
   	}
 		
 		function removePermission(group_id) {
-			/*
-			permission_scope_list = permission_scope_list.filter( scope => {
-				scope.group_id != group_id;
-			});
-			*/
-			
 			account_permission_groups = account_permission_groups.filter( permission_group_id => {
 				return permission_group_id != group_id;
 			}); 
@@ -297,7 +289,7 @@
 		    jQuery(form).ajaxSubmit({
 		      data : {
 		      	permissiongroupids: [1, 2, 3],
-		      	//permission_scope_list: permission_scope_list,		      	
+		      	permission_scope_list: permission_scope_list,		      	
 		      },
 		      beforeSend : function() {
 			      App.blockUI();

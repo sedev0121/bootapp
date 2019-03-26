@@ -1,8 +1,7 @@
 package com.srm.platform.vendor.saveform;
 
 import java.util.List;
-
-import com.srm.platform.vendor.utility.PermissionScopeRecord;
+import java.util.Map;
 
 public class AccountSaveForm {
 
@@ -19,8 +18,7 @@ public class AccountSaveForm {
 	private String vendor;
 	private Integer state;
 
-	private PermissionScopeRecord test;
-//	private List<PermissionScopeRecord> permission_scope_list;
+	private List<Map<String, String>> permission_scope_list;
 //	private List<Long> permissiongroupids;
 
 	public Long getId() {
@@ -119,33 +117,12 @@ public class AccountSaveForm {
 		this.unitname = unitname;
 	}
 
-//	public List<Long> getPermissiongroupids() {
-//		return permissiongroupids;
-//	}
-//
-//	public void setPermissiongroupids(List<Long> permissiongroupids) {
-//		this.permissiongroupids = permissiongroupids;
-//	}
-//	
-//	
-//	public List<PermissionScopeRecord> getPermission_scope_list() {
-//		return permission_scope_list;
-//	}
-//
-//	public void setPermission_scope_list(List<PermissionScopeRecord> permission_scope_list) {
-//		this.permission_scope_list = permission_scope_list;
-//	}
-//
-//	public String toString() {
-//		return String.format("%s", this.permissiongroupids.toString());
-//	}
-
-	public PermissionScopeRecord getTest() {
-		return test;
+	public List<Map<String, String>> getPermission_scope_list() {
+		return permission_scope_list;
 	}
 
-	public void setTest(PermissionScopeRecord test) {
-		this.test = test;
+	public void setPermission_scope_list(List<Map<String, String>> permission_scope_list) {
+		this.permission_scope_list = permission_scope_list;
 	}
 	
 	
