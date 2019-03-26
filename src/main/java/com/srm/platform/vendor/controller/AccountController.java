@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.persistence.Query;
 
@@ -34,11 +33,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.PermissionGroupUser;
-import com.srm.platform.vendor.model.StatementMain;
+import com.srm.platform.vendor.model.PermissionUserScope;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
+import com.srm.platform.vendor.repository.PermissionUserScopeRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.saveform.AccountSaveForm;
@@ -46,7 +46,7 @@ import com.srm.platform.vendor.searchitem.AccountSearchItem;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.PermissionScopeOfAccount;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
-import com.srm.platform.vendor.utility.PermissionRecord;
+import com.srm.platform.vendor.utility.PermissionScopeRecord;
 
 @Controller
 @RequestMapping(path = "/account")
@@ -59,9 +59,13 @@ public class AccountController extends CommonController {
 
 	@Autowired
 	private PermissionGroupRepository permissionGroupRepository;
+	
 	@Autowired
 	private PermissionGroupUserRepository permissionGroupUserRepository;
-
+	
+	@Autowired
+	private PermissionUserScopeRepository permissionUserScopeRepository;
+	
 	@Autowired
 	private VendorRepository vendorRepository;
 
@@ -263,26 +267,32 @@ public class AccountController extends CommonController {
 
 		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, account);
 
-		permissionGroupUserRepository.deleteByAccountId(account.getId());
-
-		if ("ROLE_BUYER".equals(account.getRole())) {
-			List<PermissionRecord> permissionList = accountSaveForm.getPermission();
-			if (permissionList != null) {
-				for (PermissionRecord record : permissionList) {
-					PermissionGroupUser temp = new PermissionGroupUser();
-					temp.setAccountId(account.getId());
-					temp.setGroupId(record.getPermissionGroupId());
-
-					Example<PermissionGroupUser> example = Example.of(temp);
-					Optional<PermissionGroupUser> result = permissionGroupUserRepository.findOne(example);
-					if (result.isPresent()) {
-						temp = result.get();
-					}
-
-					permissionGroupUserRepository.save(temp);
-				}
-			}
-		}
+//		permissionGroupUserRepository.deleteByAccountId(account.getId());
+//		permissionUserScopeRepository.deleteByAccountId(account.getId());
+//		
+//		if ("ROLE_BUYER".equals(account.getRole())) {
+//			List<Long> permissionGroupIdList = accountSaveForm.getPermission_group_ids();
+//			if (permissionGroupIdList != null) {
+//				for (Long groupId : permissionGroupIdList) {
+//					PermissionGroupUser temp = new PermissionGroupUser();
+//					temp.setAccountId(account.getId());
+//					temp.setGroupId(groupId);
+//					permissionGroupUserRepository.save(temp);
+//				}
+//			}
+//			
+//			List<PermissionScopeRecord> permissionScopeList = accountSaveForm.getPermission_scope_list();
+//			if (permissionScopeList != null) {
+//				for (PermissionScopeRecord scope : permissionScopeList) {
+//					PermissionUserScope temp = new PermissionUserScope();
+//					temp.setAccountId(account.getId());
+//					temp.setGroupId(scope.getGroup_id());
+//					temp.setDimensionId(scope.getDimesion_id());
+//					temp.setTargetId(scope.getTarget_id());
+//					permissionUserScopeRepository.save(temp);
+//				}
+//			}
+//		}
 
 		return jsonResponse;
 	}

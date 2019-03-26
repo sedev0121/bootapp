@@ -30,7 +30,7 @@
 							<label for="company">业务实体： </label> <input type="text" id="company" name="company" th:value="${account.duty}" class="form-control">
 						</div>
 						<div class="col-md-3 form-group">
-							<label for="unit">部门： </label> <input type="text" id="unit" name="unit" th:value="${account.duty}" class="form-control">
+							<label for="unit">部门： </label> <input type="text" name="unitname" th:value="${account.duty}" class="form-control">
 						</div>
 						<div class="col-md-3 form-group">
 							<label for="mobile">手机:</label> <input type="text" id="mobile" name="mobile" class="form-control" th:value="${account.mobile}">
@@ -163,6 +163,7 @@
   	}
   	
 		function addPermission(group_id) {
+			removePermission(group_id);
 			account_permission_groups.push(group_id); 		
   	}
 		
@@ -174,7 +175,7 @@
 			*/
 			
 			account_permission_groups = account_permission_groups.filter( permission_group_id => {
-				permission_group_id != group_id;
+				return permission_group_id != group_id;
 			}); 
   	}
   	
@@ -295,9 +296,8 @@
 	    submitHandler : function(form) {
 		    jQuery(form).ajaxSubmit({
 		      data : {
-			      permissions : [ {
-				      1 : [ {} ]
-			      } ],
+		      	permissiongroupids: [1, 2, 3],
+		      	//permission_scope_list: permission_scope_list,		      	
 		      },
 		      beforeSend : function() {
 			      App.blockUI();
@@ -399,12 +399,21 @@
 		  var clicked_row_data = table.row(this).data();
 			var firstTabId = null;
 			
-			if (currentPermissionGroupId == clicked_row_data.id) {
+			if (!clicked_row_data || currentPermissionGroupId == clicked_row_data.id) {
 				return;
 			}
 			
 		  currentPermissionGroupId = clicked_row_data.id;
 		  currentPermissionDimensions = permission_dimensions[currentPermissionGroupId];
+		  
+		  /****  TODO: remove ***/
+		  currentPermissionDimensions = [];
+		  currentPermissionDimensions.push(SCOPE_COMPANY);
+		  currentPermissionDimensions.push(SCOPE_ACCOUNT);
+		  currentPermissionDimensions.push(SCOPE_STORE);
+		  currentPermissionDimensions.push(SCOPE_VENDOR);
+		  currentPermissionDimensions.push(SCOPE_INVENTORY);
+		  /**********************************/
 		  
 		  if (!currentPermissionDimensions) {
 		  	$('#scope_tabs').hide();

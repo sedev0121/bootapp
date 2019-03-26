@@ -1,15 +1,15 @@
 package com.srm.platform.vendor.saveform;
 
 import java.util.List;
-import java.util.Map;
 
-import com.srm.platform.vendor.utility.PermissionRecord;
+import com.srm.platform.vendor.utility.PermissionScopeRecord;
 
 public class AccountSaveForm {
 
 	private Long id;
 	private String username;
 	private String realname;
+	private String unitname;
 	private Long unit;
 	private String mobile;
 	private String tel;
@@ -19,7 +19,9 @@ public class AccountSaveForm {
 	private String vendor;
 	private Integer state;
 
-	private List<PermissionRecord> permissions;
+	private PermissionScopeRecord test;
+//	private List<PermissionScopeRecord> permission_scope_list;
+//	private List<Long> permissiongroupids;
 
 	public Long getId() {
 		return id;
@@ -109,12 +111,42 @@ public class AccountSaveForm {
 		this.state = state;
 	}
 
-	public List<PermissionRecord> getPermission() {
-		return permissions;
+	public String getUnitname() {
+		return unitname;
 	}
 
-	public void setPermission(List<PermissionRecord> permissions) {
-		this.permissions = permissions;
+	public void setUnitname(String unitname) {
+		this.unitname = unitname;
 	}
 
+//	public List<Long> getPermissiongroupids() {
+//		return permissiongroupids;
+//	}
+//
+//	public void setPermissiongroupids(List<Long> permissiongroupids) {
+//		this.permissiongroupids = permissiongroupids;
+//	}
+//	
+//	
+//	public List<PermissionScopeRecord> getPermission_scope_list() {
+//		return permission_scope_list;
+//	}
+//
+//	public void setPermission_scope_list(List<PermissionScopeRecord> permission_scope_list) {
+//		this.permission_scope_list = permission_scope_list;
+//	}
+//
+//	public String toString() {
+//		return String.format("%s", this.permissiongroupids.toString());
+//	}
+
+	public PermissionScopeRecord getTest() {
+		return test;
+	}
+
+	public void setTest(PermissionScopeRecord test) {
+		this.test = test;
+	}
+	
+	
 }
