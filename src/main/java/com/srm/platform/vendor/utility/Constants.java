@@ -57,5 +57,12 @@ public class Constants {
 	public final static String KEY_SYNC_PURCHASE_IN = "last_sync_purchase_in_date";
 	public final static String KEY_SYNC_VENDOR = "last_sync_vendor_date";
 	public final static String KEY_SYNC_PURCHASE_ORDER = "last_sync_purchase_order_date";
+	
+	public final static int PERMISSION_DIMENSION_COMPANY = 1;
+	public final static int PERMISSION_DIMENSION_ACCOUNT = 2;
+	public final static int PERMISSION_DIMENSION_STORE = 3;
+	public final static int PERMISSION_DIMENSION_VENDOR = 4;
+	public final static int PERMISSION_DIMENSION_INVENTORY = 5;
+	
 
 }

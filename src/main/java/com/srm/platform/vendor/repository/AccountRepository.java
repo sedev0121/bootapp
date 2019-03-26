@@ -9,7 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.srm.platform.vendor.model.Account;
-import com.srm.platform.vendor.utility.AccountSearchItem;
+import com.srm.platform.vendor.searchitem.AccountSearchItem;
+import com.srm.platform.vendor.utility.Constants;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
@@ -58,5 +59,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	
 	@Query(value = "select t.*, case t.role when 'ROLE_VENDOR' then p.name else u.name end as unitname from account t left join unit u on t.unit_id=u.id left join vendor v on t.vendor_code=v.code left join (select group_concat(a.name) name, c.vendor_code from unit a left join unit_provide b on a.id=b.unit_id left join vendor_provide c on b.provide_id=c.provide_id where c.vendor_code is not null GROUP BY c.vendor_code) p on t.vendor_code=p.vendor_code where t.id=?1 limit 1", nativeQuery = true)
 	AccountSearchItem findOneVendorById(Long id);
+	
+	@Query(value = "SELECT * FROM account a left join permission_user_scope b on on b.target_id=a.id where role='ROLE_VENDOR' and account_id=?1 and dimension_id=" + Constants.PERMISSION_DIMENSION_ACCOUNT, nativeQuery = true)
+	List<Account> findPermissionScopeAccountsOf(Long accountId);
 	
 }

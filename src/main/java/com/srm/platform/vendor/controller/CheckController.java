@@ -24,8 +24,8 @@ import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
+import com.srm.platform.vendor.searchitem.PurchaseOrderDetailSearchResult;
 import com.srm.platform.vendor.utility.Constants;
-import com.srm.platform.vendor.utility.PurchaseOrderDetailSearchResult;
 
 @RestController
 @RequestMapping(path = "/check")

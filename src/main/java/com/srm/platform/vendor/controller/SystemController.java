@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.utility.AccountSearchResult;
+import com.srm.platform.vendor.searchitem.AccountSearchResult;
 
 @Controller
 @RequestMapping(path = "/system")

@@ -3,10 +3,8 @@ package com.srm.platform.vendor.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.persistence.Query;
 
@@ -28,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.util.StringUtils;
 
+import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Action;
 import com.srm.platform.vendor.model.Function;
 import com.srm.platform.vendor.model.FunctionAction;
@@ -39,9 +38,15 @@ import com.srm.platform.vendor.repository.FunctionRepository;
 import com.srm.platform.vendor.repository.PermissionGroupFunctionActionRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
-import com.srm.platform.vendor.utility.AccountSearchItem;
-import com.srm.platform.vendor.utility.AccountSearchResult;
-import com.srm.platform.vendor.utility.SearchItem;
+import com.srm.platform.vendor.searchitem.AccountSearchItem;
+import com.srm.platform.vendor.searchitem.AccountSearchResult;
+import com.srm.platform.vendor.searchitem.PermissionAccount;
+import com.srm.platform.vendor.searchitem.ScopeAccountItem;
+import com.srm.platform.vendor.searchitem.ScopeCompanyItem;
+import com.srm.platform.vendor.searchitem.ScopeInventoryItem;
+import com.srm.platform.vendor.searchitem.ScopeStoreItem;
+import com.srm.platform.vendor.searchitem.ScopeVendorItem;
+import com.srm.platform.vendor.searchitem.SearchItem;
 
 @Controller
 @RequestMapping(path = "/permission_group")
@@ -246,6 +251,18 @@ public class PermissionController extends CommonController {
 		return permissionGroupRepository.findForSelect(search, request);
 
 	}
+	
+	@ResponseBody
+	@RequestMapping("/list_of_account/{accountId}")
+	public List<PermissionAccount> getGroupListOfAccount(@PathVariable("accountId") Long accountId) {
+		return permissionGroupRepository.findGroupListOfAccount(accountId);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/scope/accounts/{accountId}")
+	public List<Account> getScopeAccountListOfAccount(@PathVariable("accountId") Long accountId) {
+		return accountRepository.findPermissionScopeAccountsOf(accountId);
+	}
 
 	@GetMapping("/{id}/account/list")
 	public @ResponseBody List<AccountSearchResult> accountList_ajax(@PathVariable("id") String groupId) {
@@ -264,6 +281,37 @@ public class PermissionController extends CommonController {
 
 		return q.getResultList();
 
+	}
+	
+	@ResponseBody
+	@RequestMapping("/list_of_company")
+	public List<ScopeCompanyItem> getCompanyList() {
+		return permissionGroupRepository.findCompanyList();
+	}
+	
+	@ResponseBody
+	@RequestMapping("/list_of_account")
+	public List<ScopeAccountItem> getAccountList() {
+		return permissionGroupRepository.findAccountList();
+	}
+	
+	@ResponseBody
+	@RequestMapping("/list_of_store")
+	public List<ScopeStoreItem> getStoreList() {
+		return permissionGroupRepository.findStoreList();
+	}
+		
+	@ResponseBody
+	@RequestMapping("/list_of_vendor")
+	public List<ScopeVendorItem> getVendorList() {
+		return permissionGroupRepository.findVendorList();
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping("/list_of_inventory")
+	public List<ScopeInventoryItem> getInventoryList() {
+		return permissionGroupRepository.findInventoryList();
 	}
 
 }

@@ -16,8 +16,8 @@ import javax.persistence.Table;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.searchitem.StatementSearchResult;
 import com.srm.platform.vendor.utility.Constants;
-import com.srm.platform.vendor.utility.StatementSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
 @Entity

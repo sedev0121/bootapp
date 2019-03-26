@@ -42,15 +42,15 @@ import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
-import com.srm.platform.vendor.utility.AccountSearchResult;
+import com.srm.platform.vendor.searchitem.AccountSearchResult;
+import com.srm.platform.vendor.searchitem.NoticeReadSearchResult;
+import com.srm.platform.vendor.searchitem.NoticeSearchResult;
+import com.srm.platform.vendor.searchitem.PermissionUnit;
+import com.srm.platform.vendor.searchitem.SearchItem;
+import com.srm.platform.vendor.searchitem.VendorSearchItem;
 import com.srm.platform.vendor.utility.Constants;
-import com.srm.platform.vendor.utility.NoticeReadSearchResult;
-import com.srm.platform.vendor.utility.NoticeSearchResult;
-import com.srm.platform.vendor.utility.PermissionUnit;
-import com.srm.platform.vendor.utility.SearchItem;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
-import com.srm.platform.vendor.utility.VendorSearchItem;
 
 @Controller
 @RequestMapping(path = "/notice")

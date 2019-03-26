@@ -410,6 +410,10 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
     border: 1px solid #c5c5c5
 }
 
+.permission-scope .ui-widget.ui-widget-content {
+    border: none;
+}
+
 .ui-widget-content .ui-state-active {
     border: 1px solid #e6400c;
     background: #e6400c;
@@ -438,4 +442,47 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
 
 .detail {
 	color: green;
+}
+
+
+table.dataTable tbody>tr.clicked, table.dataTable tbody>tr>.clicked {
+    background-color: #e6400c;
+}
+
+table.dataTable tbody>tr.clicked td, table.dataTable tbody>tr>.clicked td {
+		color: white;
+}
+
+table.dataTable tbody tr.clicked td.select-checkbox:before, table.dataTable tbody tr.clicked th.select-checkbox:before {
+    content: ' ';
+    margin-top: -6px;
+    margin-left: -6px;
+    border: 1px solid white;
+    border-radius: 0px; 
+}
+
+table.dataTable tr.clicked.selected td.select-checkbox:after, table.dataTable tr.selected.clicked th.select-checkbox:after {
+    content: '\2714';
+    margin-top: -11px;
+    margin-left: -4px;
+    text-align: center;
+    text-shadow: none; 
+    color: white;
+}
+
+table.dataTable tbody td.select-checkbox:before, table.dataTable tbody th.select-checkbox:before {
+    content: ' ';
+    margin-top: -6px;
+    margin-left: -6px;
+    border: 1px solid black;
+    border-radius: 0px; 
+}
+
+table.dataTable tr.selected td.select-checkbox:after, table.dataTable tr.selected th.select-checkbox:after {
+    content: '\2714';
+    margin-top: -11px;
+    margin-left: -4px;
+    text-align: center;
+    text-shadow: none; 
+    color: black;
 }

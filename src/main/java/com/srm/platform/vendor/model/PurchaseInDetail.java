@@ -14,8 +14,8 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.srm.platform.vendor.searchitem.PurchaseInDetailResult;
 import com.srm.platform.vendor.utility.Constants;
-import com.srm.platform.vendor.utility.PurchaseInDetailResult;
 
 @Entity
 

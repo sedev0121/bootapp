@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.persistence.Query;
 
@@ -34,17 +33,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.PermissionGroupUser;
-import com.srm.platform.vendor.model.StatementMain;
+import com.srm.platform.vendor.model.PermissionUserScope;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
+import com.srm.platform.vendor.repository.PermissionUserScopeRepository;
 import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
-import com.srm.platform.vendor.utility.AccountSaveForm;
-import com.srm.platform.vendor.utility.AccountSearchItem;
-import com.srm.platform.vendor.utility.AccountSearchResult;
+import com.srm.platform.vendor.saveform.AccountSaveForm;
+import com.srm.platform.vendor.searchitem.AccountSearchItem;
+import com.srm.platform.vendor.searchitem.AccountSearchResult;
+import com.srm.platform.vendor.searchitem.PermissionScopeOfAccount;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
+import com.srm.platform.vendor.utility.PermissionScopeRecord;
 
 @Controller
 @RequestMapping(path = "/account")
@@ -57,9 +59,13 @@ public class AccountController extends CommonController {
 
 	@Autowired
 	private PermissionGroupRepository permissionGroupRepository;
+	
 	@Autowired
 	private PermissionGroupUserRepository permissionGroupUserRepository;
-
+	
+	@Autowired
+	private PermissionUserScopeRepository permissionUserScopeRepository;
+	
 	@Autowired
 	private VendorRepository vendorRepository;
 
@@ -167,23 +173,25 @@ public class AccountController extends CommonController {
 				groupList.add(item);
 		}
 
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonGroupString = "";
-		try {
-			jsonGroupString = mapper.writeValueAsString(groupList);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		AccountSearchItem vendorUnitResult = accountRepository.findOneVendorById(id);
 		String unitname = "";
 		if (vendorUnitResult != null) {
 			unitname = vendorUnitResult.getUnitname();			
 		}
+		
+		List<PermissionScopeOfAccount> scopeList = this.permissionGroupRepository.findScopeListOfAccount(id);
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonScopeListString = "";
+		try {
+			jsonScopeListString = mapper.writeValueAsString(scopeList);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		model.addAttribute("account", account);
-		model.addAttribute("groupList", jsonGroupString);
 		model.addAttribute("unitname", unitname);
+		model.addAttribute("permission_scope", jsonScopeListString);
 		return "admin/account/edit";
 	}
 
@@ -216,14 +224,8 @@ public class AccountController extends CommonController {
 
 		account.setUsername(accountSaveForm.getUsername());
 		account.setRealname(accountSaveForm.getRealname());
-		account.setWeixin(accountSaveForm.getWeixin());
-		account.setQq(accountSaveForm.getQq());
-		account.setYahoo(accountSaveForm.getYahoo());
-		account.setWangwang(accountSaveForm.getWangwang());
 		account.setMobile(accountSaveForm.getMobile());
 		account.setTel(accountSaveForm.getTel());
-		account.setAddress(accountSaveForm.getAddress());
-		account.setGtalk(accountSaveForm.getGtalk());
 		account.setEmail(accountSaveForm.getEmail());
 		account.setRole(accountSaveForm.getRole());
 		account.setDuty(accountSaveForm.getDuty());
@@ -266,22 +268,28 @@ public class AccountController extends CommonController {
 		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, account);
 
 		permissionGroupUserRepository.deleteByAccountId(account.getId());
-
+		permissionUserScopeRepository.deleteByAccountId(account.getId());
+		
 		if ("ROLE_BUYER".equals(account.getRole())) {
-			List<Long> permissionList = accountSaveForm.getPermission();
-			if (permissionList != null) {
-				for (Long id : permissionList) {
+			List<Map<String, Long>> permissionGroupIdList = accountSaveForm.getPermission_group_ids();
+			if (permissionGroupIdList != null) {
+				for (Map<String, Long> group : permissionGroupIdList) {
 					PermissionGroupUser temp = new PermissionGroupUser();
 					temp.setAccountId(account.getId());
-					temp.setGroupId(id);
-
-					Example<PermissionGroupUser> example = Example.of(temp);
-					Optional<PermissionGroupUser> result = permissionGroupUserRepository.findOne(example);
-					if (result.isPresent()) {
-						temp = result.get();
-					}
-
+					temp.setGroupId(group.get("group_id"));
 					permissionGroupUserRepository.save(temp);
+				}
+			}
+			
+			List<Map<String, String>> permissionScopeList = accountSaveForm.getPermission_scope_list();
+			if (permissionScopeList != null) {
+				for (Map<String, String> scope : permissionScopeList) {
+					PermissionUserScope temp = new PermissionUserScope();
+					temp.setAccountId(account.getId());
+					temp.setGroupId(Long.valueOf(scope.get("group_id")));
+					temp.setDimensionId(Long.valueOf(scope.get("dimension_id")));
+					temp.setTargetId(scope.get("target_id"));
+					permissionUserScopeRepository.save(temp);
 				}
 			}
 		}

@@ -17,8 +17,8 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.srm.platform.vendor.utility.NoticeSearchResult;
-import com.srm.platform.vendor.utility.ProvideClassSearchResult;
+import com.srm.platform.vendor.searchitem.NoticeSearchResult;
+import com.srm.platform.vendor.searchitem.ProvideClassSearchResult;
 
 @Entity
 @Table(name = "provide_class")

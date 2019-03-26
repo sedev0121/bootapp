@@ -28,7 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.VendorRepository;
-import com.srm.platform.vendor.utility.VendorSearchItem;
+import com.srm.platform.vendor.searchitem.VendorSearchItem;
 import com.srm.platform.vendor.view.ExcelDeliveryReportView;
 import com.srm.platform.vendor.view.ExcelOrderlistReportView;
 

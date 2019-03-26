@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
-import com.srm.platform.vendor.utility.VenPriceDetailItem;
+import com.srm.platform.vendor.searchitem.VenPriceDetailItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete

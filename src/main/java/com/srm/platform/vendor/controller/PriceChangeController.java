@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.srm.platform.vendor.model.PriceChangeReportItem;
-import com.srm.platform.vendor.utility.PriceSearchResult;
+import com.srm.platform.vendor.searchitem.PriceSearchResult;
 import com.srm.platform.vendor.utility.Utils;
 import com.srm.platform.vendor.view.ExcelIncomingReportView;
 import com.srm.platform.vendor.view.ExcelPriceChangeReportView;

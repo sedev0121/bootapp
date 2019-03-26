@@ -32,9 +32,9 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
-import com.srm.platform.vendor.utility.InquerySearchResult;
-import com.srm.platform.vendor.utility.PurchaseInDetailItem;
-import com.srm.platform.vendor.utility.PurchaseInDetailResult;
+import com.srm.platform.vendor.searchitem.InquerySearchResult;
+import com.srm.platform.vendor.searchitem.PurchaseInDetailItem;
+import com.srm.platform.vendor.searchitem.PurchaseInDetailResult;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
