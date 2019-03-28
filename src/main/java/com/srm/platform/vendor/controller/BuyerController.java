@@ -51,26 +51,7 @@ import com.srm.platform.vendor.utility.GenericJsonResponse;
 
 @Controller
 @RequestMapping(path = "/buyer")
-public class BuyerController extends CommonController {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-	@Autowired
-	private AccountRepository accountRepository;
-
-	@Autowired
-	private PermissionGroupRepository permissionGroupRepository;
-
-	@Autowired
-	private PermissionGroupUserRepository permissionGroupUserRepository;
-
-	@Autowired
-	private PermissionUserScopeRepository permissionUserScopeRepository;
-
-	@Autowired
-	private VendorRepository vendorRepository;
-
-	@Autowired
-	private CompanyRepository companyRepository;
+public class BuyerController extends AccountController {	
 
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
@@ -177,14 +158,6 @@ public class BuyerController extends CommonController {
 
 	}
 
-	// 用户管理->删除
-	@GetMapping("/{id}/delete")
-	public @ResponseBody Boolean delete(@PathVariable("id") Long id, Model model) {
-		Account account = accountRepository.findOneById(id);
-		accountRepository.delete(account);
-		return true;
-	}
-
 	// 用户修改
 	@Transactional
 	@PostMapping("/update")
@@ -245,52 +218,28 @@ public class BuyerController extends CommonController {
 		permissionGroupUserRepository.deleteByAccountId(account.getId());
 		permissionUserScopeRepository.deleteByAccountId(account.getId());
 
-		if ("ROLE_BUYER".equals(account.getRole())) {
-			List<Map<String, Long>> permissionGroupIdList = accountSaveForm.getPermission_group_ids();
-			if (permissionGroupIdList != null) {
-				for (Map<String, Long> group : permissionGroupIdList) {
-					PermissionGroupUser temp = new PermissionGroupUser();
-					temp.setAccountId(account.getId());
-					temp.setGroupId(group.get("group_id"));
-					permissionGroupUserRepository.save(temp);
-				}
+		List<Map<String, Long>> permissionGroupIdList = accountSaveForm.getPermission_group_ids();
+		if (permissionGroupIdList != null) {
+			for (Map<String, Long> group : permissionGroupIdList) {
+				PermissionGroupUser temp = new PermissionGroupUser();
+				temp.setAccountId(account.getId());
+				temp.setGroupId(group.get("group_id"));
+				permissionGroupUserRepository.save(temp);
 			}
+		}
 
-			List<Map<String, String>> permissionScopeList = accountSaveForm.getPermission_scope_list();
-			if (permissionScopeList != null) {
-				for (Map<String, String> scope : permissionScopeList) {
-					PermissionUserScope temp = new PermissionUserScope();
-					temp.setAccountId(account.getId());
-					temp.setGroupId(Long.valueOf(scope.get("group_id")));
-					temp.setDimensionId(Long.valueOf(scope.get("dimension_id")));
-					temp.setTargetId(scope.get("target_id"));
-					permissionUserScopeRepository.save(temp);
-				}
+		List<Map<String, String>> permissionScopeList = accountSaveForm.getPermission_scope_list();
+		if (permissionScopeList != null) {
+			for (Map<String, String> scope : permissionScopeList) {
+				PermissionUserScope temp = new PermissionUserScope();
+				temp.setAccountId(account.getId());
+				temp.setGroupId(Long.valueOf(scope.get("group_id")));
+				temp.setDimensionId(Long.valueOf(scope.get("dimension_id")));
+				temp.setTargetId(scope.get("target_id"));
+				permissionUserScopeRepository.save(temp);
 			}
 		}
 
 		return jsonResponse;
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "/company/list", produces = "application/json")
-	public Page<SearchItem> company_list(@RequestParam(value = "q") String search) {
-		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
-		return companyRepository.findForSelect(request);
-
-	}
-
-	// 用户修改
-	@Transactional
-	@GetMapping("/checkuser")
-	public @ResponseBody Boolean checkUser_ajax(@RequestParam("id") Long id,
-			@RequestParam("username") String username) {
-		Account account = accountRepository.findOneByUsername(username);
-
-		if (account != null && account.getId() != id) {
-			return false;
-		} else {
-			return true;
-		}
 	}
 }

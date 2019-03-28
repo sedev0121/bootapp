@@ -46,30 +46,13 @@ import com.srm.platform.vendor.searchitem.AccountSearchItem;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.PermissionScopeOfAccount;
 import com.srm.platform.vendor.searchitem.SearchItem;
+import com.srm.platform.vendor.searchitem.SellerSearchResult;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 
 @Controller
 @RequestMapping(path = "/seller")
-public class SellerController extends CommonController {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-	@Autowired
-	private AccountRepository accountRepository;
-
-	@Autowired
-	private PermissionGroupRepository permissionGroupRepository;
+public class SellerController extends AccountController {
 	
-	@Autowired
-	private PermissionGroupUserRepository permissionGroupUserRepository;
-	
-	@Autowired
-	private PermissionUserScopeRepository permissionUserScopeRepository;
-	
-	@Autowired
-	private VendorRepository vendorRepository;
-	
-	@Autowired
-	private CompanyRepository companyRepository;
 
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
@@ -79,56 +62,37 @@ public class SellerController extends CommonController {
 	
 	// 用户管理->列表
 	@GetMapping("/list")
-	public @ResponseBody Page<AccountSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<SellerSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
 		String stateStr = requestParams.getOrDefault("state", "");
-		String role = requestParams.getOrDefault("role", "");
-		String exceptVendor = requestParams.get("except_vendor");
 
 		Integer state = Integer.parseInt(stateStr);
 
-		if (order.equals("vendorname"))
-			order = "v.name";
-		if (order.equals("unitname"))
-			order = "u.name";
 
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT t.*, case t.role when 'ROLE_VENDOR' then p.name else u.name end as unitname, v.name vendorname ";
+		String selectQuery = "SELECT t.id, t.username, t.state, v.*, v.name vendorname ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM account t left join unit u on t.unit_id=u.id left join vendor v on t.vendor_code=v.code "
-				+ "left join (select group_concat(a.name) name, c.vendor_code from unit a left join unit_provide b on a.id=b.unit_id left join vendor_provide c on b.provide_id=c.provide_id \r\n" + 
-				"where c.vendor_code is not null GROUP BY c.vendor_code) p on t.vendor_code=p.vendor_code "
-				+ "where 1=1 ";
+		String bodyQuery = "FROM account t left join vendor v on t.vendor_code=v.code where t.role='ROLE_VENDOR' ";
 
 		Map<String, Object> params = new HashMap<>();
 
 		if (!search.trim().isEmpty()) {
-			bodyQuery += " and (p.name LIKE CONCAT('%',:search, '%') or u.name LIKE CONCAT('%',:search, '%') or t.username LIKE CONCAT('%',:search, '%') or t.realname LIKE CONCAT('%',:search, '%') or t.duty LIKE CONCAT('%',:search, '%') or t.email LIKE CONCAT('%',:search, '%')) ";
+			bodyQuery += " and (v.name LIKE CONCAT('%',:search, '%') or v.abbrname LIKE CONCAT('%',:search, '%') or t.username LIKE CONCAT('%',:search, '%') or v.email LIKE CONCAT('%',:search, '%')) ";
 			params.put("search", search.trim());
 		}
 
 		if (state >= 0) {
 			bodyQuery += " and state=:state";
 			params.put("state", state);
-		}
-
-		if (exceptVendor != null) {
-			bodyQuery += " and role<>:exceptRole";
-			params.put("exceptRole", "ROLE_VENDOR");
-		}
-
-		if (!role.trim().isEmpty()) {
-			bodyQuery += " and role=:role";
-			params.put("role", role);
 		}
 
 		countQuery += bodyQuery;
@@ -141,14 +105,14 @@ public class SellerController extends CommonController {
 		BigInteger totalCount = (BigInteger) q.getSingleResult();
 
 		selectQuery += bodyQuery + orderBy;
-		q = em.createNativeQuery(selectQuery, "AccountSearchResult");
+		q = em.createNativeQuery(selectQuery, "SellerSearchResult");
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			q.setParameter(entry.getKey(), entry.getValue());
 		}
 
 		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
 
-		return new PageImpl<AccountSearchResult>(list, request, totalCount.longValue());
+		return new PageImpl<SellerSearchResult>(list, request, totalCount.longValue());
 
 	}
 
@@ -195,13 +159,7 @@ public class SellerController extends CommonController {
 		return "admin/seller/edit";
 	}
 
-	// 用户管理->删除
-	@GetMapping("/{id}/delete")
-	public @ResponseBody Boolean delete(@PathVariable("id") Long id, Model model) {
-		Account account = accountRepository.findOneById(id);
-		accountRepository.delete(account);
-		return true;
-	}
+	
 
 	// 用户修改
 	@Transactional
@@ -288,35 +246,5 @@ public class SellerController extends CommonController {
 		}
 
 		return jsonResponse;
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "/search/{keyword}", produces = "application/json")
-	public Page<AccountSearchItem> search_ajax(@PathVariable("keyword") String keyword) {
-		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "realname");
-
-		return accountRepository.findForAutoComplete(keyword, request);
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "/company/list", produces = "application/json")
-	public Page<SearchItem> company_list(@RequestParam(value = "q") String search) {
-		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
-		return companyRepository.findForSelect(request);
-
-	}
-	
-	// 用户修改
-	@Transactional
-	@GetMapping("/checkuser")
-	public @ResponseBody Boolean checkUser_ajax(@RequestParam("id") Long id,
-			@RequestParam("username") String username) {
-		Account account = accountRepository.findOneByUsername(username);
-
-		if (account != null && account.getId() != id) {
-			return false;
-		} else {
-			return true;
-		}
-	}
+	}	
 }

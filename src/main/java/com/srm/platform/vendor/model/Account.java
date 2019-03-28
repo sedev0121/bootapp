@@ -24,25 +24,23 @@ import org.hibernate.annotations.NotFoundAction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.BuyerSearchResult;
+import com.srm.platform.vendor.searchitem.SellerSearchResult;
 
 @Entity
 
 @SqlResultSetMappings({
 	@SqlResultSetMapping(
-		name = "AccountSearchResult", 
+		name = "SellerSearchResult", 
 		classes = {
 			@ConstructorResult(
-				targetClass = AccountSearchResult.class, 
+				targetClass = SellerSearchResult.class, 
 				columns = {
 					@ColumnResult(name = "id", type = String.class), 
 					@ColumnResult(name = "username", type = String.class),
-					@ColumnResult(name = "realname", type = String.class),
-					@ColumnResult(name = "unitname", type = String.class),
-					@ColumnResult(name = "duty", type = String.class), 
-					@ColumnResult(name = "role", type = String.class),
-					@ColumnResult(name = "vendorname", type = String.class),
+					@ColumnResult(name = "name", type = String.class),
+					@ColumnResult(name = "abbrname", type = String.class),
 					@ColumnResult(name = "email", type = String.class), 
-					@ColumnResult(name = "tel", type = String.class),
+					@ColumnResult(name = "phone", type = String.class),
 					@ColumnResult(name = "mobile", type = String.class),
 					@ColumnResult(name = "state", type = String.class) 
 				}
