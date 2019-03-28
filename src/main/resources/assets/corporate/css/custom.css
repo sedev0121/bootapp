@@ -486,3 +486,7 @@ table.dataTable tr.selected td.select-checkbox:after, table.dataTable tr.selecte
     text-shadow: none; 
     color: black;
 }
+
+.select-checkbox {
+	min-width: 50px;
+}

@@ -78,28 +78,9 @@ public class VendorController extends CommonController {
 		if (vendor == null)
 			show404();
 
-		List<ProvideClass> provideClassList = null;
-		
-		if (isAdmin() || hasAuthority("基础资料-新建供应商")) {
-			provideClassList = provideClassRepository.findProvideClassesByVendorCode(code);	
-		} else {
-			provideClassList = provideClassRepository.findProvideClassesByVendorCodeAndUnitId(code, this.getDefaultUnitList());
-		}
-		
-
 		Account account = accountRepository.findOneByUsername(code);
 
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonGroupString = "";
-		try {
-			jsonGroupString = mapper.writeValueAsString(provideClassList);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		model.addAttribute("data", vendor);
-		model.addAttribute("provideClassList", jsonGroupString);
 		model.addAttribute("accountState", account == null ? 2 : account.getState());
 		return "vendor/edit";
 	}

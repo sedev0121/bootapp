@@ -92,7 +92,8 @@ public class Account implements Serializable {
 	@Column(name = "entry_time")
 	private Date entryTime;
 
-	@JoinColumn(name = "company_id")
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "company_id", nullable=true)
 	@ManyToOne()
 	private Company company;
 

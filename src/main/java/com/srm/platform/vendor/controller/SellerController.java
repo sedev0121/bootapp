@@ -172,7 +172,7 @@ public class SellerController extends AccountController {
 		}
 
 		account.setUsername(accountSaveForm.getUsername());
-
+		account.setRole("ROLE_VENDOR");
 		boolean isDuplicatedVendor = false;
 		List<Account> accountsHavingVendorCode = accountRepository.findAccountsByVendor(accountSaveForm.getVendor());
 		for (Account vendorAccount : accountsHavingVendorCode) {
