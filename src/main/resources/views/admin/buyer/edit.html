@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+	<div class="container" layout:fragment="content">
+		<ul class="breadcrumb">
+			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+			<li><a th:href="@{/buyer}">采购用户管理</a></li>
+			<li class="active" th:text="${account.id}?'用户详细':'新建用户'"></li>
+		</ul>
+		<div class="btn-group-bar">
+			<div class="text-right">
+				<a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a> <a class="btn btn-danger" id="del" th:if="${account.id}"><i class="fa fa-remove"></i> 删除</a> <a class="btn btn-default" th:href="@{/account}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+			</div>
+		</div>
+		<form id="form" th:action="@{/buyer/update}" method="post">
+			<input type="hidden" id="id" name="id" th:value="${account.id}"> <input type="hidden" id="role" name="role" th:value="${account.role}">
+			<div class="panel panel-default">
+				<div class="panel-body form-body">
+					<div class="row">
+						<div class="col-md-3 form-group">
+							<label for="realname">姓名：</label> <input type="text" id="realname" name="realname" class="form-control" th:value="${account.realname}">
+						</div>
+						<div class="col-md-3 form-group">
+							<label for="company">业务实体： </label> 
+							<select name="company" id="company" class="form-control">
+								<option th:value="${account.company?.id}" th:text="${account.company?.name}" selected="selected"></option>
+							</select>
+						</div>
+						<div class="col-md-3 form-group">
+							<label for="unitname">部门： </label> <input type="text" name="unitname" th:value="${account.unitname}" class="form-control">
+						</div>
+						<div class="col-md-3 form-group">
+							<label for="duty">职位: </label> <input type="text" id="duty" name="duty" th:value="${account.duty}" class="form-control">
+						</div>
+						<div class="col-md-3 form-group">
+							<label for="account_no">员工编号：</label> <input type="text" id="account_no" name="account_no" class="form-control" th:value="${account.id}" readonly>
+						</div>
+						<div class="col-md-3 form-group">
+							<label for="mobile">手机:</label> <input type="text" id="mobile" name="mobile" class="form-control" th:value="${account.mobile}">
+						</div>
+						<div class="col-md-3 form-group">
+							<label for="tel">电话:</label> <input type="text" name="tel" class="form-control" th:value="${account.tel}">
+						</div>
+						<div class="col-md-3 form-group">
+							<label for="email">邮箱:</label> <input type="text" id="email" name="email" class="form-control" th:value="${account.email}">
+						</div>
+					</div>
+					<hr/>
+					<div class="row">
+						<div class="col-md-3 form-group">
+							<label for="username">用户名: </label> <input type="text" name="username" id="username" class="form-control" th:value="${account.username}">
+						</div>
+						<div class="col-md-3 form-group">
+							<label for="init_password">初始密码： </label> <input type="text" class="form-control" th:value="111" readonly>
+						</div>
+						<div class="col-md-2 form-group">
+							<label for="state">状态: </label>
+							<div class="ui toggle checkbox">
+								<input type="checkbox" class="form-control" name="state" value="1" th:checked="${account.state}"> <label>启用 / 停用</label>
+							</div>
+						</div>
+						<div class="col-md-2 form-group">
+							<label for="start_date">启用日期: </label> <input type="text" class="form-control" readonly th:value="${#dates.format(account.startDate, 'yyyy-MM-dd')}">
+						</div>
+						<div class="col-md-2 form-group">
+							<label for="stop_date">停用日期:</label> <input type="text" class="form-control" readonly th:value="${#dates.format(account.stopDate, 'yyyy-MM-dd')}">
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="row permission-scope">
+			<div class="col-md-4 tab-style-1">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#permission_list">权限列表</a></li>
+				</ul>
+				<div class="tab-content">
+					<div id="permission_list" class="tab-pane fade active in">
+						<table id="permission_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+						</table>
+					</div>
+				</div>
+			</div>
+			<!-- TABS -->
+			<div class="col-md-8 tab-style-1" id="scope_tabs">
+				<ul class="nav nav-tabs">
+					<li class=""><a data-toggle="tab" href="#company_scope" id="company_tab">公司</a></li>
+					<li class=""><a data-toggle="tab" href="#account_scope" id="account_tab">采购员</a></li>
+					<li class=""><a data-toggle="tab" href="#store_scope" id="store_tab">库房</a></li>
+					<li class=""><a data-toggle="tab" href="#vendor_scope" id="vendor_tab">供应商</a></li>
+					<li class=""><a data-toggle="tab" href="#inventory_scope" id="inventory_tab">商品分类</a></li>
+				</ul>
+				<div class="tab-content">
+					<div id="company_scope" class="tab-pane fade">
+						<table id="company_scope_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+						</table>
+					</div>
+					<div id="account_scope" class="tab-pane fade">
+						<table id="account_scope_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+						</table>
+					</div>
+					<div id="store_scope" class="tab-pane fade">
+						<table id="store_scope_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+						</table>
+					</div>
+					<div id="vendor_scope" class="tab-pane fade">
+						<table id="vendor_scope_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+						</table>
+					</div>
+					<div id="inventory_scope" class="tab-pane fade">
+						<table id="inventory_scope_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
+</html>
+<script th:inline="javascript">
+	var edit_url = /*[[@{/buyer/}]]*/'';
+  var checkuser_url = /*[[@{/buyer/checkuser/}]]*/'';
+  var checkemail_url = /*[[@{/profile/checkemail}]]*/'';
+  var checkmobile_url = /*[[@{/profile/checkmobile}]]*/'';
+  var checkweixin_url = /*[[@{/profile/checkweixin}]]*/'';
+  var perm_search_url = /*[[@{/permission_group/search}]]*/'';
+  var scope_list = [[${permission_scope}]];
+  
+  var company_search_url = /*[[@{/buyer/company/list}]]*/'';
+  
+  const SCOPE_COMPANY = 1;
+  const SCOPE_ACCOUNT = 2;
+  const SCOPE_STORE = 3;
+  const SCOPE_VENDOR = 4;
+  const SCOPE_INVENTORY = 5;
+  
+  var table, company_table, account_table, store_table, vendor_table, inventory_table;
+  var currentPermissionGroupId, currentPermissionDimensions;
+  
+  jQuery(document).ready(function() {
+
+  	$("#company").select2(App.getSelect2Options(company_search_url));
+  	
+  	var permission_scope_list = JSON.parse(scope_list);
+  	
+  	var permission_dimensions = {};
+  	
+  	function contains(scope_list, item) {
+  		return scope_list.indexOf(item.toString()) > -1;
+  	}
+  	
+  	function addScope(group_id, dimension_id, target_id) {
+  		
+  		removeScope(group_id, dimension_id, target_id);
+  		permission_scope_list.push({
+  			group_id: currentPermissionGroupId,
+  			dimension_id: dimension_id,
+  			target_id: target_id.toString(),
+  		});  		
+  		
+  	}
+  	
+  	function removeScope(group_id, dimension_id, target_id) {
+
+  		permission_scope_list = permission_scope_list.filter( scope => {
+				return !(scope.group_id == group_id && scope.dimension_id == dimension_id && scope.target_id == target_id.toString());
+			});
+
+  	}
+  	
+  	function getScopeOf(group_id, dimension_id) {
+  		var result = [];
+  		$.map(permission_scope_list, function(row, index) {
+  			if (row.group_id == group_id && row.dimension_id == dimension_id) {
+  				result.push(row.target_id);
+  			}
+  		});
+  		
+  		return result;
+  	}
+  	
+  	$.map(permission_scope_list, function(row, index) {
+			var key = row.group_id;
+			if (!permission_dimensions[key] && row.dimensions) {				
+				permission_dimensions[key] = row.dimensions.split(",");
+				permission_dimensions[key] = permission_dimensions[key].map(dimension_id => {
+					return parseInt(dimension_id);
+				});
+			}			
+		});
+  	
+	  function onCheckVendor(isVendor) {
+		  if (isVendor) {
+			  $('#username').prop('readonly', true);
+			  $('#realname').prop('readonly', true);
+			  $('#duty').prop('readonly', true);
+			  $('#unit_name').prop('disabled', true);
+			  $('#form').validate().settings.rules.email.required = true;
+			  $('#form').validate().settings.rules.mobile.required = true;
+			  $('#form').validate().settings.rules.weixin.required = true;
+		  } else {
+			  $('#username').prop('readonly', false);
+			  $('#realname').prop('readonly', false);
+			  $('#duty').prop('readonly', false);
+			  $('#unit_name').prop('disabled', false);
+			  $('#form').validate().settings.rules.email.required = false;
+			  $('#form').validate().settings.rules.mobile.required = false;
+			  $('#form').validate().settings.rules.weixin.required = false;
+
+		  }
+	  }
+
+	  var is_add = $("#id").val().length == 0;
+	  $("#form").validate({
+	    // define validation rules
+	    rules : {
+	      realname : {
+		      required : true
+	      },
+	      duty : {
+		      required : true
+	      },
+	      username : {
+	        required : true,
+	        remote : {
+	          url : checkuser_url,
+	          data : {
+	            username : function() {
+		            return $("#username").val();
+	            },
+	            id : function() {
+		            return $("#id").val();
+	            }
+	          }
+	        }
+	      },
+	      email : {
+	        required : true,
+	        email : true,
+	        remote : {
+	          url : checkemail_url,
+	          data : {
+	            email : function() {
+		            return $("#email").val();
+	            },
+	            id : function() {
+		            return $("#id").val();
+	            }
+	          }
+	        }
+	      },
+	      mobile : {
+	        required : true,
+	        remote : {
+	          url : checkmobile_url,
+	          data : {
+	            mobile : function() {
+		            return $("#mobile").val();
+	            },
+	            id : function() {
+		            return $("#id").val();
+	            }
+	          }
+	        }
+	      },
+	    },
+	    messages : {
+	      username : {
+		      remote : "该用户名已在使用！"
+	      },
+	      email : {
+		      remote : "该邮箱已在使用！"
+	      },
+	      mobile : {
+		      remote : "该手机号已在使用！"
+	      },
+	    },
+
+	    //display error alert on form submit
+	    invalidHandler : function(event, validator) {
+		    App.showErrorDialog("输入有误", "请输入正确的值");
+	    },
+
+	    submitHandler : function(form) {
+	    	var selectedGroupIds = [];
+	      var selectedGroupRows = table.rows('.selected').data().toArray();
+	      $.each(selectedGroupRows, function(key, item){
+	      	selectedGroupIds.push({group_id:item.id});
+	      });
+	      
+		    jQuery(form).ajaxSubmit({
+		      data : {
+		      	permission_group_ids: selectedGroupIds,
+		      	permission_scope_list: permission_scope_list,		      	
+		      },
+		      beforeSend : function() {
+			      App.blockUI();
+		      },
+		      complete : function() {
+			      App.unblockUI();
+		      },
+		      success : function(res, status, xhr, form) {
+			      if (res.success == 1) {
+				      App.showSuccessDialog("操作成功", function() {
+					      window.location.href = edit_url + res.data.id + "/edit";
+				      });
+			      } else {
+				      App.showErrorDialog("操作失败", res.errmsg);
+			      }
+		      },
+		      error : function(res, status, xhr, form) {
+			      App.showErrorDialog("操作失败", "请输入正确的值");
+		      }
+		    });
+	    }
+	  });
+
+	  $("#save").click(function() {
+		  $("#form").submit();
+	  });
+
+	  $("#del").click(function() {
+		  App.showConfirmDialog('确定要删除吗?', function() {
+			  var del_url = edit_url + $("#id").val() + "/delete";
+			  $.get(del_url, function(data, status) {
+				  App.showSuccessDialog("操作成功", function() {
+					  window.location.href = edit_url;
+				  });
+			  });
+		  });
+	  });
+
+	  //Permission Table
+	  table = $('#permission_table').DataTable({
+	    ordering : true,
+	    serverSide : false,
+	    processing : false,
+	    scrollY: '350px',
+	    select : {
+	      style : 'multi',
+	      selector : 'td:first-child'
+	    },
+	    ajax : {
+	      url : /*[[@{|/permission_group/list_of_account/${account.id}|}]]*/'',
+	      dataSrc : function(json) {
+		      for (var i = 0; i < json.length; i++) {
+			      json[i].selected = true;
+			      json[i].select = true;
+		      }
+		      return json;
+	      },
+	    },
+	    order : [ [ 1, 'asc' ] ],
+	    columns : [ {
+	      data : null,
+	      defaultContent : '',
+	      width: "50px",
+	      orderable : false,
+	      className : 'select-checkbox',
+	    }, {
+	      data : 'name',
+	      title : '权限名',
+	    }],
+	    drawCallback: function( settings ) {
+    		this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
+	    	  if (this.data().account_id) {
+	    	    this.select();
+	    	  }
+	    	});
+    		
+    		$('#permission_table tbody tr:first').click();
+      }
+	  });
+
+	  table.on('select', function ( e, dt, type, indexes ) {			    
+	  	if ( type === 'row' ) {			  
+	  		var data = table.row(indexes[0]).data(); 
+	  	}
+	  });
+	  
+	  table.on('deselect', function ( e, dt, type, indexes ) {			    
+	  	if ( type === 'row' ) {			  
+	  		var data = table.row(indexes[0]).data(); 
+	  	}
+	  });
+	  
+	  $('#permission_table tbody').on('click', 'tr', function() {
+
+	  	$('.clicked').removeClass("clicked");
+	  	$(this).addClass("clicked");
+		  var clicked_row_data = table.row(this).data();
+			var firstTabId = null;
+			
+			if (!clicked_row_data || currentPermissionGroupId == clicked_row_data.id) {
+				return;
+			}
+			
+		  currentPermissionGroupId = clicked_row_data.id;
+		  currentPermissionDimensions = permission_dimensions[currentPermissionGroupId];
+		  
+		  /****  TODO: remove ***/
+		  currentPermissionDimensions = [];
+		  currentPermissionDimensions.push(SCOPE_COMPANY);
+		  currentPermissionDimensions.push(SCOPE_ACCOUNT);
+		  currentPermissionDimensions.push(SCOPE_STORE);
+		  currentPermissionDimensions.push(SCOPE_VENDOR);
+		  currentPermissionDimensions.push(SCOPE_INVENTORY);
+		  /**********************************/
+		  
+		  if (!currentPermissionDimensions) {
+		  	$('#scope_tabs').hide();
+		  	App.showErrorDialog("操作失败", "该权限没有设置权限维度。请先在【应用权限】设置该权限的维度。");
+		  	return;
+		  } else {
+		  	$('#scope_tabs').show();
+		  }
+		  
+		  if (currentPermissionDimensions.indexOf(SCOPE_COMPANY) > -1) {
+		  	$("#company_tab").show();
+		  	if (!firstTabId)
+		  		firstTabId = "#company_tab";
+		  } else {
+		  	$("#company_tab").hide();
+		  }
+		  
+		  if (currentPermissionDimensions.indexOf(SCOPE_ACCOUNT) > -1) {
+		  	$("#account_tab").show();
+		  	if (!firstTabId)
+		  		firstTabId = "#account_tab";
+		  } else {
+		  	$("#account_tab").hide();
+		  }
+		  
+		  if (currentPermissionDimensions.indexOf(SCOPE_STORE) > -1) {
+		  	$("#store_tab").show();
+		  	if (!firstTabId)
+		  		firstTabId = "#store_tab";
+		  } else {
+		  	$("#store_tab").hide();
+		  }
+		  
+		  if (currentPermissionDimensions.indexOf(SCOPE_VENDOR) > -1) {
+		  	$("#vendor_tab").show();
+		  	if (!firstTabId)
+		  		firstTabId = "#vendor_tab";
+		  } else {
+		  	$("#vendor_tab").hide();
+		  }
+		  
+		  if (currentPermissionDimensions.indexOf(SCOPE_INVENTORY) > -1) {
+		  	$("#inventory_tab").show();
+		  	if (!firstTabId)
+		  		firstTabId = "#inventory_tab";
+		  } else {
+		  	$("#inventory_tab").hide();
+		  }
+		  
+		  loadScopeTab();
+		  
+		  $(firstTabId).click();
+	  });
+
+	  $('#scope_tabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      // FYP-table is id of datatable
+      if (company_table) {
+      	company_table.columns.adjust();
+      }
+      
+      if (account_table) {
+      	account_table.columns.adjust();
+      }
+      
+      if (store_table) {
+      	store_table.columns.adjust();
+      }
+      
+      if (vendor_table) {
+      	vendor_table.columns.adjust();
+      }
+      
+      if (inventory_table) {
+      	inventory_table.columns.adjust();
+      }
+  	});
+	  
+	  function loadScopeTab() {	  	
+	  	
+		  //Company Scope Table	  
+		  if (company_table) {
+			  company_table.clear().destroy();
+		  }
+
+		  company_table = $('#company_scope_table').DataTable({
+		  	ordering : true,
+		    serverSide : false,
+		    processing : false,
+		    scrollY: '350px',
+		    select : {
+		      style : 'multi',
+		      selector : 'td'
+		    },
+		    ajax : {
+		      url : /*[[@{|/permission_group/list_of_company|}]]*/'',
+		      dataSrc : function(json) {
+			      for (var i = 0; i < json.length; i++) {
+				      json[i].selected = true;
+				      json[i].select = true;
+			      }
+			      return json;
+		      },
+		    },
+		    order : [ [ 1, 'asc' ] ],
+		    columns : [ {
+		      data : null,
+		      defaultContent : '',
+		      orderable : false,
+		      width: "50px",
+		      className : 'select-checkbox',
+		    }, {
+		      data : 'name',
+		      title : '业务实体',
+		    }],
+		    drawCallback: function( settings ) {
+		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
+		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_COMPANY);
+		    	  if (contains(scope_list, this.data().id)) {
+		    	    this.select();
+		    	  }
+		    	});
+	      }
+		  });
+
+		  company_table.on('select', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = company_table.row(indexes[0]).data(); 
+		  		addScope(currentPermissionGroupId, SCOPE_COMPANY, data.id);
+		  	}
+		  });
+		  
+		  company_table.on('deselect', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = company_table.row(indexes[0]).data(); 
+		  		removeScope(currentPermissionGroupId, SCOPE_COMPANY, data.id);
+		  	}
+		  });
+		  
+			//Account Scope Table	  
+		  if (account_table) {
+		  	account_table.clear().destroy();
+		  }
+
+		  account_table = $('#account_scope_table').DataTable({
+		  	ordering : true,
+		    serverSide : false,
+		    processing : false,
+		    scrollY: '350px',
+		    select : {
+		      style : 'multi',
+		      selector : 'td'
+		    },
+		    ajax : {
+		      url : /*[[@{|/permission_group/list_of_account|}]]*/'',
+		      dataSrc : function(json) {
+			      for (var i = 0; i < json.length; i++) {
+				      json[i].selected = true;
+				      json[i].select = true;
+			      }
+			      return json;
+		      },
+		    },
+		    order : [ [ 1, 'asc' ] ],
+		    columns : [ {
+		      data : null,
+		      defaultContent : '',
+		      orderable : false,
+		      width: "50px",
+		      className : 'select-checkbox',
+		    }, {
+		      data : 'realname',
+		      title : '姓名',
+		    }, {
+		      data : 'duty',
+		      title : '职位',
+		    }, {
+		      data : 'email',
+		      title : 'Email',
+		    }, {
+		      data : 'mobile',
+		      title : '手机',
+		    }],
+		    drawCallback: function( settings ) {
+		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
+		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_ACCOUNT);
+		    		if (contains(scope_list, this.data().id)) {
+		    	    this.select();
+		    	  }
+		    	});
+	      }
+		  });
+
+		  account_table.on('select', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = account_table.row(indexes[0]).data(); 
+		  		addScope(currentPermissionGroupId, SCOPE_ACCOUNT, data.id);
+		  	}
+		  });
+		  
+		  account_table.on('deselect', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = account_table.row(indexes[0]).data(); 
+		  		removeScope(currentPermissionGroupId, SCOPE_ACCOUNT, data.id);
+		  	}
+		  });
+		  
+			//Store Scope Table	  
+		  if (store_table) {
+		  	store_table.clear().destroy();
+		  }
+
+		  store_table = $('#store_scope_table').DataTable({
+		  	ordering : true,
+		    serverSide : false,
+		    processing : false,
+		    scrollY: '350px',
+		    select : {
+		      style : 'multi',
+		      selector : 'td'
+		    },
+		    ajax : {
+		      url : /*[[@{|/permission_group/list_of_store|}]]*/'',
+		      dataSrc : function(json) {
+			      for (var i = 0; i < json.length; i++) {
+				      json[i].selected = true;
+				      json[i].select = true;
+			      }
+			      return json;
+		      },
+		    },
+		    order : [ [ 1, 'asc' ] ],
+		    columns : [ {
+		      data : null,
+		      defaultContent : '',
+		      orderable : false,
+		      width: "50px",
+		      className : 'select-checkbox',
+		    }, {
+		      data : 'name',
+		      title : '仓库名称',
+		    }, {
+		      data : 'company_name',
+		      title : '业务实体',
+		    }],
+		    drawCallback: function( settings ) {
+		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
+		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_STORE);
+		    		if (contains(scope_list, this.data().id)) {
+		    	    this.select();
+		    	  }
+		    	});
+	      }
+		  });
+
+		  store_table.on('select', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = store_table.row(indexes[0]).data(); 
+		  		addScope(currentPermissionGroupId, SCOPE_STORE, data.id);
+		  	}
+		  });
+		  
+		  store_table.on('deselect', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = store_table.row(indexes[0]).data(); 
+		  		removeScope(currentPermissionGroupId, SCOPE_STORE, data.id);
+		  	}
+		  });
+		  
+			//Vendor Scope Table	 
+		  if (vendor_table) {
+		  	vendor_table.clear().destroy();
+		  }
+
+		  vendor_table = $('#vendor_scope_table').DataTable({
+		  	ordering : true,
+		    serverSide : false,
+		    processing : false,
+		    scrollY: '350px',
+		    select : {
+		      style : 'multi',
+		      selector : 'td'
+		    },
+		    ajax : {
+		      url : /*[[@{|/permission_group/list_of_vendor|}]]*/'',
+		      dataSrc : function(json) {
+			      for (var i = 0; i < json.length; i++) {
+				      json[i].selected = true;
+				      json[i].select = true;
+			      }
+			      return json;
+		      },
+		    },
+		    order : [ [ 1, 'asc' ] ],
+		    columns : [ {
+		      data : null,
+		      defaultContent : '',
+		      orderable : false,
+		      width: "50px",
+		      className : 'select-checkbox',
+		    }, {
+		      data : 'code',
+		      title : '编号',
+		    }, {
+		      data : 'name',
+		      title : '名称',
+		    }],
+		    drawCallback: function( settings ) {
+		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
+		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_VENDOR);
+		    		if (contains(scope_list, this.data().code)) {
+		    	    this.select();
+		    	  }
+		    	});
+	      }
+		  });
+
+		  vendor_table.on('select', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = vendor_table.row(indexes[0]).data(); 
+		  		addScope(currentPermissionGroupId, SCOPE_VENDOR, data.code);
+		  	}
+		  });
+		  
+		  vendor_table.on('deselect', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = vendor_table.row(indexes[0]).data(); 
+		  		removeScope(currentPermissionGroupId, SCOPE_VENDOR, data.code);
+		  	}
+		  });
+		  
+		  
+			//Inventory Scope Table	 
+		  if (inventory_table) {
+		  	inventory_table.clear().destroy();
+		  }
+
+		  inventory_table = $('#inventory_scope_table').DataTable({
+		  	ordering : true,
+		    serverSide : false,
+		    processing : false,
+		    scrollY: '350px',
+		    select : {
+		      style : 'multi',
+		      selector : 'td'
+		    },
+		    ajax : {
+		      url : /*[[@{|/permission_group/list_of_inventory|}]]*/'',
+		      dataSrc : function(json) {
+			      for (var i = 0; i < json.length; i++) {
+				      json[i].selected = true;
+				      json[i].select = true;
+			      }
+			      return json;
+		      },
+		    },
+		    order : [ [ 1, 'asc' ] ],
+		    columns : [ {
+		      data : null,
+		      defaultContent : '',
+		      orderable : false,
+		      width: "50px",
+		      className : 'select-checkbox',
+		    }, {
+		      data : 'name',
+		      title : '名称',
+		    }],
+		    drawCallback: function( settings ) {
+		    	this.api().rows().every (function (rowIdx, tableLoop, rowLoop) {
+		    		var scope_list = getScopeOf(currentPermissionGroupId, SCOPE_INVENTORY);
+		    		if (contains(scope_list, this.data().code)) {
+		    	    this.select();
+		    	  }
+		    	});
+	      }
+		  });
+		  
+		  inventory_table.on('select', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = inventory_table.row(indexes[0]).data(); 
+		  		addScope(currentPermissionGroupId, SCOPE_INVENTORY, data.code);
+		  	}
+		  });
+		  
+		  inventory_table.on('deselect', function ( e, dt, type, indexes ) {			    
+		  	if ( type === 'row' ) {			  
+		  		var data = inventory_table.row(indexes[0]).data(); 
+		  		removeScope(currentPermissionGroupId, SCOPE_INVENTORY, data.code);
+		  	}
+		  });
+
+		  $('#scope_tabs').tabs();
+
+	  }
+
+  });
+</script>

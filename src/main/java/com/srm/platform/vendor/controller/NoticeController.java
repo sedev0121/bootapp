@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Query;
-import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +39,10 @@ import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
-import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.NoticeReadSearchResult;
 import com.srm.platform.vendor.searchitem.NoticeSearchResult;
-import com.srm.platform.vendor.searchitem.PermissionUnit;
-import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.searchitem.VendorSearchItem;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.UploadFileHelper;
@@ -69,9 +65,6 @@ public class NoticeController extends CommonController {
 
 	@Autowired
 	private VendorRepository vendorRepository;
-	
-	@Autowired
-	private UnitRepository unitRepository;
 
 
 	// 用户管理->列表
@@ -296,9 +289,9 @@ public class NoticeController extends CommonController {
 			if (state == 3) {
 				List<Account> toAccountList = new ArrayList<>();
 				if (notice.getToAllVendor() == 1) {
-					List<String> unitIdList = getAllUnitsOfId(notice.getUnit().getId());
-
-					toAccountList.addAll(accountRepository.findAllVendorsByUnitIdList(unitIdList));
+//					List<String> unitIdList = getAllUnitsOfId(notice.getUnit().getId());
+//
+//					toAccountList.addAll(accountRepository.findAllVendorsByUnitIdList(unitIdList));
 
 				} else {
 					if (notice.getVendorCodeList() != null && !notice.getVendorCodeList().isEmpty()) {
@@ -551,25 +544,10 @@ public class NoticeController extends CommonController {
 	
 	public List<String> getAllUnitsOfId(Long unitId) {
 		String unitList = String.valueOf(unitId);
-		unitList = StringUtils.append(unitList, "," + searchChildren(unitList));
 
 		return Arrays.asList(StringUtils.split(unitList, ","));
 	}
 
-	private String searchChildren(String parentIdList) {
-		String childList = "";
-		List<PermissionUnit> unitList = unitRepository.findChildrenByParentId(StringUtils.split(parentIdList, ","));
-		for (PermissionUnit unit : unitList) {
-			if (unit != null)
-				childList = StringUtils.append(childList, "," + unit.getUnits());
-		}
-
-		if (childList.isEmpty()) {
-			return childList;
-		} else {
-			childList = StringUtils.append(childList, "," + searchChildren(childList));
-			return childList;
-		}
-	}
+	
 
 }

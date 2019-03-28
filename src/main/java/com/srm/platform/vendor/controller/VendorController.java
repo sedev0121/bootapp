@@ -1,6 +1,5 @@
 package com.srm.platform.vendor.controller;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -20,18 +19,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.thymeleaf.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.ProvideClass;
-import com.srm.platform.vendor.model.Unit;
-import com.srm.platform.vendor.model.UnitProvide;
 import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.model.VendorProvide;
 import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorProvideRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.saveform.VendorSaveForm;
@@ -52,9 +46,6 @@ public class VendorController extends CommonController {
 
 	@Autowired
 	private AccountRepository accountRepository;
-
-	@Autowired
-	private UnitRepository unitRepository;
 
 	@Autowired
 	private VendorProvideRepository vendorProvideRepository;
