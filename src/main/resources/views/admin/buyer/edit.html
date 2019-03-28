@@ -4,33 +4,38 @@
 	<div class="container" layout:fragment="content">
 		<ul class="breadcrumb">
 			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
-			<li><a th:href="@{/account}">用户管理</a></li>
+			<li><a th:href="@{/buyer}">采购用户管理</a></li>
 			<li class="active" th:text="${account.id}?'用户详细':'新建用户'"></li>
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right">
-				<a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a> <a class="btn btn-danger" id="del" th:if="${account.id}"><i class="fa fa-remove"></i> 删除</a> <a class="btn btn-default" th:href="@{/account}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+				<a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a> 
+				<a class="btn btn-danger" id="del" th:if="${account.id}"><i class="fa fa-remove"></i> 删除</a> 
+				<a class="btn btn-default" th:href="@{/buyer}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
-		<form id="form" th:action="@{/account/update}" method="post">
+		<form id="form" th:action="@{/buyer/update}" method="post">
 			<input type="hidden" id="id" name="id" th:value="${account.id}"> <input type="hidden" id="role" name="role" th:value="${account.role}">
 			<div class="panel panel-default">
 				<div class="panel-body form-body">
 					<div class="row">
 						<div class="col-md-3 form-group">
-							<label for="account_no">员工编号：</label> <input type="text" id="account_no" name="account_no" class="form-control" th:value="${account.realname}">
+							<label for="realname">姓名：</label> <input type="text" id="realname" name="realname" class="form-control" th:value="${account.realname}">
 						</div>
 						<div class="col-md-3 form-group">
-							<label for="realname">姓名：</label> <input type="text" id="realname" name="realname" class="form-control" th:value="${account.realname}">
+							<label for="company">业务实体： </label> 
+							<select name="company" id="company" class="form-control">
+								<option th:value="${account.company?.id}" th:text="${account.company?.name}" selected="selected"></option>
+							</select>
+						</div>
+						<div class="col-md-3 form-group">
+							<label for="unitname">部门： </label> <input type="text" name="unitname" th:value="${account.unitname}" class="form-control">
 						</div>
 						<div class="col-md-3 form-group">
 							<label for="duty">职位: </label> <input type="text" id="duty" name="duty" th:value="${account.duty}" class="form-control">
 						</div>
 						<div class="col-md-3 form-group">
-							<label for="company">业务实体： </label> <input type="text" id="company" name="company" th:value="${account.duty}" class="form-control">
-						</div>
-						<div class="col-md-3 form-group">
-							<label for="unit">部门： </label> <input type="text" name="unitname" th:value="${account.duty}" class="form-control">
+							<label for="account_no">员工编号：</label> <input type="text" id="account_no" name="account_no" class="form-control" th:value="${account.id}" readonly>
 						</div>
 						<div class="col-md-3 form-group">
 							<label for="mobile">手机:</label> <input type="text" id="mobile" name="mobile" class="form-control" th:value="${account.mobile}">
@@ -42,23 +47,24 @@
 							<label for="email">邮箱:</label> <input type="text" id="email" name="email" class="form-control" th:value="${account.email}">
 						</div>
 					</div>
+					<hr/>
 					<div class="row">
-						<div class="col-md-2 form-group">
+						<div class="col-md-3 form-group">
 							<label for="username">用户名: </label> <input type="text" name="username" id="username" class="form-control" th:value="${account.username}">
 						</div>
-						<div class="col-md-2 form-group">
-							<label for="init_password">初始密码： </label> <input type="text" name="init_password" id="init_password" class="form-control" th:value="${account.username}">
+						<div class="col-md-3 form-group">
+							<label for="init_password">初始密码： </label> <input type="text" class="form-control" th:value="111" readonly>
 						</div>
 						<div class="col-md-2 form-group">
 							<label for="state">状态: </label>
 							<div class="ui toggle checkbox">
-								<input type="checkbox" name="state" value="1" th:checked="${account.state}"> <label>启用 / 停用</label>
+								<input type="checkbox" class="form-control" name="state" value="1" th:checked="${account.state}"> <label>启用 / 停用</label>
 							</div>
 						</div>
-						<div class="col-md-3 form-group">
+						<div class="col-md-2 form-group">
 							<label for="start_date">启用日期: </label> <input type="text" class="form-control" readonly th:value="${#dates.format(account.startDate, 'yyyy-MM-dd')}">
 						</div>
-						<div class="col-md-3 form-group">
+						<div class="col-md-2 form-group">
 							<label for="stop_date">停用日期:</label> <input type="text" class="form-control" readonly th:value="${#dates.format(account.stopDate, 'yyyy-MM-dd')}">
 						</div>
 					</div>
@@ -113,15 +119,15 @@
 </body>
 </html>
 <script th:inline="javascript">
-	var edit_url = /*[[@{/account/}]]*/'';
-  var tree_url = /*[[@{/unit/tree}]]*/'';
-  var checkuser_url = /*[[@{/account/checkuser/}]]*/'';
+	var edit_url = /*[[@{/buyer/}]]*/'';
+  var checkuser_url = /*[[@{/buyer/checkuser/}]]*/'';
   var checkemail_url = /*[[@{/profile/checkemail}]]*/'';
   var checkmobile_url = /*[[@{/profile/checkmobile}]]*/'';
   var checkweixin_url = /*[[@{/profile/checkweixin}]]*/'';
   var perm_search_url = /*[[@{/permission_group/search}]]*/'';
-  var account_url = /*[[@{/account/search/}]]*/'';
   var scope_list = [[${permission_scope}]];
+  
+  var company_search_url = /*[[@{/buyer/company/list}]]*/'';
   
   const SCOPE_COMPANY = 1;
   const SCOPE_ACCOUNT = 2;
@@ -134,6 +140,8 @@
   
   jQuery(document).ready(function() {
 
+  	$("#company").select2(App.getSelect2Options(company_search_url));
+  	
   	var permission_scope_list = JSON.parse(scope_list);
   	
   	var permission_dimensions = {};

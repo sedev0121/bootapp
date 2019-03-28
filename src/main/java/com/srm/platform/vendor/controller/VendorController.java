@@ -1,6 +1,5 @@
 package com.srm.platform.vendor.controller;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -20,18 +19,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.thymeleaf.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.ProvideClass;
-import com.srm.platform.vendor.model.Unit;
-import com.srm.platform.vendor.model.UnitProvide;
 import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.model.VendorProvide;
 import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.UnitRepository;
 import com.srm.platform.vendor.repository.VendorProvideRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.saveform.VendorSaveForm;
@@ -52,9 +46,6 @@ public class VendorController extends CommonController {
 
 	@Autowired
 	private AccountRepository accountRepository;
-
-	@Autowired
-	private UnitRepository unitRepository;
 
 	@Autowired
 	private VendorProvideRepository vendorProvideRepository;
@@ -87,28 +78,9 @@ public class VendorController extends CommonController {
 		if (vendor == null)
 			show404();
 
-		List<ProvideClass> provideClassList = null;
-		
-		if (isAdmin() || hasAuthority("基础资料-新建供应商")) {
-			provideClassList = provideClassRepository.findProvideClassesByVendorCode(code);	
-		} else {
-			provideClassList = provideClassRepository.findProvideClassesByVendorCodeAndUnitId(code, this.getDefaultUnitList());
-		}
-		
-
 		Account account = accountRepository.findOneByUsername(code);
 
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonGroupString = "";
-		try {
-			jsonGroupString = mapper.writeValueAsString(provideClassList);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		model.addAttribute("data", vendor);
-		model.addAttribute("provideClassList", jsonGroupString);
 		model.addAttribute("accountState", account == null ? 2 : account.getState());
 		return "vendor/edit";
 	}
@@ -210,27 +182,9 @@ public class VendorController extends CommonController {
 			account.setState(1);
 			account.setStartDate(new Date());
 			account.setStopDate(null);
-		} else if (vendorSaveForm.getState() == 0) {
-			if (!this.isAdmin()) {
-				List<Unit> otherUnits = unitRepository.findOtherUnitsUsingVendor(this.getLoginAccount().getUnit().getId(), vendor.getCode());
-				if (otherUnits.size() > 0) {
-					jsonResponse.setSuccess(GenericJsonResponse.FAILED);
-					jsonResponse.setErrmsg("供货类别正在被别的组织使用。若要停用，请联系管理员。");
-					return jsonResponse;
-				}
-			}
+		} else if (vendorSaveForm.getState() == 0) {			
 			account.setState(0);
 			account.setStopDate(new Date());	
-		} else {
-			vendorProvideRepository.deleteByVendorCodeAndUnitId(vendorSaveForm.getCode());
-
-			List<Long> provideClassIdList = vendorSaveForm.getProvideclasses();
-			if (provideClassIdList != null) {
-				for (Long id : provideClassIdList) {
-					VendorProvide temp = new VendorProvide(id, vendorSaveForm.getCode(), this.getLoginAccount().getUnit().getId());
-					vendorProvideRepository.save(temp);
-				}
-			}
 		}
 
 		account = accountRepository.save(account);

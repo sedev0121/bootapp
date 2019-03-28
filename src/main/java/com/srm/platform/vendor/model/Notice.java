@@ -49,10 +49,6 @@ public class Notice {
 	private Date createDate;
 
 	@OneToOne(cascade = { CascadeType.REFRESH })
-	@JoinColumn(name = "create_unit", referencedColumnName = "id")
-	private Unit unit;
-
-	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "create_account", referencedColumnName = "id")
 	private Account createAccount;
 
@@ -129,14 +125,6 @@ public class Notice {
 
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
-	}
-
-	public Unit getUnit() {
-		return unit;
-	}
-
-	public void setUnit(Unit unit) {
-		this.unit = unit;
 	}
 
 	public Account getCreateAccount() {

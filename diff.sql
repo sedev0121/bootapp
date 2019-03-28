@@ -82,3 +82,8 @@ INSERT INTO `permission_user_scope` VALUES (163, 18, 5, 1, '1');
 INSERT INTO `permission_user_scope` VALUES (164, 18, 5, 1, '2');
 INSERT INTO `permission_user_scope` VALUES (165, 18, 5, 1, '3');
 INSERT INTO `permission_user_scope` VALUES (166, 18, 7, 1, '1');
+
+
+
+alter table account add column company_id int(11) NULL DEFAULT 1;
+alter table account add column unitname varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;

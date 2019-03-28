@@ -1,17 +1,9 @@
 package com.srm.platform.vendor.utility;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
-
-import org.thymeleaf.util.StringUtils;
-
-import com.srm.platform.vendor.repository.UnitRepository;
 
 public class Utils {
 

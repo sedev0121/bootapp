@@ -17,7 +17,8 @@ public class AccountSaveForm {
 	private String duty;
 	private String vendor;
 	private Integer state;
-
+	private Long company;
+	
 	private List<Map<String, String>> permission_scope_list;
 	private List<Map<String, Long>> permission_group_ids;
 
@@ -131,6 +132,14 @@ public class AccountSaveForm {
 
 	public void setPermission_group_ids(List<Map<String, Long>> permission_group_ids) {
 		this.permission_group_ids = permission_group_ids;
+	}
+
+	public Long getCompany() {
+		return company;
+	}
+
+	public void setCompany(Long company) {
+		this.company = company;
 	}
 
 }

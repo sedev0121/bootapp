@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.NotFound;
@@ -22,19 +23,52 @@ import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
+import com.srm.platform.vendor.searchitem.BuyerSearchResult;
+import com.srm.platform.vendor.searchitem.SellerSearchResult;
 
 @Entity
 
-@SqlResultSetMapping(name = "AccountSearchResult", classes = {
-		@ConstructorResult(targetClass = AccountSearchResult.class, columns = {
-				@ColumnResult(name = "id", type = String.class), @ColumnResult(name = "username", type = String.class),
-				@ColumnResult(name = "realname", type = String.class),
-				@ColumnResult(name = "unitname", type = String.class),
-				@ColumnResult(name = "duty", type = String.class), @ColumnResult(name = "role", type = String.class),
-				@ColumnResult(name = "vendorname", type = String.class),
-				@ColumnResult(name = "email", type = String.class), @ColumnResult(name = "tel", type = String.class),
-				@ColumnResult(name = "mobile", type = String.class),
-				@ColumnResult(name = "state", type = String.class) }) })
+@SqlResultSetMappings({
+	@SqlResultSetMapping(
+		name = "SellerSearchResult", 
+		classes = {
+			@ConstructorResult(
+				targetClass = SellerSearchResult.class, 
+				columns = {
+					@ColumnResult(name = "id", type = String.class), 
+					@ColumnResult(name = "username", type = String.class),
+					@ColumnResult(name = "name", type = String.class),
+					@ColumnResult(name = "abbrname", type = String.class),
+					@ColumnResult(name = "email", type = String.class), 
+					@ColumnResult(name = "phone", type = String.class),
+					@ColumnResult(name = "mobile", type = String.class),
+					@ColumnResult(name = "state", type = String.class) 
+				}
+			) 
+		}
+	),
+	@SqlResultSetMapping(
+		name = "BuyerSearchResult", 
+		classes = {
+			@ConstructorResult(
+				targetClass = BuyerSearchResult.class, 
+				columns = {
+					@ColumnResult(name = "id", type = String.class), 
+					@ColumnResult(name = "username", type = String.class),
+					@ColumnResult(name = "realname", type = String.class),
+					@ColumnResult(name = "unitname", type = String.class),
+					@ColumnResult(name = "duty", type = String.class), 
+					@ColumnResult(name = "role", type = String.class),
+					@ColumnResult(name = "companyname", type = String.class),
+					@ColumnResult(name = "email", type = String.class), 
+					@ColumnResult(name = "tel", type = String.class),
+					@ColumnResult(name = "mobile", type = String.class),
+					@ColumnResult(name = "state", type = String.class) 
+				}
+			) 
+		}
+	)
+})
 
 @Table(name = "account")
 public class Account implements Serializable {
@@ -53,14 +87,15 @@ public class Account implements Serializable {
 	private String role = "ROLE_BUYER";
 	private String realname;
 	private String duty;
-
+	private String unitname;
 	private String address;
 	@Column(name = "entry_time")
 	private Date entryTime;
 
-	@JoinColumn(name = "unit_id")
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "company_id", nullable=true)
 	@ManyToOne()
-	private Unit unit;
+	private Company company;
 
 	@OneToOne()
 	@NotFound(action = NotFoundAction.IGNORE)
@@ -92,14 +127,6 @@ public class Account implements Serializable {
 
 	public void setDuty(String duty) {
 		this.duty = duty;
-	}
-
-	public Unit getUnit() {
-		return unit;
-	}
-
-	public void setUnit(Unit unit) {
-		this.unit = unit;
 	}
 
 	public String getEmail() {
@@ -286,4 +313,20 @@ public class Account implements Serializable {
 		this.stopDate = stopDate;
 	}
 
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
+
+	public String getUnitname() {
+		return unitname;
+	}
+
+	public void setUnitname(String unitname) {
+		this.unitname = unitname;
+	}
+	
 }
