@@ -40,6 +40,7 @@ import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.searchitem.AccountSearchItem;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
+import com.srm.platform.vendor.searchitem.BuyerSearchResult;
 import com.srm.platform.vendor.searchitem.PermissionAccount;
 import com.srm.platform.vendor.searchitem.ScopeAccountItem;
 import com.srm.platform.vendor.searchitem.ScopeCompanyItem;
@@ -50,7 +51,7 @@ import com.srm.platform.vendor.searchitem.SearchItem;
 
 @Controller
 @RequestMapping(path = "/permission_group")
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+@PreAuthorize("hasRole('ROLE_BUYER')")
 public class PermissionController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -265,16 +266,16 @@ public class PermissionController extends CommonController {
 	}
 
 	@GetMapping("/{id}/account/list")
-	public @ResponseBody List<AccountSearchResult> accountList_ajax(@PathVariable("id") String groupId) {
+	public @ResponseBody List<BuyerSearchResult> accountList_ajax(@PathVariable("id") String groupId) {
 
-		String selectQuery = "SELECT t.*, u.name unitname, v.name vendorname FROM account t left join unit u on t.unit_id=u.id "
-				+ "left join vendor v on t.vendor_code=v.code where t.id in (select account_id from permission_group_user where group_id=:groupId) ";
+		String selectQuery = "SELECT t.*, c.name companyname FROM account t left join company c on t.company_id=c.id "
+				+ "where t.id in (select account_id from permission_group_user where group_id=:groupId) ";
 
 		Map<String, Object> params = new HashMap<>();
 
 		params.put("groupId", groupId);
 
-		Query q = em.createNativeQuery(selectQuery, "AccountSearchResult");
+		Query q = em.createNativeQuery(selectQuery, "BuyerSearchResult");
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			q.setParameter(entry.getKey(), entry.getValue());
 		}

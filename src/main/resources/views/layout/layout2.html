@@ -89,28 +89,103 @@
         <!-- BEGIN NAVIGATION -->
         <div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR')">
           <ul>
+            <li class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/inquery')} or ${#strings.startsWith(#request.requestURI,'/quote')}? active : ''" >   
+              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">价格管理</a>
+                
+              <ul class="dropdown-menu">
+                <li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/inquery}" >询价管理</a></li>
+                <li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/quote}">报价管理</a></li>
+                <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/inquery}">报价管理</a></li>
+                <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/quote}">询价管理</a></li>
+              </ul>
+            </li>         
             <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/purchaseorder')} ? active : ''" >
               <a th:href="@{/purchaseorder}">订单管理</a>
             </li>
+            <li sec:authorize="hasRole('ROLE_VENDOR')" class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/ship/index') or #strings.startsWith(#request.requestURI,'/purchaseorder')}? active : ''" >
+              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">订单管理 </a>
+                
+              <ul class="dropdown-menu">
+                <li><a th:href="@{/purchaseorder}">订单确认</a></li>
+                <li><a th:href="@{/ship/index}">订单发货</a></li>
+              </ul>
+            </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/ship/view')} ? active : ''" >
+              <a th:href="@{/ship/view}">出货看板</a>
+            </li>
+            <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/purchasein')} ? active : ''" >
+              <a th:href="@{/purchasein}">出入库单据</a>
+            </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/statement')} ? active : ''" >
+              <a th:href="@{/statement}">对账单管理</a>
+            </li>
             <li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')} or ${#strings.startsWith(#request.requestURI,'/baseprice')}? active : ''" >   
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
+                
               <ul class="dropdown-menu">
                 <li><a th:href="@{/vendor}">供应商管理</a></li>
                 <li><a th:href="@{/inventory}">物料档案表</a></li>
                 <li><a th:href="@{/baseprice}">物料价格查询</a></li>
               </ul>
             </li>
-            <li class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/buyer')} or ${#strings.startsWith(#request.requestURI,'/seller')} or ${#strings.startsWith(#request.requestURI,'/config')} or ${#strings.startsWith(#request.requestURI,'/permission_group')}? active : ''" >   
-              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">系统管理 </a>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/stock')} or
+			${#strings.startsWith(#request.requestURI,'/incoming')} or 
+			${#strings.startsWith(#request.requestURI,'/incoming')} or 
+			${#strings.startsWith(#request.requestURI,'/pricechange')} or 
+			${#strings.startsWith(#request.requestURI,'/orderlist')} ? active : ''" >
+			  <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">报表中心 </a>
+
+			  <ul class="dropdown-menu">
+                <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/stock}">库存报表</a></li>
+                <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/incoming}">来料异常报表 </a></li>
+                <li><a th:href="@{/delivery}">准时交货率报表</a></li>
+				<li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/pricechange}">价格变动报表</a></li>
+                <li><a th:href="@{/orderlist}">订单明细列表</a></li>
+              </ul>
+            </li>
+            <li class="dropdown" th:classappend="(${#strings.startsWith(#request.requestURI,'/notice')} or ${#strings.startsWith(#request.requestURI,'/message')} or ${#strings.startsWith(#request.requestURI,'/alert')})? active : ''" >   
+              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">公告通知 </a>
+                
               <ul class="dropdown-menu">
-                <li><a th:href="@{/buyer}">采购员用户管理</a></li>
-                <li><a th:href="@{/seller}">供应商用户管理</a></li>
-                <li><a th:href="@{/permission_group}">权限管理</a></li>
-                <li><a th:href="@{/config}">系统配置</a></li>
+                <li><a th:href="@{/notice}">公告通知</a></li>
+                <li><a th:href="@{/message}">系统消息</a></li>
+                <li><a th:href="@{/alert}">预警信息</a></li>
               </ul>
             </li>
           </ul>
-        </div>        
+        </div>
+        
+        <!-- BEGIN NAVIGATION -->
+        <div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_ADMIN')">
+          <ul>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/account')} ? active : ''" >
+              <a th:href="@{/account}">用户管理</a>
+            </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/permission_group')} ? active : ''" >
+              <a th:href="@{/permission_group}">权限组管理</a>
+            </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/unit')} ? active : ''" >
+              <a th:href="@{/unit}">组织架构管理</a>
+            </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/vendor')} ? active : ''" >
+              <a th:href="@{/vendor}">供应商管理</a>
+            </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/provideclass')} ? active : ''" >
+              <a th:href="@{/provideclass}">供货类别</a>
+            </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/notice')} ? active : ''" >
+              <a th:href="@{/notice}">公告通知</a>
+            </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/system')} ? active : ''" >
+              <a th:href="@{/system}">系统状态</a>
+            </li>
+            <li th:classappend="${#strings.startsWith(#request.requestURI,'/config')} ? active : ''" >
+              <a th:href="@{/config}">系统配置</a>
+            </li>
+          </ul>
+        </div>
+
+        
         <input type="hidden" id="timepicker"/>
         <!-- END NAVIGATION -->
       </div>
