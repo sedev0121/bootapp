@@ -9,13 +9,38 @@
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right">
-				<a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a> <a class="btn btn-danger" id="del" th:if="${account.id}"><i class="fa fa-remove"></i> 删除</a> <a class="btn btn-default" th:href="@{/account}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+				<a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a> 
+				<a class="btn btn-danger" id="del" th:if="${account.id}"><i class="fa fa-remove"></i> 删除</a> 
+				<a class="btn btn-default" th:href="@{/seller}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
 		<form id="form" th:action="@{/seller/update}" method="post">
-			<input type="hidden" id="id" name="id" th:value="${account.id}"> <input type="hidden" id="role" name="role" th:value="${account.role}">
+			<input type="hidden" id="id" name="id" th:value="${account.id}"> 
+			<input type="hidden" id="vendor" name="vendor" th:value="${account.vendor?.code}"> 
+			
 			<div class="panel panel-default">
 				<div class="panel-body form-body">
+					<div class="row">
+						<div class="col-md-3 form-group">
+							<label for="username">用户名: </label> <input type="text" name="username" id="username" class="form-control" th:value="${account.username}" readonly>
+						</div>
+						<div class="col-md-3 form-group">
+							<label for="init_password">初始密码： </label> <input type="text" class="form-control" th:value="111" readonly>
+						</div>
+						<div class="col-md-2 form-group">
+							<label for="state">状态: </label>
+							<div class="ui toggle checkbox">
+								<input type="checkbox" class="form-control" name="state" value="1" th:checked="${account.state}"> <label>启用 / 停用</label>
+							</div>
+						</div>
+						<div class="col-md-2 form-group">
+							<label for="start_date">启用日期: </label> <input type="text" class="form-control" readonly th:value="${#dates.format(account.startDate, 'yyyy-MM-dd')}">
+						</div>
+						<div class="col-md-2 form-group">
+							<label for="stop_date">停用日期:</label> <input type="text" class="form-control" readonly th:value="${#dates.format(account.stopDate, 'yyyy-MM-dd')}">
+						</div>
+					</div>
+					<hr />
 					<div class="row">
 						<div class="col-md-3">
 							<label>供应商编码: </label> <input type="text" name="code" id="vendor_code" class="form-control select-vendor" readonly th:value="${account.vendor.code}" />
@@ -26,7 +51,6 @@
 						<div class="col-md-3">
 							<label>供应商简称: </label> <input type="text" id="vendor_abbrname" class="form-control" readonly th:value="${account.vendor.abbrname}" />
 						</div>
-
 						<div class="col-md-3">
 							<label>所属地区: </label> <input type="text" id="vendor_abbrname" class="form-control" readonly th:value="${account.vendor.abbrname}" />
 						</div>
@@ -83,7 +107,7 @@
 						</div>
 						<div class="col-md-3">
 							<label>呼机: </label> <input type="text" id="vendor_abbrname" class="form-control" readonly th:value="${account.vendor.abbrname}" />
-						</div>						
+						</div>
 						<div class="col-md-3">
 							<label>邮政编码: </label> <input type="text" id="vendor_abbrname" class="form-control" readonly th:value="${account.vendor.abbrname}" />
 						</div>
@@ -121,34 +145,13 @@
 							<label>变更日期: </label> <input type="text" id="vendor_timestamp" class="form-control" readonly th:value="${account.vendor.timestamp}" />
 						</div>
 					</div>
-					<hr />
-					<div class="row">
-						<div class="col-md-3 form-group">
-							<label for="username">用户名: </label> <input type="text" name="username" id="username" class="form-control" th:value="${account.username}" readonly>
-						</div>
-						<div class="col-md-3 form-group">
-							<label for="init_password">初始密码： </label> <input type="text" class="form-control" th:value="111" readonly>
-						</div>
-						<div class="col-md-2 form-group">
-							<label for="state">状态: </label>
-							<div class="ui toggle checkbox">
-								<input type="checkbox" class="form-control" name="state" value="1" th:checked="${account.state}"> <label>启用 / 停用</label>
-							</div>
-						</div>
-						<div class="col-md-2 form-group">
-							<label for="start_date">启用日期: </label> <input type="text" class="form-control" readonly th:value="${#dates.format(account.startDate, 'yyyy-MM-dd')}">
-						</div>
-						<div class="col-md-2 form-group">
-							<label for="stop_date">停用日期:</label> <input type="text" class="form-control" readonly th:value="${#dates.format(account.stopDate, 'yyyy-MM-dd')}">
-						</div>
-					</div>
 				</div>
 			</div>
 		</form>
 </body>
 </html>
 <script th:inline="javascript">
-	var edit_url = /*[[@{/account/}]]*/'';
+	var edit_url = /*[[@{/seller/}]]*/'';
 
   var table;
 
@@ -157,10 +160,6 @@
 
 	  $("#save").click(function() {
 		  jQuery(form).ajaxSubmit({
-		    data : {
-		      permission_group_ids : selectedGroupIds,
-		      permission_scope_list : permission_scope_list,
-		    },
 		    beforeSend : function() {
 			    App.blockUI();
 		    },

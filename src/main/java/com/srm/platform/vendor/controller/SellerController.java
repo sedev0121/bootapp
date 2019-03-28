@@ -86,7 +86,7 @@ public class SellerController extends AccountController {
 		Map<String, Object> params = new HashMap<>();
 
 		if (!search.trim().isEmpty()) {
-			bodyQuery += " and (v.name LIKE CONCAT('%',:search, '%') or v.abbrname LIKE CONCAT('%',:search, '%') or t.username LIKE CONCAT('%',:search, '%') or v.email LIKE CONCAT('%',:search, '%')) ";
+			bodyQuery += " and (v.name LIKE CONCAT('%',:search, '%') or v.phone LIKE CONCAT('%',:search, '%') or v.mobile LIKE CONCAT('%',:search, '%') or v.abbrname LIKE CONCAT('%',:search, '%') or t.username LIKE CONCAT('%',:search, '%') or v.email LIKE CONCAT('%',:search, '%')) ";
 			params.put("search", search.trim());
 		}
 
@@ -169,23 +169,15 @@ public class SellerController extends AccountController {
 		Account account = new Account();
 		if (accountSaveForm.getId() != null) {
 			account = accountRepository.findOneById(accountSaveForm.getId());
-
 		}
 
 		account.setUsername(accountSaveForm.getUsername());
-		account.setRealname(accountSaveForm.getRealname());
-		account.setUnitname(accountSaveForm.getUnitname());
-		account.setMobile(accountSaveForm.getMobile());
-		account.setTel(accountSaveForm.getTel());
-		account.setEmail(accountSaveForm.getEmail());
-		account.setRole(accountSaveForm.getRole());
-		account.setDuty(accountSaveForm.getDuty());
-		account.setCompany(companyRepository.findOneById(accountSaveForm.getCompany()));
 
 		boolean isDuplicatedVendor = false;
 		List<Account> accountsHavingVendorCode = accountRepository.findAccountsByVendor(accountSaveForm.getVendor());
 		for (Account vendorAccount : accountsHavingVendorCode) {
 			if (vendorAccount.getId() != accountSaveForm.getId()) {
+				logger.info(String.format("%d = %d", vendorAccount.getId(), accountSaveForm.getId()));
 				isDuplicatedVendor = true;
 				break;
 			}
@@ -207,43 +199,11 @@ public class SellerController extends AccountController {
 			account.setStopDate(new Date());
 		}
 
-		if (accountSaveForm.getVendor() != null && !accountSaveForm.getVendor().isEmpty()) {
-			Vendor newVendor = vendorRepository.findOneByCode(accountSaveForm.getVendor());
-			vendorRepository.save(newVendor);
-			account.setVendor(newVendor);
-		} else {
-			account.setVendor(null);
-		}
+		Vendor newVendor = vendorRepository.findOneByCode(accountSaveForm.getVendor());
+		account.setVendor(newVendor);
 		account = accountRepository.save(account);
 
 		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, account);
-
-		permissionGroupUserRepository.deleteByAccountId(account.getId());
-		permissionUserScopeRepository.deleteByAccountId(account.getId());
-		
-		if ("ROLE_BUYER".equals(account.getRole())) {
-			List<Map<String, Long>> permissionGroupIdList = accountSaveForm.getPermission_group_ids();
-			if (permissionGroupIdList != null) {
-				for (Map<String, Long> group : permissionGroupIdList) {
-					PermissionGroupUser temp = new PermissionGroupUser();
-					temp.setAccountId(account.getId());
-					temp.setGroupId(group.get("group_id"));
-					permissionGroupUserRepository.save(temp);
-				}
-			}
-			
-			List<Map<String, String>> permissionScopeList = accountSaveForm.getPermission_scope_list();
-			if (permissionScopeList != null) {
-				for (Map<String, String> scope : permissionScopeList) {
-					PermissionUserScope temp = new PermissionUserScope();
-					temp.setAccountId(account.getId());
-					temp.setGroupId(Long.valueOf(scope.get("group_id")));
-					temp.setDimensionId(Long.valueOf(scope.get("dimension_id")));
-					temp.setTargetId(scope.get("target_id"));
-					permissionUserScopeRepository.save(temp);
-				}
-			}
-		}
 
 		return jsonResponse;
 	}	
