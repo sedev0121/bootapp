@@ -96,8 +96,7 @@
               <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
               <ul class="dropdown-menu">
                 <li><a th:href="@{/vendor}">供应商管理</a></li>
-                <li><a th:href="@{/inventory}">物料档案表</a></li>
-                <li><a th:href="@{/baseprice}">物料价格查询</a></li>
+                <li><a th:href="@{/inventory}">物料档案表</a></li>                
               </ul>
             </li>
             <li class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/buyer')} or ${#strings.startsWith(#request.requestURI,'/seller')} or ${#strings.startsWith(#request.requestURI,'/config')} or ${#strings.startsWith(#request.requestURI,'/permission_group')}? active : ''" >   

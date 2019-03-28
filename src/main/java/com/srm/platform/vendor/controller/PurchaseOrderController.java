@@ -141,18 +141,18 @@ public class PurchaseOrderController extends CommonController {
 			bodyQuery += " and a.srmstate>0 ";
 
 		} else {
-			List<String> vendorList = this.getVendorListOfUser();
-			
-			if (vendorList.size() == 0) {
-				return new PageImpl<PurchaseOrderSearchResult>(new ArrayList(), request, 0);
-			}
-			
-			bodyQuery += " and b.code in :vendorList";
-			params.put("vendorList", vendorList);
-			if (!vendorStr.trim().isEmpty()) {
-				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
-				params.put("vendor", vendorStr.trim());
-			}
+//			List<String> vendorList = this.getVendorListOfUser();
+//			
+//			if (vendorList.size() == 0) {
+//				return new PageImpl<PurchaseOrderSearchResult>(new ArrayList(), request, 0);
+//			}
+//			
+//			bodyQuery += " and b.code in :vendorList";
+//			params.put("vendorList", vendorList);
+//			if (!vendorStr.trim().isEmpty()) {
+//				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
+//				params.put("vendor", vendorStr.trim());
+//			}
 		}
 
 		if (!code.trim().isEmpty()) {

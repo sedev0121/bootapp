@@ -25,7 +25,6 @@ import com.srm.platform.vendor.searchitem.InventorySearchItem;
 //商品档案表
 @Controller
 @RequestMapping(path = "/inventory")
-@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('基础资料-物料档案')")
 public class InventoryController extends CommonController {
 
 	@PersistenceContext
