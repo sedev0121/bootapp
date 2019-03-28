@@ -130,15 +130,18 @@ public class AccountService implements UserDetailsService {
 
 	private List<GrantedAuthority> createAuthorities(Account account) {
 
-		if (account.getUnit() != null) {
-			String myUnitList = String.valueOf(account.getUnit().getId());
-			myUnitList = StringUtils.append(myUnitList, "," + searchChildren(myUnitList));
+//		if (account.getUnit() != null) {
+//			String myUnitList = String.valueOf(account.getUnit().getId());
+//			myUnitList = StringUtils.append(myUnitList, "," + searchChildren(myUnitList));
+//
+//			httpSession.setAttribute(Constants.KEY_DEFAULT_UNIT_LIST, myUnitList);			
+//		}else {
+//			httpSession.setAttribute(Constants.KEY_DEFAULT_UNIT_LIST, "");
+//		}
 
-			httpSession.setAttribute(Constants.KEY_DEFAULT_UNIT_LIST, myUnitList);			
-		}else {
-			httpSession.setAttribute(Constants.KEY_DEFAULT_UNIT_LIST, "");
-		}
-
+		httpSession.setAttribute(Constants.KEY_DEFAULT_UNIT_LIST, "");
+		
+		
 		List<PermissionItem> permissions = permissionGroupRepository.findPermissionForAccount(account.getId());
 		List<GrantedAuthority> authorities = new ArrayList<>();
 		authorities.add(new SimpleGrantedAuthority(account.getRole()));

@@ -36,6 +36,7 @@ import com.srm.platform.vendor.model.PermissionGroupUser;
 import com.srm.platform.vendor.model.PermissionUserScope;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.CompanyRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.repository.PermissionUserScopeRepository;
@@ -45,8 +46,8 @@ import com.srm.platform.vendor.saveform.AccountSaveForm;
 import com.srm.platform.vendor.searchitem.AccountSearchItem;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.PermissionScopeOfAccount;
+import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
-import com.srm.platform.vendor.utility.PermissionScopeRecord;
 
 @Controller
 @RequestMapping(path = "/account")
@@ -68,6 +69,9 @@ public class AccountController extends CommonController {
 	
 	@Autowired
 	private VendorRepository vendorRepository;
+	
+	@Autowired
+	private CompanyRepository companyRepository;
 
 	@Autowired
 	private UnitRepository unitRepository;
@@ -173,12 +177,6 @@ public class AccountController extends CommonController {
 				groupList.add(item);
 		}
 
-		AccountSearchItem vendorUnitResult = accountRepository.findOneVendorById(id);
-		String unitname = "";
-		if (vendorUnitResult != null) {
-			unitname = vendorUnitResult.getUnitname();			
-		}
-		
 		List<PermissionScopeOfAccount> scopeList = this.permissionGroupRepository.findScopeListOfAccount(id);
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonScopeListString = "";
@@ -190,7 +188,6 @@ public class AccountController extends CommonController {
 		}
 		
 		model.addAttribute("account", account);
-		model.addAttribute("unitname", unitname);
 		model.addAttribute("permission_scope", jsonScopeListString);
 		return "admin/account/edit";
 	}
@@ -224,12 +221,13 @@ public class AccountController extends CommonController {
 
 		account.setUsername(accountSaveForm.getUsername());
 		account.setRealname(accountSaveForm.getRealname());
+		account.setUnitname(accountSaveForm.getUnitname());
 		account.setMobile(accountSaveForm.getMobile());
 		account.setTel(accountSaveForm.getTel());
 		account.setEmail(accountSaveForm.getEmail());
 		account.setRole(accountSaveForm.getRole());
 		account.setDuty(accountSaveForm.getDuty());
-		account.setUnit(unitRepository.findOneById(accountSaveForm.getUnit()));
+		account.setCompany(companyRepository.findOneById(accountSaveForm.getCompany()));
 
 		boolean isDuplicatedVendor = false;
 		List<Account> accountsHavingVendorCode = accountRepository.findAccountsByVendor(accountSaveForm.getVendor());
@@ -305,6 +303,14 @@ public class AccountController extends CommonController {
 		return accountRepository.findForAutoComplete(keyword, request);
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/company/list", produces = "application/json")
+	public Page<SearchItem> company_list(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
+		return companyRepository.findForSelect(request);
+
+	}
+	
 	// 用户修改
 	@Transactional
 	@GetMapping("/checkuser")

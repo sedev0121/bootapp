@@ -18,19 +18,22 @@
 				<div class="panel-body form-body">
 					<div class="row">
 						<div class="col-md-3 form-group">
-							<label for="account_no">员工编号：</label> <input type="text" id="account_no" name="account_no" class="form-control" th:value="${account.realname}">
+							<label for="realname">姓名：</label> <input type="text" id="realname" name="realname" class="form-control" th:value="${account.realname}">
 						</div>
 						<div class="col-md-3 form-group">
-							<label for="realname">姓名：</label> <input type="text" id="realname" name="realname" class="form-control" th:value="${account.realname}">
+							<label for="company">业务实体： </label> 
+							<select name="company" id="company" class="form-control">
+								<option th:value="${account.company?.id}" th:text="${account.company?.name}" selected="selected"></option>
+							</select>
+						</div>
+						<div class="col-md-3 form-group">
+							<label for="unitname">部门： </label> <input type="text" name="unitname" th:value="${account.unitname}" class="form-control">
 						</div>
 						<div class="col-md-3 form-group">
 							<label for="duty">职位: </label> <input type="text" id="duty" name="duty" th:value="${account.duty}" class="form-control">
 						</div>
 						<div class="col-md-3 form-group">
-							<label for="company">业务实体： </label> <input type="text" id="company" name="company" th:value="${account.duty}" class="form-control">
-						</div>
-						<div class="col-md-3 form-group">
-							<label for="unit">部门： </label> <input type="text" name="unitname" th:value="${account.duty}" class="form-control">
+							<label for="account_no">员工编号：</label> <input type="text" id="account_no" name="account_no" class="form-control" th:value="${account.id}" readonly>
 						</div>
 						<div class="col-md-3 form-group">
 							<label for="mobile">手机:</label> <input type="text" id="mobile" name="mobile" class="form-control" th:value="${account.mobile}">
@@ -42,23 +45,24 @@
 							<label for="email">邮箱:</label> <input type="text" id="email" name="email" class="form-control" th:value="${account.email}">
 						</div>
 					</div>
+					<hr/>
 					<div class="row">
-						<div class="col-md-2 form-group">
+						<div class="col-md-3 form-group">
 							<label for="username">用户名: </label> <input type="text" name="username" id="username" class="form-control" th:value="${account.username}">
 						</div>
-						<div class="col-md-2 form-group">
-							<label for="init_password">初始密码： </label> <input type="text" name="init_password" id="init_password" class="form-control" th:value="${account.username}">
+						<div class="col-md-3 form-group">
+							<label for="init_password">初始密码： </label> <input type="text" class="form-control" th:value="111" readonly>
 						</div>
 						<div class="col-md-2 form-group">
 							<label for="state">状态: </label>
 							<div class="ui toggle checkbox">
-								<input type="checkbox" name="state" value="1" th:checked="${account.state}"> <label>启用 / 停用</label>
+								<input type="checkbox" class="form-control" name="state" value="1" th:checked="${account.state}"> <label>启用 / 停用</label>
 							</div>
 						</div>
-						<div class="col-md-3 form-group">
+						<div class="col-md-2 form-group">
 							<label for="start_date">启用日期: </label> <input type="text" class="form-control" readonly th:value="${#dates.format(account.startDate, 'yyyy-MM-dd')}">
 						</div>
-						<div class="col-md-3 form-group">
+						<div class="col-md-2 form-group">
 							<label for="stop_date">停用日期:</label> <input type="text" class="form-control" readonly th:value="${#dates.format(account.stopDate, 'yyyy-MM-dd')}">
 						</div>
 					</div>
@@ -123,6 +127,8 @@
   var account_url = /*[[@{/account/search/}]]*/'';
   var scope_list = [[${permission_scope}]];
   
+  var company_search_url = /*[[@{/account/company/list}]]*/'';
+  
   const SCOPE_COMPANY = 1;
   const SCOPE_ACCOUNT = 2;
   const SCOPE_STORE = 3;
@@ -134,6 +140,8 @@
   
   jQuery(document).ready(function() {
 
+  	$("#company").select2(App.getSelect2Options(company_search_url));
+  	
   	var permission_scope_list = JSON.parse(scope_list);
   	
   	var permission_dimensions = {};

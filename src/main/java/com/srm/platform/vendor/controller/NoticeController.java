@@ -192,7 +192,6 @@ public class NoticeController extends CommonController {
 	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('公告通知-新建')")
 	public String add(Model model) {
 		Notice notice = new Notice();
-		notice.setUnit(this.getLoginAccount().getUnit());
 		notice.setCreateAccount(this.getLoginAccount());
 		model.addAttribute("notice", notice);
 		model.addAttribute("vendorList", "");
@@ -266,7 +265,6 @@ public class NoticeController extends CommonController {
 				notice.setAttachOriginalName(origianlFileName);
 			}
 
-			notice.setUnit(this.getLoginAccount().getUnit());
 			notice.setCreateAccount(this.getLoginAccount());
 			if (to_all_vendor != null) {
 				notice.setToAllVendor(1);
@@ -537,7 +535,7 @@ public class NoticeController extends CommonController {
 
 		boolean isVisible = false;
 
-		if (isAuthorizedUnit(notice.getCreateAccount().getUnit().getId()) && this.hasAuthority("公告通知-发布")) {
+		if (this.hasAuthority("公告通知-发布")) {
 			isVisible = true;
 		} else if (notice.getCreateAccount().getId() == this.getLoginAccount().getId()) {
 			isVisible = true;

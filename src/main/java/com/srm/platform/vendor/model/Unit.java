@@ -34,10 +34,6 @@ public class Unit implements Serializable {
 	private Long parentId;
 
 	
-	@JsonIgnore
-	@OneToMany(mappedBy = "unit", fetch = FetchType.LAZY)
-	private List<Account> accounts;
-
 	public Long getParentId() {
 		return parentId;
 	}
@@ -52,14 +48,6 @@ public class Unit implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public List<Account> getAccounts() {
-		return accounts;
-	}
-
-	public void setAccounts(List<Account> accounts) {
-		this.accounts = accounts;
 	}
 
 	public String getName() {

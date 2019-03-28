@@ -53,14 +53,14 @@ public class Account implements Serializable {
 	private String role = "ROLE_BUYER";
 	private String realname;
 	private String duty;
-
+	private String unitname;
 	private String address;
 	@Column(name = "entry_time")
 	private Date entryTime;
 
-	@JoinColumn(name = "unit_id")
+	@JoinColumn(name = "company_id")
 	@ManyToOne()
-	private Unit unit;
+	private Company company;
 
 	@OneToOne()
 	@NotFound(action = NotFoundAction.IGNORE)
@@ -92,14 +92,6 @@ public class Account implements Serializable {
 
 	public void setDuty(String duty) {
 		this.duty = duty;
-	}
-
-	public Unit getUnit() {
-		return unit;
-	}
-
-	public void setUnit(Unit unit) {
-		this.unit = unit;
 	}
 
 	public String getEmail() {
@@ -286,4 +278,20 @@ public class Account implements Serializable {
 		this.stopDate = stopDate;
 	}
 
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
+
+	public String getUnitname() {
+		return unitname;
+	}
+
+	public void setUnitname(String unitname) {
+		this.unitname = unitname;
+	}
+	
 }

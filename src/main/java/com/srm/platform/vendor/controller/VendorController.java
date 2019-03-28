@@ -210,27 +210,9 @@ public class VendorController extends CommonController {
 			account.setState(1);
 			account.setStartDate(new Date());
 			account.setStopDate(null);
-		} else if (vendorSaveForm.getState() == 0) {
-			if (!this.isAdmin()) {
-				List<Unit> otherUnits = unitRepository.findOtherUnitsUsingVendor(this.getLoginAccount().getUnit().getId(), vendor.getCode());
-				if (otherUnits.size() > 0) {
-					jsonResponse.setSuccess(GenericJsonResponse.FAILED);
-					jsonResponse.setErrmsg("供货类别正在被别的组织使用。若要停用，请联系管理员。");
-					return jsonResponse;
-				}
-			}
+		} else if (vendorSaveForm.getState() == 0) {			
 			account.setState(0);
 			account.setStopDate(new Date());	
-		} else {
-			vendorProvideRepository.deleteByVendorCodeAndUnitId(vendorSaveForm.getCode());
-
-			List<Long> provideClassIdList = vendorSaveForm.getProvideclasses();
-			if (provideClassIdList != null) {
-				for (Long id : provideClassIdList) {
-					VendorProvide temp = new VendorProvide(id, vendorSaveForm.getCode(), this.getLoginAccount().getUnit().getId());
-					vendorProvideRepository.save(temp);
-				}
-			}
 		}
 
 		account = accountRepository.save(account);
