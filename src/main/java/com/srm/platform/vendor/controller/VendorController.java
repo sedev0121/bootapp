@@ -31,15 +31,17 @@ import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.saveform.VendorSaveForm;
 import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.searchitem.VendorSearchItem;
+import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 
 // 供应商管理
 @Controller
 @RequestMapping(path = "/vendor")
-@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('基础资料-供应商档案')")
+@PreAuthorize("hasAuthority('供应商管理-查看列表')")
 public class VendorController extends CommonController {
 
 	private static String DEFAULT_PASSWORD = "111";
+	private static Long LIST_FUNCTION_ACTION_ID = 27L;
 
 	@Autowired
 	private VendorRepository vendorRepository;
@@ -59,66 +61,45 @@ public class VendorController extends CommonController {
 		return "vendor/index";
 	}
 
-	
-	// 详细
-	@PreAuthorize("hasAuthority('基础资料-新建供应商') or hasRole('ROLE_ADMIN')")
-	@GetMapping("/add")
-	public String add(Model model) {
-		Vendor vendor = new Vendor();
-		model.addAttribute("data", vendor);
-		model.addAttribute("provideClassList", "[]");
-		model.addAttribute("accountState", "2");
-		return "vendor/edit";
-	}
-
-	// 详细
+	// 修改
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
 		Vendor vendor = vendorRepository.findOneByCode(code);
 		if (vendor == null)
 			show404();
 
-		Account account = accountRepository.findOneByUsername(code);
-
+		checkPermission(code, LIST_FUNCTION_ACTION_ID);
+		
 		model.addAttribute("data", vendor);
-		model.addAttribute("accountState", account == null ? 2 : account.getState());
 		return "vendor/edit";
 	}
 
+
 	// 查询列表API
-	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<VendorSearchItem> list_ajax(@RequestParam Map<String, String> requestParams) {
+		AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+		List<String> allowedVendorCodeList = accountPermission.getVendorList();
+		
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
 
-		List<String> unitList = this.getDefaultUnitList();
-
 		if (order.equals("unitname")) {
 			order = "b.name";
-//		} else if (order.equals("provide_name")) {
-//			order = "group_concat(concat(p.name, '(', p.code, ')'), ' ')";
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
 		Page<VendorSearchItem> result = null;
-		if (isAdmin()) {
-			result = vendorRepository.findBySearchTerm(search, request);
-		} else if (hasAuthority("基础资料-新建供应商")) {
-			result = vendorRepository.findBySearchTermForAdmin(search, request);
-		} else {
-			result = vendorRepository.findBySearchTerm(search, unitList, request);
-		}
+		result = vendorRepository.findBySearchTerm(search, allowedVendorCodeList, request);
 		return result;
 	}
 
 	// 查询列表API
-	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/listall", produces = "application/json")
 	public @ResponseBody Page<VendorSearchItem> list_all_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
@@ -140,56 +121,19 @@ public class VendorController extends CommonController {
 		return result;
 	}
 
-	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR') or hasRole('ROLE_ADMIN')")
 	@ResponseBody
 	@RequestMapping(value = "/search", produces = "application/json")
 	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
-
-		if (isAdmin()) {
-			return vendorRepository.findVendorNotCreatAccount(search, request);
-		} else {
-			List<String> unitList = this.getDefaultUnitList();
-			return vendorRepository.findForSelect(unitList, search, request);
-		}
-
+		return vendorRepository.findVendorNotCreatAccount(search, request);
 	}
-
-	// 修改
-	@Transactional
-	@PostMapping("/update")
-	public @ResponseBody GenericJsonResponse<Vendor> update_ajax(VendorSaveForm vendorSaveForm) {
-		Vendor vendor = vendorRepository.findOneByCode(vendorSaveForm.getCode());
-		Account account = accountRepository.findOneByUsername(vendor.getCode());
-
-		GenericJsonResponse<Vendor> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
-				vendor);
-		
-		if (account == null) {
-			account = new Account();
-			account.setUsername(vendor.getCode());
-			account.setRealname(vendor.getAbbrname());
-			account.setMobile(vendor.getMobile());
-			account.setAddress(vendor.getAddress());
-			account.setEmail(vendor.getEmail());
-			account.setRole("ROLE_VENDOR");
-			account.setVendor(vendor);
-			account.setDuty("供应商");
-			account.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
+	
+	private void checkPermission(String vendorCode, Long functionActionId) {
+		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
+		boolean result = accountPermission.checkVendorPermission(vendorCode);
+		if (!result) {
+			show403();
 		}
-
-		if (vendorSaveForm.getState() == 1) {
-			account.setState(1);
-			account.setStartDate(new Date());
-			account.setStopDate(null);
-		} else if (vendorSaveForm.getState() == 0) {			
-			account.setState(0);
-			account.setStopDate(new Date());	
-		}
-
-		account = accountRepository.save(account);
-
-		return jsonResponse;
 	}
 
 }

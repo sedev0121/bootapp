@@ -45,14 +45,17 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PriceRepository;
 import com.srm.platform.vendor.repository.ProvideClassRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.searchitem.DimensionTargetItem;
 import com.srm.platform.vendor.service.SessionCounter;
 import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.u8api.AppProperties;
+import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.U8VenpriceadjustPostData;
@@ -112,6 +115,9 @@ public class CommonController {
 	@Autowired
 	public ProvideClassRepository provideClassRepository;
 
+	@Autowired
+	public PermissionGroupRepository permissionGroupRepository;
+	
 	protected int currentPage;
 	protected int maxResults;
 	protected int pageSize;
@@ -134,16 +140,12 @@ public class CommonController {
 		throw new AccessDeniedException("access denied");
 	}
 
-	public void checkVendor(Vendor vendor) {
-		List<String> unitList = getDefaultUnitList();
-		List<ProvideClass> provideClassListOfUnits = provideClassRepository.findVendorProvideClassesForUnits(vendor.getCode(), unitList);
-		
-		if ((isVendor() && !vendor.getCode().equals(this.getLoginAccount().getVendor().getCode())) || 
-				(!isVendor() && provideClassListOfUnits.size() == 0)) {
-			show403();
-		}
+	public AccountPermission getPermissionScopeOfFunction(Long functionActionId) {
+		List<DimensionTargetItem> scopeList = permissionGroupRepository.findPermissionScopeOf(this.getLoginAccount().getId(), functionActionId);
+		AccountPermission accountPermission = new AccountPermission(this.getLoginAccount().getId(), functionActionId, scopeList);
+		return accountPermission;
 	}
-
+	
 	public boolean hasAuthority(String authority) {
 		Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication()
 				.getAuthorities();
@@ -166,36 +168,6 @@ public class CommonController {
 		List<String> result = Arrays.asList(StringUtils.split(value, ","));
 		return result;
 
-	}
-
-	public List<String> getDefaultUnitList() {
-		String defaultUnitList = (String) httpSession.getAttribute(Constants.KEY_DEFAULT_UNIT_LIST);
-		List<String> result = Arrays.asList(StringUtils.split(defaultUnitList, ","));
-		return result;
-
-	}
-	
-	public List<String> getVendorListOfUser() {
-		List<String> unitList = this.getDefaultUnitList();
-		List<Vendor> vendorList = vendorRepository.findVendorsByUnitIdList(unitList);
-		
-		List<String> vendorCodeList = new ArrayList<String>();
-		for (Vendor vendor : vendorList) {
-			vendorCodeList.add(vendor.getCode());
-		}
-		
-		return vendorCodeList;
-	}
-	
-	
-
-	public boolean isAuthorizedUnit(Long unitId) {
-		for (String unitIdStr : getDefaultUnitList()) {
-			if (Long.valueOf(unitIdStr) == unitId) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public boolean isVisibleNotice(Long noticeId) {
