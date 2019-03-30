@@ -2,20 +2,10 @@ package com.srm.platform.vendor.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "vendor")
@@ -27,33 +17,20 @@ public class Vendor implements Serializable {
 
 	private String name;
 	private String abbrname;
-
-	@Column(name = "sort_code")
 	private String sortCode;
 	private String industry;
 	private String address;
 	private String phone;
-
-	@Column(name = "bank_open")
 	private String bankOpen;
-
-	@Column(name = "bank_acc_number")
 	private String bankAccNumber;
 	private String fax;
 	private String email;
 
-	
-	public Vendor() {
-
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
+	private String contact;
+	private String mobile;
+	private String receiveSite;
+	private Date endDate;
+	private String memo;
 
 	public String getCode() {
 		return code;
@@ -79,7 +56,6 @@ public class Vendor implements Serializable {
 		this.abbrname = abbrname;
 	}
 
-	@JsonProperty("sort_code")
 	public String getSortCode() {
 		return sortCode;
 	}
@@ -104,7 +80,14 @@ public class Vendor implements Serializable {
 		this.address = address;
 	}
 
-	@JsonProperty("bank_open")
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
 	public String getBankOpen() {
 		return bankOpen;
 	}
@@ -113,7 +96,6 @@ public class Vendor implements Serializable {
 		this.bankOpen = bankOpen;
 	}
 
-	@JsonProperty("bank_acc_number")
 	public String getBankAccNumber() {
 		return bankAccNumber;
 	}
@@ -158,26 +140,16 @@ public class Vendor implements Serializable {
 		return receiveSite;
 	}
 
-	@JsonProperty("receive_site")
 	public void setReceiveSite(String receiveSite) {
 		this.receiveSite = receiveSite;
 	}
 
-	@JsonProperty("end_date")
 	public Date getEndDate() {
 		return endDate;
 	}
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-	}
-
-	public Double getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(Double timestamp) {
-		this.timestamp = timestamp;
 	}
 
 	public String getMemo() {
@@ -187,16 +159,5 @@ public class Vendor implements Serializable {
 	public void setMemo(String memo) {
 		this.memo = memo;
 	}
-
-	private String contact;
-	private String mobile;
-
-	@Column(name = "receive_site")
-	private String receiveSite;
-
-	@Column(name = "end_date")
-	private Date endDate;
-	private Double timestamp;
-	private String memo;
 
 }

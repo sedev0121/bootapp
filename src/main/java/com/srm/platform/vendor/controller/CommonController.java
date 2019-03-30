@@ -313,7 +313,7 @@ public class CommonController {
 			price.setFisoutside(false);
 			price.setFcheckdate(new Date());
 			price.setDescription(item.getInventory().getSpecs());
-			price.setFauxunit(item.getInventory().getPuunitName());
+//			price.setFauxunit(item.getInventory().getPuunitName());
 			priceRepository.save(price);
 		}
 
