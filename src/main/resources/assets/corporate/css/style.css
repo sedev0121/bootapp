@@ -876,6 +876,7 @@ body.page-header-fixed {
 .page-slider {
     margin-top: -25px;
     clear: both;
+    position: relative;
 }
 
 /* OWL styles */
@@ -1928,7 +1929,6 @@ Pre-Footer and pre-footer elements
 
 /* footer */
 .footer {
-    background: #272626;
     color: #fff;
     font-size: 12px;
     padding: 15px 0;
@@ -3535,11 +3535,14 @@ Styler Panel
 }
 
 .login-content {
+	  position: absolute;
+	  background: rgba(255, 255, 255, 0.9);
+	  right: 20px;
+	  top: 20px;
     padding: 30px;
     width: 400px;
     color: white;
-    margin-top: 250px;
-    margin-left: 140px;
+    z-index: 300;
     font-size: 17px;
 }
 

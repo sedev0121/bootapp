@@ -5,13 +5,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "inventory_class")
-public class InventoryClass {
+@Table(name = "vendor_class")
+public class VendorClass {
 	@Id
 	private String code;
-
 	private String name;
-
 	private Integer rank;
 	private Integer endRankFlag;
 

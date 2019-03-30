@@ -4,11 +4,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.srm.platform.vendor.model.InventoryClass;
 import com.srm.platform.vendor.model.ProvideClass;
+import com.srm.platform.vendor.model.VendorClass;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
 
-public interface InventoryClassRepository extends JpaRepository<InventoryClass, Long> {
+public interface VendorClassRepository extends JpaRepository<VendorClass, Long> {
 
-	InventoryClass findOneByCode(String code);
+	VendorClass findOneByCode(String code);
 }

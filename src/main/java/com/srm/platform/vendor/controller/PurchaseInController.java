@@ -127,13 +127,13 @@ public class PurchaseInController extends CommonController {
 
 		Map<String, Object> params = new HashMap<>();
 
-		List<String> vendorList = this.getVendorListOfUser();
-		
-		if (vendorList.size() == 0) {
-			return new PageImpl<PurchaseInDetailResult>(new ArrayList(), request, 0);
-		}
-		
-		params.put("vendorList", vendorList);
+//		List<String> vendorList = this.getVendorListOfUser();
+//		
+//		if (vendorList.size() == 0) {
+//			return new PageImpl<PurchaseInDetailResult>(new ArrayList(), request, 0);
+//		}
+//		
+//		params.put("vendorList", vendorList);
 
 		if (!inventory.trim().isEmpty()) {
 			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";

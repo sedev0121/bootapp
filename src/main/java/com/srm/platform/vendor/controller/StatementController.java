@@ -220,18 +220,18 @@ public class StatementController extends CommonController {
 			bodyQuery += " and a.state>=" + Constants.STATEMENT_STATE_REVIEW;
 
 		} else {
-			List<String> vendorList = this.getVendorListOfUser();
-			
-			if (vendorList.size() == 0) {
-				return new PageImpl<StatementSearchResult>(new ArrayList(), request, 0);
-			}
-			
-			bodyQuery += " and b.code in :vendorList";
-			params.put("vendorList", vendorList);
-			if (!vendorStr.trim().isEmpty()) {
-				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
-				params.put("vendor", vendorStr.trim());
-			}
+//			List<String> vendorList = this.getVendorListOfUser();
+//			
+//			if (vendorList.size() == 0) {
+//				return new PageImpl<StatementSearchResult>(new ArrayList(), request, 0);
+//			}
+//			
+//			bodyQuery += " and b.code in :vendorList";
+//			params.put("vendorList", vendorList);
+//			if (!vendorStr.trim().isEmpty()) {
+//				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
+//				params.put("vendor", vendorStr.trim());
+//			}
 		}
 
 		if (!code.trim().isEmpty()) {

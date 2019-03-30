@@ -8,6 +8,10 @@ import org.springframework.context.annotation.Configuration;
 public class AppProperties {
 	private String from_account;
 
+	private String account;
+	private String token_url;
+	private String data_url;
+
 	private String app_key;
 	private int error_code_success;
 
@@ -20,10 +24,34 @@ public class AppProperties {
 	private PropertyMeasurementUnit measurementUnit;
 	private PropertyInventoryClass inventoryClass;
 	private PropertyVenPriceAdjust venPriceAdjust;
-	
+
 	private PropertyCurrentStock currentStock;
 
 	private PropertyLinkU8 linku8;
+
+	public String getAccount() {
+		return account;
+	}
+
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
+	public String getToken_url() {
+		return token_url;
+	}
+
+	public void setToken_url(String token_url) {
+		this.token_url = token_url;
+	}
+
+	public String getData_url() {
+		return data_url;
+	}
+
+	public void setData_url(String data_url) {
+		this.data_url = data_url;
+	}
 
 	public String getFrom_account() {
 		return from_account;
@@ -80,11 +108,11 @@ public class AppProperties {
 	public void setPurchaseOrder(PropertyPurchaseOrder purchaseOrder) {
 		this.purchaseOrder = purchaseOrder;
 	}
-	
+
 	public PropertyCurrentStock getCurrentStock() {
 		return currentStock;
 	}
-	
+
 	public void setCurrentStock(PropertyCurrentStock currentStock) {
 		this.currentStock = currentStock;
 	}
@@ -96,7 +124,6 @@ public class AppProperties {
 	public void setPurInvoice(PropertyPurInvoice purInvoice) {
 		this.purInvoice = purInvoice;
 	}
-	
 
 	public PropertyInventory getInventory() {
 		return inventory;
@@ -307,7 +334,7 @@ public class AppProperties {
 		}
 
 	}
-	
+
 	public static class PropertyCurrentStock {
 		private String batch_get;
 

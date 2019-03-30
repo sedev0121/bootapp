@@ -108,7 +108,7 @@ public class NoticeController extends CommonController {
 		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id "
 				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id and e.to_account_id=:to_account where type=1 ";
 
-		List<String> unitList = this.getDefaultUnitList();
+		
 		Map<String, Object> params = new HashMap<>();
 
 		if (isVendor()) {
@@ -116,10 +116,10 @@ public class NoticeController extends CommonController {
 			params.put("to_account", this.getLoginAccount().getId());
 		} else {
 			if (this.hasAuthority("公告通知-发布")) {
-				bodyQuery += " and ((a.create_unit in :unitList and a.state=2) or create_account=:create_account or (e.to_account_id=:to_account and a.state=3))";
-				params.put("unitList", unitList);
-				params.put("create_account", this.getLoginAccount().getId());
-				params.put("to_account", this.getLoginAccount().getId());
+//				bodyQuery += " and ((a.create_unit in :unitList and a.state=2) or create_account=:create_account or (e.to_account_id=:to_account and a.state=3))";
+//				params.put("unitList", unitList);
+//				params.put("create_account", this.getLoginAccount().getId());
+//				params.put("to_account", this.getLoginAccount().getId());
 			} else {
 				bodyQuery += " and (create_account=:create_account or (e.to_account_id=:to_account and a.state=3))";
 				params.put("create_account", this.getLoginAccount().getId());

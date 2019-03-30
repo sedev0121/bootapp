@@ -45,11 +45,6 @@ public class HomeController {
 		return "login";
 	}
 	
-	@GetMapping(value = "/houtai")
-	public String houtai() {
-		return "houtai";
-	}
-
 	@ResponseBody
 	@RequestMapping(value = "/keepalive")
 	public String keepAlive() {

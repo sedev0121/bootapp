@@ -48,13 +48,16 @@ import com.srm.platform.vendor.searchitem.ScopeInventoryItem;
 import com.srm.platform.vendor.searchitem.ScopeStoreItem;
 import com.srm.platform.vendor.searchitem.ScopeVendorItem;
 import com.srm.platform.vendor.searchitem.SearchItem;
+import com.srm.platform.vendor.utility.AccountPermission;
 
 @Controller
 @RequestMapping(path = "/permission_group")
-@PreAuthorize("hasRole('ROLE_BUYER')")
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('权限管理-查看列表')")
 public class PermissionController extends CommonController {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	private static Long LIST_FUNCTION_ACTION_ID = 12L;
+	private static Long EDIT_FUNCTION_ACTION_ID = 13L;
+	
 	@Autowired
 	private AccountRepository accountRepository;
 
@@ -97,14 +100,17 @@ public class PermissionController extends CommonController {
 		return "admin/permission_group/list";
 	}
 
-	// 权限组管理->修改
+	// 权限组管理->修改	
 	@GetMapping("/{id}/edit")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('权限管理-新建/修改')")
 	public String edit(@PathVariable("id") Long id, Model model) {
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
 
 		if (temp == null)
 			show404();
 
+		checkPermission(temp, LIST_FUNCTION_ACTION_ID);
+		
 		model.addAttribute("permission_group", temp);
 
 		List<AccountSearchItem> accounts = permissionGroupRepository.findAccountsInGroupById(id);
@@ -119,12 +125,15 @@ public class PermissionController extends CommonController {
 
 	// 权限组管理->修改
 	@GetMapping("/{id}/edit_perm")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('权限管理-新建/修改')")
 	public String edit_perm(@PathVariable("id") Long id, Model model) {
 		PermissionGroup temp = permissionGroupRepository.findOneById(id);
 
 		if (temp == null)
 			show404();
 
+		checkPermission(temp, LIST_FUNCTION_ACTION_ID);
+		
 		List<Function> functionList = functionRepository.findAll();
 		List<FunctionAction> functionActionList = functionActionRepository.findAll();
 
@@ -164,6 +173,7 @@ public class PermissionController extends CommonController {
 
 	// 权限组管理->新建
 	@GetMapping("/add")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('权限管理-新建/修改')")
 	public String add(Model model) {
 		model.addAttribute("permission_group", new PermissionGroup());
 		return "admin/permission_group/edit";
@@ -313,6 +323,10 @@ public class PermissionController extends CommonController {
 	@RequestMapping("/list_of_inventory")
 	public List<ScopeInventoryItem> getInventoryList() {
 		return permissionGroupRepository.findInventoryList();
+	}
+	
+	private void checkPermission(PermissionGroup permissionGroup, Long functionActionId) {
+		
 	}
 
 }

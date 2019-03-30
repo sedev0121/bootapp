@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -23,6 +24,7 @@ public class Function {
 
 	private String name;
 
+	@OrderBy("id asc")
 	@ManyToMany(cascade = { CascadeType.REFRESH }, fetch = FetchType.EAGER)
 	@JoinTable(name = "function_action", joinColumns = {
 			@JoinColumn(name = "function_id", referencedColumnName = "id") }, inverseJoinColumns = {

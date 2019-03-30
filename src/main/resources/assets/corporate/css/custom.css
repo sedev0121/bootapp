@@ -1,492 +1,543 @@
 body {
-    font-family:'Microsoft YaHei','SimSun' !important;
-    font-size: 12px;
+	font-family: 'Microsoft YaHei', 'SimSun' !important;
+	font-size: 12px;
 }
 
 .pre-header {
-    background: #272626;   
-    color: #b0b0b0;
-    padding-top:5px;
-    padding-bottom:5px;
-    margin-bottom:0px;
+	background: #272626;
+	color: #b0b0b0;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin-bottom: 0px;
 }
 
 .pre-header ul {
-    margin-bottom:0px;
-    color: white;
+	margin-bottom: 0px;
+	color: white;
 }
 
 .pre-header a {
-    color: #57c8eb;
+	color: #57c8eb;
 }
 
-.pre-header a:focus, .top-header a:hover{
-    color: #e6400c;
+.pre-header a:focus, .top-header a:hover {
+	color: #e6400c;
 }
 
 .pre-header .active {
-    color: #e6400c;
+	color: #e6400c;
 }
 
 .version {
-    /* visibility:hidden; */
+	/* visibility:hidden; */
+	
 }
+
 .select-unit {
-    background-color:#fff !important
+	background-color: #fff !important
 }
 
 .select-unit:disabled {
-    background-color:#eee !important
+	background-color: #eee !important
 }
 
 .select2 {
-    width:100%!important;
+	width: 100% !important;
 }
 
 .select2-container--default .select2-selection--single {
-    border: 1px solid #ccc;
+	border: 1px solid #ccc;
 }
 
 .new, .new a {
-    font-weight:bold;    
-    color:red;
+	font-weight: bold;
+	color: red;
 }
 
 .notice span {
-    color: red;
+	color: red;
 }
 
 .datepicker {
-  padding:6px 12px;
+	padding: 6px 12px;
 }
 
 .btn-file {
-    border-bottom:none;
-}
-input[type=file]:focus, input[type=checkbox]:focus, input[type=radio]:focus {
-    outline: thin dotted;
-    outline: 0px auto -webkit-focus-ring-color;
-    outline-offset: -2px;
+	border-bottom: none;
 }
 
-input[type=number]::-webkit-inner-spin-button { 
-    -webkit-appearance: none;
-    cursor:pointer;
-    display:block;
-    width:0px;
-    color: #333;
-    text-align:center;
-    position:relative;
+input[type=file]:focus, input[type=checkbox]:focus, input[type=radio]:focus
+	{
+	outline: thin dotted;
+	outline: 0px auto -webkit-focus-ring-color;
+	outline-offset: -2px;
+}
+
+input[type=number]::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	cursor: pointer;
+	display: block;
+	width: 0px;
+	color: #333;
+	text-align: center;
+	position: relative;
 }
 
 input[type=number] {
-    text-align:right;
+	text-align: right;
 }
 
-input[type=number]::-webkit-inner-spin-button:before,
-input[type=number]::-webkit-inner-spin-button:after {
-    content: "^";
-    position:absolute;
-    right: 0;
-    font-family:monospace;
-    line-height:
+input[type=number]::-webkit-inner-spin-button:before, input[type=number]::-webkit-inner-spin-button:after
+	{
+	content: "^";
+	position: absolute;
+	right: 0;
+	font-family: monospace;
+	line-height:
 }
 
 input[type=number]::-webkit-inner-spin-button:before {
-    top:0px;
+	top: 0px;
 }
 
 input[type=number]::-webkit-inner-spin-button:after {
-    bottom:0px;
-    -webkit-transform: rotate(180deg);
+	bottom: 0px;
+	-webkit-transform: rotate(180deg);
 }
 
 .account legend {
-    border: none; 
-    font-size: 18px;
-    padding-top: 20px; 
-    margin-bottom: 10px;
-    color: #3E4D5C;
+	border: none;
+	font-size: 18px;
+	padding-top: 20px;
+	margin-bottom: 10px;
+	color: #3E4D5C;
 }
 
-.select2-container--default .select2-selection--multiple .select2-selection__choice {
-    border-radius: 2px; 
+.select2-container--default .select2-selection--multiple .select2-selection__choice
+	{
+	border-radius: 2px;
 }
 
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
-    /* padding: 6px; */    
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th,
+	.table>thead>tr>td, .table>thead>tr>th {
+	/* padding: 6px; */
+	
 }
 
-table.dataTable.table thead th.sorting:after, table.dataTable.table thead th.sorting_asc:after, table.dataTable.table thead th.sorting_desc:after, table.dataTable.table thead td.sorting:after, table.dataTable.table thead td.sorting_asc:after, table.dataTable.table thead td.sorting_desc:after {
-    top: 9px;
-    right: 5px;
+table.dataTable.table thead th.sorting:after, table.dataTable.table thead th.sorting_asc:after,
+	table.dataTable.table thead th.sorting_desc:after, table.dataTable.table thead td.sorting:after,
+	table.dataTable.table thead td.sorting_asc:after, table.dataTable.table thead td.sorting_desc:after
+	{
+	top: 9px;
+	right: 5px;
 }
 
-table.dataTable thead .sorting:before, table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:before, table.dataTable thead .sorting_asc:after, table.dataTable thead .sorting_desc:before, table.dataTable thead .sorting_desc:after, table.dataTable thead .sorting_asc_disabled:before, table.dataTable thead .sorting_asc_disabled:after, table.dataTable thead .sorting_desc_disabled:before, table.dataTable thead .sorting_desc_disabled:after {
-    bottom: 0.6em;
+table.dataTable thead .sorting:before, table.dataTable thead .sorting:after,
+	table.dataTable thead .sorting_asc:before, table.dataTable thead .sorting_asc:after,
+	table.dataTable thead .sorting_desc:before, table.dataTable thead .sorting_desc:after,
+	table.dataTable thead .sorting_asc_disabled:before, table.dataTable thead .sorting_asc_disabled:after,
+	table.dataTable thead .sorting_desc_disabled:before, table.dataTable thead .sorting_desc_disabled:after
+	{
+	bottom: 0.6em;
 }
 
-div.dataTables_scrollBody table tbody tr:first-child th, div.dataTables_scrollBody table tbody tr:first-child td {
-    border-top: none; 
+div.dataTables_scrollBody table tbody tr:first-child th, div.dataTables_scrollBody table tbody tr:first-child td
+	{
+	border-top: none;
 }
 
-table.table-bordered.dataTable tbody th, table.table-bordered.dataTable tbody td {
-    border-bottom-width: 0; 
+table.table-bordered.dataTable tbody th, table.table-bordered.dataTable tbody td
+	{
+	border-bottom-width: 0;
 }
 
 table.table-bordered.dataTable th, table.table-bordered.dataTable td {
-    border-left-width: 0; 
+	border-left-width: 0;
 }
 
-
 table.DTFC_Cloned.table-striped>tbody>tr:nth-of-type(even) {
-    background-color: #ffffff;
-    border:0px;
+	background-color: #ffffff;
+	border: 0px;
 }
 
 table.DTFC_Cloned.table-striped>tbody>tr:nth-of-type(odd) {
-    background-color: #f9f9f9;
-    border:0px;
+	background-color: #f9f9f9;
+	border: 0px;
 }
 
-table.DTFC_Cloned.table-striped>tbody>tr>td.even:hover) {
-    background-color: #f9f9f9 !important;
+table.DTFC_Cloned.table-striped>tbody>tr>td.even:hover ) {
+	background-color: #f9f9f9 !important;
 }
 
-.DTFC_LeftBodyWrapper table.DTFC_Cloned.table thead th.sorting_asc:after, .DTFC_LeftBodyWrapper table.DTFC_Cloned.table thead td.sorting_asc:after,
-.DTFC_LeftBodyWrapper table.DTFC_Cloned.table thead th.sorting_desc:after, .DTFC_LeftBodyWrapper table.DTFC_Cloned.table thead td.sorting_desc:after {
-    content: "";
+.DTFC_LeftBodyWrapper table.DTFC_Cloned.table thead th.sorting_asc:after,
+	.DTFC_LeftBodyWrapper table.DTFC_Cloned.table thead td.sorting_asc:after,
+	.DTFC_LeftBodyWrapper table.DTFC_Cloned.table thead th.sorting_desc:after,
+	.DTFC_LeftBodyWrapper table.DTFC_Cloned.table thead td.sorting_desc:after
+	{
+	content: "";
 }
-
 
 .search-content {
-    margin-bottom: 5px;
+	margin-bottom: 5px;
 }
 
 .nav-tabs {
-    font-size: 12px;
+	font-size: 12px;
 }
 
 span.error {
-    color:#e6400c;    
+	color: #e6400c;
 }
 
 #forget-page a {
-    color: white;
+	color: white;
 }
 
 #forget-page p {
-    color: #808080;
+	color: #808080;
 }
 
-
 .btn_back {
-    font-size:13px !important;
+	font-size: 13px !important;
 }
 
 .hint {
-    color: #808080;
-    margin-top: 23px;
+	color: #808080;
+	margin-top: 23px;
 }
+
 .login-font {
-    font-size:17px;
-    font-weight:bold !important;
+	font-size: 17px;
+	font-weight: bold !important;
 }
+
 .main {
-    min-height:605px;
+	min-height: 605px;
 }
 
-@media (max-height: 900px) {
-    .main {
-        min-height:549px;
-    }
+@media ( max-height : 900px) {
+	.main {
+		min-height: 549px;
+	}
 }
-
 
 .btn {
-    font-size: 12px;
-    padding: 8px 12px;
+	font-size: 12px;
+	padding: 8px 12px;
 }
 
 .form-control {
-    font-size: 12px;
+	font-size: 12px;
 }
 
 .breadcrumb {
-    font-size: 12px;
+	font-size: 12px;
 }
 
-select[readonly].select2-hidden-accessible + .select2-container {
-  pointer-events: none;
-  touch-action: none;
+select[readonly].select2-hidden-accessible+.select2-container {
+	pointer-events: none;
+	touch-action: none;
 }
 
-select[readonly].select2-hidden-accessible + .select2-container .select2-selection {
-  background: #eee;
-  box-shadow: none;
+select[readonly].select2-hidden-accessible+.select2-container .select2-selection
+	{
+	background: #eee;
+	box-shadow: none;
 }
 
-select[readonly].select2-hidden-accessible + .select2-container .select2-selection__arrow,
-select[readonly].select2-hidden-accessible + .select2-container .select2-selection__clear {
-  display: none;
+select[readonly].select2-hidden-accessible+.select2-container .select2-selection__arrow,
+	select[readonly].select2-hidden-accessible+.select2-container .select2-selection__clear
+	{
+	display: none;
 }
 
 #save {
-    background-color:#4B77BE;
+	background-color: #4B77BE;
 }
 
 .inquery_state_1 {
-    color:#4B77BE;
+	color: #4B77BE;
 }
 
 #submit {
-    background-color:#32C5D2;
+	background-color: #32C5D2;
 }
+
 .inquery_state_2 {
-    color:#32C5D2;
+	color: #32C5D2;
 }
 
 #confirm, #review_ok {
-    background-color:#1BA39C;
+	background-color: #1BA39C;
 }
+
 .inquery_state_3 {
-    color:#1BA39C;
+	color: #1BA39C;
 }
 
 #delete {
-    color: #fff;
-    background-color: #F3565D;
-    border-color: #f13e46;
+	color: #fff;
+	background-color: #F3565D;
+	border-color: #f13e46;
 }
 
 #cancel, #review_no {
-    background-color:red;
+	background-color: red;
 }
+
 .inquery_state_4 {
-    color:red;
+	color: red;
 }
 
 #pass {
-    background-color:#8E44AD;
+	background-color: #8E44AD;
 }
+
 .inquery_state_5 {
-    color:#8E44AD;
+	color: #8E44AD;
 }
 
 #verify {
-    background-color:#C49F47;
+	background-color: #C49F47;
 }
+
 .inquery_state_6 {
-    color:#C49F47;
+	color: #C49F47;
 }
 
 #publish {
-    background-color:grey;
+	background-color: grey;
 }
+
 .inquery_state_7 {
-    color:grey;
+	color: grey;
 }
 
 #export {
-    background-color: #2AB4C0;
-    color: white;
+	background-color: #2AB4C0;
+	color: white;
 }
+
 #import {
-    background-color: #3598DC;
-    color: white;
+	background-color: #3598DC;
+	color: white;
 }
+
 .dt-center {
-    text-align:center;
+	text-align: center;
 }
 
 .dt-right {
-    text-align:right;
+	text-align: right;
 }
 
-.DTED_Lightbox_Close {visibility: hidden;}
+.DTED_Lightbox_Close {
+	visibility: hidden;
+}
+
 div.DTE_Field select {
-  padding: 6px 4px;
-  width: 100%;
+	padding: 6px 4px;
+	width: 100%;
 }
 
 div.DTE_Field.DTE_Field_Type_date input.jqueryui {
-    width: 100%; 
-    margin-right: 0px;
+	width: 100%;
+	margin-right: 0px;
 }
 
 .btn-group-bar {
-    margin-bottom: 5px;
+	margin-bottom: 5px;
 }
 
-.ui-datepicker .ui-datepicker-prev span, .ui-datepicker .ui-datepicker-next span {
-    width:16px;
+.ui-datepicker .ui-datepicker-prev span, .ui-datepicker .ui-datepicker-next span
+	{
+	width: 16px;
 }
 
 .tab-content {
-    background: none;
-    border: 1px solid transparent;
-    border-color: #ddd;
-    border-top: 0px solid transparent;    
-
+	background: none;
+	border: 1px solid transparent;
+	border-color: #ddd;
+	border-top: 0px solid transparent;
 }
 
 .dataTables_processing {
-    background-color:#ddd;
-    border-radius:4px;
-    padding:4px;
+	background-color: #ddd;
+	border-radius: 4px;
+	padding: 4px;
 }
 
 .user_avatar {
-    border: 1px solid #ddd;
+	border: 1px solid #ddd;
 }
 
-
 .ui-autocomplete {
-    position: absolute;
-    top: 0;
-    left: 0;
-    cursor: default
+	position: absolute;
+	top: 0;
+	left: 0;
+	cursor: default
 }
 
 .ui-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: block;
-    outline: 0
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: block;
+	outline: 0
 }
 
 .ui-menu .ui-menu {
-    position: absolute
+	position: absolute
 }
 
 .ui-menu .ui-menu-item {
-    margin: 0;
-    cursor: pointer;
-    list-style-image:
-        url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7")
+	margin: 0;
+	cursor: pointer;
+	list-style-image:
+		url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7")
 }
 
 .ui-menu .ui-menu-item-wrapper {
-    position: relative;
-    padding: 3px 1em 3px .4em
+	position: relative;
+	padding: 3px 1em 3px .4em
 }
 
 .ui-menu .ui-menu-divider {
-    margin: 5px 0;
-    height: 0;
-    font-size: 0;
-    line-height: 0;
-    border-width: 1px 0 0 0
+	margin: 5px 0;
+	height: 0;
+	font-size: 0;
+	line-height: 0;
+	border-width: 1px 0 0 0
 }
 
 .ui-menu .ui-state-focus, .ui-menu .ui-state-active {
-    margin: -1px
+	margin: -1px
 }
 
 .ui-menu-icons {
-    position: relative
+	position: relative
 }
 
 .ui-menu-icons .ui-menu-item-wrapper {
-    padding-left: 2em
+	padding-left: 2em
 }
 
 .ui-menu .ui-icon {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: .2em;
-    margin: auto 0
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: .2em;
+	margin: auto 0
 }
 
 .ui-menu .ui-menu-icon {
-    left: auto;
-    right: 0
+	left: auto;
+	right: 0
 }
 
-
 .ui-widget.ui-widget-content {
-    border: 1px solid #c5c5c5
+	border: 1px solid #c5c5c5
 }
 
 .permission-scope .ui-widget.ui-widget-content {
-    border: none;
+	border: none;
 }
 
 .ui-widget-content .ui-state-active {
-    border: 1px solid #e6400c;
-    background: #e6400c;
-    color: #fff
+	border: 1px solid #e6400c;
+	background: #e6400c;
+	color: #fff
 }
 
 .detail-tabs .ui-widget.ui-widget-content {
-    border: 0px solid #c5c5c5
+	border: 0px solid #c5c5c5
 }
 
-.red {    
-    color: #e6400c
+.red {
+	color: #e6400c
 }
 
 .perm {
-    min-height: 140px !important;
+	min-height: 140px !important;
 }
 
-.perm legend{
-    margin-bottom:10px;
+.perm legend {
+	margin-bottom: 10px;
 }
 
 #dashboard .panel-body {
-    min-height: 165px;
+	min-height: 165px;
 }
 
 .detail {
 	color: green;
 }
 
-
 table.dataTable tbody>tr.clicked, table.dataTable tbody>tr>.clicked {
-    background-color: #e6400c;
+	background-color: #e6400c;
 }
 
-table.dataTable tbody>tr.clicked td, table.dataTable tbody>tr>.clicked td {
-		color: white;
+table.dataTable tbody>tr.clicked td, table.dataTable tbody>tr>.clicked td
+	{
+	color: white;
 }
 
-table.dataTable tbody tr.clicked td.select-checkbox:before, table.dataTable tbody tr.clicked th.select-checkbox:before {
-    content: ' ';
-    margin-top: -6px;
-    margin-left: -6px;
-    border: 1px solid white;
-    border-radius: 0px; 
+table.dataTable tbody tr.clicked td.select-checkbox:before, table.dataTable tbody tr.clicked th.select-checkbox:before
+	{
+	content: ' ';
+	margin-top: -6px;
+	margin-left: -6px;
+	border: 1px solid white;
+	border-radius: 0px;
 }
 
-table.dataTable tr.clicked.selected td.select-checkbox:after, table.dataTable tr.selected.clicked th.select-checkbox:after {
-    content: '\2714';
-    margin-top: -11px;
-    margin-left: -4px;
-    text-align: center;
-    text-shadow: none; 
-    color: white;
+table.dataTable tr.clicked.selected td.select-checkbox:after, table.dataTable tr.selected.clicked th.select-checkbox:after
+	{
+	content: '\2714';
+	margin-top: -11px;
+	margin-left: -4px;
+	text-align: center;
+	text-shadow: none;
+	color: white;
 }
 
-table.dataTable tbody td.select-checkbox:before, table.dataTable tbody th.select-checkbox:before {
-    content: ' ';
-    margin-top: -6px;
-    margin-left: -6px;
-    border: 1px solid black;
-    border-radius: 0px; 
+table.dataTable tbody td.select-checkbox:before, table.dataTable tbody th.select-checkbox:before
+	{
+	content: ' ';
+	margin-top: -6px;
+	margin-left: -6px;
+	border: 1px solid black;
+	border-radius: 0px;
 }
 
-table.dataTable tr.selected td.select-checkbox:after, table.dataTable tr.selected th.select-checkbox:after {
-    content: '\2714';
-    margin-top: -11px;
-    margin-left: -4px;
-    text-align: center;
-    text-shadow: none; 
-    color: black;
+table.dataTable tr.selected td.select-checkbox:after, table.dataTable tr.selected th.select-checkbox:after
+	{
+	content: '\2714';
+	margin-top: -11px;
+	margin-left: -4px;
+	text-align: center;
+	text-shadow: none;
+	color: black;
 }
 
 .select-checkbox {
 	min-width: 50px;
+}
+
+.footer-right {
+	margin-left: 50px;
+}
+
+.news a,
+.notice a,
+.alarm a {
+	color: black;
+	text-decoration: none;
+}
+
+.footer a.link {
+	color: black;
+	margin-left: 60px;
+	margin-right: 60px;
+	text-decoration: none;
 }

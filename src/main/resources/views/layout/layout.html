@@ -2,253 +2,226 @@
 <!-- Head BEGIN -->
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8">
-  <title>供应商管理平台</title>
-
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  
-  <link rel="shortcut icon" th:href="@{/assets/favicon-128.png}">
-
-  <!-- Fonts START -->
-  <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|PT+Sans+Narrow|Source+Sans+Pro:200,300,400,600,700,900&amp;subset=all" rel="stylesheet" type="text/css">
-  <!-- Fonts END -->
-
-  <!-- Global styles START -->     
-       
-  <link th:href="@{/assets/plugins/font-awesome/css/font-awesome.min.css}" rel="stylesheet">
-  <link th:href="@{/assets/plugins/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-  <!-- Global styles END --> 
-   
-  <!-- Page level plugin styles START -->
-  <link th:href="@{/assets/pages/css/components.css}" rel="stylesheet">
-  <link th:href="@{/assets/pages/css/animate.css}" rel="stylesheet">
-  <!-- Page level plugin styles END -->
-
-  <!-- Theme styles START -->
-  <link th:href="@{/assets/plugins/jstree/theme/style.min.css}" rel="stylesheet">
-  <link th:href="@{/assets/corporate/css/style-responsive.css}" rel="stylesheet">
-  <link th:href="@{/assets/plugins/uniform/css/uniform.default.css}" rel="stylesheet" type="text/css"> 
-  <link th:href="@{/assets/plugins/sweetalert/sweetalert2.min.css}" rel="stylesheet" type="text/css">
-  <link th:href="@{/assets/plugins/select2/css/select2.css}" rel="stylesheet" type="text/css">
-  <link th:href="@{/assets/plugins/select2/css/select2-bootstrap.min.css}" rel="stylesheet" type="text/css">
-
-  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/datepicker3.css}" rel="stylesheet" type="text/css">
-  <link th:href="@{/assets/plugins/bootstrap-datepicker/css/datepicker.css}" rel="stylesheet" type="text/css">
-  <link href="https://cdn.datatables.net/responsive/2.2.1/css/responsive.dataTables.min.css" rel="stylesheet">
-  <link href="https://cdn.datatables.net/fixedcolumns/3.2.6/css/fixedColumns.dataTables.min.css" rel="stylesheet">
-
-  <!-- <link th:href="@{/assets/plugins/jquery-ui/jquery-ui.min.css}" rel="stylesheet" type="text/css"> -->
-  <link th:href="@{/assets/plugins/jquery-ui/jquery-ui.datepicker.css}" rel="stylesheet" type="text/css">
-  <link th:href="@{/assets/corporate/css/style.css}" rel="stylesheet">
-  <link th:href="@{/assets/corporate/css/style-responsive.css}" rel="stylesheet">
-  
-  <link th:href="@{/assets/plugins/data-table/editor/css/buttons.dataTables.min.css}" rel="stylesheet" type="text/css">
-  <link th:href="@{/assets/plugins/data-table/editor/css/select.dataTables.min.css}" rel="stylesheet" type="text/css">
-  <link th:href="@{/assets/plugins/data-table/editor/css/editor.dataTables.min.css}" rel="stylesheet" type="text/css">
-  <link th:href="@{/assets/plugins/data-table/editor/css/editor.semanticui.min.css}" rel="stylesheet" type="text/css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/semantic.min.css" rel="stylesheet">
-  <link href="https://cdn.datatables.net/1.10.16/css/dataTables.semanticui.min.css" rel="stylesheet">
-  <!-- Theme styles END -->
-  <link th:href="@{/assets/corporate/css/custom.css}" rel="stylesheet">
-
+<meta charset="utf-8">
+<title>供应商管理平台</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<link rel="shortcut icon" th:href="@{/assets/favicon-128.png}">
+<!-- Fonts START -->
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|PT+Sans+Narrow|Source+Sans+Pro:200,300,400,600,700,900&amp;subset=all" rel="stylesheet" type="text/css">
+<!-- Fonts END -->
+<!-- Global styles START -->
+<link th:href="@{/assets/plugins/font-awesome/css/font-awesome.min.css}" rel="stylesheet">
+<link th:href="@{/assets/plugins/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+<!-- Global styles END -->
+<!-- Page level plugin styles START -->
+<link th:href="@{/assets/pages/css/components.css}" rel="stylesheet">
+<link th:href="@{/assets/pages/css/animate.css}" rel="stylesheet">
+<!-- Page level plugin styles END -->
+<!-- Theme styles START -->
+<link th:href="@{/assets/plugins/jstree/theme/style.min.css}" rel="stylesheet">
+<link th:href="@{/assets/corporate/css/style-responsive.css}" rel="stylesheet">
+<link th:href="@{/assets/plugins/uniform/css/uniform.default.css}" rel="stylesheet" type="text/css">
+<link th:href="@{/assets/plugins/sweetalert/sweetalert2.min.css}" rel="stylesheet" type="text/css">
+<link th:href="@{/assets/plugins/select2/css/select2.css}" rel="stylesheet" type="text/css">
+<link th:href="@{/assets/plugins/select2/css/select2-bootstrap.min.css}" rel="stylesheet" type="text/css">
+<link th:href="@{/assets/plugins/bootstrap-datepicker/css/datepicker3.css}" rel="stylesheet" type="text/css">
+<link th:href="@{/assets/plugins/bootstrap-datepicker/css/datepicker.css}" rel="stylesheet" type="text/css">
+<link href="https://cdn.datatables.net/responsive/2.2.1/css/responsive.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/fixedcolumns/3.2.6/css/fixedColumns.dataTables.min.css" rel="stylesheet">
+<!-- <link th:href="@{/assets/plugins/jquery-ui/jquery-ui.min.css}" rel="stylesheet" type="text/css"> -->
+<link th:href="@{/assets/plugins/jquery-ui/jquery-ui.datepicker.css}" rel="stylesheet" type="text/css">
+<link th:href="@{/assets/corporate/css/style.css}" rel="stylesheet">
+<link th:href="@{/assets/corporate/css/style-responsive.css}" rel="stylesheet">
+<link th:href="@{/assets/plugins/data-table/editor/css/buttons.dataTables.min.css}" rel="stylesheet" type="text/css">
+<link th:href="@{/assets/plugins/data-table/editor/css/select.dataTables.min.css}" rel="stylesheet" type="text/css">
+<link th:href="@{/assets/plugins/data-table/editor/css/editor.dataTables.min.css}" rel="stylesheet" type="text/css">
+<link th:href="@{/assets/plugins/data-table/editor/css/editor.semanticui.min.css}" rel="stylesheet" type="text/css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/semantic.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.10.16/css/dataTables.semanticui.min.css" rel="stylesheet">
+<!-- Theme styles END -->
+<link th:href="@{/assets/corporate/css/custom.css}" rel="stylesheet">
 </head>
 <!-- Head END -->
-
 <!-- Body BEGIN -->
 <body class="corporate">
-    <!-- BEGIN HEADER -->
-    <div class="pre-header">
-      <div class="container">
-        <div class="row">
-            <!-- BEGIN TOP BAR LEFT PART -->
-            <div class="col-md-6 col-sm-6 additional-shop-info">
-                <ul class="list-unstyled list-inline">
-                    <li> 欢迎来到SRM系统！<span class="active" th:text="${session.account?.vendor?.abbrname}"> 【上海全力文体用品公司】</span></li>
-                </ul>
-            </div>
-            <!-- END TOP BAR LEFT PART -->
-            <!-- BEGIN TOP BAR MENU -->
-            <div class="col-md-6 col-sm-6 additional-nav" sec:authorize="isAuthenticated()">
-              <ul class="list-unstyled list-inline pull-right">
-                <li><a th:href="@{/profile}" th:text="${session.realname}">账号管理 </a></li>
-                <li><a th:href="@{/logout}">退出</a></li>
-              </ul>
-            </div>
-            <!-- END TOP BAR MENU -->
-        </div>
-                   
-      </div>
-    </div>
-    <div class="header">
-      <div class="container">
-        <a class="site-logo" th:href="@{/}"><img th:src="@{/assets/corporate/img/logo.png}" alt="采购管理平台"></a>
-
-        <a href="javascript:void(0);" class="mobi-toggler"><i class="fa fa-bars"></i></a>
-
-        <!-- BEGIN NAVIGATION -->
-        <div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR')">
-          <ul>
-            <li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/purchaseorder')} ? active : ''" >
-              <a th:href="@{/purchaseorder}">订单管理</a>
-            </li>
-            <li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')} or ${#strings.startsWith(#request.requestURI,'/baseprice')}? active : ''" >   
-              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
-              <ul class="dropdown-menu">
-                <li><a th:href="@{/vendor}">供应商管理</a></li>
-                <li><a th:href="@{/inventory}">物料档案表</a></li>                
-              </ul>
-            </li>
-            <li class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/buyer')} or ${#strings.startsWith(#request.requestURI,'/seller')} or ${#strings.startsWith(#request.requestURI,'/config')} or ${#strings.startsWith(#request.requestURI,'/permission_group')}? active : ''" >   
-              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">系统管理 </a>
-              <ul class="dropdown-menu">
-                <li><a th:href="@{/buyer}">采购员用户管理</a></li>
-                <li><a th:href="@{/seller}">供应商用户管理</a></li>
-                <li><a th:href="@{/permission_group}">权限管理</a></li>
-                <li><a th:href="@{/config}">系统配置</a></li>
-              </ul>
-            </li>
-          </ul>
-        </div>        
-        <input type="hidden" id="timepicker"/>
-        <!-- END NAVIGATION -->
-      </div>
-    </div>
-    <!-- Header END -->
-
-    <div class="main">
-      <div class="container"  layout:fragment="content">          
-      </div>
-    </div>
-    <!-- BEGIN PRE-FOOTER -->
-    <div class="pre-footer margin-top-10">
-      <div class="container">
-        <div class="row">
-          <!-- BEGIN BOTTOM ABOUT BLOCK -->
-          <div class="col-md-5 col-sm-8 pre-footer-col">
-            <h2>关于我们</h2>
-            <p>美尔凯特供应商协同平台支持在线采购、在线对账、采购询报价、采购比价、采购订单协同、交货管理、付款结算与供应商评估，帮助企业和供应商提高工作效率、降低交易成本。</p>
-          </div>
-          <!-- END BOTTOM ABOUT BLOCK -->
-
-          <!-- BEGIN BOTTOM CONTACTS -->
-          <div class="col-md-4 col-sm-6 pre-footer-col">
-            <h2>联系我们</h2>
-            <address class="margin-bottom-40">
-                                 浙江美尔凯特集成吊顶有限公司 <br>
-              Tel：0573-83255588<br>
-              Fax：0573-83251908<br>
-              <a href="http://www.mellkit.com">Http://www.mellkit.com</a><br>
-            </address>
-          </div>
-          <!-- END BOTTOM CONTACTS -->
-
-          <!-- BEGIN TWITTER BLOCK --> 
-          <div class="col-md-3 col-sm-4 pre-footer-col">
-            <h2>技术支持</h2>
-            <ul class="list-unstyled">
-              <li> 嘉兴市云链信息技术有限公司</li>
-              <li>服务热线：0573-83988820、83988818</li>
-              <li>QQ：595878081</li>
-              <li><a href="http://www.cnyunl.com">Http://www.cnyunl.com</a></li>            
-            </ul>
-          </div>
-          <!-- END TWITTER BLOCK -->
-        </div>
-      </div>
-    </div>
-    <!-- END PRE-FOOTER -->
-    
-    <!-- BEGIN FOOTER -->
-    <div class="footer">
-      <div class="container">
-        <div class="row">
-          <!-- BEGIN COPYRIGHT -->
-          <div class="col-md-6 col-sm-6">
-             <p class="powered"> Copyright © 嘉兴市<a href="http://www.cnyunl.com">云链</a>信息技术有限公司</p> 
-          </div>
-          <!-- END COPYRIGHT -->
-
-          <!-- BEGIN POWERED -->
-          <div class="col-md-6 col-sm-6 text-right">
-            <p class="powered">用户单位：浙江美尔凯特集成吊顶有限公司</p>
-          </div>
-          <!-- END POWERED -->
-        </div>
-      </div>
-    </div>
-    <!-- END FOOTER -->
-
-    <script th:src="@{/assets/plugins/jquery.min.js}" type="text/javascript"></script>
-    <script th:src="@{/assets/plugins/jquery-migrate.min.js}" type="text/javascript"></script>
-    <script th:src="@{/assets/plugins/bootstrap/js/bootstrap.min.js}" type="text/javascript"></script>      
-    <script th:src="@{/assets/corporate/scripts/back-to-top.js}" type="text/javascript"></script>
-    <script th:src="@{/assets/plugins/fancybox/source/jquery.fancybox.pack.js}" type="text/javascript"></script><!-- pop up -->
-    <script th:src="@{/assets/plugins/owl.carousel/owl.carousel.min.js}" type="text/javascript"></script><!-- slider for products -->
-    <script th:src="@{/assets/pages/scripts/bs-carousel.js}" type="text/javascript"></script>
-    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    
-    <script src="https://cdn.datatables.net/1.10.17/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/select/1.2.5/js/dataTables.select.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/fixedcolumns/3.2.6/js/dataTables.fixedColumns.min.js"></script>
-    <script src="https://cdn.datatables.net/keytable/2.4.0/js/dataTables.keyTable.min.js"></script>
-    <script th:src="@{/assets/plugins/data-table/datatable-input.js}" type="text/javascript" ></script>
-    <script th:src="@{/assets/plugins/data-table/dataTables.buttons.min.js}" type="text/javascript" ></script>
-    <script th:src="@{/assets/plugins/data-table/editor/js/dataTables.editor.min.js}" type="text/javascript" ></script>
-    
-    
-    <script th:src="@{/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js}"  type="text/javascript" ></script>
-    <script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js}"  type="text/javascript" ></script>
-    <script th:src="@{/assets/plugins/jquery-validate/jquery.validate.js}" type="text/javascript" ></script>
-    <script th:src="@{/assets/plugins/sweetalert/sweetalert2.min.js}" type="text/javascript" ></script>
-    <script th:src="@{/assets/plugins/uniform/jquery.uniform.min.js}" type="text/javascript"></script>
-    <script th:src="@{/assets/plugins/jquery.form.min.js}" type="text/javascript"></script>
-    <script th:src="@{/assets/plugins/jquery-ui/jquery-ui.min.js}" type="text/javascript"></script>
-    <script th:src="@{/assets/plugins/jstree/jstree.min.js}" type="text/javascript"></script>
-    <script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
-    <script th:src="@{/assets/plugins/select2/js/i18n/zh-CN.js}" type="text/javascript"></script>
-    <script th:src="@{/assets/plugins/jquery.blockui.min.js}" type="text/javascript"></script>
-    <script th:src="@{/assets/plugins/session-timeout/bootstrap-session-timeout.min.js}" type="text/javascript" ></script>
-    <script th:src="@{/assets/corporate/scripts/layout.js}" type="text/javascript"></script>
-    <script th:src="@{/assets/corporate/scripts/app.js}" type="text/javascript"></script>
+	<!-- BEGIN HEADER -->
+	<div class="pre-header">
+		<div class="container">
+			<div class="row">
+				<!-- BEGIN TOP BAR LEFT PART -->
+				<div class="col-md-6 col-sm-6 additional-shop-info">
+					<ul class="list-unstyled list-inline">
+						<li>欢迎来到SRM系统！<span class="active" th:text="${session.account?.vendor?.abbrname}"> 【上海全力文体用品公司】</span></li>
+					</ul>
+				</div>
+				<!-- END TOP BAR LEFT PART -->
+				<!-- BEGIN TOP BAR MENU -->
+				<div class="col-md-6 col-sm-6 additional-nav" sec:authorize="isAuthenticated()">
+					<ul class="list-unstyled list-inline pull-right">
+						<li><a th:href="@{/profile}" th:text="${session.realname}">账号管理 </a></li>
+						<li><a th:href="@{/logout}">退出</a></li>
+					</ul>
+				</div>
+				<!-- END TOP BAR MENU -->
+			</div>
+		</div>
+	</div>
+	<div class="header">
+		<div class="container">
+			<a class="site-logo" th:href="@{/}"><img th:src="@{/assets/corporate/img/logo.png}" alt="美大供应商协同管理平台"></a> <a href="javascript:void(0);" class="mobi-toggler"><i class="fa fa-bars"></i></a>
+			<!-- BEGIN NAVIGATION -->
+			<div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR')">
+				<ul>
+					<li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/purchaseorder')} ? active : ''"><a th:href="@{/purchaseorder}">订单管理</a></li>
+					<li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')} or ${#strings.startsWith(#request.requestURI,'/baseprice')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
+						<ul class="dropdown-menu">
+							<li><a th:href="@{/vendor}">供应商管理</a></li>
+							<li><a th:href="@{/inventory}">物料档案表</a></li>
+						</ul></li>
+					<li class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/buyer')} or ${#strings.startsWith(#request.requestURI,'/seller')} or ${#strings.startsWith(#request.requestURI,'/config')} or ${#strings.startsWith(#request.requestURI,'/permission_group')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">系统管理 </a>
+						<ul class="dropdown-menu">
+							<li><a th:href="@{/buyer}">采购员用户管理</a></li>
+							<li><a th:href="@{/seller}">供应商用户管理</a></li>
+							<li><a th:href="@{/permission_group}">权限管理</a></li>
+						</ul></li>
+				</ul>
+			</div>
+			<!-- BEGIN NAVIGATION -->
+			<div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_ADMIN')">
+				<ul>
+					<li><a th:href="@{/buyer}">采购员用户管理</a></li>
+					<li><a th:href="@{/seller}">供应商用户管理</a></li>
+					<li><a th:href="@{/permission_group}">权限管理</a></li>
+				</ul>
+			</div>
+			<input type="hidden" id="timepicker" />
+			<!-- END NAVIGATION -->
+		</div>
+	</div>
+	<!-- Header END -->
+	<div class="main">
+		<div class="container" layout:fragment="content"></div>
+	</div>
+	<!-- BEGIN PRE-FOOTER -->
+	<div class="pre-footer margin-top-10">
+		<div class="container">
+			<div class="row">
+				<!-- BEGIN BOTTOM ABOUT BLOCK -->
+				<div class="col-md-5 col-sm-8 pre-footer-col">
+					<h2>关于我们</h2>
+					<p>美尔凯特供应商协同平台支持在线采购、在线对账、采购询报价、采购比价、采购订单协同、交货管理、付款结算与供应商评估，帮助企业和供应商提高工作效率、降低交易成本。</p>
+				</div>
+				<!-- END BOTTOM ABOUT BLOCK -->
+				<!-- BEGIN BOTTOM CONTACTS -->
+				<div class="col-md-4 col-sm-6 pre-footer-col">
+					<h2>联系我们</h2>
+					<address class="margin-bottom-40">
+						浙江美尔凯特集成吊顶有限公司 <br> Tel：0573-83255588<br> Fax：0573-83251908<br> <a href="http://www.mellkit.com">Http://www.mellkit.com</a><br>
+					</address>
+				</div>
+				<!-- END BOTTOM CONTACTS -->
+				<!-- BEGIN TWITTER BLOCK -->
+				<div class="col-md-3 col-sm-4 pre-footer-col">
+					<h2>技术支持</h2>
+					<ul class="list-unstyled">
+						<li>嘉兴市云链信息技术有限公司</li>
+						<li>服务热线：0573-83988820、83988818</li>
+						<li>QQ：595878081</li>
+						<li><a href="http://www.cnyunl.com">Http://www.cnyunl.com</a></li>
+					</ul>
+				</div>
+				<!-- END TWITTER BLOCK -->
+			</div>
+		</div>
+	</div>
+	<!-- END PRE-FOOTER -->
+	<!-- BEGIN FOOTER -->
+	<div class="footer">
+		<div class="container">
+			<div class="row">
+				<!-- BEGIN COPYRIGHT -->
+				<div class="col-md-6 col-sm-6">
+					<p class="powered">
+						Copyright © 嘉兴市<a href="http://www.cnyunl.com">云链</a>信息技术有限公司
+					</p>
+				</div>
+				<!-- END COPYRIGHT -->
+				<!-- BEGIN POWERED -->
+				<div class="col-md-6 col-sm-6 text-right">
+					<p class="powered">技术支持：云链信息</p>
+				</div>
+				<!-- END POWERED -->
+			</div>
+		</div>
+	</div>
+	<!-- END FOOTER -->
+	<script th:src="@{/assets/plugins/jquery.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/jquery-migrate.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/bootstrap/js/bootstrap.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/corporate/scripts/back-to-top.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/fancybox/source/jquery.fancybox.pack.js}" type="text/javascript"></script>
+	<!-- pop up -->
+	<script th:src="@{/assets/plugins/owl.carousel/owl.carousel.min.js}" type="text/javascript"></script>
+	<!-- slider for products -->
+	<script th:src="@{/assets/pages/scripts/bs-carousel.js}" type="text/javascript"></script>
+	<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.17/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/select/1.2.5/js/dataTables.select.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
+	<script src="https://cdn.datatables.net/fixedcolumns/3.2.6/js/dataTables.fixedColumns.min.js"></script>
+	<script src="https://cdn.datatables.net/keytable/2.4.0/js/dataTables.keyTable.min.js"></script>
+	<script th:src="@{/assets/plugins/data-table/datatable-input.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/data-table/dataTables.buttons.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/data-table/editor/js/dataTables.editor.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/jquery-validate/jquery.validate.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/sweetalert/sweetalert2.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/uniform/jquery.uniform.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/jquery.form.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/jquery-ui/jquery-ui.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/jstree/jstree.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/select2/js/i18n/zh-CN.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/jquery.blockui.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/session-timeout/bootstrap-session-timeout.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/corporate/scripts/layout.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/corporate/scripts/app.js}" type="text/javascript"></script>
 </body>
 <!-- END BODY -->
-
 <script th:inline="javascript" sec:authorize="isAuthenticated()">
-var keep_alive_url = /*[[@{/keepalive/}]]*/'';
-var logout_url = /*[[@{/logout}]]*/'';
-var session_timeout = /*[[${session.timeout}]]*/'';
-session_timeout = App.intVal(session_timeout);
+	var keep_alive_url = /*[[@{/keepalive/}]]*/'';
+  var logout_url = /*[[@{/logout}]]*/'';
+  var session_timeout = /*[[${session.timeout}]]*/'';
+  session_timeout = App.intVal(session_timeout);
 
-jQuery(document).ready(function() {
-  $.sessionTimeout({
-    title: '会话过期',
-    message: '您的会话(Session)即将要过期!',
-    logoutButton: '退出',
-    keepAliveButton: '保持会话',
-    ajaxType:'get',
-    keepAliveUrl: keep_alive_url,
-    logoutUrl: logout_url,
-    redirUrl: logout_url,
-    warnAfter: (session_timeout - 30) * 1000,
-    redirAfter: session_timeout * 1000,
-    countdownBar: true,
-    ignoreUserActivity:false,
-    countdownMessage: '在{timer}秒后将会自动退出。'
-  });  
-});
-
+  jQuery(document).ready(function() {
+	  $.sessionTimeout({
+	    title : '会话过期',
+	    message : '您的会话(Session)即将要过期!',
+	    logoutButton : '退出',
+	    keepAliveButton : '保持会话',
+	    ajaxType : 'get',
+	    keepAliveUrl : keep_alive_url,
+	    logoutUrl : logout_url,
+	    redirUrl : logout_url,
+	    warnAfter : (session_timeout - 30) * 1000,
+	    redirAfter : session_timeout * 1000,
+	    countdownBar : true,
+	    ignoreUserActivity : false,
+	    countdownMessage : '在{timer}秒后将会自动退出。'
+	  });
+  });
 </script>
-
 <script type="text/javascript">
-var is_vendor = 0;
-var is_admin = 0;
-var is_readonly = 1;
+	var is_vendor = 0;
+  var is_admin = 0;
+  var is_readonly = 1;
 
-jQuery(document).ready(function() {
-    Layout.init();    
-});
+  jQuery(document).ready(function() {
+	  Layout.init();
+  });
 </script>
 </html>

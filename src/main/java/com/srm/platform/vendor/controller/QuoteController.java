@@ -147,19 +147,19 @@ public class QuoteController extends CommonController {
 			params.put("vendor", vendorStr);
 			params.put("createType", Constants.CREATE_TYPE_BUYER);
 		} else {
-			List<String> vendorList = this.getVendorListOfUser();
-			
-			if (vendorList.size() == 0) {
-				return new PageImpl<InquerySearchResult>(new ArrayList(), request, 0);
-			}
-			
-			bodyQuery += " and c.code in :vendorList";
-			params.put("vendorList", vendorList);
-			if (!vendorStr.trim().isEmpty()) {
-				bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";
-				params.put("vendor", vendorStr.trim());
-			}
-			params.put("createType", Constants.CREATE_TYPE_VENDOR);
+//			List<String> vendorList = this.getVendorListOfUser();
+//			
+//			if (vendorList.size() == 0) {
+//				return new PageImpl<InquerySearchResult>(new ArrayList(), request, 0);
+//			}
+//			
+//			bodyQuery += " and c.code in :vendorList";
+//			params.put("vendorList", vendorList);
+//			if (!vendorStr.trim().isEmpty()) {
+//				bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";
+//				params.put("vendor", vendorStr.trim());
+//			}
+//			params.put("createType", Constants.CREATE_TYPE_VENDOR);
 		}
 
 		if (!inventory.trim().isEmpty()) {
