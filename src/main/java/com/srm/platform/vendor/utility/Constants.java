@@ -64,5 +64,5 @@ public class Constants {
 	public final static int PERMISSION_DIMENSION_VENDOR = 4;
 	public final static int PERMISSION_DIMENSION_INVENTORY = 5;
 	
-
+	public final static String SUPER_ADMIN_ID = "admin";
 }

@@ -157,7 +157,7 @@ public class AccountPermission {
 		}
 	}
 	
-	public boolean checkCompanyPermission(String inventoryClassCode) {
+	public boolean checkInventoryClassPermission(String inventoryClassCode) {
 		if (this.inventoryClassList == null || this.inventoryClassList.size() == 0) {
 			return false;
 		} else {

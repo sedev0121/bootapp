@@ -47,12 +47,18 @@ import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.BuyerSearchResult;
 import com.srm.platform.vendor.searchitem.PermissionScopeOfAccount;
 import com.srm.platform.vendor.searchitem.SearchItem;
+import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 
 @Controller
 @RequestMapping(path = "/buyer")
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('采购员用户管理-查看列表')")
 public class BuyerController extends AccountController {	
 
+	private static Long LIST_FUNCTION_ACTION_ID = 6L;
+	private static Long EDIT_FUNCTION_ACTION_ID = 7L;
+	private static Long DELETE_FUNCTION_ACTION_ID = 8L;
+	
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
 	public String buyer(Model model) {
@@ -61,11 +67,14 @@ public class BuyerController extends AccountController {
 
 	// 用户管理->修改
 	@GetMapping("/{id}/edit")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('采购员用户管理-新建/修改')")
 	public String edit(@PathVariable("id") Long id, Model model) {
 		Account account = accountRepository.findOneById(id);
 		if (account == null)
 			show404();
 
+		checkPermission(account, EDIT_FUNCTION_ACTION_ID);
+		
 		PermissionGroupUser temp = new PermissionGroupUser();
 		temp.setAccountId(account.getId());
 
@@ -96,6 +105,7 @@ public class BuyerController extends AccountController {
 
 	// 用户管理->新建
 	@GetMapping("/add")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('采购员用户管理-新建/修改')")
 	public String add(Model model) {
 		model.addAttribute("account", new Account());
 		model.addAttribute("groupList", "[]");
@@ -241,5 +251,15 @@ public class BuyerController extends AccountController {
 		}
 
 		return jsonResponse;
+	}
+	
+	
+	private void checkPermission(Account account, Long functionActionId) {
+		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
+		boolean accountResult = accountPermission.checkAccountPermission(account.getId());
+		boolean companyResult = accountPermission.checkCompanyPermission(account.getCompany().getId());
+		if (!(accountResult || companyResult || isAdmin())) {
+			show403();
+		}
 	}
 }

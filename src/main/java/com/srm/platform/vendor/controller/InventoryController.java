@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -21,12 +22,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.searchitem.InventorySearchItem;
+import com.srm.platform.vendor.utility.AccountPermission;
 
 //商品档案表
 @Controller
 @RequestMapping(path = "/inventory")
+@PreAuthorize("hasAuthority('商品管理-查看列表')")
 public class InventoryController extends CommonController {
 
+	private static Long LIST_FUNCTION_ACTION_ID = 31L;
+	
 	@PersistenceContext
 	private EntityManager em;
 
@@ -45,15 +50,20 @@ public class InventoryController extends CommonController {
 		Inventory main = inventoryRepository.findByCode(code);
 		if (main == null)
 			show404();
+		
+		//TODO: need to get inventory class code
+//		checkPermission(main.getCode(), LIST_FUNCTION_ACTION_ID);
+		
 		model.addAttribute("data", main);
-
 		return "inventory/edit";
 	}
 
 	// 查询列表API
-	@PreAuthorize("hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR')")
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<Inventory> list_ajax(@RequestParam Map<String, String> requestParams) {
+		AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+		List<String> allowedInventoryClassCodeList = accountPermission.getInventoryClassList();
+		
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
@@ -63,21 +73,21 @@ public class InventoryController extends CommonController {
 		if ("main_measure.name".equals(order)) {
 			order = "b.name";
 		}
+		
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<Inventory> result = inventoryRepository.findBySearchTerm(search, request);
+		Page<Inventory> result = inventoryRepository.findBySearchTerm(search, allowedInventoryClassCodeList, request);
 
 		return result;
 	}
-
-	@RequestMapping(value = "/select", produces = "application/json")
-	public @ResponseBody Page<InventorySearchItem> inventory_list_for_select_ajax(
-			@RequestParam(value = "inv") String invName, @RequestParam(value = "vendor") String vendorCode) {
-		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
-		Page<InventorySearchItem> list = inventoryRepository.findSelectListBySearchTerm(vendorCode, invName, request);
-
-		return list;
+	
+	private void checkPermission(String inventoryClassCode, Long functionActionId) {
+		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
+		boolean result = accountPermission.checkInventoryClassPermission(inventoryClassCode);
+		if (!result) {
+			show403();
+		}
 	}
 
 }

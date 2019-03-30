@@ -1,5 +1,7 @@
 package com.srm.platform.vendor.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,8 +14,9 @@ import com.srm.platform.vendor.searchitem.InventorySearchItem;
 // CRUD refers Create, Read, Update, Delete
 
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
+	//TODO: inventory class filter
 	@Query(value = "SELECT * FROM inventory a left join measurement_unit b on a.main_measure=b.code WHERE a.code LIKE %?1% or a.name LIKE %?1% ", nativeQuery = true)
-	Page<Inventory> findBySearchTerm(String search, Pageable pageable);
+	Page<Inventory> findBySearchTerm(String search, List<String> inventoryClassCodeList, Pageable pageable);
 
 	Inventory findByCode(String code);
 

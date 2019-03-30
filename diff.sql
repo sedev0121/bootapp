@@ -87,3 +87,38 @@ INSERT INTO `permission_user_scope` VALUES (166, 18, 7, 1, '1');
 
 alter table account add column company_id int(11) NULL DEFAULT 1;
 alter table account add column unitname varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+
+TRUNCATE TABLE function;
+ALTER TABLE function AUTO_INCREMENT = 1;
+INSERT INTO `function` VALUES (1, '订单管理');
+INSERT INTO `function` VALUES (2, '商品管理');
+INSERT INTO `function` VALUES (3, '供应商管理');
+INSERT INTO `function` VALUES (4, '采购员用户管理');
+INSERT INTO `function` VALUES (5, '供应商用户管理');
+INSERT INTO `function` VALUES (6, '权限管理');
+
+TRUNCATE TABLE action;
+ALTER TABLE action AUTO_INCREMENT = 1;
+INSERT INTO `action` VALUES (1, '查看列表');
+INSERT INTO `action` VALUES (2, '新建/修改');
+INSERT INTO `action` VALUES (3, '删除');
+
+
+TRUNCATE TABLE function_action;
+ALTER TABLE function_action AUTO_INCREMENT = 1;
+INSERT INTO `function_action` VALUES (1, 1, 1);
+INSERT INTO `function_action` VALUES (2, 1, 2);
+INSERT INTO `function_action` VALUES (3, 1, 3);
+INSERT INTO `function_action` VALUES (4, 2, 1);
+INSERT INTO `function_action` VALUES (5, 3, 1);
+INSERT INTO `function_action` VALUES (6, 4, 1);
+INSERT INTO `function_action` VALUES (7, 4, 2);
+INSERT INTO `function_action` VALUES (8, 4, 3);
+INSERT INTO `function_action` VALUES (9, 5, 1);
+INSERT INTO `function_action` VALUES (10, 5, 2);
+INSERT INTO `function_action` VALUES (11, 5, 3);
+INSERT INTO `function_action` VALUES (12, 6, 1);
+INSERT INTO `function_action` VALUES (13, 6, 2);
+INSERT INTO `function_action` VALUES (14, 6, 3);
+
