@@ -64,7 +64,7 @@
           return json.content;
         },
       },
-
+      order: [ [1, 'asc'] ],
       columns : [ {
         data : 'code',
         title : '存货编码',
@@ -80,13 +80,9 @@
         data : 'specs',
         title : '规格型号',
       }, {
-        data : 'main_measure.name',
+        data : 'mainMeasure',
         className: 'dt-center',
         title : '主计量单位',
-      }, {
-        data : 'tax_rate',
-        className: 'dt-right',
-        title : '销项税率',
       }, {
         data : 'iimptaxrate',
         className: 'dt-right',
