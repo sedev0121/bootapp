@@ -31,6 +31,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.srm.platform.vendor.utility.Constants;
 
 @Component
 @ComponentScan(basePackageClasses = AppProperties.class)
@@ -104,6 +105,10 @@ public class RestApiClient {
 	}
 	
 	private RestApiResponse postForConfirm(String classname, List<String> codes) {
+		if (Constants.TEST) {
+			return null;
+		}
+		
 		String url = appProperties.getData_url();
 
 		Map<String, Object> postData = new HashMap<>();
