@@ -8,8 +8,6 @@ public interface VendorSearchItem {
 
 	String getAbbrname();
 
-	String getUnitname();
-
 	String getAddress();
 
 	String getBank_open();
@@ -28,8 +26,5 @@ public interface VendorSearchItem {
 
 	String getContact();
 	String getIndustry();
-	String getTimestamp();
 	String getSort_code();
-	String getState();
-	String getProvide_name();
 }

@@ -54,11 +54,11 @@
 					<div class="col-lg-4 col-md-4">
 						<label>所属类别: </label> <input type="text" id="vendor_sort_code" class="form-control" readonly th:value="${data.sortCode}" />
 					</div>
-					<div class="col-lg-4 col-md-4 hidden">
+					<div class="col-lg-4 col-md-4">
 						<label>所属行业: </label> <input type="text" id="vendor_industry" class="form-control" readonly th:value="${data.industry}" />
 					</div>
-					<div class="col-lg-4 col-md-4 hidden">
-						<label>变更日期: </label> <input type="text" id="vendor_timestamp" class="form-control" readonly th:value="${data.timestamp}" />
+					<div class="col-lg-4 col-md-4">
+						<label>停用日期: </label> <input type="text" class="form-control" readonly th:value="${data.endDate}" />
 					</div>
 				</div>
 			</div>

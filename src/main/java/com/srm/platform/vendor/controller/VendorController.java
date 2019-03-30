@@ -28,7 +28,7 @@ import com.srm.platform.vendor.utility.AccountPermission;
 @PreAuthorize("hasAuthority('供应商管理-查看列表')")
 public class VendorController extends CommonController {
 
-	private static Long LIST_FUNCTION_ACTION_ID = 27L;
+	private static Long LIST_FUNCTION_ACTION_ID = 5L;
 
 	@Autowired
 	private VendorRepository vendorRepository;
@@ -58,6 +58,10 @@ public class VendorController extends CommonController {
 	public @ResponseBody Page<VendorSearchItem> list_ajax(@RequestParam Map<String, String> requestParams) {
 		AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
 		List<String> allowedVendorCodeList = accountPermission.getVendorList();
+
+		if (allowedVendorCodeList == null || allowedVendorCodeList.size() == 0) {
+			return Page.empty();
+		}
 		
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
@@ -65,9 +69,6 @@ public class VendorController extends CommonController {
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
 
-		if (order.equals("unitname")) {
-			order = "b.name";
-		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
