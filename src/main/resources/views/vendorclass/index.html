@@ -5,11 +5,11 @@
 		<ul class="breadcrumb">
 			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
 			<li><a href="#">基础资料</a></li>
-			<li class="active">供应商管理</li>
+			<li class="active">供应商档案分类管理</li>
 		</ul>
 		<div class="search-content form-inline">
 			<div class="search-cell width-10">
-				<label for="product_name">供应商名称/编码:</label> 
+				<label for="product_name">供应商档案分类名称/编码:</label> 
 				<input type="text" id="product_name" class="form-control"> 
 				<a class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</a>
 			</div>
@@ -28,7 +28,7 @@
 	  var table_options = {
 	    ordering : true,
 	    ajax : {
-	      url : /*[[@{/vendor/list}]]*/'',
+	      url : /*[[@{/vendorclass/list}]]*/'',
 	      data : function(data) {
 		      var filter = {
 		        rows_per_page : data.length,
@@ -48,41 +48,16 @@
 	    order: [ [1, 'asc'] ],
 	    columns : [ {
 	      data : 'code',
-	      title : '供应商编码',
+	      title : '供应商档案分类编码',
 	      render : function(data, display, record) {
-		      var edit_url = /*[[@{/vendor/}]]*/'';
+		      var edit_url = /*[[@{/vendorclass/}]]*/'';
 		      edit_url += data + '/edit';
 		      return '<a href="' + edit_url + '">' + data + '</a>';
 	      },
 	      defaultContent : ''
 	    }, {
 	      data : 'name',
-	      title : '供应商名称',
-	    }, {
-	      data : 'abbrname',
-	      title : '供应商简称',
-	    }, {
-	      data : 'address',
-	      title : '地址',
-	    }, {
-	      data : 'bank_open',
-	      title : '开户银行',
-	    }, {
-	      data : 'bank_acc_number',
-	      title : '银行帐号',
-	    }, {
-	      data : 'fax',
-	      title : '传真 ',
-	    }, {
-	      data : 'email',
-	      title : 'Email地址',
-	    }, {
-	      data : 'mobile',
-	      className : 'dt-right',
-	      title : '手机',
-	    }, {
-	      data : 'receive_site',
-	      title : '到货地址',
+	      title : '供应商档案分类名称',
 	    } ],
 	  };
 
