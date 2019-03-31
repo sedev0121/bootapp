@@ -310,7 +310,6 @@ public class SyncController {
 						continue;
 					}
 
-					logger.info(getStringValue(temp, "cPOID"));
 					PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(getStringValue(temp, "cPOID"));
 					if (main == null) {
 						main = new PurchaseOrderMain();
