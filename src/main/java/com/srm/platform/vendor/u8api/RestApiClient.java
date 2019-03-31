@@ -92,6 +92,18 @@ public class RestApiClient {
 	public RestApiResponse postConfirmForVendor(List<String> codes) {
 		return postForConfirm("SRM_vendor", codes);
 	}
+	
+	public RestApiResponse postForOrder() {
+		return postForData("SRM_pomo", "pomo");
+	}
+	
+	public RestApiResponse postConfirmForOrder(List<String> pocodes, List<String> mocodes) {
+		Map<String, List<String>> content = new HashMap<>();
+		content.put("pocodes", pocodes);
+		content.put("mocodes", mocodes);
+		
+		return postForConfirm("SRM_pomo", content);
+	}
 
 	private RestApiResponse postForData(String classname, String dataField) {
 		String url = appProperties.getData_url();
@@ -115,6 +127,22 @@ public class RestApiClient {
 
 		Map<String, Object> content = new HashMap<>();
 		content.put("codes", codes);
+
+		postData.put("classname", classname);
+		postData.put("method", "feedback");
+		postData.put("content", content);
+
+		return post(url, postData, null, true);
+	}
+	
+	private RestApiResponse postForConfirm(String classname, Map<String, List<String>> content) {
+		if (Constants.TEST) {
+			return null;
+		}
+		
+		String url = appProperties.getData_url();
+
+		Map<String, Object> postData = new HashMap<>();
 
 		postData.put("classname", classname);
 		postData.put("method", "feedback");
@@ -164,7 +192,7 @@ public class RestApiClient {
 			response.setErrmsg(String.valueOf(map.get("errmsg")));
 
 			if (dataField != null) {
-				List<LinkedHashMap<String, String>> dataList = (List<LinkedHashMap<String, String>>) map.get(dataField);
+				List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) map.get(dataField);
 				response.setData(dataList);
 			}
 

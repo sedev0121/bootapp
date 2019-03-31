@@ -596,18 +596,18 @@ public class SyncControllerOld {
 					}
 
 					detail.setInventory(inventoryRepository.findOneByCode(temp.get("cInvCode")));
-					if (temp.get("iQuantity") != null && !temp.get("iQuantity").isEmpty())
-						detail.setQuantity(Float.parseFloat(temp.get("iQuantity")));
-					if (temp.get("iNatUnitPrice") != null && !temp.get("iNatUnitPrice").isEmpty())
-						detail.setPrice(Float.parseFloat(temp.get("iNatUnitPrice")));
-					if (temp.get("iTaxNatPrice") != null && !temp.get("iTaxNatPrice").isEmpty())
-						detail.setTaxprice(Float.parseFloat(temp.get("iTaxNatPrice")));
-					if (temp.get("iNatSum") != null && !temp.get("iNatSum").isEmpty())
-						detail.setSum(Float.parseFloat(temp.get("iNatSum")));
-					if (temp.get("iNatMoney") != null && !temp.get("iNatMoney").isEmpty())
-						detail.setMoney(Float.parseFloat(temp.get("iNatMoney")));
-					if (temp.get("ivouchrowno") != null && !temp.get("ivouchrowno").isEmpty())
-						detail.setRowno(Integer.parseInt(temp.get("ivouchrowno")));
+//					if (temp.get("iQuantity") != null && !temp.get("iQuantity").isEmpty())
+//						detail.setQuantity(Float.parseFloat(temp.get("iQuantity")));
+//					if (temp.get("iNatUnitPrice") != null && !temp.get("iNatUnitPrice").isEmpty())
+//						detail.setPrice(Float.parseFloat(temp.get("iNatUnitPrice")));
+//					if (temp.get("iTaxNatPrice") != null && !temp.get("iTaxNatPrice").isEmpty())
+//						detail.setTaxprice(Float.parseFloat(temp.get("iTaxNatPrice")));
+//					if (temp.get("iNatSum") != null && !temp.get("iNatSum").isEmpty())
+//						detail.setSum(Float.parseFloat(temp.get("iNatSum")));
+//					if (temp.get("iNatMoney") != null && !temp.get("iNatMoney").isEmpty())
+//						detail.setMoney(Float.parseFloat(temp.get("iNatMoney")));
+//					if (temp.get("ivouchrowno") != null && !temp.get("ivouchrowno").isEmpty())
+//						detail.setRowno(Integer.parseInt(temp.get("ivouchrowno")));
 
 					
 					String arriveDateStr = temp.get("dArriveDate");

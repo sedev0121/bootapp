@@ -14,9 +14,13 @@ public class InventoryClass {
 	@Id
 	private String code;
 	private String name;
+	
 	@JsonIgnore
+	@Nullable
 	private Integer rank;
+	
 	@JsonIgnore
+	@Nullable
 	private Integer endRankFlag;
 
 	public String getCode() {
@@ -39,7 +43,7 @@ public class InventoryClass {
 		return rank;
 	}
 
-	public void setRank(int rank) {
+	public void setRank(Integer rank) {
 		this.rank = rank;
 	}
 

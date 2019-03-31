@@ -32,7 +32,7 @@ public class Inventory {
 
 	private String defwarehouse;
 	private String defwarehousename;
-	private Float iimptaxrate;
+	private Double iimptaxrate;
 	private Date startDate;
 	private Date endDate;
 	private Date modifyDate;
@@ -97,11 +97,11 @@ public class Inventory {
 		this.defwarehousename = defwarehousename;
 	}
 
-	public Float getIimptaxrate() {
+	public Double getIimptaxrate() {
 		return iimptaxrate;
 	}
 
-	public void setIimptaxrate(Float iimptaxrate) {
+	public void setIimptaxrate(Double iimptaxrate) {
 		this.iimptaxrate = iimptaxrate;
 	}
 

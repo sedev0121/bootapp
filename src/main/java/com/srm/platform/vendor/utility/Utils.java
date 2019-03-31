@@ -26,8 +26,9 @@ public class Utils {
 		Date date = null;
 
 		try {
-			if (dateStr != null && !dateStr.isEmpty())
+			if (dateStr != null && !dateStr.isEmpty() && !dateStr.equals("null")) {
 				date = getDateFormat().parse(dateStr);
+			}				
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -39,8 +40,9 @@ public class Utils {
 		Date date = null;
 
 		try {
-			if (dateStr != null && !dateStr.isEmpty())
+			if (dateStr != null && !dateStr.isEmpty() && !dateStr.equals("null")) {
 				date = getDateTimeFormat().parse(dateStr);
+			}				
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -53,8 +55,9 @@ public class Utils {
 		Date date = null;
 
 		try {
-			if (dateStr != null && !dateStr.isEmpty())
+			if (dateStr != null && !dateStr.isEmpty() && !dateStr.equals("null")) {
 				date = getDateTimeFormat2().parse(dateStr);
+			}				
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
