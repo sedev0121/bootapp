@@ -24,14 +24,14 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderDetailSearchResult;
 @SqlResultSetMapping(name = "PurchaseOrderDetailSearchResult", classes = {
 		@ConstructorResult(targetClass = PurchaseOrderDetailSearchResult.class, columns = {
 				@ColumnResult(name = "id", type = Long.class), @ColumnResult(name = "rowno", type = Integer.class),
-				@ColumnResult(name = "code"), @ColumnResult(name = "quantity", type = Float.class),
-				@ColumnResult(name = "shipped_quantity", type = Float.class), @ColumnResult(name = "inventoryname"),
+				@ColumnResult(name = "code"), @ColumnResult(name = "quantity", type = Double.class),
+				@ColumnResult(name = "shipped_quantity", type = Double.class), @ColumnResult(name = "inventoryname"),
 				@ColumnResult(name = "inventorycode"), @ColumnResult(name = "vendorname"),
 				@ColumnResult(name = "vendorcode"), @ColumnResult(name = "specs"), @ColumnResult(name = "unitname"),
 				@ColumnResult(name = "arrivedate", type = Date.class),
 				@ColumnResult(name = "last_ship_date", type = Date.class),
 				@ColumnResult(name = "confirmdate", type = Date.class), @ColumnResult(name = "arrivenote"),
-				@ColumnResult(name = "confirmnote"), @ColumnResult(name = "remain_quantity", type = Float.class) }) })
+				@ColumnResult(name = "confirmnote"), @ColumnResult(name = "remain_quantity", type = Double.class) }) })
 
 @Table(name = "purchase_order_detail")
 public class PurchaseOrderDetail {
@@ -49,25 +49,25 @@ public class PurchaseOrderDetail {
 	private Inventory inventory;
 
 	private Integer rowno;
-	private Float quantity;
+	private Double quantity;
 
 	@Column(name = "shipped_quantity")
-	private Float shippedQuantity;
-	private Float price;
-	private Float taxprice;
-	private Float tax;
-	private Float money;
-	private Float sum;
-	private Float natprice;
-	private Float nattaxprice;
-	private Float natmoney;
-	private Float natsum;
-	private Float prepaymoney;
+	private Double shippedQuantity;
+	private Double price;
+	private Double taxprice;
+	private Double tax;
+	private Double money;
+	private Double sum;
+	private Double natprice;
+	private Double nattaxprice;
+	private Double natmoney;
+	private Double natsum;
+	private Double prepaymoney;
 	private Date arrivedate;
 	private Date confirmdate;
 	private String arrivenote;
 	private String confirmnote;
-	private Float confirmquantity;
+	private Double confirmquantity;
 	private Date lastShipDate;
 
 	public PurchaseOrderDetail() {
@@ -90,11 +90,11 @@ public class PurchaseOrderDetail {
 		this.lastShipDate = lastShipDate;
 	}
 
-	public Float getConfirmquantity() {
+	public Double getConfirmquantity() {
 		return confirmquantity;
 	}
 
-	public void setConfirmquantity(Float confirmquantity) {
+	public void setConfirmquantity(Double confirmquantity) {
 		this.confirmquantity = confirmquantity;
 	}
 
@@ -122,99 +122,99 @@ public class PurchaseOrderDetail {
 		this.rowno = rowno;
 	}
 
-	public Float getQuantity() {
+	public Double getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Float quantity) {
+	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
 	}
 
-	public Float getShippedQuantity() {
+	public Double getShippedQuantity() {
 		return shippedQuantity;
 	}
 
-	public void setShippedQuantity(Float shippedQuantity) {
+	public void setShippedQuantity(Double shippedQuantity) {
 		this.shippedQuantity = shippedQuantity;
 	}
 
-	public Float getPrice() {
+	public Double getPrice() {
 		return price;
 	}
 
-	public void setPrice(Float price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 
-	public Float getTax() {
+	public Double getTax() {
 		return tax;
 	}
 
-	public void setTax(Float tax) {
+	public void setTax(Double tax) {
 		this.tax = tax;
 	}
 
-	public Float getTaxprice() {
+	public Double getTaxprice() {
 		return taxprice;
 	}
 
-	public void setTaxprice(Float taxprice) {
+	public void setTaxprice(Double taxprice) {
 		this.taxprice = taxprice;
 	}
 
-	public Float getMoney() {
+	public Double getMoney() {
 		return money;
 	}
 
-	public void setMoney(Float money) {
+	public void setMoney(Double money) {
 		this.money = money;
 	}
 
-	public Float getSum() {
+	public Double getSum() {
 		return sum;
 	}
 
-	public void setSum(Float sum) {
+	public void setSum(Double sum) {
 		this.sum = sum;
 	}
 
-	public Float getNatprice() {
+	public Double getNatprice() {
 		return natprice;
 	}
 
-	public void setNatprice(Float natprice) {
+	public void setNatprice(Double natprice) {
 		this.natprice = natprice;
 	}
 
-	public Float getNattaxprice() {
+	public Double getNattaxprice() {
 		return nattaxprice;
 	}
 
-	public void setNattaxprice(Float nattaxprice) {
+	public void setNattaxprice(Double nattaxprice) {
 		this.nattaxprice = nattaxprice;
 	}
 
-	public Float getNatmoney() {
+	public Double getNatmoney() {
 		return natmoney;
 	}
 
-	public void setNatmoney(Float natmoney) {
+	public void setNatmoney(Double natmoney) {
 		this.natmoney = natmoney;
 	}
 
-	public Float getNatsum() {
+	public Double getNatsum() {
 		return natsum;
 	}
 
-	public void setNatsum(Float natsum) {
+	public void setNatsum(Double natsum) {
 		this.natsum = natsum;
 	}
 
-	public Float getPrepaymoney() {
+	public Double getPrepaymoney() {
 		return prepaymoney;
 	}
 
-	public void setPrepaymoney(Float prepaymoney) {
+	public void setPrepaymoney(Double prepaymoney) {
 		this.prepaymoney = prepaymoney;
 	}
 

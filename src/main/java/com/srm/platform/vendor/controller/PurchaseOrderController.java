@@ -242,7 +242,7 @@ public class PurchaseOrderController extends CommonController {
 					detail.setConfirmnote(item.get("confirmnote"));
 				} else {
 					if (item.get("prepaymoney") != null && !item.get("prepaymoney").isEmpty())
-						detail.setPrepaymoney(Float.parseFloat(item.get("prepaymoney")));
+						detail.setPrepaymoney(Double.parseDouble(item.get("prepaymoney")));
 					else
 						detail.setPrepaymoney(null);
 					detail.setArrivenote(item.get("arrivenote"));

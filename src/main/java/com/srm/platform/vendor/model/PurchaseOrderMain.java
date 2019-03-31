@@ -41,25 +41,28 @@ public class PurchaseOrderMain {
 	@JoinColumn(name = "vencode", referencedColumnName = "code")
 	Vendor vendor;
 
+	private String poid;
+	
 	@JsonProperty("purchase_type_name")
 	private String purchaseTypeName;
-
-	private String deptcode;
-	private String deptname;
-	private String personcode;
-	private String personname;
 
 	private String remark;
 	private String state;
 
 	private Integer srmstate;
+	private Date orderdate;
 
 	private String maker;
 	private Date makedate;
 
+	private Date audittime;
+	private Date changeaudittime;
+
 	private String verifier;
+	private String changeverifier;
 
 	private String closer;
+	private Date closedate;
 
 	private String locker;
 	private Date lockdate;
@@ -118,38 +121,6 @@ public class PurchaseOrderMain {
 		this.vendor = vendor;
 	}
 
-	public String getDeptcode() {
-		return deptcode;
-	}
-
-	public void setDeptcode(String deptcode) {
-		this.deptcode = deptcode;
-	}
-
-	public String getDeptname() {
-		return deptname;
-	}
-
-	public void setDeptname(String deptname) {
-		this.deptname = deptname;
-	}
-
-	public String getPersoncode() {
-		return personcode;
-	}
-
-	public void setPersoncode(String personcode) {
-		this.personcode = personcode;
-	}
-
-	public String getPersonname() {
-		return personname;
-	}
-
-	public void setPersonname(String personname) {
-		this.personname = personname;
-	}
-
 	public String getPurchaseTypeName() {
 		return purchaseTypeName;
 	}
@@ -206,8 +177,6 @@ public class PurchaseOrderMain {
 		this.state = state;
 	}
 
-	
-
 	public Integer getSrmstate() {
 		return srmstate;
 	}
@@ -238,6 +207,54 @@ public class PurchaseOrderMain {
 
 	public void setReviewdate(Date reviewdate) {
 		this.reviewdate = reviewdate;
+	}
+
+	public Date getClosedate() {
+		return closedate;
+	}
+
+	public void setClosedate(Date closedate) {
+		this.closedate = closedate;
+	}
+
+	public Date getOrderdate() {
+		return orderdate;
+	}
+
+	public void setOrderdate(Date orderdate) {
+		this.orderdate = orderdate;
+	}
+
+	public String getChangeverifier() {
+		return changeverifier;
+	}
+
+	public void setChangeverifier(String changeverifier) {
+		this.changeverifier = changeverifier;
+	}
+
+	public Date getChangeaudittime() {
+		return changeaudittime;
+	}
+
+	public void setChangeaudittime(Date changeaudittime) {
+		this.changeaudittime = changeaudittime;
+	}
+
+	public Date getAudittime() {
+		return audittime;
+	}
+
+	public void setAudittime(Date audittime) {
+		this.audittime = audittime;
+	}
+
+	public String getPoid() {
+		return poid;
+	}
+
+	public void setPoid(String poid) {
+		this.poid = poid;
 	}
 
 }

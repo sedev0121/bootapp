@@ -310,7 +310,7 @@ public class ShipController extends CommonController {
 
 						if (detail != null) {
 							if (row.get(1) != null) {
-								float quantity = detail.getShippedQuantity() == null ? 0 : detail.getShippedQuantity();
+								double quantity = detail.getShippedQuantity() == null ? 0 : detail.getShippedQuantity();
 
 								detail.setShippedQuantity(quantity + Float.parseFloat(row.get(1)));
 								detail.setLastShipDate(new Date());
@@ -348,7 +348,7 @@ public class ShipController extends CommonController {
 				continue;
 			PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneById(Long.valueOf(entry.getKey()));
 			if (detail != null && entry.getValue() != null && !entry.getValue().isEmpty()) {
-				float quantity = detail.getShippedQuantity() == null ? 0 : detail.getShippedQuantity();
+				double quantity = detail.getShippedQuantity() == null ? 0 : detail.getShippedQuantity();
 				detail.setShippedQuantity(quantity + Long.valueOf(entry.getValue()));
 				detail.setLastShipDate(new Date());
 				purchaseOrderDetailRepository.save(detail);

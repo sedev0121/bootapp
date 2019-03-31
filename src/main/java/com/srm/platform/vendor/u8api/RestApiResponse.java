@@ -8,7 +8,7 @@ public class RestApiResponse {
 
 	private String status;
 	private String errmsg;
-	private List<LinkedHashMap<String, String>> data;
+	private List<LinkedHashMap<String, Object>> data;
 	private Map<String, Object> originalMap;
 
 	public String getStatus() {
@@ -27,11 +27,11 @@ public class RestApiResponse {
 		this.errmsg = errmsg;
 	}
 
-	public List<LinkedHashMap<String, String>> getData() {
+	public List<LinkedHashMap<String, Object>> getData() {
 		return data;
 	}
 
-	public void setData(List<LinkedHashMap<String, String>> data) {
+	public void setData(List<LinkedHashMap<String, Object>> data) {
 		this.data = data;
 	}
 
