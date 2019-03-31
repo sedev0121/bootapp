@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "inventory")
 public class Inventory {
@@ -14,7 +16,10 @@ public class Inventory {
 	private String name;
 	private String specs;
 	private String sortCode;
+	
+	@JsonProperty(value = "main_measure")
 	private String mainMeasure;
+	
 	private String defwarehouse;
 	private String defwarehousename;
 	private Float iimptaxrate;

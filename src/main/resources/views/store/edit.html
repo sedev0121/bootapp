@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+</head>
+<body>
+	<div class="container" layout:fragment="content">
+		<ul class="breadcrumb">
+			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+			<li><a href="#">基础资料</a></li>
+			<li><a th:href="@{/vendor}">仓库管理</a></li>
+			<li class="active">详细信息</li>
+		</ul>
+		<div class="btn-group-bar">
+			<div class="text-right">
+				<a class="btn btn-default" th:href="@{/store}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-4">
+						<label>仓库编码: </label> <input type="text" name="code" id="vendor_code" class="form-control select-vendor" readonly th:value="${data.id}" />
+					</div>
+					<div class="col-md-8">
+						<label>仓库名称: </label> <input type="text" id="vendor_name" class="form-control select-vendor" readonly th:value="${data.name}" />
+					</div>					
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
