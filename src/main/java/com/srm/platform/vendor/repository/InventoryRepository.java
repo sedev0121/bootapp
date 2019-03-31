@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.Inventory;
-import com.srm.platform.vendor.model.InventoryClass;
-import com.srm.platform.vendor.searchitem.InventorySearchItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
@@ -19,12 +17,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 	Inventory findOneByCode(String code);
 	
 	//TODO: inventory class filter
-	@Query(value = "SELECT * FROM inventory a left join measurement_unit b on a.main_measure=b.code WHERE a.code LIKE %?1% or a.name LIKE %?1% ", nativeQuery = true)
+	@Query(value = "SELECT * FROM inventory a left join inventory_class b on a.sort_code=b.code WHERE a.code LIKE %?1% or a.name LIKE %?1% ", nativeQuery = true)
 	Page<Inventory> findBySearchTerm(String search, List<String> inventoryClassCodeList, Pageable pageable);
-
-	Inventory findByCode(String code);
-
-	@Query(value = "select a.code, a.name, a.specs, a.puunit_name, ifnull(b.favdate, a.start_date) start_date, ifnull(b.fcanceldate, a.end_date) end_date, ifnull(b.fprice, a.ref_sale_price) price from inventory a left join price b on a.code=b.cinvcode and b.fisoutside=0 and b.fsupplyno=?1 where a.name like %?2%", countQuery = "select count(a.code) from inventory a left join price b on a.code=b.cinvcode and b.fisoutside=0 and b.fsupplyno=?1 where a.name like %?2%", nativeQuery = true)
-	Page<InventorySearchItem> findSelectListBySearchTerm(String vendorCode, String invName, Pageable pageable);
 
 }

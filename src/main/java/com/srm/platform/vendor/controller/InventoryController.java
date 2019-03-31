@@ -47,7 +47,7 @@ public class InventoryController extends CommonController {
 	// 详细
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
-		Inventory main = inventoryRepository.findByCode(code);
+		Inventory main = inventoryRepository.findOneByCode(code);
 		if (main == null)
 			show404();
 		
@@ -70,7 +70,7 @@ public class InventoryController extends CommonController {
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
 
-		if ("main_measure.name".equals(order)) {
+		if ("inventoryClass.name".equals(order)) {
 			order = "b.name";
 		}
 		

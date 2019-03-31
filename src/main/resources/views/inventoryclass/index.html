@@ -48,13 +48,7 @@
 	    order: [ [1, 'asc'] ],
 	    columns : [ {
 	      data : 'code',
-	      title : '存货分类编码',
-	      render : function(data, display, record) {
-		      var edit_url = /*[[@{/inventoryclass/}]]*/'';
-		      edit_url += data + '/edit';
-		      return '<a href="' + edit_url + '">' + data + '</a>';
-	      },
-	      defaultContent : ''
+	      title : '存货分类编码',	      
 	    }, {
 	      data : 'name',
 	      title : '存货分类名称',

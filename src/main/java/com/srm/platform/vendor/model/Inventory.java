@@ -4,7 +4,15 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "inventory")
@@ -13,8 +21,15 @@ public class Inventory {
 	private String code;
 	private String name;
 	private String specs;
-	private String sortCode;
+
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "sort_code", referencedColumnName = "code", nullable=true)
+	@ManyToOne()
+	private InventoryClass inventoryClass;
+
+	@JsonProperty(value = "main_measure")
 	private String mainMeasure;
+
 	private String defwarehouse;
 	private String defwarehousename;
 	private Float iimptaxrate;
@@ -50,12 +65,12 @@ public class Inventory {
 		this.specs = specs;
 	}
 
-	public String getSortCode() {
-		return sortCode;
+	public InventoryClass getInventoryClass() {
+		return inventoryClass;
 	}
 
-	public void setSortCode(String sortCode) {
-		this.sortCode = sortCode;
+	public void setInventoryClass(InventoryClass inventoryClass) {
+		this.inventoryClass = inventoryClass;
 	}
 
 	public String getMainMeasure() {
