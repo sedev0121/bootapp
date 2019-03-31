@@ -595,7 +595,7 @@ public class SyncControllerOld {
 						detail.setMain(main);
 					}
 
-					detail.setInventory(inventoryRepository.findByCode(temp.get("cInvCode")));
+					detail.setInventory(inventoryRepository.findOneByCode(temp.get("cInvCode")));
 					if (temp.get("iQuantity") != null && !temp.get("iQuantity").isEmpty())
 						detail.setQuantity(Float.parseFloat(temp.get("iQuantity")));
 					if (temp.get("iNatUnitPrice") != null && !temp.get("iNatUnitPrice").isEmpty())
@@ -850,7 +850,7 @@ public class SyncControllerOld {
 					}
 
 					detail.setMain(main);
-					detail.setInventory(inventoryRepository.findByCode(inventory_code));
+					detail.setInventory(inventoryRepository.findOneByCode(inventory_code));
 
 					detail.setQuantity(quantity);
 

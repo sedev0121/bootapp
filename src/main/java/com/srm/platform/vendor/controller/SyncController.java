@@ -114,6 +114,7 @@ public class SyncController {
 				String tempValue;
 				inventory.setCode(temp.get("code"));
 				inventory.setName(temp.get("name"));
+				inventory.setInventoryClass(inventoryClassRepository.findOneByCode(temp.get("sort_code")));
 				inventory.setSpecs(temp.get("specs"));
 				inventory.setMainMeasure(temp.get("main_measure"));
 				inventory.setDefwarehouse(temp.get("defwarehouse"));

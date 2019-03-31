@@ -375,7 +375,7 @@ public class InqueryController extends CommonController {
 			for (Map<String, String> row : form.getTable()) {
 				VenPriceAdjustDetail detail = new VenPriceAdjustDetail();
 				detail.setMain(venPriceAdjustMain);
-				detail.setInventory(inventoryRepository.findByCode(row.get("cinvcode")));
+				detail.setInventory(inventoryRepository.findOneByCode(row.get("cinvcode")));
 				detail.setCbodymemo(row.get("cbodymemo"));
 				if (row.get("iunitprice") != null && !row.get("iunitprice").isEmpty()) {
 					detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));

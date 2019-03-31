@@ -4,15 +4,19 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.lang.Nullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "inventory_class")
 public class InventoryClass {
 	@Id
 	private String code;
-
 	private String name;
-
+	@JsonIgnore
 	private Integer rank;
+	@JsonIgnore
 	private Integer endRankFlag;
 
 	public String getCode() {

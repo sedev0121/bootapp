@@ -6,20 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public interface InventorySearchItem {
 
-	@JsonProperty("id")
 	String getCode();
 
-	@JsonProperty("title")
 	String getName();
-
-	String getSpecs();
-
-	String getPuunitName();
-
-	Date getStartDate();
-
-	Date getEndDate();
-
-	Integer getPrice();
+//	String getInventoryClassName();
+//	String getSpecs();
+//	Date getStartDate();
+//	Date getEndDate();
 
 }
