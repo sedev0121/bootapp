@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+	<div class="container" layout:fragment="content">
+		<ul class="breadcrumb">
+			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+			<li class="active">箱码管理</li>
+		</ul>
+		<div class="row">
+			<div class="col-md-2">
+				<div class="">
+					<table id="box_class_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+					</table>
+				</div>
+			</div>
+			<div class="col-md-10">
+				<div class="search-content">
+					<div class="search-cell width-20">
+						<label for="code">箱码：</label> <input type="text" name="code" id="code" class="form-control">
+					</div>
+					<div class="search-cell width-10 form-group">
+						<label for="state">箱码状态：</label> <select name="state" id="state" class="form-control">
+						</select>
+					</div>
+					<div class="search-cell width-10 form-group">
+						<label for="used">装箱状态：</label> <select name="used" id="used" class="form-control">
+						</select>
+					</div>
+					<div style="vertical-align: bottom" class="search-cell form-group">
+						<button class="btn btn-default" id="btn_search">
+							<i class="fa fa-search"></i> 查询
+						</button>
+						<button class="btn btn-primary" id="btn_generate">
+							<i class="fa fa-plus-circle"></i> 生成箱码
+						</button>
+						<button class="btn btn-info" id="btn_enable">
+							<i class="fa fa-play"></i> 启用
+						</button>
+						<button class="btn btn-danger" id="btn_disable">
+							<i class="fa fa-stop"></i> 停用
+						</button>
+						<button class="btn btn-warning" id="btn_empty">
+							<i class="fa fa-trash"></i> 空置
+						</button>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<table id="box_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="box_dialog" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" i="edit_dialog_title">修改箱码信息</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="box_form" th:action="@{/box/update}" method="post">
+							<input type="hidden" id="edit_id" name="id" class="form-control">
+							<input type="hidden" id="class_id" name="class_id" class="form-control">
+							<div class="row">
+								<div class="col-lg-4 col-md-4">
+									<label for="code">序列号: </label> <input type="text" id="edit_code" readonly class="form-control" />
+								</div>
+								<div class="col-lg-4 col-md-4">
+									<label for="spec">规格: </label> <input type="text" id="edit_spec" name="spec" class="form-control" />
+								</div>
+								<div class="col-lg-4 col-md-4">
+									<label for="memo">其他: </label> <input type="text" id="edit_memo" name="memo" class="form-control" />
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+						<button type="button" class="btn btn-primary" id="save_box">保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script th:inline="javascript">
+	var box_class_table, box_table;
+  var box_url = /*[[@{|/box/list/|}]]*/'';
+	var current_class_id = null;
+	
+  function edit(id) {
+  	if (id) {
+    	var filted_rows = box_table.rows().data().filter( row => {
+  			return row.id == id;
+  		});
+  		var edit_data = filted_rows[0];
+  		$('#edit_id').val(edit_data.id);
+  		$('#edit_code').val(edit_data.code);
+  		$('#edit_spec').val(edit_data.spec);
+  		$('#edit_memo').val(edit_data.memo);
+  		$('#edit_dialog_title').val("修改箱码信息");
+  	} else {
+  		$('#edit_dialog_title').val("生成箱码信息");
+  	}
+
+  	$("#class_id").val(current_class_id);
+		
+    $('#box_dialog').modal('show');          
+  }
+  
+  jQuery(document).ready(function() {
+
+  	$('#state').select2({data: App.getAccountStateDataWithAll(), minimumResultsForSearch: -1});
+  	$('#used').select2({data: App.getUsedStateDataWithAll(), minimumResultsForSearch: -1});
+  	
+	  $('#btn_generate').click(function() {
+	  	edit(null);
+	  });
+	  
+	  $('#btn_enable').click(function() {
+		  box_table.draw();
+	  });
+	  
+	  $('#btn_disable').click(function() {
+		  box_table.draw();
+	  });
+	  
+	  $('#btn_search').click(function() {
+		  box_table.draw();
+	  });
+
+	  $('#btn_empty').click(function() {
+		  box_table.draw();
+	  });
+
+	  $('#save_box').click(function() {
+	  	$("#box_form").ajaxSubmit({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          },
+          success: function(res, status, xhr, form) {
+            if (res.success == 1) {
+              $('#box_dialog').modal('hide'); 
+              box_table.draw();
+              App.showSuccessDialog("操作成功");
+            }else{
+              App.showErrorDialog(res.errmsg);
+            }              
+          },
+          error: function (res, status, xhr, form) {
+            App.showErrorDialog("操作失败", "请输入正确的值");
+          }
+        });
+	  });
+	  
+	  box_class_table = $('#box_class_table').DataTable({
+	    ordering : false,
+	    serverSide : false,
+	    processing : false,
+	    lengthChange : false,
+	    scrollY : '350px',
+	    paging : false,
+	    info : false,
+	    ajax : {
+	      url : /*[[@{|/box/class/list|}]]*/'',
+	      dataSrc : function(json) {
+		      return json;
+	      },
+	    },
+	    order : [ [ 0, 'asc' ] ],
+	    columns : [ {
+	      data : 'name',
+	      title : '全部分类',
+	    } ],
+	    drawCallback : function(settings) {
+		    $('#box_class_table tbody tr:first').click();
+	    }
+	  });
+
+	  $('#box_class_table tbody').on('click', 'tr', function() {
+		  $('.clicked').removeClass("clicked");
+		  $(this).addClass("clicked");
+		  var clicked_row_data = box_class_table.row(this).data();
+		  current_class_id = clicked_row_data.id;
+		  reloadBoxTable(clicked_row_data.id);
+	  });
+
+	  function reloadBoxTable(class_id) {
+
+		  if (box_table) {
+			  box_table.clear().destroy();
+		  }
+
+		  box_table = $('#box_table').DataTable({
+		    ordering : true,
+		    scrollY : '350px',
+		    select : {
+		      style : 'multi',
+		      selector : 'td'
+		    },
+		    ajax : {
+		      url : box_url + class_id,
+		      data : function(data) {
+		        var filter = {
+		          rows_per_page : data.length,
+		          page_index : data.start / data.length + 1,
+		          order: data.columns[data.order[0].column].data,
+		          dir:data.order[0].dir,
+		          code: $('#code').val(),
+		          state:$('#state').val(),
+		          used:$('#used').val(),
+			      }
+		        return filter;
+		      },
+		      dataSrc : function(json) {
+			      json.recordsTotal = json.totalElements;
+			      json.recordsFiltered = json.totalElements;
+			      return json.content;
+		      },
+		    },
+		    order : [ [ 1, 'asc' ] ],
+		    columns : [ {
+		      data : null,
+		      defaultContent : '',
+		      orderable : false,
+		      width : "50px",
+		      className : 'select-checkbox',
+		    }, {
+		      data : 'code',
+		      title : '序列号',
+		      render: function (data, display, record) {
+		        return '<a onclick="edit(' + record.id + ')">' + data + '</a>';
+		      },
+		    }, {
+		      data : 'spec',
+		      title : '规格',
+		    }, {
+		      data : 'memo',
+		      title : '其他',
+		    }, {
+		      data : 'state',
+		      title : '启用/停用',
+		      render: App.getAccountStateOfId,
+		    }, {
+		      data : 'used',
+		      title : '装箱状态',
+		      render: App.getUsedStateOfId,
+		    }],
+		  });
+	  }
+	  
+	  $('#state, #used').change(function() {
+	  	box_table.draw();
+	  });
+	  
+	  $('#code').keyup(function(e){
+	      if(e.keyCode == 13)
+	      	box_table.draw();
+	  });
+  });
+</script>
