@@ -111,9 +111,24 @@ var edit_url = [[@{/purchaseorder/}]];
           return '<a href="' + url + '">' + data + '</a>';
         },
       }, {
+        data : 'audittime',
+        className: 'dt-center',
+        title : '订单日期',
+        render : $.fn.date_renderer
+      }, {
+        data : 'vendorname',
+        visible: false,
+        className: 'dt-center',
+        title : '业务实体',
+      }, {
+        data : 'vencode',
+        visible: !is_vendor,
+        className: 'dt-center',
+        title : '供应商编码',
+      }, {
         data : 'vendorname',
         visible: !is_vendor,
-        title : '供应商名称'
+        title : '供应商简称'
       }, {
         data : 'purchase_type_name',
         title : '订单类型'
@@ -132,10 +147,10 @@ var edit_url = [[@{/purchaseorder/}]];
       }, {
         data : 'state',
         className: 'dt-center',
-        title : 'U8状态'
+        title : 'ERP状态'
       }, {
         data : 'srmstate',
-        title : '状态',
+        title : 'SRM状态',
         className: 'dt-center',
         createdCell: App.getInqueryStateClass,
         render : App.getPurchaseOrderStateOfId
@@ -158,7 +173,7 @@ var edit_url = [[@{/purchaseorder/}]];
         title : '确认日期',
         render : $.fn.date_renderer
       } ],
-      order: [  [ 7, "desc" ] ]
+      order: [  [ 1, "desc" ] ]
 
       
     });

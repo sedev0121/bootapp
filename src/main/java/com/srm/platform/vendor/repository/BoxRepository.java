@@ -16,6 +16,7 @@ import com.srm.platform.vendor.model.Inventory;
 public interface BoxRepository extends JpaRepository<Box, Long> {
 	
 	Box findOneById(Long id);
+	Box findOneByCode(String code);
 	
 	@Query(value = "SELECT * FROM box WHERE box_class_id=?1 and code like %?2%", nativeQuery = true)
 	Page<Box> findBySearchTerm(Long classId, String search, Pageable pageable);

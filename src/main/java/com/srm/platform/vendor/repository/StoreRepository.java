@@ -17,4 +17,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 	
 	@Query(value = "SELECT a.*, b.name company_name FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or b.name LIKE %?1%)", nativeQuery = true)
 	Page<StoreSearchItem> findBySearchTerm(String search, Pageable pageable);
+	
+	@Query(value = "SELECT a.*, b.name company_name FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or b.name LIKE %?1%) and is_use_in_srm=?2", nativeQuery = true)
+	Page<StoreSearchItem> findBySearchTerm(String search, Integer usedState, Pageable pageable);
 }

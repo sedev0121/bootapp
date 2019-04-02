@@ -56,10 +56,10 @@ public class ExcelShipReportView extends AbstractXlsView {
 			row.createCell(0).setCellValue(rowNum);
 			row.createCell(1).setCellValue(entry.getMain().getCode());
 			row.createCell(2).setCellValue(entry.getRowno());
-			row.createCell(3).setCellValue(entry.getInventory().getCode());
-			row.createCell(4).setCellValue(entry.getInventory().getName());
-			row.createCell(5).setCellValue(entry.getInventory().getSpecs());
-			row.createCell(6).setCellValue(entry.getInventory().getMainMeasure());
+//			row.createCell(3).setCellValue(entry.getInventory().getCode());
+//			row.createCell(4).setCellValue(entry.getInventory().getName());
+//			row.createCell(5).setCellValue(entry.getInventory().getSpecs());
+//			row.createCell(6).setCellValue(entry.getInventory().getMainMeasure());
 			row.createCell(7).setCellValue(entry.getQuantity());
 			row.createCell(8).setCellValue(Utils.formatDate(entry.getLastShipDate()));
 			if (entry.getShippedQuantity() != null)

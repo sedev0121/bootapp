@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -12,20 +13,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.Box;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.BoxRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -49,6 +54,9 @@ public class ApiController {
 	
 	@Autowired
 	private StatementDetailRepository statementDetailRepository;
+	
+	@Autowired
+	private BoxRepository boxRepository;
 	
 	@ResponseBody
 	@RequestMapping({ "/invoice" })
@@ -114,6 +122,33 @@ public class ApiController {
 			noticeRead.setAccount(account);
 			noticeReadRepository.save(noticeRead);
 		}
+	}
+	
+	@ResponseBody
+	@RequestMapping({ "/box/empty" })
+	public GenericJsonResponse<Box> boxEmpty(@RequestParam Map<String, String> requestParams) {
+		GenericJsonResponse<Box> jsonResponse;
+		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
+
+		Box box = new Box();
+		String code = requestParams.get("box_id");
+
+		if (code == null || code.isEmpty()) {
+			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
+			jsonResponse.setErrmsg("箱码(box_id)不能为空");
+		} else {
+			box = boxRepository.findOneByCode(code);
+			if (box == null) {
+				jsonResponse.setSuccess(GenericJsonResponse.FAILED);
+				jsonResponse.setErrmsg("该箱码不存在");
+			}else {
+				box.setUsed(0);
+				box = boxRepository.save(box);	
+			}			
+		}
+		
+		return jsonResponse;
+
 	}
 
 }

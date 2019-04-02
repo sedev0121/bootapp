@@ -11,6 +11,9 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	private String state;
 
+	private String vencode;
+	private Date audittime;
+	
 	private String vendorname;
 
 	private String deployername;
@@ -35,10 +38,12 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	private String purchase_type_name;
 
-	public PurchaseOrderSearchResult(String code, String state, String vendorname, String deployername,
+	public PurchaseOrderSearchResult(String code, String vencode, Date audittime, String state, String vendorname, String deployername,
 			String reviewername, Date deploydate, Date reviewdate, String maker, Date makedate, Float sum, Float money,
 			Integer srmstate, String purchase_type_name, Float prepaymoney) {
 		this.code = code;
+		this.setVencode(vencode);
+		this.setAudittime(audittime);
 		this.state = state;
 		this.vendorname = vendorname;
 		this.deployername = deployername;
@@ -169,6 +174,22 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	public void setPurchase_type_name(String purchase_type_name) {
 		this.purchase_type_name = purchase_type_name;
+	}
+
+	public String getVencode() {
+		return vencode;
+	}
+
+	public void setVencode(String vencode) {
+		this.vencode = vencode;
+	}
+
+	public Date getAudittime() {
+		return audittime;
+	}
+
+	public void setAudittime(Date audittime) {
+		this.audittime = audittime;
 	}
 
 }

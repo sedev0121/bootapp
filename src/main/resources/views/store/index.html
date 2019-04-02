@@ -7,11 +7,18 @@
 			<li><a href="#">基础资料</a></li>
 			<li class="active">仓库管理</li>
 		</ul>
-		<div class="search-content form-inline">
-			<div class="search-cell width-10">
-				<label for="product_name">仓库名称/编码:</label> 
-				<input type="text" id="product_name" class="form-control"> 
-				<a class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</a>
+		<div class="search-content">
+			<div class="search-cell width-20">
+				<label for="code">仓库编号/名称：</label> <input type="text" name="code" id="code" class="form-control">
+			</div>
+			<div class="search-cell width-10 form-group">
+				<label for="used">SRM使用：</label> <select name="used" id="used" class="form-control">
+				</select>
+			</div>
+			<div style="vertical-align: bottom" class="search-cell form-group">
+				<button class="btn btn-default" id="btn_search">
+					<i class="fa fa-search"></i> 查询
+				</button>
 			</div>
 		</div>
 		<div class="row">
@@ -24,7 +31,9 @@
 </body>
 </html>
 <script th:inline="javascript">
-  $(document).ready(function() {
+	$(document).ready(function() {
+		$('#used').select2({data: App.getYesNoDataWithAll(), minimumResultsForSearch: -1});
+		
 	  var table_options = {
 	    ordering : true,
 	    ajax : {
@@ -35,7 +44,8 @@
 		        page_index : data.start / data.length + 1,
 		        order : data.columns[data.order[0].column].data,
 		        dir : data.order[0].dir,
-		        search : $('#product_name').val()
+		        search : $('#code').val(),
+		        used : $('#used').val()
 		      }
 		      return filter;
 	      },
@@ -45,7 +55,7 @@
 		      return json.content;
 	      },
 	    },
-	    order: [ [0, 'asc'] ],
+	    order : [ [ 0, 'asc' ] ],
 	    columns : [ {
 	      data : 'name',
 	      title : '仓库名称',
@@ -55,29 +65,36 @@
 		      return '<a href="' + edit_url + '">' + data + '</a>';
 	      },
 	    }, {
-	      data : 'name',
+	      data : 'company_name',
 	      title : '业务实体',
 	    }, {
-	      data : 'name',
+	      data : 'address',
 	      title : '仓库地址',
 	    }, {
-	      data : 'name',
+	      data : 'is_accept_set',
 	      title : '是否整箱收货',
+	      render: App.getYesNoOfId,
 	    }, {
-	      data : 'name',
+	      data : 'is_use_in_srm',
 	      title : '是否SRM使用',
+	      render: App.getYesNoOfId,
 	    }, {
-	      data : 'name',
+	      data : 'memo',
 	      title : '备注',
 	    } ],
 	  };
 
 	  var table = $('#example').DataTable(table_options);
+	  
 	  $("#btn_search").click(function() {
 		  table.draw();
 	  });
 
-	  $('#product_name').keyup(function(e) {
+	  $('#used').change(function() {
+	  	table.draw();
+	  });
+	  
+	  $('#code').keyup(function(e) {
 		  if (e.keyCode == 13)
 			  table.draw();
 	  });
