@@ -9,7 +9,10 @@
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-				<a class="btn btn-primary" id="deploy" sec:authorize="hasAuthority('订单管理-新建/发布')" th:if="${(main.srmstate==0 or main.srmstate==3 ) AND main.state =='审核'} "><i class="fa fa-undo"></i> 发布</a> <a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> <a class="btn btn-primary" id="cancel" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-undo"></i> 拒绝</a> <a class="btn btn-default" th:href="@{/purchaseorder}"><i
+				<a class="btn btn-primary" id="deploy" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0 or main.srmstate==3 ) AND main.state =='审核'} "><i class="fa fa-undo"></i> 发布</a> 
+				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
+				<a class="btn btn-primary" id="cancel" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-undo"></i> 拒绝</a> 
+				<a class="btn btn-default" th:href="@{/purchaseorder}"><i
 					class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -65,49 +68,30 @@
 							<div class="tab-style-1" id="tabs">
 								<ul class="nav nav-tabs">
 									<li class="active"><a data-toggle="tab" href="#tab-1">基本信息</a></li>
-									<li><a data-toggle="tab" href="#tab-2">订金信息</a></li>
+									<li><a data-toggle="tab" href="#tab-2">行关闭</a></li>
+									<li><a data-toggle="tab" href="#tab-3">操作日志</a></li>
+									<li><a data-toggle="tab" href="#tab-4">附件</a></li>
 								</ul>
 								<div class="tab-content">
 									<div id="tab-1" class="tab-pane row-fluid fade in active">
 										<table id="basic_info" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-											<tfoot align="right">
+											<tfoot>
 												<tr>
-													<th colspan="4" align="center">合计</th>
+													<th colspan="11" class="dt-center">合计</th>
+													<th></th>
+													<th  colspan="3"></th>
 													<th></th>
 													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
+													<th colspan="6"></th>
 												</tr>
 											</tfoot>
 										</table>
 									</div>
-									<div id="tab-2" class="tab-pane row-fluid fade in">
-										<table id="prepay_info" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-											<tfoot align="right">
-												<tr>
-													<th colspan="4" align="center">合计</th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-												</tr>
-											</tfoot>
-										</table>
+									<div id="tab-2" class="tab-pane row-fluid fade in">										
+									</div>
+									<div id="tab-3" class="tab-pane row-fluid fade in">										
+									</div>
+									<div id="tab-4" class="tab-pane row-fluid fade in">										
 									</div>
 								</div>
 							</div>
@@ -141,101 +125,8 @@
 
 	  var basic_table, prepay_table;
 
-	  function load_prepay_table() {
-
-		  basic_array = $('#basic_info').DataTable().rows().data().toArray();
-		  var prepay_array = [];
-		  $.each(basic_array, function(key, item) {
-			  if (item.prepaymoney != undefined)
-				  prepay_array.push(item);
-		  });
-
-		  if (prepay_table != undefined) {
-			  prepay_table.clear();
-			  prepay_table.rows.add(prepay_array);
-			  prepay_table.draw();
-			  return;
-		  }
-
-		  prepay_table = $('#prepay_info').DataTable({
-		    serverSide : false,
-		    processing : false,
-		    ajax : null,
-		    data : prepay_array,
-		    columns : [ {
-		      data : 'rowno',
-		      title : '行号',
-		    }, {
-		      data : 'inventory_name',
-		      title : '存货名称',
-		    }, {
-		      data : 'inventory_code',
-		      title : '存货代码',
-		    }, {
-		      data : 'unit_name',
-		      className : 'dt-center',
-		      title : '单位',
-		    }, {
-		      data : 'quantity',
-		      className : 'dt-right',
-		      title : '数量',
-		    }, {
-		      data : 'price',
-		      className : 'dt-right',
-		      title : '未税单价',
-		    }, {
-		      data : 'taxprice',
-		      className : 'dt-right',
-		      title : '含税单价',
-		    }, {
-		      data : 'money',
-		      className : 'dt-right',
-		      title : '未税金额',
-		    }, {
-		      data : 'sum',
-		      className : 'dt-right',
-		      title : '含税金额',
-		    }, {
-		      data : 'prepaymoney',
-		      className : 'dt-right',
-		      title : '订金',
-		    }, {
-		      data : null,
-		      className : 'dt-right',
-		      render : function(data, type, record) {
-			      return record.sum - record.prepaymoney;
-		      },
-		      title : '未付金额',
-		    }, {
-		      data : 'arrivedate',
-		      className : 'dt-center',
-		      title : '需求日期',
-		      render : $.fn.date_renderer,
-		    }, {
-		      data : 'arrivenote',
-		      title : '备注',
-		    }, {
-		      data : 'confirmquantity',
-		      className : 'dt-right vendor-cell',
-		      title : '承诺交货数量',
-		    }, {
-		      data : 'confirmdate',
-		      className : 'dt-center',
-		      title : '承诺交货日期',
-		      render : $.fn.date_renderer,
-		    }, {
-		      data : 'confirmnote',
-		      title : '供方备注',
-		    } ],
-		    footerCallback : function(row, data, start, end, display) {
-			    App.footerCallback(this.api(), [ [ 4, "quantity" ], [ 7, "cost" ], [ 8, "cost" ], [ 9, "cost" ], [ 10, "cost" ] ]);
-		    },
-		  });
-	  }
-
 	  $('#tabs').tabs({
 		  activate : function(event, ui) {
-			  load_prepay_table();
 		  }
 	  });
 
@@ -278,6 +169,10 @@
 	  basic_table = $('#basic_info').DataTable({
 	    serverSide : false,
 	    processing : false,
+	    select : {
+	      style : 'multi',
+	      selector : 'td'
+	    },
 	    ajax : {
 	      url : detail_url,
 	      dataSrc : function(json) {
@@ -296,8 +191,13 @@
 		      return json;
 	      },
 	    },
-
 	    columns : [ {
+	      data : null,
+	      defaultContent : '',
+	      width: "50px",
+	      orderable : false,
+	      className : 'select-checkbox',
+	    }, {
 	      data : 'rowno',
 	      className : 'dt-center',
 	      title : '行号',
@@ -314,7 +214,35 @@
 	    }, {
 	      data : 'quantity',
 	      className : 'dt-right',
-	      title : '数量',
+	      title : '订单数量',
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单箱数',
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单已交数量',
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单已交箱数',
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单未交数量',
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单未交箱数',		 
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '件数',
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '加急到货时间',
 	    }, {
 	      data : 'price',
 	      className : 'dt-right',
@@ -359,7 +287,7 @@
 	      title : '供方备注',
 	    } ],
 	    footerCallback : function(row, data, start, end, display) {
-		    App.footerCallback(this.api(), [ [ 4, "quantity" ], [ 7, "cost" ], [ 8, "cost" ], [ 9, "cost" ] ]);
+		    App.footerCallback(this.api(), [ [ 11, "quantity" ], [ 15, "cost" ], [ 16, "cost" ] ]);
 	    },
 	  });
 
