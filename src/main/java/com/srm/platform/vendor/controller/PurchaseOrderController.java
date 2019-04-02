@@ -109,7 +109,7 @@ public class PurchaseOrderController extends CommonController {
 
 		switch (order) {
 		case "vendorname":
-			order = "b.name";
+			order = "b.abbrname";
 			break;
 		case "deployername":
 			order = "c.realname";
@@ -122,7 +122,7 @@ public class PurchaseOrderController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT a.*, b.name vendorname, c.realname deployername, d.realname reviewername, e.prepaymoney, e.money, e.sum ";
+		String selectQuery = "SELECT a.*, b.abbrname vendorname, c.realname deployername, d.realname reviewername, e.prepaymoney, e.money, e.sum ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 

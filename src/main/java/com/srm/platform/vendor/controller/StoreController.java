@@ -66,13 +66,22 @@ public class StoreController extends CommonController {
 		String order = requestParams.getOrDefault("order", "name");
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
+		String used = requestParams.getOrDefault("used", "-1");
 
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
 		Page<StoreSearchItem> result = null;
-		result = storeRepository.findBySearchTerm(search, request);
+		
+		Integer usedState = Integer.parseInt(used);
+		if (usedState > -1) {
+			result = storeRepository.findBySearchTerm(search, usedState, request);	
+		} else {
+			result = storeRepository.findBySearchTerm(search, request);
+		}
+		
+		
 		return result;
 	}
 

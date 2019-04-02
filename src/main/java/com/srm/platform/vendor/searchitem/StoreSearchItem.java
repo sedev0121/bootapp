@@ -5,14 +5,14 @@ public interface StoreSearchItem {
 	Long getId();
 
 	String getName();
-//
-//	String getCompany_name();
-//
-//	String getAddress();
-//
-//	Integer getIs_accept_set();
-//
-//	Integer getIs_use_in_srm();
-//
-//	String getMemo();
+
+	String getCompany_name();
+
+	String getAddress();
+
+	String getIs_accept_set();
+
+	String getIs_use_in_srm();
+
+	String getMemo();
 }

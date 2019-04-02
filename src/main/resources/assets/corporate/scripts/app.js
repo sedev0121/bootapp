@@ -22,7 +22,9 @@ var App = function() {
   var used_state_data = [{id:1, text:"使用中"}, {id:0, text:"空置"}];
   var statement_type_data = [{id:1, text:"采购对账"}, {id:2, text:"委外对账"}];
   var invoice_type_data = [{id:1, text:"专用发票"}, {id:2, text:"普通发票"}];
-    
+  
+  var yes_no_data = [{id:1, text:"是"}, {id:0, text:"否"}];
+  
   var getLabelOfId = function(store, id) {
     var title = "";
     $.each(store, function(key, item){
@@ -248,6 +250,9 @@ var App = function() {
     getUsedStateDataWithAll: function() {
       return [{id:-1, text:"　"}, ...used_state_data];
     },
+    getYesNoDataWithAll: function() {
+      return [{id:-1, text:"　"}, ...yes_no_data];
+    },
     getStatementStateData: function() {
       return statement_state_data;
     },
@@ -305,6 +310,9 @@ var App = function() {
     },
     getUsedStateOfId: function(id) {
       return getLabelOfId(used_state_data, id);
+    },
+    getYesNoOfId: function(id) {
+      return getLabelOfId(yes_no_data, id);
     },
     getStatementTypeOfId: function(id) {
       return getLabelOfId(statement_type_data, id);
