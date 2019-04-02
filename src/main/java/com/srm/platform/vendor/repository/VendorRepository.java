@@ -22,8 +22,7 @@ public interface VendorRepository extends JpaRepository<Vendor, Long> {
 			+ "abbrname LIKE %?1% or name LIKE %?1%", countQuery = "SELECT count(*) FROM vendor WHERE abbrname LIKE %?1% or name LIKE %?1%", nativeQuery = true)
 	Page<SearchItem> findForSelect(String search, Pageable pageable);
 
-	@Query(value = "SELECT code, name FROM vendor WHERE unit_id is null and "
-			+ "(abbrname LIKE %?1% or name LIKE %?1%)", countQuery = "SELECT count(*) FROM vendor WHERE unit_id is null and (abbrname LIKE %?1% or name LIKE %?1%)", nativeQuery = true)
+	@Query(value = "SELECT code, name FROM vendor WHERE (abbrname LIKE %?1% or name LIKE %?1%)", countQuery = "SELECT count(*) FROM vendor WHERE (abbrname LIKE %?1% or name LIKE %?1%)", nativeQuery = true)
 	Page<SearchItem> findVendorNotCreatAccount(String search, Pageable pageable);
 	
 	@Query(value = "SELECT distinct code, name FROM vendor a left join vendor_provide b on a.code=b.vendor_code where b.provide_id in (select provide_id from unit_provide where unit_id in ?1) and (abbrname LIKE %?2% or name LIKE %?2%)", countQuery = "SELECT count(distinct a.code) FROM vendor a left join vendor_provide b on a.code=b.vendor_code where b.provide_id in (select provide_id from unit_provide where unit_id in ?1) and (abbrname LIKE %?2% or name LIKE %?2%)", nativeQuery = true)

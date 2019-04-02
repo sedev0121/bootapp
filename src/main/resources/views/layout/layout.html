@@ -73,7 +73,12 @@
 			<!-- BEGIN NAVIGATION -->
 			<div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR')">
 				<ul>
-					<li th:classappend="${#strings.startsWith(#request.requestURI,'/purchaseorder')} ? active : ''"><a th:href="@{/purchaseorder}">订单管理</a></li>
+					<li class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/purchaseorder')} or ${#strings.startsWith(#request.requestURI,'/inquery')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">订单管理 </a>
+						<ul class="dropdown-menu">
+							<li><a th:href="@{/purchaseorder}">订单管理</a></li>
+							<li><a th:href="@{/inquery}">议价单管理</a></li>
+						</ul>
+					</li>
 					<li th:classappend="${#strings.startsWith(#request.requestURI,'/box')} ? active : ''"><a th:href="@{/box}">箱码管理</a></li>
 					<li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/store')} or ${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')} or ${#strings.startsWith(#request.requestURI,'/baseprice')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
 						<ul class="dropdown-menu">
@@ -82,8 +87,9 @@
 							<li><a th:href="@{/inventoryclass}">存货分类</a></li>
 							<li><a th:href="@{/inventory}">存货档案</a></li>
 							<li><a th:href="@{/store}">仓库管理</a></li>
-						</ul></li>
-					<li class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/buyer')} or ${#strings.startsWith(#request.requestURI,'/seller')} or ${#strings.startsWith(#request.requestURI,'/config')} or ${#strings.startsWith(#request.requestURI,'/permission_group')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">系统管理 </a>
+						</ul>
+					</li>
+					<li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/buyer')} or ${#strings.startsWith(#request.requestURI,'/seller')} or ${#strings.startsWith(#request.requestURI,'/config')} or ${#strings.startsWith(#request.requestURI,'/permission_group')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">系统管理 </a>
 						<ul class="dropdown-menu">
 							<li><a th:href="@{/buyer}">采购员用户管理</a></li>
 							<li><a th:href="@{/seller}">供应商用户管理</a></li>

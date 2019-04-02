@@ -7,9 +7,8 @@
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li><a href="#" class="active">价格管理</a></li>
-      <li class="active" sec:authorize="hasRole('ROLE_BUYER')">询价管理</li>
-      <li class="active" sec:authorize="hasRole('ROLE_VENDOR')">报价管理</li>
+      <li><a th:href="@{/purchageorder}">订单管理</a></li>
+      <li class="active">议价单管理</li>
     </ul>
     <div class="search-content">
         <div class="search-cell width-10 form-group">
@@ -35,7 +34,7 @@
         </div>
         <div style="vertical-align: bottom" class="search-cell width-15">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:href="@{/inquery/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+          <a class="btn btn-primary" th:href="@{/inquery/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
     </div>
     <div class="row">
