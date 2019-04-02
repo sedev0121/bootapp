@@ -24,15 +24,24 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderDetailSearchResult;
 
 @SqlResultSetMapping(name = "PurchaseOrderDetailSearchResult", classes = {
 		@ConstructorResult(targetClass = PurchaseOrderDetailSearchResult.class, columns = {
-				@ColumnResult(name = "id", type = Long.class), @ColumnResult(name = "rowno", type = Integer.class),
-				@ColumnResult(name = "code"), @ColumnResult(name = "quantity", type = Double.class),
-				@ColumnResult(name = "shipped_quantity", type = Double.class), @ColumnResult(name = "inventoryname"),
-				@ColumnResult(name = "inventorycode"), @ColumnResult(name = "vendorname"),
-				@ColumnResult(name = "vendorcode"), @ColumnResult(name = "specs"), @ColumnResult(name = "unitname"),
+				@ColumnResult(name = "id", type = Long.class), 
+				@ColumnResult(name = "rowno", type = Integer.class),
+				@ColumnResult(name = "code"), 
+				@ColumnResult(name = "quantity", type = Double.class),
+				@ColumnResult(name = "shipped_quantity", type = Double.class), 
+				@ColumnResult(name = "inventory_name"),
+				@ColumnResult(name = "inventory_code"), 
+				@ColumnResult(name = "vendorname"),
+				@ColumnResult(name = "vendorcode"), 
+				@ColumnResult(name = "specs"), 
+				@ColumnResult(name = "unit_name"),
 				@ColumnResult(name = "arrivedate", type = Date.class),
 				@ColumnResult(name = "last_ship_date", type = Date.class),
-				@ColumnResult(name = "confirmdate", type = Date.class), @ColumnResult(name = "arrivenote"),
-				@ColumnResult(name = "confirmnote"), @ColumnResult(name = "remain_quantity", type = Double.class) }) })
+				@ColumnResult(name = "confirmdate", type = Date.class), 
+				@ColumnResult(name = "arrivenote"),
+				@ColumnResult(name = "confirmnote"), 
+				@ColumnResult(name = "remain_quantity", type = Double.class) 
+				}) })
 
 @Table(name = "purchase_order_detail")
 public class PurchaseOrderDetail {

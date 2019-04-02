@@ -10,13 +10,13 @@ public class PurchaseOrderDetailSearchResult {
 
 	String code;
 
-	Float quantity;
+	Double quantity;
 
-	Float shipped_quantity;
+	Double shipped_quantity;
 
-	String inventoryname;
+	String inventory_name;
 
-	String inventorycode;
+	String inventory_code;
 
 	String vendorname;
 
@@ -24,7 +24,7 @@ public class PurchaseOrderDetailSearchResult {
 
 	String specs;
 
-	String unitname;
+	String unit_name;
 
 	Date arrivedate;
 
@@ -34,26 +34,27 @@ public class PurchaseOrderDetailSearchResult {
 
 	String confirmnote;
 
-	Float remain_quantity;
+	Double remain_quantity;
 
 	Date lastshipdate;
 
-	public PurchaseOrderDetailSearchResult(Long id, Integer rowno, String code, Float quantity, Float shipped_quantity,
-			String inventoryname, String inventorycode, String vendorname, String vendorcode, String specs,
-			String unitname, Date arrivedate, Date lastshipdate, Date confirmdate, String arrivenote,
-			String confirmnote, Float remain_quantity) {
+
+	public PurchaseOrderDetailSearchResult(Long id, Integer rowno, String code, Double quantity, Double shipped_quantity,
+			String inventory_name, String inventory_code, String vendorname, String vendorcode, String specs,
+			String unit_name, Date arrivedate, Date lastshipdate, Date confirmdate, String arrivenote,
+			String confirmnote, Double remain_quantity) {
 
 		this.id = id;
 		this.rowno = rowno;
 		this.code = code;
 		this.quantity = quantity;
 		this.shipped_quantity = shipped_quantity;
-		this.inventorycode = inventorycode;
-		this.inventoryname = inventoryname;
+		this.inventory_code = inventory_code;
+		this.inventory_name = inventory_name;
 		this.vendorcode = vendorcode;
 		this.vendorname = vendorname;
 		this.specs = specs;
-		this.unitname = unitname;
+		this.unit_name = unit_name;
 		this.arrivedate = arrivedate;
 		this.lastshipdate = lastshipdate;
 		this.confirmdate = confirmdate;
@@ -94,36 +95,20 @@ public class PurchaseOrderDetailSearchResult {
 		this.code = code;
 	}
 
-	public Float getQuantity() {
+	public Double getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Float quantity) {
+	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
 	}
 
-	public Float getShipped_quantity() {
+	public Double getShipped_quantity() {
 		return shipped_quantity;
 	}
 
-	public void setShipped_quantity(Float shipped_quantity) {
+	public void setShipped_quantity(Double shipped_quantity) {
 		this.shipped_quantity = shipped_quantity;
-	}
-
-	public String getInventoryname() {
-		return inventoryname;
-	}
-
-	public void setInventoryname(String inventoryname) {
-		this.inventoryname = inventoryname;
-	}
-
-	public String getInventorycode() {
-		return inventorycode;
-	}
-
-	public void setInventorycode(String inventorycode) {
-		this.inventorycode = inventorycode;
 	}
 
 	public String getVendorname() {
@@ -150,12 +135,28 @@ public class PurchaseOrderDetailSearchResult {
 		this.specs = specs;
 	}
 
-	public String getUnitname() {
-		return unitname;
+	public String getInventory_name() {
+		return inventory_name;
 	}
 
-	public void setUnitname(String unitname) {
-		this.unitname = unitname;
+	public void setInventory_name(String inventory_name) {
+		this.inventory_name = inventory_name;
+	}
+
+	public String getInventory_code() {
+		return inventory_code;
+	}
+
+	public void setInventory_code(String inventory_code) {
+		this.inventory_code = inventory_code;
+	}
+
+	public String getUnit_name() {
+		return unit_name;
+	}
+
+	public void setUnit_name(String unit_name) {
+		this.unit_name = unit_name;
 	}
 
 	public Date getArrivedate() {
@@ -190,11 +191,11 @@ public class PurchaseOrderDetailSearchResult {
 		this.confirmnote = confirmnote;
 	}
 
-	public Float getRemain_quantity() {
+	public Double getRemain_quantity() {
 		return remain_quantity;
 	}
 
-	public void setRemain_quantity(Float remain_quantity) {
+	public void setRemain_quantity(Double remain_quantity) {
 		this.remain_quantity = remain_quantity;
 	}
 

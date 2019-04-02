@@ -71,7 +71,7 @@ public class CheckController {
 			long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
 
 			String alertPattern = "订单【%s】【%s】交货已逾期%d天，请及时处理!";
-			String alert = String.format(alertPattern, item.getCode(), item.getInventoryname(), diff);
+			String alert = String.format(alertPattern, item.getCode(), item.getInventory_name(), diff);
 
 			Notice notice = new Notice();
 			notice.setState(Constants.NOTICE_STATE_PUBLISH);

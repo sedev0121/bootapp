@@ -62,7 +62,7 @@ import com.srm.platform.vendor.view.ExcelShipReportView;
 
 @Controller
 @RequestMapping(path = "/ship")
-@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('出货看板-查看列表')")
+//@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('出货看板-查看列表')")
 public class ShipController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -79,8 +79,8 @@ public class ShipController extends CommonController {
 	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
 
 	// 查询列表
-	@PreAuthorize("hasRole('ROLE_VENDOR')")
-	@GetMapping({ "/index" })
+//	@PreAuthorize("hasRole('ROLE_VENDOR')")
+	@GetMapping({ "/", "" })
 	public String index() {
 		return "ship/index";
 	}
@@ -118,30 +118,20 @@ public class ShipController extends CommonController {
 		case "vendorcode":
 			order = "d.code";
 			break;
-		case "inventoryname":
-			order = "c.name";
-			break;
 		case "lastshipdate":
 			order = "a.last_ship_date";
-			break;
-		case "specs":
-			order = "c.specs";
-			break;
-		case "unitname":
-			order = "e.name";
 			break;
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, d.code vendorcode, (a.quantity-ifnull(a.shipped_quantity,0)) remain_quantity, d.name vendorname, c.name inventoryname, c.specs, e.name unitname ";
+		String selectQuery = "select a.*, 'aa' specs, d.code vendorcode, (a.quantity-ifnull(a.shipped_quantity,0)) remain_quantity, d.name vendorname ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from purchase_order_detail a left join purchase_order_main b on a.code = b.code "
-				+ "left join inventory c on a.inventorycode=c.code left join vendor d on b.vencode=d.code "
-				+ "left join measurement_unit e on c.main_measure=e.code where b.srmstate=2 ";
+				+ "left join vendor d on b.vencode=d.code where b.srmstate=2 ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -172,7 +162,7 @@ public class ShipController extends CommonController {
 		}
 
 		if (!inventory.trim().isEmpty()) {
-			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
+			bodyQuery += " and (a.inventory_name like CONCAT('%',:inventory, '%') or a.inventory_code like CONCAT('%',:inventory, '%')) ";
 			params.put("inventory", inventory.trim());
 		}
 
@@ -217,18 +207,14 @@ public class ShipController extends CommonController {
 			ExportShipForm shipForm = objectMapper.readValue(exportData, new TypeReference<ExportShipForm>() {
 			});
 
-			String query = "select a.*, d.code vendorcode, (a.quantity-ifnull(a.shipped_quantity,0)) remain_quantity, d.name vendorname, c.name inventoryname, c.specs, e.name unitname "
+			String query = "select a.*, d.code vendorcode, (a.quantity-ifnull(a.shipped_quantity,0)) remain_quantity, d.name vendorname "
 					+ "from purchase_order_detail a left join purchase_order_main b on a.code = b.code "
-					+ "left join inventory c on a.inventorycode=c.code left join vendor d on b.vencode=d.code "
-					+ "left join measurement_unit e on c.main_measure=e.code where a.id in :idList ";
+					+ "left join vendor d on b.vencode=d.code where a.id in :idList ";
 
 			List<Long> idList = shipForm.getList();
 
 			String order = "code";
 			switch (shipForm.getOrder()) {
-			case "inventoryname":
-				order = "c.name";
-				break;
 			case "specs":
 				order = "c.specs";
 				break;
