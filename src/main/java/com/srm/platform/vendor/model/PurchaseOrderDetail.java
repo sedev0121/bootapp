@@ -17,6 +17,7 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.srm.platform.vendor.searchitem.PurchaseOrderDetailSearchResult;
 
 @Entity
@@ -44,9 +45,20 @@ public class PurchaseOrderDetail {
 	@JoinColumn(name = "code", referencedColumnName = "code")
 	private PurchaseOrderMain main;
 
-	@OneToOne(cascade = { CascadeType.REFRESH })
-	@JoinColumn(name = "inventorycode", referencedColumnName = "code")
-	private Inventory inventory;
+	@JsonProperty(value = "unit_name")
+	private String unitName;
+	
+	@JsonProperty(value = "inventory_code")
+	private String inventoryCode;
+	
+	@JsonProperty(value = "inventory_name")
+	private String inventoryName;	
+	
+	@JsonProperty(value = "inventory_class_code")
+	private String inventoryClassCode;
+	
+	@JsonProperty(value = "inventory_class_name")
+	private String inventoryClassName;
 
 	private Integer rowno;
 	private Double quantity;
@@ -72,6 +84,38 @@ public class PurchaseOrderDetail {
 
 	public PurchaseOrderDetail() {
 
+	}
+
+	public String getInventoryCode() {
+		return inventoryCode;
+	}
+
+	public void setInventoryCode(String inventoryCode) {
+		this.inventoryCode = inventoryCode;
+	}
+
+	public String getInventoryName() {
+		return inventoryName;
+	}
+
+	public void setInventoryName(String inventoryName) {
+		this.inventoryName = inventoryName;
+	}
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+
+	public String getInventoryClassName() {
+		return inventoryClassName;
+	}
+
+	public void setInventoryClassName(String inventoryClassName) {
+		this.inventoryClassName = inventoryClassName;
 	}
 
 	public Long getId() {
@@ -104,14 +148,6 @@ public class PurchaseOrderDetail {
 
 	public void setMain(PurchaseOrderMain main) {
 		this.main = main;
-	}
-
-	public Inventory getInventory() {
-		return inventory;
-	}
-
-	public void setInventory(Inventory inventory) {
-		this.inventory = inventory;
 	}
 
 	public Integer getRowno() {
@@ -248,6 +284,14 @@ public class PurchaseOrderDetail {
 
 	public void setConfirmnote(String confirmnote) {
 		this.confirmnote = confirmnote;
+	}
+
+	public String getInventoryClassCode() {
+		return inventoryClassCode;
+	}
+
+	public void setInventoryClassCode(String inventoryClassCode) {
+		this.inventoryClassCode = inventoryClassCode;
 	}
 
 }

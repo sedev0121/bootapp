@@ -350,21 +350,28 @@ public class SyncController {
 
 					purchaseOrderMainRepository.save(main);
 
-					PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByCodeAndRowno(main.getCode(),
-							getStringValue(temp, "ivouchrowno"));
-
-					if (detail == null) {
-						detail = new PurchaseOrderDetail();
-						detail.setMain(main);
-					}
-
+					purchaseOrderDetailRepository.deleteAll(purchaseOrderDetailRepository.findDetailsByCode(main.getCode()));
+					
 					List<LinkedHashMap<String, Object>> details = getDetailMap(temp, "details");
-					if (details == null) {
+					if (details == null || details.size() == 0) {
 						continue;
 					}
-
+					
 					for (LinkedHashMap<String, Object> detailTemp : details) {
-						detail.setInventory(inventoryRepository.findOneByCode(getStringValue(detailTemp, "cInvCode")));
+						PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByCodeAndRowno(main.getCode(),
+								getStringValue(detailTemp, "ivouchrowno"));
+
+						if (detail == null) {
+							detail = new PurchaseOrderDetail();
+							detail.setMain(main);
+						}						
+
+						detail.setUnitName(getStringValue(detailTemp, "cComUnitName"));
+						detail.setInventoryCode(getStringValue(detailTemp, "cInvCode"));
+						detail.setInventoryName(getStringValue(detailTemp, "cInvName"));
+						detail.setInventoryClassCode(getStringValue(detailTemp, "cInvCCode"));
+						detail.setInventoryClassName(getStringValue(detailTemp, "cInvCName"));
+						
 						detail.setQuantity(getDoubleValue(detailTemp, "iQuantity"));
 						detail.setMoney(getDoubleValue(detailTemp, "iNatMoney"));
 						detail.setSum(getDoubleValue(detailTemp, "iNatSum"));
@@ -383,11 +390,10 @@ public class SyncController {
 					}
 
 					if (main.getPurchaseTypeName().equals("普通采购")) {
-						pocodes.add(main.getCode());
+						pocodes.add(main.getPoid());
 					} else {
-						mocodes.add(main.getCode());
+						mocodes.add(main.getPoid());
 					}
-
 					totalCount++;
 				}
 
