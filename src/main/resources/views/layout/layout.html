@@ -79,6 +79,7 @@
 							<li><a th:href="@{/inquery}">议价单管理</a></li>
 						</ul>
 					</li>
+					<li th:classappend="${#strings.startsWith(#request.requestURI,'/ship')} ? active : ''"><a th:href="@{/ship}">发货管理</a></li>
 					<li th:classappend="${#strings.startsWith(#request.requestURI,'/box')} ? active : ''"><a th:href="@{/box}">箱码管理</a></li>
 					<li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/store')} or ${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')} or ${#strings.startsWith(#request.requestURI,'/baseprice')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
 						<ul class="dropdown-menu">
