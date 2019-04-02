@@ -50,6 +50,7 @@
 						</table>
 					</div>
 				</div>
+				<form id="state_form" th:action="@{/box/update_state}" method="post"></form>
 			</div>
 		</div>
 		<div class="modal fade" id="box_dialog" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="true">
@@ -61,8 +62,8 @@
 					</div>
 					<div class="modal-body">
 						<form id="box_form" th:action="@{/box/update}" method="post">
-							<input type="hidden" id="edit_id" name="id" class="form-control">
-							<input type="hidden" id="class_id" name="class_id" class="form-control">
+							<input type="hidden" id="edit_id" name="id"> 
+							<input type="hidden" id="class_id" name="class_id">
 							<div class="row">
 								<div class="col-lg-4 col-md-4">
 									<label for="code">序列号: </label> <input type="text" id="edit_code" readonly class="form-control" />
@@ -120,43 +121,76 @@
 	  	edit(null);
 	  });
 	  
-	  $('#btn_enable').click(function() {
-		  box_table.draw();
-	  });
-	  
-	  $('#btn_disable').click(function() {
-		  box_table.draw();
-	  });
+	  function update_state(key) {
+	  	var selected_data = box_table.rows('.selected').data().toArray();
+	  	if (selected_data.length == 0) {
+	  		App.showErrorDialog("操作失败", "请选择至少一行");
+	  		return;
+	  	}
+	  	var box_ids = selected_data.map(row => row.id);
+	  	$("#state_form").ajaxSubmit({
+	  		data : {
+	      	key: key,
+	      	ids: box_ids.join(),		      	
+	      },
+        beforeSend: function(){
+          App.blockUI();
+        },
+        complete: function(){
+          App.unblockUI();
+        },
+        success: function(res, status, xhr, form) {
+          if (res.success == 1) {
+            $('#box_dialog').modal('hide'); 
+            box_table.draw();
+            App.showSuccessDialog("操作成功");
+          }else{
+            App.showErrorDialog(res.errmsg);
+          }              
+        },
+        error: function (res, status, xhr, form) {
+          App.showErrorDialog("操作失败", "请稍候重试");
+        }
+      });	  
+	  }
 	  
 	  $('#btn_search').click(function() {
 		  box_table.draw();
 	  });
+	  
+	  $('#btn_enable').click(function() {	  	 	
+	  	update_state("enable");
+	  });
+	  
+	  $('#btn_disable').click(function() {
+	  	update_state("disable");
+	  });
 
 	  $('#btn_empty').click(function() {
-		  box_table.draw();
+	  	update_state("empty");
 	  });
 
 	  $('#save_box').click(function() {
 	  	$("#box_form").ajaxSubmit({
-          beforeSend: function(){
-            App.blockUI();
-          },
-          complete: function(){
-            App.unblockUI();
-          },
-          success: function(res, status, xhr, form) {
-            if (res.success == 1) {
-              $('#box_dialog').modal('hide'); 
-              box_table.draw();
-              App.showSuccessDialog("操作成功");
-            }else{
-              App.showErrorDialog(res.errmsg);
-            }              
-          },
-          error: function (res, status, xhr, form) {
-            App.showErrorDialog("操作失败", "请输入正确的值");
-          }
-        });
+	      beforeSend: function(){
+          App.blockUI();
+        },
+        complete: function(){
+          App.unblockUI();
+        },
+        success: function(res, status, xhr, form) {
+          if (res.success == 1) {
+            $('#box_dialog').modal('hide'); 
+            box_table.draw();
+            App.showSuccessDialog("操作成功");
+          }else{
+            App.showErrorDialog(res.errmsg);
+          }              
+        },
+        error: function (res, status, xhr, form) {
+          App.showErrorDialog("操作失败", "请输入正确的值");
+        }
+      });
 	  });
 	  
 	  box_class_table = $('#box_class_table').DataTable({

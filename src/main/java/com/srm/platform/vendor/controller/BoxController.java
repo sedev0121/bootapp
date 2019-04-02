@@ -1,8 +1,10 @@
 package com.srm.platform.vendor.controller;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +22,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Box;
@@ -128,7 +132,6 @@ public class BoxController extends CommonController {
 		return new PageImpl<BoxSearchResult>(list, request, totalCount.longValue());
 	}
 
-	// 用户修改
 	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody GenericJsonResponse<Box> update_ajax(@RequestParam Map<String, String> requestParams) {
@@ -143,17 +146,48 @@ public class BoxController extends CommonController {
 			box = boxRepository.findOneById(Long.valueOf(id));
 		} else {
 			box.setCode(Utils.generateId());
+			box.setState(1);
+			box.setUsed(0);
 			box.setBoxClass(boxClassRepository.findOneById(Long.valueOf(classId)));
 		}
 
 		box.setSpec(spec);
 		box.setMemo(memo);
-		
+
 		box = boxRepository.save(box);
 
 		GenericJsonResponse<Box> jsonResponse;
 
 		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, box);
+
+		return jsonResponse;
+	}
+
+	@Transactional
+	@PostMapping("/update_state")	
+	public @ResponseBody GenericJsonResponse<Box> update_state(@RequestParam Map<String, String> requestParams) {
+
+		Box box = new Box();
+		String key = requestParams.get("key");
+		String ids = requestParams.get("ids");
+
+		List<String> boxIds = Arrays.asList(StringUtils.split(ids, ","));
+		for (String id : boxIds) {
+			box = boxRepository.findOneById(Long.valueOf(id));
+			if ("enable".equals(key)) {
+				box.setState(1);	
+			} else if ("disable".equals(key)) {
+				box.setState(0);
+			} else if ("empty".equals(key)) {
+				box.setUsed(0);
+			}
+			
+			box = boxRepository.save(box);
+		}
+
+		GenericJsonResponse<Box> jsonResponse;
+
+		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
 
 		return jsonResponse;
 	}
