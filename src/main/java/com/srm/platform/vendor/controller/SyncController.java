@@ -59,11 +59,13 @@ public class SyncController {
 	@ResponseBody
 	@GetMapping({ "", "/" })
 	public boolean index() {
+		logger.info("=============== Sync Start ==============");
 		this.inventoryClass();
 		this.vendorClass();
 		this.inventory();
 		this.vendor();
 		this.order();
+		logger.info("=============== Sync End ==============");
 		return true;
 	}
 
@@ -294,30 +296,40 @@ public class SyncController {
 		int totalCount = 0;
 		boolean hasMore = true;
 		while (hasMore) {
+			
 			List<String> pocodes = new ArrayList<String>();
 			List<String> mocodes = new ArrayList<String>();
 
 			RestApiResponse response = apiClient.postForOrder();
 
 			if (response.isSuccess()) {
+				if (response.getData() != null && response.getData().size() == 0) {
+					hasMore = false;
+					break;
+				}
 				for (LinkedHashMap<String, Object> temp : response.getData()) {
-
-					Vendor vendor = vendorRepository.findOneByCode(getStringValue(temp, "cVenCode"));
-
-					// TODO:0=新建 1=审核 2=关闭
-					int cState = getIntegerValue(temp, "cState");
-					if (cState == 0 || vendor == null) {
-						continue;
-					}
 
 					PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(getStringValue(temp, "cPOID"));
 					if (main == null) {
 						main = new PurchaseOrderMain();
 						main.setCode(getStringValue(temp, "cPOID"));
 					}
-
-					main.setPoid(getStringValue(temp, "POID"));
 					main.setPurchaseTypeName(getStringValue(temp, "cBusType"));
+					main.setPoid(getStringValue(temp, "POID"));
+					Vendor vendor = vendorRepository.findOneByCode(getStringValue(temp, "cVenCode"));
+
+					// TODO:0=新建 1=审核 2=关闭
+					int cState = getIntegerValue(temp, "cState");
+					if (cState == 0 || vendor == null) {
+						if (main.getPurchaseTypeName().equals("普通采购")) {
+							pocodes.add(main.getPoid());
+						} else {
+							mocodes.add(main.getPoid());
+						}
+						totalCount++;
+						continue;
+					}					
+
 					main.setOrderdate(Utils.parseDateTime(getStringValue(temp, "dPODate")));
 					main.setVendor(vendor);
 
@@ -358,6 +370,7 @@ public class SyncController {
 					}
 					
 					for (LinkedHashMap<String, Object> detailTemp : details) {
+						
 						PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByCodeAndRowno(main.getCode(),
 								getStringValue(detailTemp, "ivouchrowno"));
 
@@ -401,9 +414,11 @@ public class SyncController {
 					response = apiClient.postConfirmForOrder(pocodes, mocodes);
 				} else {
 					hasMore = false;
+					break;
 				}
 			} else {
 				hasMore = false;
+				break;
 			}
 		}
 

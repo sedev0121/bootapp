@@ -541,3 +541,16 @@ table.dataTable tr.selected td.select-checkbox:after, table.dataTable tr.selecte
 	margin-right: 60px;
 	text-decoration: none;
 }
+
+.no-border {
+	border: none !important;
+	-webkit-box-shadow: none !important;
+}
+
+.margin-left-10 {
+	margin-left: 10px !important;
+}
+
+.margin-left-20 {
+	margin-left: 20px !important;
+}
