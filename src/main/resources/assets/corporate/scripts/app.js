@@ -19,6 +19,7 @@ var App = function() {
   
   var role_data = [{id:"ROLE_BUYER", text:"采购员"}, {id:"ROLE_VENDOR", text:"供应商"}, {id:"ROLE_ADMIN", text:"管理员"}];
   var account_state_data = [{id:1, text:"启用"}, {id:0, text:"停用"}];
+  var used_state_data = [{id:1, text:"使用中"}, {id:0, text:"空置"}];
   var statement_type_data = [{id:1, text:"采购对账"}, {id:2, text:"委外对账"}];
   var invoice_type_data = [{id:1, text:"专用发票"}, {id:2, text:"普通发票"}];
     
@@ -244,6 +245,9 @@ var App = function() {
     getAccountStateDataWithAll: function() {
       return [{id:-1, text:"　"}, ...account_state_data];
     },
+    getUsedStateDataWithAll: function() {
+      return [{id:-1, text:"　"}, ...used_state_data];
+    },
     getStatementStateData: function() {
       return statement_state_data;
     },
@@ -298,6 +302,9 @@ var App = function() {
     },
     getAccountStateOfId: function(id) {
       return getLabelOfId(account_state_data, id);
+    },
+    getUsedStateOfId: function(id) {
+      return getLabelOfId(used_state_data, id);
     },
     getStatementTypeOfId: function(id) {
       return getLabelOfId(statement_type_data, id);
