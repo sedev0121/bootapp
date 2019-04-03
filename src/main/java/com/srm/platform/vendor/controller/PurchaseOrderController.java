@@ -46,20 +46,15 @@ import com.srm.platform.vendor.utility.Utils;
 @RequestMapping(path = "/purchaseorder")
 @PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('订单管理-查看列表')")
 public class PurchaseOrderController extends CommonController {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@PersistenceContext
 	private EntityManager em;
 
-	@Autowired
-	private PurchaseOrderMainRepository purchaseOrderMainRepository;
-
-	@Autowired
-	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
-
-	@Autowired
-	private AccountRepository accountRepository;
-
+	@Override
+	protected String getOperationHistoryType() {
+		return "order";
+	};
+	
 	// 查询列表
 	@GetMapping({ "/", "" })
 	public String index() {
@@ -231,7 +226,8 @@ public class PurchaseOrderController extends CommonController {
 		String title = String.format("订单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
 
 		this.sendmessage(title, toList, String.format("/purchaseorder/%s/read", main.getCode()));
-
+		this.addOpertionHistory(main.getCode(), String.format("%s了订单", action));
+		
 		if (form.getTable() != null) {
 			for (Map<String, String> item : form.getTable()) {
 

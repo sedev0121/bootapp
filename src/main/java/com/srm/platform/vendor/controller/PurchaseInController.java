@@ -46,11 +46,7 @@ public class PurchaseInController extends CommonController {
 	@PersistenceContext
 	private EntityManager em;
 
-	@Autowired
-	private PurchaseInMainRepository purchaseInMainRepository;
 
-	@Autowired
-	private PurchaseInDetailRepository purchaseInDetailRepository;
 
 
 	// 查询列表

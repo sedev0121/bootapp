@@ -10,6 +10,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,6 +28,12 @@ public class Inventory {
 	@ManyToOne()
 	private InventoryClass inventoryClass;
 
+	@Nullable
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "box_class_id", referencedColumnName = "id", nullable=true)
+	@ManyToOne()
+	private BoxClass boxClass;
+
 	@JsonProperty(value = "main_measure")
 	private String mainMeasure;
 
@@ -36,6 +43,9 @@ public class Inventory {
 	private Date startDate;
 	private Date endDate;
 	private Date modifyDate;
+	
+	@JsonProperty(value = "count_per_box")
+	private Integer countPerBox;
 
 	public Inventory() {
 
@@ -48,7 +58,15 @@ public class Inventory {
 	public void setCode(String code) {
 		this.code = code;
 	}
+	
+	public BoxClass getBoxClass() {
+		return boxClass;
+	}
 
+	public void setBoxClass(BoxClass boxClass) {
+		this.boxClass = boxClass;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -127,6 +145,14 @@ public class Inventory {
 
 	public void setModifyDate(Date modifyDate) {
 		this.modifyDate = modifyDate;
+	}
+
+	public Integer getCountPerBox() {
+		return countPerBox;
+	}
+
+	public void setCountPerBox(Integer countPerBox) {
+		this.countPerBox = countPerBox;
 	}
 
 }

@@ -26,23 +26,6 @@ import com.srm.platform.vendor.searchitem.SearchItem;
 public class AccountController extends CommonController {
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired
-	protected AccountRepository accountRepository;
-
-	@Autowired
-	protected PermissionGroupRepository permissionGroupRepository;
-
-	@Autowired
-	protected PermissionGroupUserRepository permissionGroupUserRepository;
-
-	@Autowired
-	protected PermissionUserScopeRepository permissionUserScopeRepository;
-
-	@Autowired
-	protected VendorRepository vendorRepository;
-
-	@Autowired
-	protected CompanyRepository companyRepository;
 
 	@GetMapping("/{id}/delete")
 	public @ResponseBody Boolean delete(@PathVariable("id") Long id, Model model) {

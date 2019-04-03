@@ -554,3 +554,35 @@ table.dataTable tr.selected td.select-checkbox:after, table.dataTable tr.selecte
 .margin-left-20 {
 	margin-left: 20px !important;
 }
+
+.operation-time {
+	float: left;
+	padding-right: 10px;
+}
+.operation-content {
+	margin-left: 10px;
+	display: table-cell;
+}
+
+.operation {
+	margin-bottom: 5px;
+}
+
+.operations {
+	max-height: 300px;
+	overflow: auto;
+	margin-bottom: 10px;
+}
+
+a.save-history {
+	float: right;
+	display: block;
+}
+
+.row.edit-history {
+	margin-left: 0px;
+	margin-right: 0px;
+}
+.history-content {
+	width: 100%;
+}

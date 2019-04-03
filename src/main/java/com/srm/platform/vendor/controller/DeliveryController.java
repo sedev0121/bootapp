@@ -36,6 +36,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.DeliveryDetail;
+import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.StatementDetail;
@@ -57,76 +59,69 @@ import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
-@RequestMapping(path = "/inquery")
+@RequestMapping(path = "/delivery")
 //@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('询价管理-查看列表')")
-public class InqueryController extends CommonController {
+public class DeliveryController extends CommonController {
 
 	// 查询列表
 	@GetMapping({ "", "/" })
 	public String index() {
-		return "inquery/index";
+		return "delivery/index";
 	}
 
 	// 新建
 //	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
 	@GetMapping({ "/add" })
 	public String add(Model model) {
-		VenPriceAdjustMain main = new VenPriceAdjustMain(accountRepository);
+		DeliveryMain main = new DeliveryMain();
 		model.addAttribute("main", main);
-		return "inquery/edit";
+		return "delivery/edit";
 	}
 
 	// 详细
-	@GetMapping({ "/{ccode}/edit" })
-	public String edit(@PathVariable("ccode") String ccode, Model model) {
-		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
+	@GetMapping({ "/{id}/edit" })
+	public String edit(@PathVariable("id") Long id, Model model) {
+		DeliveryMain main = deliveryMainRepository.findOneById(id);
 		if (main == null)
 			show404();
 
 		// checkVendor(main.getVendor());
 
 		model.addAttribute("main", main);
-		return "inquery/edit";
+		return "delivery/edit";
 	}
 
-	@GetMapping({ "/{ccode}/read/{msgid}" })
-	public String read(@PathVariable("ccode") String ccode, @PathVariable("msgid") Long msgid, Model model) {
-		setReadDate(msgid);
-		return "redirect:/inquery/" + ccode + "/edit";
-	}
-
-	// 询价单商品列表API
 	@RequestMapping(value = "/{mainId}/details", produces = "application/json")
-	public @ResponseBody List<VenPriceDetailItem> details_ajax(@PathVariable("mainId") String mainId) {
-		List<VenPriceDetailItem> list = venPriceAdjustDetailRepository.findDetailsByMainId(mainId);
+	public @ResponseBody List<DeliveryDetail> details_ajax(@PathVariable("mainId") Long mainId) {
+		List<DeliveryDetail> list = deliveryDetailRepository.findDetailsByMainId(mainId);
 
 		return list;
 	}
 
-	@GetMapping("/{ccode}/deleteattach")
-	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
-	public @ResponseBody Boolean deleteAttach(@PathVariable("ccode") String ccode) {
-		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
+	@GetMapping("/{id}/deleteattach")
+//	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
+	public @ResponseBody Boolean deleteAttach(@PathVariable("id") Long id) {
+		DeliveryMain main = deliveryMainRepository.findOneById(id);
 
-		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_INQUERY) + File.separator
-				+ main.getAttachFileName());
-		if (attach.exists())
-			attach.delete();
-		main.setAttachFileName(null);
-		main.setAttachOriginalName(null);
-		venPriceAdjustMainRepository.save(main);
+//		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_INQUERY) + File.separator
+//				+ main.getAttachFileName());
+//		if (attach.exists())
+//			attach.delete();
+//		main.setAttachFileName(null);
+//		main.setAttachOriginalName(null);
+		deliveryMainRepository.save(main);
 		return true;
 	}
 
 	// 删除API
-	@PreAuthorize("hasAuthority('询价管理-删除') or hasRole('ROLE_VENDOR')")
-	@GetMapping("/{ccode}/delete")
+//	@PreAuthorize("hasAuthority('询价管理-删除') or hasRole('ROLE_VENDOR')")
+	@GetMapping("/{id}/delete")
 	@Transactional
-	public @ResponseBody Boolean delete_ajax(@PathVariable("ccode") String ccode) {
-		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
+	public @ResponseBody Boolean delete_ajax(@PathVariable("id") Long id) {
+		DeliveryMain main = deliveryMainRepository.findOneById(id);
 		if (main != null) {
-			venPriceAdjustDetailRepository.DeleteByMainId(main.getCcode());
-			venPriceAdjustMainRepository.delete(main);
+			deliveryDetailRepository.DeleteByMainId(id);
+			deliveryMainRepository.delete(main);
 		}
 
 		return true;
@@ -134,113 +129,44 @@ public class InqueryController extends CommonController {
 
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody Page<InquerySearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<DeliveryMain> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "ccode");
 		String dir = requestParams.getOrDefault("dir", "asc");
+		
 		String vendorStr = requestParams.getOrDefault("vendor", "");
 		String stateStr = requestParams.getOrDefault("state", "0");
-		String inventory = requestParams.getOrDefault("inventory", "");
-		String start_date = requestParams.getOrDefault("start_date", null);
-		String end_date = requestParams.getOrDefault("end_date", null);
+		String code = requestParams.getOrDefault("code", "");
 
 		Integer state = Integer.parseInt(stateStr);
-		Date startDate = Utils.parseDate(start_date);
-		Date endDate = Utils.parseDate(end_date);
 
 		switch (order) {
-		case "vendorname":
-			order = "c.name";
+		case "vendor.name":
+			order = "b.name";
 			break;
-		case "vendorcode":
-			order = "c.code";
-			break;
-		case "verifiername":
-			order = "f.realname";
-			break;
-		case "makername":
-			order = "e.realname";
-			break;
-		}
+		}		
+		
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "select distinct a.*, c.code vendorcode, c.name vendorname, e.realname makername, f.realname verifiername ";
-		String countQuery = "select count( distinct a.ccode ) ";
-		String orderBy = " order by " + order + " " + dir;
-
-		String bodyQuery = "from venpriceadjust_main a left join venpriceadjust_detail b on a.ccode = b.mainid "
-				+ "left join vendor c on a.cvencode=c.code left join inventory d on b.cinvcode=d.code "
-				+ "left join account e on a.maker_id=e.id left join account f on a.cverifier_id=f.id "
-				+ "where a.createtype= :createType ";
-
-		if (!isVendor()) {
-			bodyQuery = "from venpriceadjust_main a left join venpriceadjust_detail b on a.ccode = b.mainid "
-					+ "left join vendor c on a.cvencode=c.code left join inventory d on b.cinvcode=d.code "
-					+ "left join account e on a.maker_id=e.id left join account f on a.cverifier_id=f.id "
-					+ "where a.createtype= :createType ";
-		}
-		Map<String, Object> params = new HashMap<>();
-
 		if (isVendor()) {
 			Vendor vendor = this.getLoginAccount().getVendor();
 			vendorStr = vendor == null ? "0" : vendor.getCode();
-			bodyQuery += " and c.code= :vendor";
-			params.put("vendor", vendorStr);
-			params.put("createType", Constants.CREATE_TYPE_VENDOR);
+			
+			if (state > 0) {
+				return deliveryMainRepository.findBySearchTermForVendor(code, vendorStr, state, request);
+			}else {
+				return deliveryMainRepository.findBySearchTermForVendor(code, vendorStr, request);
+			}
 		} else {
-//			List<String> vendorList = this.getVendorListOfUser();
-//			if (vendorList.size() == 0) {
-//				return new PageImpl<InquerySearchResult>(new ArrayList(), request, 0);
-//			}
-//			params.put("vendorList", vendorList);
-//			if (!vendorStr.trim().isEmpty()) {
-//				bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";
-//				params.put("vendor", vendorStr.trim());
-//			}
-			params.put("createType", Constants.CREATE_TYPE_BUYER);
+			if (state > 0) {
+				return deliveryMainRepository.findBySearchTerm(code, vendorStr, state, request);
+			}else {
+				return deliveryMainRepository.findBySearchTerm(code, vendorStr, request);
+			}
 		}
-
-		if (!inventory.trim().isEmpty()) {
-			bodyQuery += " and (d.name like CONCAT('%',:inventory, '%') or d.code like CONCAT('%',:inventory, '%')) ";
-			params.put("inventory", inventory.trim());
-		}
-
-		if (state > 0) {
-			bodyQuery += " and iverifystate=:state";
-			params.put("state", state);
-		}
-
-		if (startDate != null) {
-			bodyQuery += " and a.dstartdate=:startDate";
-			params.put("startDate", startDate);
-		}
-		if (endDate != null) {
-			bodyQuery += " and a.denddate=:endDate";
-			params.put("endDate", endDate);
-		}
-
-		countQuery += bodyQuery;
-		Query q = em.createNativeQuery(countQuery);
-
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			q.setParameter(entry.getKey(), entry.getValue());
-		}
-
-		BigInteger totalCount = (BigInteger) q.getSingleResult();
-
-		selectQuery += bodyQuery + orderBy;
-		q = em.createNativeQuery(selectQuery, "InquerySearchResult");
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			q.setParameter(entry.getKey(), entry.getValue());
-		}
-
-		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
-
-		return new PageImpl<InquerySearchResult>(list, request, totalCount.longValue());
-
 	}
 
 	// 更新API

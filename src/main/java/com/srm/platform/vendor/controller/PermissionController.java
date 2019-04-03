@@ -58,24 +58,7 @@ public class PermissionController extends CommonController {
 	private static Long LIST_FUNCTION_ACTION_ID = 12L;
 	private static Long EDIT_FUNCTION_ACTION_ID = 13L;
 	
-	@Autowired
-	private AccountRepository accountRepository;
 
-	@Autowired
-	private PermissionGroupRepository permissionGroupRepository;
-
-	@Autowired
-	private FunctionRepository functionRepository;
-
-	@Autowired
-	private FunctionActionRepository functionActionRepository;
-
-
-	@Autowired
-	private PermissionGroupFunctionActionRepository permissionGroupFunctionActionRepository;
-
-	@Autowired
-	private PermissionGroupUserRepository permissionGroupUserReopsitory;
 
 	// 权限组管理->列表
 	@GetMapping("/list")

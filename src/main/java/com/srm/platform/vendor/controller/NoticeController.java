@@ -54,17 +54,7 @@ import com.srm.platform.vendor.utility.Utils;
 public class NoticeController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired
-	private NoticeRepository noticeRepository;
 
-	@Autowired
-	private NoticeReadRepository noticeReadRepository;
-
-	@Autowired
-	private AccountRepository accountRepository;
-
-	@Autowired
-	private VendorRepository vendorRepository;
 
 
 	// 用户管理->列表

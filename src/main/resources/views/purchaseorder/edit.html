@@ -10,10 +10,10 @@
 		<div class="btn-group-bar">
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
 				<a class="btn btn-primary" id="deploy" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0 or main.srmstate==3 ) AND main.state =='审核'} "><i class="fa fa-undo"></i> 发布</a> 
+				<a class="btn btn-primary" id="negotiate" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0 or main.srmstate==3 ) AND main.state =='审核'}" th:href="@{|/inquery/${main.code}/edit|}"><i class="fa fa-undo"></i> 发起议价</a> 
 				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
 				<a class="btn btn-primary" id="cancel" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-undo"></i> 拒绝</a> 
-				<a class="btn btn-default" th:href="@{/purchaseorder}"><i
-					class="fa fa-arrow-left"></i> 返回列表</a>
+				<a class="btn btn-default" th:href="@{/purchaseorder}"><i	class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
 		<div class="panel panel-default">
@@ -68,9 +68,8 @@
 							<div class="tab-style-1" id="tabs">
 								<ul class="nav nav-tabs">
 									<li class="active"><a data-toggle="tab" href="#tab-1">基本信息</a></li>
-									<li><a data-toggle="tab" href="#tab-2">行关闭</a></li>
-									<li><a data-toggle="tab" href="#tab-3">操作日志</a></li>
-									<li><a data-toggle="tab" href="#tab-4">附件</a></li>
+									<li><a data-toggle="tab" href="#tab-2">操作日志</a></li>
+									<li><a data-toggle="tab" href="#tab-3">附件</a></li>
 								</ul>
 								<div class="tab-content">
 									<div id="tab-1" class="tab-pane row-fluid fade in active">
@@ -87,11 +86,17 @@
 											</tfoot>
 										</table>
 									</div>
-									<div id="tab-2" class="tab-pane row-fluid fade in">										
+									<div id="tab-2" class="tab-pane row-fluid fade in">		
+										<div class="operations" id="operation_history">
+										</div>	
+										<div class="row edit-history">
+											<form id="history_form" th:action="@{/operation_history/update}" method="post">												
+												<textarea name="content" id="history_content" class="history-content" rows="5"></textarea>
+												<a class="btn btn-primary save-history" id="save_history"><i class="fa fa-plus"></i> 保存</a>
+											</form>											 
+										</div>							
 									</div>
 									<div id="tab-3" class="tab-pane row-fluid fade in">										
-									</div>
-									<div id="tab-4" class="tab-pane row-fluid fade in">										
 									</div>
 								</div>
 							</div>
@@ -109,6 +114,7 @@
 <script th:inline="javascript">
 	/*[+
    var detail_url = [[@{/purchaseorder/}]] + [[${main.code}]] + "/details";
+	 var history_url = [[@{/operation_history/list/order/}]] + [[${main.code}]];
    var submit_url = [[@{/purchaseorder/update}]];
    var state = [[${main.srmstate}]];
    +]*/
@@ -125,6 +131,50 @@
 
 	  var basic_table, prepay_table;
 
+	  $('#negotiate').click(function() {
+	  	
+	  });
+	  
+	  $('#save_history').click(function() {
+	  	$("#history_form").ajaxSubmit({
+	  		data : {
+	  			target_type: "order",
+	  			target_id: $('#code').val(),		      	
+	      },
+	      beforeSend: function(){
+          App.blockUI();
+        },
+        complete: function(){
+          App.unblockUI();
+        },
+        success: function(res, status, xhr, form) {
+          if (res.success == 1) {
+          	$('#history_content').val('');
+          	loadHistory();
+          }else{
+            App.showErrorDialog(res.errmsg);
+          }              
+        },
+        error: function (res, status, xhr, form) {
+          App.showErrorDialog("操作失败", "请稍后重试");
+        }
+      });
+	  });
+	  
+	  function loadHistory() {
+	  	$.get(history_url, function(data, status) {
+	  		$('#operation_history').empty();
+	  		$.each(data, function(key, item) {
+	  			var time = "<div class='operation-time'>" + $.fn.time_renderer(item.create_date) + "</div>";
+	  			var content = "<div class='operation-content'>【" + item.account.realname + "】"+ item.content + "</div>";
+	  			var record = "<div class='operation'>" + time + content + "</div>";
+	  			$('#operation_history').append($(record));
+	  		});
+		  });
+	  }
+	  
+	  loadHistory();
+	  
 	  $('#tabs').tabs({
 		  activate : function(event, ui) {
 		  }

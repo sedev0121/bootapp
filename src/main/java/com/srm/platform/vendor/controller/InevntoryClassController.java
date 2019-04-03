@@ -22,13 +22,10 @@ import com.srm.platform.vendor.utility.AccountPermission;
 // 供应商管理
 @Controller
 @RequestMapping(path = "/inventoryclass")
-//@PreAuthorize("hasAuthority('供应商管理-查看列表')")
+// @PreAuthorize("hasAuthority('供应商管理-查看列表')")
 public class InevntoryClassController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 5L;
-
-	@Autowired
-	private InventoryClassRepository inventoryClassRepository;
 
 	// 查询列表
 	@GetMapping({ "", "/" })
@@ -44,11 +41,10 @@ public class InevntoryClassController extends CommonController {
 			show404();
 
 		checkPermission(code, LIST_FUNCTION_ACTION_ID);
-		
+
 		model.addAttribute("data", inventoryClass);
 		return "inventoryclass/edit";
 	}
-
 
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
@@ -72,8 +68,8 @@ public class InevntoryClassController extends CommonController {
 		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
 		boolean result = accountPermission.checkVendorPermission(vendorCode);
 		if (!result) {
-			//TODO:
-//			show403();
+			// TODO:
+			// show403();
 		}
 	}
 

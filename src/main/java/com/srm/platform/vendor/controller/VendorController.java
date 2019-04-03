@@ -30,9 +30,6 @@ public class VendorController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 5L;
 
-	@Autowired
-	private VendorRepository vendorRepository;
-
 	// 查询列表
 	@GetMapping({ "", "/" })
 	public String index() {

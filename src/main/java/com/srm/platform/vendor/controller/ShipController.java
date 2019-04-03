@@ -69,15 +69,6 @@ public class ShipController extends CommonController {
 	@PersistenceContext
 	private EntityManager em;
 
-	@Autowired
-	private AccountRepository accountRepository;
-
-	@Autowired
-	private PurchaseOrderMainRepository purchaseOrderMainRepository;
-
-	@Autowired
-	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
-
 	// 查询列表
 //	@PreAuthorize("hasRole('ROLE_VENDOR')")
 	@GetMapping({ "/", "" })

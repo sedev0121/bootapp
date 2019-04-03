@@ -2,47 +2,30 @@ package com.srm.platform.vendor.controller;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Query;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.util.StringUtils;
 
-import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Box;
 import com.srm.platform.vendor.model.BoxClass;
-import com.srm.platform.vendor.model.InventoryClass;
-import com.srm.platform.vendor.model.PermissionGroupUser;
-import com.srm.platform.vendor.model.PermissionUserScope;
-import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.repository.BoxClassRepository;
-import com.srm.platform.vendor.repository.BoxRepository;
-import com.srm.platform.vendor.repository.InventoryClassRepository;
-import com.srm.platform.vendor.saveform.AccountSaveForm;
 import com.srm.platform.vendor.searchitem.BoxSearchResult;
-import com.srm.platform.vendor.searchitem.StatementSearchResult;
-import com.srm.platform.vendor.searchitem.VendorSearchItem;
 import com.srm.platform.vendor.utility.AccountPermission;
-import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.Utils;
 
@@ -53,12 +36,6 @@ import com.srm.platform.vendor.utility.Utils;
 public class BoxController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 5L;
-
-	@Autowired
-	private BoxClassRepository boxClassRepository;
-
-	@Autowired
-	private BoxRepository boxRepository;
 
 	// 查询列表
 	@GetMapping({ "", "/" })
@@ -164,7 +141,7 @@ public class BoxController extends CommonController {
 	}
 
 	@Transactional
-	@PostMapping("/update_state")	
+	@PostMapping("/update_state")
 	public @ResponseBody GenericJsonResponse<Box> update_state(@RequestParam Map<String, String> requestParams) {
 
 		Box box = new Box();
@@ -175,13 +152,13 @@ public class BoxController extends CommonController {
 		for (String id : boxIds) {
 			box = boxRepository.findOneById(Long.valueOf(id));
 			if ("enable".equals(key)) {
-				box.setState(1);	
+				box.setState(1);
 			} else if ("disable".equals(key)) {
 				box.setState(0);
 			} else if ("empty".equals(key)) {
 				box.setUsed(0);
 			}
-			
+
 			box = boxRepository.save(box);
 		}
 

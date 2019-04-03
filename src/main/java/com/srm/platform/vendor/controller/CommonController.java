@@ -37,19 +37,39 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
+import com.srm.platform.vendor.model.OperationHistory;
 import com.srm.platform.vendor.model.Price;
-import com.srm.platform.vendor.model.ProvideClass;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
-import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.BoxClassRepository;
+import com.srm.platform.vendor.repository.BoxRepository;
+import com.srm.platform.vendor.repository.CompanyRepository;
+import com.srm.platform.vendor.repository.DeliveryDetailRepository;
+import com.srm.platform.vendor.repository.DeliveryMainRepository;
+import com.srm.platform.vendor.repository.FunctionActionRepository;
+import com.srm.platform.vendor.repository.FunctionRepository;
+import com.srm.platform.vendor.repository.InventoryClassRepository;
+import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.repository.OperationHistoryRepository;
+import com.srm.platform.vendor.repository.PermissionGroupFunctionActionRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
+import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
+import com.srm.platform.vendor.repository.PermissionUserScopeRepository;
 import com.srm.platform.vendor.repository.PriceRepository;
 import com.srm.platform.vendor.repository.ProvideClassRepository;
+import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
+import com.srm.platform.vendor.repository.PurchaseInMainRepository;
+import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
+import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
+import com.srm.platform.vendor.repository.StatementDetailRepository;
+import com.srm.platform.vendor.repository.StatementMainRepository;
+import com.srm.platform.vendor.repository.StoreRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
+import com.srm.platform.vendor.repository.VendorClassRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.searchitem.DimensionTargetItem;
 import com.srm.platform.vendor.service.SessionCounter;
@@ -84,12 +104,17 @@ public class CommonController {
 	@PersistenceContext
 	public EntityManager em;
 
-	
 	@Autowired
-	private VendorRepository vendorRepository;
-	
+	public VendorRepository vendorRepository;
+
+	@Autowired
+	public CompanyRepository companyRepository;
+
 	@Autowired
 	public NoticeRepository noticeRepository;
+
+	@Autowired
+	public OperationHistoryRepository operationHistoryRepository;
 
 	@Autowired
 	public NoticeReadRepository noticeReadRepository;
@@ -104,6 +129,12 @@ public class CommonController {
 	public SessionCounter sessionCounter;
 
 	@Autowired
+	public DeliveryMainRepository deliveryMainRepository;
+	
+	@Autowired
+	public DeliveryDetailRepository deliveryDetailRepository;
+	
+	@Autowired
 	public VenPriceAdjustMainRepository venPriceAdjustMainRepository;
 
 	@Autowired
@@ -111,13 +142,67 @@ public class CommonController {
 
 	@Autowired
 	public PriceRepository priceRepository;
-	
+
 	@Autowired
 	public ProvideClassRepository provideClassRepository;
 
 	@Autowired
 	public PermissionGroupRepository permissionGroupRepository;
-	
+
+	@Autowired
+	public PermissionGroupUserRepository permissionGroupUserRepository;
+
+	@Autowired
+	public PermissionUserScopeRepository permissionUserScopeRepository;
+
+	@Autowired
+	public BoxClassRepository boxClassRepository;
+
+	@Autowired
+	public BoxRepository boxRepository;
+
+	@Autowired
+	public InventoryClassRepository inventoryClassRepository;
+
+	@Autowired
+	public InventoryRepository inventoryRepository;
+
+	@Autowired
+	public FunctionRepository functionRepository;
+
+	@Autowired
+	public FunctionActionRepository functionActionRepository;
+
+	@Autowired
+	public PermissionGroupFunctionActionRepository permissionGroupFunctionActionRepository;
+
+	@Autowired
+	public PermissionGroupUserRepository permissionGroupUserReopsitory;
+
+	@Autowired
+	public PurchaseInMainRepository purchaseInMainRepository;
+
+	@Autowired
+	public PurchaseInDetailRepository purchaseInDetailRepository;
+
+	@Autowired
+	public PurchaseOrderMainRepository purchaseOrderMainRepository;
+
+	@Autowired
+	public PurchaseOrderDetailRepository purchaseOrderDetailRepository;
+
+	@Autowired
+	public StatementMainRepository statementMainRepository;
+
+	@Autowired
+	public StatementDetailRepository statementDetailRepository;
+
+	@Autowired
+	public StoreRepository storeRepository;
+
+	@Autowired
+	public VendorClassRepository vendorClassRepository;
+
 	protected int currentPage;
 	protected int maxResults;
 	protected int pageSize;
@@ -141,11 +226,13 @@ public class CommonController {
 	}
 
 	public AccountPermission getPermissionScopeOfFunction(Long functionActionId) {
-		List<DimensionTargetItem> scopeList = permissionGroupRepository.findPermissionScopeOf(this.getLoginAccount().getId(), functionActionId);
-		AccountPermission accountPermission = new AccountPermission(this.getLoginAccount().getId(), functionActionId, scopeList);
+		List<DimensionTargetItem> scopeList = permissionGroupRepository
+				.findPermissionScopeOf(this.getLoginAccount().getId(), functionActionId);
+		AccountPermission accountPermission = new AccountPermission(this.getLoginAccount().getId(), functionActionId,
+				scopeList);
 		return accountPermission;
 	}
-	
+
 	public boolean hasAuthority(String authority) {
 		Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication()
 				.getAuthorities();
@@ -214,6 +301,20 @@ public class CommonController {
 			noticeRead.setAccount(account);
 			noticeReadRepository.save(noticeRead);
 		}
+	}
+
+	protected String getOperationHistoryType() {
+		return null;
+	};
+	
+	public void addOpertionHistory(String targetId, String content) {
+		OperationHistory operationHistory = new OperationHistory();
+		operationHistory.setTargetId(targetId);
+		operationHistory.setTargetType(this.getOperationHistoryType());
+		operationHistory.setContent(content);
+		operationHistory.setAccount(this.getLoginAccount());
+
+		operationHistory = operationHistoryRepository.save(operationHistory);
 	}
 
 	public Account getLoginAccount() {
@@ -313,7 +414,7 @@ public class CommonController {
 			price.setFisoutside(false);
 			price.setFcheckdate(new Date());
 			price.setDescription(item.getInventory().getSpecs());
-//			price.setFauxunit(item.getInventory().getPuunitName());
+			// price.setFauxunit(item.getInventory().getPuunitName());
 			priceRepository.save(price);
 		}
 
