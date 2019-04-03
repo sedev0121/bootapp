@@ -35,8 +35,7 @@ public class StoreController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 5L;
 
-	@Autowired
-	private StoreRepository storeRepository;
+
 
 	// 查询列表
 	@GetMapping({ "", "/" })

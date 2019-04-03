@@ -27,8 +27,6 @@ public class ProfileController extends CommonController {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired
-	private AccountRepository accountRepository;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;

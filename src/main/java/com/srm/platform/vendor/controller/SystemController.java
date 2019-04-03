@@ -32,9 +32,6 @@ import com.srm.platform.vendor.searchitem.AccountSearchResult;
 public class SystemController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired
-	private AccountRepository accountRepository;
-
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
 	public String index(Model model) {

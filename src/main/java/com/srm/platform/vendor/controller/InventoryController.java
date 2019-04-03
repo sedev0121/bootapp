@@ -35,8 +35,6 @@ public class InventoryController extends CommonController {
 	@PersistenceContext
 	private EntityManager em;
 
-	@Autowired
-	private InventoryRepository inventoryRepository;
 
 	// 查询列表
 	@GetMapping({ "/", "" })

@@ -71,21 +71,6 @@ public class StatementController extends CommonController {
 	@PersistenceContext
 	private EntityManager em;
 
-	@Autowired
-	private VendorRepository vendorRepository;
-
-	@Autowired
-	private AccountRepository accountRepository;
-
-	@Autowired
-	private StatementMainRepository statementMainRepository;
-
-	@Autowired
-	private StatementDetailRepository statementDetailRepository;
-
-	@Autowired
-	private PurchaseInDetailRepository purchaseInDetailRepository;
-
 	// 查询列表
 	@GetMapping({ "", "/" })
 	public String index() {

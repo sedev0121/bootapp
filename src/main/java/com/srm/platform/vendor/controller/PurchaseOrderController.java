@@ -51,15 +51,6 @@ public class PurchaseOrderController extends CommonController {
 	@PersistenceContext
 	private EntityManager em;
 
-	@Autowired
-	private PurchaseOrderMainRepository purchaseOrderMainRepository;
-
-	@Autowired
-	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
-
-	@Autowired
-	private AccountRepository accountRepository;
-
 	// 查询列表
 	@GetMapping({ "/", "" })
 	public String index() {

@@ -36,8 +36,6 @@ import com.srm.platform.vendor.utility.Utils;
 public class AlertController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired
-	private NoticeRepository noticeRepository;
 
 	// 用户管理->列表
 	@GetMapping({ "/", "" })

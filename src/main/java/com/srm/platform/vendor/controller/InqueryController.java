@@ -61,15 +61,6 @@ import com.srm.platform.vendor.utility.Utils;
 //@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('询价管理-查看列表')")
 public class InqueryController extends CommonController {
 
-	@Autowired
-	private VendorRepository vendorRepository;
-
-	@Autowired
-	private InventoryRepository inventoryRepository;
-
-	@Autowired
-	private AccountRepository accountRepository;
-
 	// 查询列表
 	@GetMapping({ "", "/" })
 	public String index() {

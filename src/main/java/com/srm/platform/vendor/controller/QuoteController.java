@@ -54,14 +54,7 @@ public class QuoteController extends CommonController {
 	@PersistenceContext
 	private EntityManager em;
 
-	@Autowired
-	private AccountRepository accountRepository;
 
-	@Autowired
-	private VenPriceAdjustMainRepository venPriceAdjustMainRepository;
-
-	@Autowired
-	private VenPriceAdjustDetailRepository venPriceAdjustDetailRepository;
 
 	// 查询列表
 	@GetMapping({ "", "/" })
