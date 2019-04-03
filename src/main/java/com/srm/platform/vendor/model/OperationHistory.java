@@ -14,6 +14,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "operation_history")
 
@@ -32,6 +34,8 @@ public class OperationHistory {
 
 	private String targetId;
 	private String targetType;
+	
+	@JsonProperty("create_date")
 	private Date createDate = new Date();
 
 	public Long getId() {

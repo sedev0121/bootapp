@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,12 +22,10 @@ public class OperationHistoryController extends CommonController {
 
 
 	// 查询列表API
-	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody List<OperationHistory> list_ajax(@RequestParam Map<String, String> requestParams) {
+	@RequestMapping(value = "/list/{targetType}/{targetId}", produces = "application/json")
+	public @ResponseBody List<OperationHistory> list_ajax(@PathVariable("targetType") String targetType, @PathVariable("targetId") String targetId) {
 
 		List<OperationHistory> result = new ArrayList<OperationHistory>();
-		String targetType = requestParams.getOrDefault("type", null);
-		String targetId = requestParams.getOrDefault("id", null);
 
 		if (targetType != null && targetId != null) {
 			result = operationHistoryRepository.findByTarget(targetType, targetId);
