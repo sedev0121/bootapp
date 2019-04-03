@@ -45,6 +45,8 @@ import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.BoxClassRepository;
 import com.srm.platform.vendor.repository.BoxRepository;
 import com.srm.platform.vendor.repository.CompanyRepository;
+import com.srm.platform.vendor.repository.DeliveryDetailRepository;
+import com.srm.platform.vendor.repository.DeliveryMainRepository;
 import com.srm.platform.vendor.repository.FunctionActionRepository;
 import com.srm.platform.vendor.repository.FunctionRepository;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
@@ -126,6 +128,12 @@ public class CommonController {
 	@Autowired
 	public SessionCounter sessionCounter;
 
+	@Autowired
+	public DeliveryMainRepository deliveryMainRepository;
+	
+	@Autowired
+	public DeliveryDetailRepository deliveryDetailRepository;
+	
 	@Autowired
 	public VenPriceAdjustMainRepository venPriceAdjustMainRepository;
 
