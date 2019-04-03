@@ -10,6 +10,7 @@
 		<div class="btn-group-bar">
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
 				<a class="btn btn-primary" id="deploy" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0 or main.srmstate==3 ) AND main.state =='审核'} "><i class="fa fa-undo"></i> 发布</a> 
+				<a class="btn btn-primary" id="negotiate" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0 or main.srmstate==3 ) AND main.state =='审核'}" th:href="@{|/inquery/${main.code}/edit|}"><i class="fa fa-undo"></i> 发起议价</a> 
 				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
 				<a class="btn btn-primary" id="cancel" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-undo"></i> 拒绝</a> 
 				<a class="btn btn-default" th:href="@{/purchaseorder}"><i	class="fa fa-arrow-left"></i> 返回列表</a>
@@ -67,9 +68,8 @@
 							<div class="tab-style-1" id="tabs">
 								<ul class="nav nav-tabs">
 									<li class="active"><a data-toggle="tab" href="#tab-1">基本信息</a></li>
-									<li><a data-toggle="tab" href="#tab-2">行关闭</a></li>
-									<li><a data-toggle="tab" href="#tab-3">操作日志</a></li>
-									<li><a data-toggle="tab" href="#tab-4">附件</a></li>
+									<li><a data-toggle="tab" href="#tab-2">操作日志</a></li>
+									<li><a data-toggle="tab" href="#tab-3">附件</a></li>
 								</ul>
 								<div class="tab-content">
 									<div id="tab-1" class="tab-pane row-fluid fade in active">
@@ -97,8 +97,6 @@
 										</div>							
 									</div>
 									<div id="tab-3" class="tab-pane row-fluid fade in">										
-									</div>
-									<div id="tab-4" class="tab-pane row-fluid fade in">										
 									</div>
 								</div>
 							</div>
@@ -133,6 +131,10 @@
 
 	  var basic_table, prepay_table;
 
+	  $('#negotiate').click(function() {
+	  	
+	  });
+	  
 	  $('#save_history').click(function() {
 	  	$("#history_form").ajaxSubmit({
 	  		data : {
