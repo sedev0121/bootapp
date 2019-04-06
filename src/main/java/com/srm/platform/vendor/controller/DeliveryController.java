@@ -48,6 +48,7 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.saveform.DeliverySaveForm;
 import com.srm.platform.vendor.saveform.VenPriceSaveForm;
 import com.srm.platform.vendor.searchitem.InquerySearchResult;
 import com.srm.platform.vendor.searchitem.VenPriceDetailItem;
@@ -93,6 +94,10 @@ public class DeliveryController extends CommonController {
 
 	@RequestMapping(value = "/{mainId}/details", produces = "application/json")
 	public @ResponseBody List<DeliveryDetail> details_ajax(@PathVariable("mainId") Long mainId) {
+		if (mainId == null) {
+			return new ArrayList<>();
+		}
+		
 		List<DeliveryDetail> list = deliveryDetailRepository.findDetailsByMainId(mainId);
 
 		return list;
@@ -172,171 +177,27 @@ public class DeliveryController extends CommonController {
 	// 更新API
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody GenericJsonResponse<VenPriceAdjustMain> update_ajax(VenPriceSaveForm form,
-			@RequestParam(value = "attach", required = false) MultipartFile attach, Principal principal) {
-
-		String origianlFileName = null;
-		String savedFileName = null;
-		if (attach != null) {
-			origianlFileName = attach.getOriginalFilename();
-			File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_INQUERY);
-
-			if (file != null)
-				savedFileName = file.getName();
-		}
-
-		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(form.getCcode());
-
-		if (venPriceAdjustMain == null) {
-			venPriceAdjustMain = new VenPriceAdjustMain();
-			venPriceAdjustMain.setCreatetype(isVendor() ? Constants.CREATE_TYPE_VENDOR : Constants.CREATE_TYPE_BUYER);
-			venPriceAdjustMain.setCcode(form.getCcode());
-		}
-
-		if ((venPriceAdjustMain.getIverifystate() == null
-				|| venPriceAdjustMain.getIverifystate() == Constants.STATE_NEW)
-				&& form.getState() <= Constants.STATE_CONFIRM) {
-			venPriceAdjustMain.setType(form.getType());
-			venPriceAdjustMain.setIsupplytype(form.getProvide_type());
-			venPriceAdjustMain.setItaxrate(form.getTax_rate());
-
-			venPriceAdjustMain.setDstartdate(form.getStart_date());
-			venPriceAdjustMain.setDenddate(form.getEnd_date());
-			venPriceAdjustMain.setDmakedate(new Date());
-			venPriceAdjustMain.setVendor(vendorRepository.findOneByCode(form.getVendor()));
-			venPriceAdjustMain.setMaker(accountRepository.findOneById(form.getMaker()));
-
-			if (savedFileName != null) {
-				venPriceAdjustMain.setAttachFileName(savedFileName);
-				venPriceAdjustMain.setAttachOriginalName(origianlFileName);
+	public @ResponseBody GenericJsonResponse<DeliveryMain> update_ajax(DeliverySaveForm form, Principal principal) {
+		
+		DeliveryMain main = new DeliveryMain();
+		if (form.getId() != null) {
+			DeliveryMain old = deliveryMainRepository.findOneById(form.getId());
+			if (old != null) {
+				main = old;
 			}
 		}
-
+		
+		main.setCode(form.getCode());
+		main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
+		
 		Account account = this.getLoginAccount();
+		main.setCreater(account);
 
-		if (form.getState() == Constants.STATE_VERIFY || (venPriceAdjustMain.getIverifystate() != null
-				&& venPriceAdjustMain.getIverifystate() == Constants.STATE_PASS
-				&& form.getState() == Constants.STATE_CANCEL)) {
-			venPriceAdjustMain.setVerifier(account);
-			venPriceAdjustMain.setDverifydate(new Date());
-		}
-		if (form.getState() == Constants.STATE_PUBLISH) {
-			GenericJsonResponse<VenPriceAdjustMain> u8Response = this.u8VenPriceAdjust(venPriceAdjustMain);
-			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
-				venPriceAdjustMain.setPublisher(account);
-				venPriceAdjustMain.setDpublishdate(new Date());
-			} else {
-				return u8Response;
-			}
-
-		}
-		int state = form.getState();
-		if (venPriceAdjustMain.getCreatetype() == Constants.CREATE_TYPE_VENDOR
-				&& form.getState() == Constants.STATE_SUBMIT) {
-			state = Constants.STATE_CONFIRM;
-		}
-		venPriceAdjustMain.setIverifystate(state);
-		venPriceAdjustMain = venPriceAdjustMainRepository.save(venPriceAdjustMain);
-
-		GenericJsonResponse<VenPriceAdjustMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS,
-				null, venPriceAdjustMain);
-
-		String action = null;
-		String type = "询价单";
-
-		List<Account> toList = new ArrayList<>();
-
-		String url = String.format("/inquery/%s/read", venPriceAdjustMain.getCcode());
-
-		switch (form.getState()) {
-		case Constants.STATE_SUBMIT:
-			action = "提交";
-			if (venPriceAdjustMain.getCreatetype() == Constants.CREATE_TYPE_VENDOR) {
-				toList.addAll(accountRepository.findAllBuyersByVendorCode(venPriceAdjustMain.getVendor().getCode()));
-				type = "报价单";
-			} else {
-				toList.addAll(accountRepository.findAccountsByVendor(venPriceAdjustMain.getVendor().getCode()));
-			}
-			url = String.format("/quote/%s/read", venPriceAdjustMain.getCcode());
-			break;
-		case Constants.STATE_CONFIRM:
-			toList.add(venPriceAdjustMain.getMaker());
-			action = "确认";
-			break;
-		case Constants.STATE_PASS:
-			toList.add(venPriceAdjustMain.getMaker());
-			action = "通过";
-			break;
-		case Constants.STATE_VERIFY:
-			toList.add(venPriceAdjustMain.getMaker());
-			action = "审核";
-			break;
-		case Constants.STATE_PUBLISH:
-			toList.add(venPriceAdjustMain.getMaker());
-			action = "归档";
-			break;
-		case Constants.STATE_CANCEL:
-			toList.add(venPriceAdjustMain.getMaker());
-			action = "退回";
-			break;
-		}
-
-		String title = String.format("%s【%s】已由【%s】%s，请及时查阅和处理！", type, venPriceAdjustMain.getCcode(),
-				account.getRealname(), action);
-		this.sendmessage(title, toList, url);
-
-		if (form.getState() <= Constants.STATE_PASS && form.getTable() != null) {
-			venPriceAdjustDetailRepository
-					.deleteInBatch(venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode()));
-
-			for (Map<String, String> row : form.getTable()) {
-				VenPriceAdjustDetail detail = new VenPriceAdjustDetail();
-				detail.setMain(venPriceAdjustMain);
-				detail.setInventory(inventoryRepository.findOneByCode(row.get("cinvcode")));
-				detail.setCbodymemo(row.get("cbodymemo"));
-				if (row.get("iunitprice") != null && !row.get("iunitprice").isEmpty()) {
-					detail.setIunitprice(Float.parseFloat(row.get("iunitprice")));
-				}
-
-				if (row.get("ivalid") != null && !row.get("ivalid").isEmpty()) {
-					detail.setIvalid(Integer.parseInt(row.get("ivalid")));
-				} else {
-					detail.setIvalid(0);
-				}
-				String max = row.get("fmaxquantity");
-				String min = row.get("fminquantity");
-				if (max != null && !max.isEmpty())
-					detail.setFmaxquantity(Float.parseFloat(max));
-
-				if (min != null && !min.isEmpty())
-					detail.setFminquantity(Float.parseFloat(min));
-
-				if (row.get("ivalid") != null && !row.get("ivalid").isEmpty())
-					detail.setIvalid(Integer.parseInt(row.get("ivalid")));
-
-				String startDateStr = row.get("dstartdate");
-				String endDateStr = row.get("denddate");
-				if (startDateStr != null && !startDateStr.isEmpty())
-					detail.setDstartdate(Utils.parseDate(startDateStr));
-				if (endDateStr != null && !endDateStr.isEmpty())
-					detail.setDenddate(Utils.parseDate(endDateStr));
-
-				if (row.get("rowno") != null && !row.get("rowno").isEmpty())
-					detail.setRowno(Integer.parseInt(row.get("rowno")));
-
-				if (row.get("itaxrate") != null && !row.get("itaxrate").isEmpty())
-					detail.setItaxrate(Float.parseFloat(row.get("itaxrate")));
-				if (row.get("itaxunitprice") != null && !row.get("itaxunitprice").isEmpty())
-					detail.setItaxunitprice(Float.parseFloat(row.get("itaxunitprice")));
-
-				venPriceAdjustDetailRepository.save(detail);
-			}
-		}
-
-		if (form.getState() == Constants.STATE_PUBLISH) {
-			updatePriceTable(venPriceAdjustMain);
-		}
-
+		deliveryMainRepository.save(main);
+		
+		GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
+				main);
+		
 		return jsonResponse;
 	}
 
