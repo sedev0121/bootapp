@@ -49,7 +49,6 @@ public class PurchaseOrderDetail {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonIgnore
 	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "code", referencedColumnName = "code")
 	private PurchaseOrderMain main;

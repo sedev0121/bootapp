@@ -2,6 +2,8 @@ package com.srm.platform.vendor.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -19,5 +21,8 @@ public interface PurchaseOrderDetailRepository extends JpaRepository<PurchaseOrd
 
 	@Query(value = "select * from purchase_order_detail where code= :code and rowno=:rowno limit 1", nativeQuery = true)
 	PurchaseOrderDetail findOneByCodeAndRowno(String code, String rowno);
+	
+	@Query(value = "select * from purchase_order_detail where code like %?1%", nativeQuery = true)
+	Page<PurchaseOrderDetail> searchAll(String search, Pageable pageable);
 
 }

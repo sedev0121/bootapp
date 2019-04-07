@@ -370,65 +370,76 @@ is_readonly = 0;
 		      return json;
 	      },
 	    },
-
 	    columns : [ {
-	      data : 'rowno',
-	      className : 'dt-center',
-	      title : '行号',
+	      data : null,
+	      defaultContent : ' ',
+	      width: "30px",
+	      orderable : false,
+	      className : 'select-checkbox',
 	    }, {
-	      data : 'cinvcode',
-	      title : '物料编码',
+	      data : 'inventory_name',
+	      title : '订单号',
 	    }, {
-	      data : 'name',
-	      title : '物料名称'
+	      data : 'inventory_name',
+	      title : '编码',
 	    }, {
-	      data : 'specs',
-	      title : '规格型号',
+	      data : 'inventory_name',
+	      title : '存货名称',
 	    }, {
-	      data : 'puunit_name',
+	      data : 'inventory_code',
+	      title : '存货代码',
+	    }, {
+	      data : 'unit_name',
 	      className : 'dt-center',
 	      title : '单位',
 	    }, {
-	      data : 'fminquantity',
-	      className : 'dt-right minquantity ',
-	      title : '最小数量',
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单数量',
 	    }, {
-	      data : 'fmaxquantity',
-	      className : 'dt-right maxquantity ',
-	      title : '最大数量',
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单箱数',
 	    }, {
-	      data : 'iunitprice',
-	      className : 'dt-right unitprice ',
-	      title : '最新未税报价',
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单已交数量',
 	    }, {
-	      data : 'itaxunitprice',
-	      className : 'dt-right taxunitprice ',
-	      title : '最新含税报价',
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单已交箱数',
 	    }, {
-	      data : 'itaxrate',
-	      className : 'dt-center taxrate ',
-	      title : '税率',
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单未交数量',
 	    }, {
-	      data : 'dstartdate',
-	      render : $.fn.date_renderer,
-	      className : 'dt-center startdate',
-	      title : '生效日期',
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单未交箱数',		 
 	    }, {
-	      data : 'denddate',
-	      render : $.fn.date_renderer,
-	      className : 'dt-center enddate',
-	      title : '有效日期'
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '发货数量',		 
 	    }, {
-	      data : 'ivalid',
-	      title : '是否有效',
-	      className : 'ivalid dt-center ',
-	      visible : state > 2 && type == 2,
-	      render : App.valid_render,
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '发货箱数',		 
 	    }, {
-	      data : 'cbodymemo',
-	      className : 'memo',
-	      title : '备注　　　　　　　',
-
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '实收数量',		 
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '实收箱数',		 
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '批次',		 
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '备注',		 
 	    } ],
 	    rowCallback : function(row, data) {
 		    // Set the checked state of the checkbox in the table
@@ -546,7 +557,7 @@ is_readonly = 0;
 				    style : 'os'
 			    },
 			    ajax : {
-			      url : /*[[@{/inventory/list}]]*/'',
+			      url : /*[[@{/purchaseorder/details/search}]]*/'',
 			      data : function(data) {
 				      var filter = {
 				        rows_per_page : data.length,
@@ -563,20 +574,77 @@ is_readonly = 0;
 				      return json.content;
 			      },
 			    },
-
+			    order: [ [1, 'asc'] ],
 			    columns : [ {
-			      data : 'code',
-			      title : '物料编码',
+			    	data : null,
+			      defaultContent : '',
+			      width: "30px",
+			      orderable : false,
+			      className : 'select-checkbox',
 			    }, {
-			      data : 'name',
-			      title : '物料名称',
+			      data : 'main.code',
+			      title : '订单号',
 			    }, {
-			      data : 'specs',
-			      title : '规格型号',
+			      data : 'rowno',
+			      title : '编码',
 			    }, {
-			      data : 'main_measure.name',
+			      data : 'inventory_name',
+			      title : '存货名称',
+			    }, {
+			      data : 'inventory_code',
+			      title : '存货代码',
+			    }, {
+			      data : 'unit_name',
 			      className : 'dt-center',
 			      title : '单位',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '订单数量',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '订单箱数',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '订单已交数量',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '订单已交箱数',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '订单未交数量',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '订单未交箱数',		 
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '发货数量',		 
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '发货箱数',		 
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '实收数量',		 
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '实收箱数',		 
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '批次',		 
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '备注',		 
 			    } ],
 			  });
 		  }
