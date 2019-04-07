@@ -57,8 +57,6 @@ public class PermissionController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 12L;
 	private static Long EDIT_FUNCTION_ACTION_ID = 13L;
-	
-
 
 	// 权限组管理->列表
 	@GetMapping("/list")
@@ -83,7 +81,7 @@ public class PermissionController extends CommonController {
 		return "admin/permission_group/list";
 	}
 
-	// 权限组管理->修改	
+	// 权限组管理->修改
 	@GetMapping("/{id}/edit")
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('权限管理-新建/修改')")
 	public String edit(@PathVariable("id") Long id, Model model) {
@@ -93,7 +91,7 @@ public class PermissionController extends CommonController {
 			show404();
 
 		checkPermission(temp, LIST_FUNCTION_ACTION_ID);
-		
+
 		model.addAttribute("permission_group", temp);
 
 		List<AccountSearchItem> accounts = permissionGroupRepository.findAccountsInGroupById(id);
@@ -116,7 +114,7 @@ public class PermissionController extends CommonController {
 			show404();
 
 		checkPermission(temp, LIST_FUNCTION_ACTION_ID);
-		
+
 		List<Function> functionList = functionRepository.findAll();
 		List<FunctionAction> functionActionList = functionActionRepository.findAll();
 
@@ -245,13 +243,13 @@ public class PermissionController extends CommonController {
 		return permissionGroupRepository.findForSelect(search, request);
 
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/list_of_account/{accountId}")
 	public List<PermissionAccount> getGroupListOfAccount(@PathVariable("accountId") Long accountId) {
 		return permissionGroupRepository.findGroupListOfAccount(accountId);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/scope/accounts/{accountId}")
 	public List<Account> getScopeAccountListOfAccount(@PathVariable("accountId") Long accountId) {
@@ -276,40 +274,39 @@ public class PermissionController extends CommonController {
 		return q.getResultList();
 
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/list_of_company")
 	public List<ScopeCompanyItem> getCompanyList() {
 		return permissionGroupRepository.findCompanyList();
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/list_of_account")
 	public List<ScopeAccountItem> getAccountList() {
 		return permissionGroupRepository.findAccountList();
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/list_of_store")
 	public List<ScopeStoreItem> getStoreList() {
 		return permissionGroupRepository.findStoreList();
 	}
-		
+
 	@ResponseBody
 	@RequestMapping("/list_of_vendor")
 	public List<ScopeVendorItem> getVendorList() {
 		return permissionGroupRepository.findVendorList();
 	}
-	
-	
+
 	@ResponseBody
 	@RequestMapping("/list_of_inventory")
 	public List<ScopeInventoryItem> getInventoryList() {
 		return permissionGroupRepository.findInventoryList();
 	}
-	
+
 	private void checkPermission(PermissionGroup permissionGroup, Long functionActionId) {
-		
+
 	}
 
 }

@@ -65,4 +65,9 @@ public class Constants {
 	public final static int PERMISSION_DIMENSION_INVENTORY = 5;
 	
 	public final static boolean TEST = false;
+	
+	public final static int DELIVERY_STATE_NEW = 1;
+	public final static int DELIVERY_STATE_SUBMIT = 2;
+	public final static int DELIVERY_STATE_REVIEW = 3;
+	public final static int DELIVERY_STATE_CANCEL = 4;
 }

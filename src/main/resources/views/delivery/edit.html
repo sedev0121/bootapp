@@ -4,95 +4,59 @@
 	<div class="container" layout:fragment="content">
 		<ul class="breadcrumb">
 			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
-			<li><a th:href="@{/purchageorder}">订单管理</a></li>
-			<li><a th:href="@{/inquery}">议价单管理</a></li>
-			<li th:text="${#strings.contains(#request.requestURI,'add')} ?'新建议价单':'询价议价细'">议价单</li>
+			<li><a th:href="@{/devliery}">预发货单管理</a></li>
+			<li th:text="${#strings.contains(#request.requestURI,'add')} ?'新建预发货单':'预发货单明细'">议价单</li>
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right">
-				<a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a> <a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-share"></i> 提交</a> <a class="btn btn-primary" th:if="${!#strings.contains(#request.requestURI,'add') && (main.iverifystate==1  || main.iverifystate==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a> <a class="btn btn-primary" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i>
-					通过</a> <a class="btn btn-primary" th:if="${main.iverifystate==3}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a> <a class="btn btn-primary" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a> <a class="btn btn-primary" th:if="${main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a> <a class="btn btn-primary" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a> <a class="btn btn-default" th:href="@{/inquery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+				<a class="btn btn-primary" th:if="${main.state==1}" id="save"><i class="fa fa-save"></i> 保存</a> 
+				<a class="btn btn-primary" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
+				<a class="btn btn-primary" th:if="${main.state==1  || main.state==4}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
+				<a class="btn btn-primary" th:if="${main.state==2}" id="pass"><i class="fa fa-arrow-up"></i>通过</a> 
+				<a class="btn btn-primary" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a>
+				<a class="btn btn-default" th:href="@{/delivery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<form id="form" th:action="@{/inquery/update}" method="post" enctype="multipart/form-data">
+				<form id="form" th:action="@{/delivery/update}" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="id" id="id" th:value="${main.id}"/>
 					<div class="row">
 						<div class="col-lg-3 col-md-3">
-							<label for="code">单号: </label> <input type="text" id="ccode" name="ccode" th:value="${main.ccode}" class="form-control" readonly />
+							<label for="code">单号: </label> 
+							<input type="text" id="code" name="code" th:value="${main.code}" class="form-control" readonly />
 						</div>
 						<div class="col-lg-3 col-md-3">
-							<label for="vendor">供应商:</label> <select id="vendor" name="vendor" class="form-control">
-								<option th:if="${main.vendor != null}" th:value="${main.vendor.code}" th:text="${main.vendor.name}" selected="selected">NEC（日电）有限公司</option>
+							<label for="vendor">供应商:</label> 
+							<select id="vendor" name="vendor" class="form-control">
+								<option th:if="${main.vendor != null}" th:value="${main.vendor?.code}" th:text="${main.vendor?.name}" selected="selected">NEC（日电）有限公司</option>
 							</select>
 						</div>
 						<div class="col-lg-3 col-md-3">
-							<label for="tax_rate">税率:</label> <input type="number" id="tax_rate" th:value="${main.itaxrate}" name="tax_rate" class="form-control">
-						</div>
-						<div class="col-lg-3 col-md-3">
-							<label for="state">状态:</label> <select name="state" id="state" class="form-control" readonly>
+							<label for="state">状态:</label> 
+							<select name="state" id="state" class="form-control" readonly>
 							</select>
 						</div>
 						<div class="col-lg-3 col-md-3">
-							<label for="end_date">生效日期:</label> <input type="text" name="start_date" id="start_date" th:value="${#dates.format(main.dstartdate, 'yyyy-MM-dd')}" class="form-control datepicker">
+							<label for="create_date">申请日期：</label> 
+							<input type="text" name="create_date" id="create_date" th:value="${#dates.format(main?.createDate, 'yyyy-MM-dd')}" class="form-control datepicker" readonly>
 						</div>
 						<div class="col-lg-3 col-md-3">
-							<label for="end_date">有效日期:</label> <input type="text" name="end_date" id="end_date" th:value="${#dates.format(main.denddate, 'yyyy-MM-dd')}" class="form-control datepicker">
+							<label for="estimated_arrival_date">预计到货日期：</label> 
+							<input type="text" name="estimated_arrival_date" id="estimated_arrival_date" th:value="${#dates.format(main?.estimatedArrivalDate, 'yyyy-MM-dd')}" class="form-control datepicker"  readonly>
 						</div>
 						<div class="col-lg-3 col-md-3">
-							<label for="type">报价类型:</label> <select name="type" id="type" class="form-control">
-							</select>
+							<label for="vendor">业务实体：</label> 
+							<input type="text" name="company" id="company" th:value="${main.company?.name}" class="form-control" readonly>
 						</div>
 						<div class="col-lg-3 col-md-3">
-							<label for="provide_type">供应类型:</label> <select name="provide_type" id="provide_type" class="form-control">
-							</select>
+							<label for="store_name">收货仓库：</label> 
+							<input type="text" name="store_name" id="store_name" th:value="${main.store?.name}" class="form-control" readonly>
 						</div>
 						<div class="col-lg-3 col-md-3">
-							<label for="maker_id">制单人:</label> <select name="maker" id="maker" class="form-control select2" readonly>
-								<option th:value="${main.maker.id}" th:text="${main.maker.realname}" selected="selected"></option>
-							</select>
-						</div>
-						<div class="col-lg-3 col-md-3">
-							<label for="make_date">单据日期: </label> <input type="text" name="make_date" id="make_date" th:value="${#dates.format(main.dmakedate, 'yyyy-MM-dd')}" class="form-control" readonly>
-						</div>
-						<div class="col-lg-3 col-md-3">
-							<label>确认人:</label> <select class="form-control select2" readonly>
-								<option th:value="${main.reviewer?.id}" th:text="${main.reviewer?.realname}" selected="selected"></option>
-							</select>
-						</div>
-						<div class="col-lg-3 col-md-3">
-							<label>确认日期: </label> <input type="text" th:value="${#dates.format(main.dreviewdate, 'yyyy-MM-dd')}" class="form-control" readonly>
-						</div>
-						<div class="col-lg-3 col-md-3">
-							<label>审核人:</label> <select class="form-control select2" readonly>
-								<option th:value="${main.verifier?.id}" th:text="${main.verifier?.realname}" selected="selected"></option>
-							</select>
-						</div>
-						<div class="col-lg-3 col-md-3">
-							<label>审核日期:</label> <input type="text" th:value="${#dates.format(main.dverifydate, 'yyyy-MM-dd')}" class="form-control" readonly>
-						</div>
-						<div class="col-lg-3 col-md-3">
-							<label>归档人:</label> <select class="form-control select2" readonly>
-								<option th:value="${main.publisher?.id}" th:text="${main.publisher?.realname}" selected="selected"></option>
-							</select>
-						</div>
-						<div class="col-lg-3 col-md-3">
-							<label>归档日期:</label> <input type="text" th:value="${#dates.format(main.dpublishdate, 'yyyy-MM-dd')}" class="form-control" readonly>
-						</div>
-						<div class="col-lg-6 col-md-6 form-group margin-top-10" id="file_select" th:if="${(main.iverifystate==1 or main.iverifystate==4) and main.attachFileName == null}">
-							<div class="input-group input-file" name="attach">
-								<span class="input-group-btn">
-									<button class="btn btn-success btn-file btn-choose" type="button">选择附件</button>
-								</span> <input type="text" class="form-control" placeholder='请选择附件' /> <span class="input-group-btn">
-									<button class="btn btn-warning btn-file btn-reset" type="button">重置</button>
-								</span>
-							</div>
-						</div>
-						<div class="col-lg-6 col-md-6 form-group margin-top-10" id="file_show" th:if="!${(main.iverifystate==1 or main.iverifystate==4) and main.attachFileName == null}">
-							<div>
-								<b> 附件：</b><a th:href="@{|/inquery/${main.ccode}/download|}" th:if="${main.attachFileName}" th:text="${main.attachOriginalName}"></a> <span th:if="!${main.attachFileName}">---</span> <a class="btn btn-danger" id="del_attach" th:if="${main.maker?.id==session.account_id and (main.iverifystate==1  || main.iverifystate==4)}">删除附件</a>
-							</div>
-						</div>
+							<label for="store_address">仓库地址：</label> 
+							<input type="text" name="store_address" id="store_address" th:value="${main.store?.address}" class="form-control" readonly>
+						</div>						
 					</div>
 					<div class="row margin-top-10">
 						<div class="col-lg-12">
@@ -150,16 +114,13 @@ is_readonly = 0;
 <script th:inline="javascript">
 	var editor, table;
   /*[+
-  var detail_url = [[@{|/inquery/${main.ccode}/details|}]];
-  var edit_url = [[@{/inquery/}]];
-  var hasAttach = [[${main.attachFileName != null}]];
-  var del_url = [[@{|/inquery/${main.ccode}/delete|}]];
+  var detail_url = [[@{|/delivery/${main.id==null?0:main.id}/details|}]];
+  var edit_url = [[@{/delivery/}]];
+  var del_url = [[@{|/delivery/${main.id}/delete|}]];
   +]*/
 
   var vendor_search_url = /*[[@{/vendor/search}]]*/'';
-  var state = /*[[${main.iverifystate}]]*/'';
-  var type = /*[[${main.type}]]*/'';
-  var supply_type = /*[[${main.isupplytype}]]*/'';
+  var state = /*[[${main.state}]]*/'';
 
   $(document).ready(function() {
 
@@ -176,86 +137,10 @@ is_readonly = 0;
 	    data : App.getInqueryStateData(),
 	    minimumResultsForSearch : -1
 	  }).select2("val", state.toString());
-	  $("#type").select2({
-	    data : App.getInqueryTypeData(),
-	    minimumResultsForSearch : -1
-	  }).select2("val", type.toString());
-	  $("#provide_type").select2({
-	    data : App.getInqueryProvideTypeData(),
-	    minimumResultsForSearch : -1
-	  }).select2("val", supply_type.toString());
+	  
 
 	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
-
-	  var prev_type;
-	  $("#type").on("select2:selecting", function(e) {
-		  prev_type = $(this).val();
-		  var table_data = table.rows().data().toArray();
-		  if (table_data.length == 0) {
-			  return;
-		  }
-
-		  App.showConfirmDialog('修改报价类型，将会改变表体数据规则，是否继续？', function() {
-			  var prev_inv_code, new_table_data = [];
-
-			  for (i = 0; i < table_data.length; i++) {
-				  item = table_data[i];
-				  if ($("#type").val() == 1) {
-					  item.fmaxquantity = '';
-					  item.fminquantity = '';
-				  } else if ($("#type").val() == 2) {
-					  item.iunitprice = '';
-					  item.itaxunitprice = '';
-				  } else {
-					  item.fmaxquantity = '';
-					  item.fminquantity = '';
-					  item.iunitprice = '';
-					  item.itaxunitprice = '';
-				  }
-
-				  if ($('#type').val() != 2 && item.cinvcode != prev_inv_code) {
-					  new_table_data.push(item);
-					  prev_inv_code = item.cinvcode;
-				  }
-			  }
-			  ;
-
-			  if ($("#type").val() == 2) {
-				  table.rows().invalidate();
-			  } else {
-				  table.clear();
-				  table.rows.add(new_table_data);
-				  table.draw();
-			  }
-
-			  onChangeType();
-
-		  }, function() {
-			  $('#type').select2("val", prev_type);
-			  return false;
-		  });
-	  }).on("select2:select", function(e) {
-		  var table_data = table.rows().data().toArray();
-		  if (table_data.length == 0) {
-			  onChangeType();
-		  }
-
-	  });
-
-	  if ((state != 1 && state != 4) || is_readonly) {
-		  $('input').attr("readonly", true);
-		  $('select').attr("readonly", true);
-		  $("#start_date").datepicker("option", "disabled", true);
-		  $("#end_date").datepicker("option", "disabled", true);
-	  } else {
-		  if (hasAttach) {
-			  $('#file_select').hide();
-			  $('#file_show').show();
-		  } else {
-			  $('#file_select').show();
-			  $('#file_show').hide();
-		  }
-	  }
+	  
 
 	  if (is_vendor)
 		  $('#vendor').attr("readonly", true);
@@ -455,7 +340,6 @@ is_readonly = 0;
 	    buttons : [ {
 	      text : "添加物料",
 	      action : function(e, dt, node, config) {
-
 		      if (!$("#vendor").val()) {
 			      $('#vendor').focus();
 			      App.showErrorDialog("请选择供应商！");
@@ -463,7 +347,6 @@ is_readonly = 0;
 		      }
 
 		      $('#import_dialog').modal('show');
-
 	      }
 	    }, {
 	      text : "复制行",
@@ -487,65 +370,76 @@ is_readonly = 0;
 		      return json;
 	      },
 	    },
-
 	    columns : [ {
-	      data : 'rowno',
-	      className : 'dt-center',
-	      title : '行号',
+	      data : null,
+	      defaultContent : ' ',
+	      width: "30px",
+	      orderable : false,
+	      className : 'select-checkbox',
 	    }, {
-	      data : 'cinvcode',
-	      title : '物料编码',
+	      data : 'inventory_name',
+	      title : '订单号',
 	    }, {
-	      data : 'name',
-	      title : '物料名称'
+	      data : 'inventory_name',
+	      title : '编码',
 	    }, {
-	      data : 'specs',
-	      title : '规格型号',
+	      data : 'inventory_name',
+	      title : '存货名称',
 	    }, {
-	      data : 'puunit_name',
+	      data : 'inventory_code',
+	      title : '存货代码',
+	    }, {
+	      data : 'unit_name',
 	      className : 'dt-center',
 	      title : '单位',
 	    }, {
-	      data : 'fminquantity',
-	      className : 'dt-right minquantity ',
-	      title : '最小数量',
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单数量',
 	    }, {
-	      data : 'fmaxquantity',
-	      className : 'dt-right maxquantity ',
-	      title : '最大数量',
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单箱数',
 	    }, {
-	      data : 'iunitprice',
-	      className : 'dt-right unitprice ',
-	      title : '最新未税报价',
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单已交数量',
 	    }, {
-	      data : 'itaxunitprice',
-	      className : 'dt-right taxunitprice ',
-	      title : '最新含税报价',
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单已交箱数',
 	    }, {
-	      data : 'itaxrate',
-	      className : 'dt-center taxrate ',
-	      title : '税率',
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单未交数量',
 	    }, {
-	      data : 'dstartdate',
-	      render : $.fn.date_renderer,
-	      className : 'dt-center startdate',
-	      title : '生效日期',
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单未交箱数',		 
 	    }, {
-	      data : 'denddate',
-	      render : $.fn.date_renderer,
-	      className : 'dt-center enddate',
-	      title : '有效日期'
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '发货数量',		 
 	    }, {
-	      data : 'ivalid',
-	      title : '是否有效',
-	      className : 'ivalid dt-center ',
-	      visible : state > 2 && type == 2,
-	      render : App.valid_render,
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '发货箱数',		 
 	    }, {
-	      data : 'cbodymemo',
-	      className : 'memo',
-	      title : '备注　　　　　　　',
-
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '实收数量',		 
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '实收箱数',		 
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '批次',		 
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '备注',		 
 	    } ],
 	    rowCallback : function(row, data) {
 		    // Set the checked state of the checkbox in the table
@@ -663,7 +557,7 @@ is_readonly = 0;
 				    style : 'os'
 			    },
 			    ajax : {
-			      url : /*[[@{/inventory/list}]]*/'',
+			      url : /*[[@{/purchaseorder/details/search}]]*/'',
 			      data : function(data) {
 				      var filter = {
 				        rows_per_page : data.length,
@@ -680,20 +574,77 @@ is_readonly = 0;
 				      return json.content;
 			      },
 			    },
-
+			    order: [ [1, 'asc'] ],
 			    columns : [ {
-			      data : 'code',
-			      title : '物料编码',
+			    	data : null,
+			      defaultContent : '',
+			      width: "30px",
+			      orderable : false,
+			      className : 'select-checkbox',
 			    }, {
-			      data : 'name',
-			      title : '物料名称',
+			      data : 'main.code',
+			      title : '订单号',
 			    }, {
-			      data : 'specs',
-			      title : '规格型号',
+			      data : 'rowno',
+			      title : '编码',
 			    }, {
-			      data : 'main_measure.name',
+			      data : 'inventory_name',
+			      title : '存货名称',
+			    }, {
+			      data : 'inventory_code',
+			      title : '存货代码',
+			    }, {
+			      data : 'unit_name',
 			      className : 'dt-center',
 			      title : '单位',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '订单数量',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '订单箱数',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '订单已交数量',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '订单已交箱数',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '订单未交数量',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '订单未交箱数',		 
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '发货数量',		 
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '发货箱数',		 
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '实收数量',		 
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '实收箱数',		 
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '批次',		 
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '备注',		 
 			    } ],
 			  });
 		  }
@@ -877,7 +828,7 @@ is_readonly = 0;
 		      success : function(res, status, xhr, form) {
 			      if (res.success == 1) {
 				      App.showSuccessDialog("操作成功", function() {
-					      window.location.href = edit_url + res.data.ccode + "/edit";
+					      window.location.href = edit_url + res.data.id + "/edit";
 				      });
 			      } else {
 				      App.showErrorDialog("操作失败", res.errmsg);

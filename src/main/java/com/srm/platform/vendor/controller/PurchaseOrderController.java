@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.Vendor;
@@ -39,6 +40,7 @@ import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.saveform.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.searchitem.PurchaseInDetailResult;
 import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
+import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.Utils;
 
@@ -254,4 +256,27 @@ public class PurchaseOrderController extends CommonController {
 		return main;
 	}
 
+
+	@RequestMapping(value = "/details/search", produces = "application/json")
+	public @ResponseBody Page<PurchaseOrderDetail> list_detail(@RequestParam Map<String, String> requestParams) {
+		
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "name");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String search = requestParams.getOrDefault("search", "");
+
+		switch (order) {
+		case "main.code":
+			order = "code";
+			break;
+		}
+		
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+		Page<PurchaseOrderDetail> result = purchaseOrderDetailRepository.searchAll(search, request);
+
+		return result;
+	}
 }

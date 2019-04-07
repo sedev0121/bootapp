@@ -21,6 +21,9 @@ public interface DeliveryDetailRepository extends JpaRepository<DeliveryDetail, 
 	@Query(value = "SELECT * FROM delivery_detail WHERE main_id=?1", nativeQuery = true)
 	List<DeliveryDetail> findDetailsByMainId(Long mainId);
 
+	@Query(value = "SELECT * FROM delivery_detail WHERE main_code=?1", nativeQuery = true)
+	List<DeliveryDetail> findDetailsByMainCode(String mainCode);
+	
 	@Modifying
 	@Query(value = "delete FROM delivery_detail WHERE mainid= :mainId", nativeQuery = true)
 	void DeleteByMainId(Long mainId);

@@ -20,6 +20,8 @@ import org.hibernate.annotations.NotFoundAction;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.srm.platform.vendor.searchitem.BoxSearchResult;
 import com.srm.platform.vendor.searchitem.SellerSearchResult;
+import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.Utils;
 
 @Entity
 @Table(name = "delivery_main")
@@ -34,19 +36,62 @@ public class DeliveryMain implements Serializable {
 
 	private String contact;
 
-	private Integer state;
-	private Integer used;
+	private Integer state = Constants.DELIVERY_STATE_NEW;
 	
+
 	@JsonProperty("create_date")
-	private Date createDate;
-	
+	private Date createDate = new Date();
+
 	@JsonProperty("estimated_arrival_date")
-	private Date estimatedArrivalDate;
+	private Date estimatedArrivalDate = new Date();
+
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "store_id")
+	@ManyToOne()
+	private Store store;
+
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "company_id")
+	@ManyToOne()
+	private Company company;
 
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "vendor_code")
 	@ManyToOne()
 	private Vendor vendor;
+
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "creater_id")
+	@ManyToOne()
+	private Account creater;
+
+	public DeliveryMain() {
+		this.code = Utils.generateId();
+	}
+
+	public Account getCreater() {
+		return creater;
+	}
+
+	public void setCreater(Account creater) {
+		this.creater = creater;
+	}
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
 
 	public Long getId() {
 		return id;
@@ -78,14 +123,6 @@ public class DeliveryMain implements Serializable {
 
 	public void setState(Integer state) {
 		this.state = state;
-	}
-
-	public Integer getUsed() {
-		return used;
-	}
-
-	public void setUsed(Integer used) {
-		this.used = used;
 	}
 
 	public Date getCreateDate() {
