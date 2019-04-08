@@ -38,19 +38,23 @@
 						</div>
 						<div class="col-lg-3 col-md-3">
 							<label for="estimated_arrival_date">预计到货日期：</label> 
-							<input type="text" name="estimated_arrival_date" id="estimated_arrival_date" th:value="${#dates.format(main?.estimatedArrivalDate, 'yyyy-MM-dd')}" class="form-control datepicker"  readonly>
+							<input type="text" name="estimated_arrival_date" id="estimated_arrival_date" th:value="${#dates.format(main?.estimatedArrivalDate, 'yyyy-MM-dd')}" class="form-control datepicker">
 						</div>
 						<div class="col-lg-3 col-md-3">
-							<label for="vendor">业务实体：</label> 
-							<input type="text" name="company" id="company" th:value="${main.company?.name}" class="form-control" readonly>
+							<label for="company">业务实体：</label> 
+							<select name="company" id="company" class="form-control">
+								<option th:if="${main.company != null}" th:value="${main.company?.id}" th:text="${main.company?.name}" selected="selected">NEC（日电）有限公司</option>
+							</select>
 						</div>
-						<div class="col-lg-3 col-md-3">
-							<label for="store_name">收货仓库：</label> 
-							<input type="text" name="store_name" id="store_name" th:value="${main.store?.name}" class="form-control" readonly>
+						<div class="col-lg-6 col-md-6">
+							<label for="store">收货仓库：</label> 
+							<select name="store" id="store" class="form-control">
+								<option th:if="${main.store != null}" th:value="${main.store?.id}" th:text="${main.store?.name}" selected="selected">NEC（日电）有限公司</option>
+							</select>
 						</div>
-						<div class="col-lg-3 col-md-3">
+						<div class="col-lg-3 col-md-3 hidden">
 							<label for="store_address">仓库地址：</label> 
-							<input type="text" name="store_address" id="store_address" th:value="${main.store?.address}" class="form-control" readonly>
+							<input type="text" id="store_address" th:value="${main.store?.address}" class="form-control" readonly>
 						</div>						
 						<div class="col-lg-3 col-md-3">
 							<label for="state">状态:</label> 
@@ -121,6 +125,8 @@ is_readonly = 0;
 
   var vendor_search_url = /*[[@{/vendor/search}]]*/'';
   var state = /*[[${main.state}]]*/'';
+  var company_search_url = /*[[@{/company/search}]]*/'';
+  var store_search_url = /*[[@{/store/search/}]]*/'';
 
   $(document).ready(function() {
 
@@ -140,7 +146,13 @@ is_readonly = 0;
 	  
 
 	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
-	  
+	  $("#company").select2(App.getSelect2Options(company_search_url));
+	  $("#store").select2();
+	  $('#company').change(function() {
+	  	var store_url = store_search_url + $('#company').val();
+	  	$("#store").select2(App.getSelect2Options(store_url));
+	  	$("#store").val(null).trigger('change');
+	  });	  
 
 	  if (is_vendor)
 		  $('#vendor').attr("readonly", true);
@@ -150,79 +162,18 @@ is_readonly = 0;
 	  editor = new $.fn.dataTable.Editor({
 	    table : "#example",
 	    idSrc : "rowno",
-	    //template: '#customForm',
 	    fields : [ {
 		    name : "cinvcode"
 	    }, {
-	      label : "最小数量:",
+	      label : "发货数量:",
 	      attr : {
 		      type : "number"
 	      },
-	      id : "fminquantity",
-	      name : "fminquantity"
-	    }, {
-	      label : "最大数量:",
-	      attr : {
-		      type : "number"
-	      },
-	      id : "fmaxquantity",
-	      name : "fmaxquantity"
-	    }, {
-	      label : "最新未税报价:",
-	      id : "iunitprice",
-	      attr : {
-		      type : "number"
-	      },
-	      name : "iunitprice"
-	    }, {
-	      label : "税率:",
-	      attr : {
-		      type : "number"
-	      },
-	      id : "itaxrate",
-	      name : "itaxrate"
-	    }, {
-	      label : "最新含税报价:",
-	      attr : {
-		      type : "number"
-	      },
-	      id : "itaxunitprice",
-	      name : "itaxunitprice"
-	    }, {
-	      label : "生效日期:",
-	      type : "date",
-	      id : "dstartdate",
-	      opts : {
-	        minDate : $('#start_date').datepicker("getDate"),
-	        onSelect : function() {
-		        editor.field('denddate').input().datepicker("option", "minDate", editor.field('dstartdate').input().datepicker("getDate"));
-	        },
-	        showOn : "focus",
-	      },
-	      dateFormat : "yy-mm-dd",
-	      name : "dstartdate"
-	    }, {
-	      label : "有效日期:",
-	      type : "date",
-	      opts : {
-	        minDate : $('#start_date').datepicker("getDate"),
-	        showOn : "focus"
-	      },
-	      dateFormat : $.datepicker.ISO_8601,
-	      name : "denddate"
-	    }, {
-	      label : "是否有效:",
-	      type : "checkbox",
-	      separator : "|",
-	      options : [ {
-	        label : '',
-	        value : 1
-	      } ],
-	      id : "ivalid",
-	      name : "ivalid"
+	      id : "delivered_quantity",
+	      name : "delivered_quantity"
 	    }, {
 	      label : "备注:",
-	      name : "cbodymemo"
+	      name : "memo"
 	    } ],
 	    i18n : {
 	      remove : {
@@ -238,82 +189,12 @@ is_readonly = 0;
 		      system : "发生错误！"
 	      }
 	    }
-	  }).on('preOpen', function(e, mode, action) {
-		  this.field('dstartdate').input().datepicker("option", "minDate", $('#start_date').datepicker("getDate"));
-		  this.field('denddate').input().datepicker("option", "minDate", $('#start_date').datepicker("getDate"));
-
-	  }).on('open', function(e, mode, action) {
-
 	  }).on('preSubmit', function(e, data, action) {
 		  if (action == 'remove') {
 			  return true;
 		  }
 
 		  var currentFieldName = e.currentTarget.s.includeFields[0];
-
-		  if (currentFieldName == "ivalid") {
-			  if (editor.field(currentFieldName).val() == 1) {
-				  var table_data = table.rows().data().toArray();
-				  var id = 1;
-				  $.each(data.data, function(rowno, editRow) {
-					  $.each(table_data, function(key, item) {
-						  if (item.cinvcode == editRow.cinvcode) {
-							  if (item.rowno != rowno) {
-								  item.ivalid = 0;
-							  }
-						  }
-					  })
-				  });
-				  table.rows().invalidate();
-
-			  }
-			  return true;
-		  }
-
-		  var checkList = [ 'iunitprice', 'itaxrate', 'itaxunitprice', 'fmaxquantity', 'fminquantity' ];
-		  if (checkList.indexOf(currentFieldName) >= 0) {
-			  var editingField = editor.field(currentFieldName);
-			  if (editingField.val() == undefined || editingField.val() == '' || parseFloat(editingField.val()) < 0) {
-				  editingField.input().addClass('error');
-				  return false;
-			  }
-
-			  if (currentFieldName == 'itaxrate' && parseFloat(editingField.val()) > 100) {
-				  editingField.input().addClass('error');
-				  return false;
-			  }
-
-			  for ( var key in data.data) {
-				  item = data.data[key];
-				  if (currentFieldName == 'fmaxquantity' && item.fminquantity || currentFieldName == 'fminquantity' && item.fmaxquantity) {
-					  if (parseFloat(item.fmaxquantity) <= parseFloat(item.fminquantity)) {
-						  editingField.input().addClass('error');
-						  return false;
-					  }
-				  }
-			  }
-			  ;
-
-			  editingField.input().removeClass('error');
-		  }
-
-		  if (currentFieldName == 'iunitprice' || currentFieldName == 'itaxrate') {
-			  $.each(data.data, function(key, item) {
-				  if (item.itaxrate != undefined && item.iunitprice != undefined) {
-					  value = (Number.parseFloat(item.itaxrate) + 100) * item.iunitprice / 100;
-					  item.itaxunitprice = value ? parseFloat(value).toFixed(6) : '';
-				  }
-			  });
-		  }
-
-		  if (currentFieldName == 'itaxunitprice') {
-			  $.each(data.data, function(key, item) {
-				  if (item.itaxrate != undefined && item.itaxunitprice != undefined) {
-					  value = item.itaxunitprice * 100 / (Number.parseFloat(item.itaxrate) + 100);
-					  item.iunitprice = value ? parseFloat(value).toFixed(6) : '';
-				  }
-			  });
-		  }
 
 	  }).on('postEdit', function(e, json, data, action) {
 		  var table_data = table.rows().data().toArray();
@@ -322,12 +203,7 @@ is_readonly = 0;
 
 		  })
 	  }).on('postRemove', function(e, json, data, action) {
-		  var table_data = table.rows().data().toArray();
-		  var id = 1;
-		  $.each(table_data, function(key, item) {
-			  item.rowno = id++;
-		  })
-		  table.rows().invalidate();
+
 
 	  });
 
@@ -380,7 +256,7 @@ is_readonly = 0;
 	      data : 'purchaseOrderDetail.code',
 	      title : '订单号',
 	    }, {
-	      data : 'purchaseOrderDetail.rowno',
+	      data : 'purchaseOrderDetail.row_no',
 	      title : '编码',
 	    }, {
 	      data : 'purchaseOrderDetail.inventory_name',
@@ -397,47 +273,47 @@ is_readonly = 0;
 	      className : 'dt-right',
 	      title : '订单数量',
 	    }, {
-	      data : 'quantity',
+	      data : 'purchaseOrderDetail.quantity',
 	      className : 'dt-right',
 	      title : '订单箱数',
 	    }, {
-	      data : 'purchaseOrderDetail.quantity',
+	      data : 'purchaseOrderDetail.arrived_quantity',
 	      className : 'dt-right',
 	      title : '订单已交数量',
 	    }, {
-	      data : 'quantity',
+	      data : 'purchaseOrderDetail.arrived_quantity',
 	      className : 'dt-right',
 	      title : '订单已交箱数',
 	    }, {
-	      data : 'quantity',
+	      data : 'purchaseOrderDetail.arrived_quantity',
 	      className : 'dt-right',
 	      title : '订单未交数量',
 	    }, {
-	      data : 'quantity',
+	      data : 'purchaseOrderDetail.arrived_quantity',
 	      className : 'dt-right',
 	      title : '订单未交箱数',		 
 	    }, {
-	      data : 'quantity',
+	      data : 'delivered_quantity',
 	      className : 'dt-right',
 	      title : '发货数量',		 
 	    }, {
-	      data : 'quantity',
+	      data : 'delivered_quantity',
 	      className : 'dt-right',
 	      title : '发货箱数',		 
 	    }, {
-	      data : 'quantity',
+	      data : 'accepted_quantity',
 	      className : 'dt-right',
 	      title : '实收数量',		 
 	    }, {
-	      data : 'quantity',
+	      data : 'accepted_quantity',
 	      className : 'dt-right',
 	      title : '实收箱数',		 
 	    }, {
-	      data : 'quantity',
+	      data : 'deliver_number',
 	      className : 'dt-right',
 	      title : '批次',		 
 	    }, {
-	      data : 'quantity',
+	      data : 'memo',
 	      className : 'dt-right',
 	      title : '备注',		 
 	    } ],
@@ -585,7 +461,7 @@ is_readonly = 0;
 			      data : 'main.code',
 			      title : '订单号',
 			    }, {
-			      data : 'rowno',
+			      data : 'row_no',
 			      title : '编码',
 			    }, {
 			      data : 'inventory_name',
@@ -637,14 +513,6 @@ is_readonly = 0;
 			      data : 'quantity',
 			      className : 'dt-right',
 			      title : '实收箱数',		 
-			    }, {
-			      data : 'quantity',
-			      className : 'dt-right',
-			      title : '批次',		 
-			    }, {
-			      data : 'quantity',
-			      className : 'dt-right',
-			      title : '备注',		 
 			    } ],
 			  });
 		  }
@@ -694,38 +562,26 @@ is_readonly = 0;
 		  $.each(selected_data, function(key, item) {
 
 			  var available = true;
-			  if ($('#type').val() != "2") {
-				  for (i = 0; i < exist_data.length; i++) {
-					  exist_row = exist_data[i];
-					  if (exist_row.cinvcode == item.code) {
-						  available = false;
-						  break;
-					  }
+			  for (i = 0; i < exist_data.length; i++) {
+				  exist_row = exist_data[i];
+				  if (exist_row.purchaseOrderDetail.code == item.main.code) {
+					  available = false;
+					  break;
 				  }
 			  }
 
 			  if (available) {
 				  var temp = {};
 				  temp.rowno = table.rows().data().toArray().length + 1;
-				  temp.cbodymemo = null;
-				  temp.cinvcode = item.code;
-				  temp.denddate = $('#end_date').val();
-				  temp.dstartdate = $('#start_date').val();
-
-				  temp.fmaxquantity = null;
-				  temp.fminquantity = null;
-				  temp.itaxrate = $('#tax_rate').val();
-				  temp.itaxunitprice = null;
-				  temp.iunitprice = null;
-
-				  temp.ivalid = 0;
-				  temp.name = item.name;
-				  temp.puunit_name = item.unit_name;
-				  temp.specs = item.specs;
-
+				  temp.purchaseOrderDetail = item;
+				  temp.purchaseOrderDetail.code = item.main.code;
+				  temp.accepted_quantity = 0;
+				  temp.delivered_quantity = 0;
+				  temp.arrived_quantity = 0;
+				  temp.deliver_number = '';
+				  temp.memo = '';
 				  table.row.add(temp);
 			  }
-
 		  })
 
 		  table.draw();
@@ -744,66 +600,25 @@ is_readonly = 0;
 
 			  if (exist_row.ivalid == 1)
 				  validInventoryIdList.push(exist_row.cinvcode);
-
-			  if ($('#type').val() == 2) {
-				  if (exist_row.fminquantity == undefined || exist_row.fminquantity == "" || exist_row.fminquantity <= 0) {
-					  App.showErrorDialog("操作失败", "最小数量不能为空！");
-					  return false;
-				  }
-
-				  if (exist_row.fmaxquantity == undefined || exist_row.fmaxquantity == "" || exist_row.fmaxquantity <= 0) {
-					  App.showErrorDialog("操作失败", "最大数量不能为空！");
-					  return false;
-				  }
-			  }
-
-			  if (($('#type').val() == 1 || $('#type').val() == 3 && is_vendor) && $('#state').val() <= 2) {
-				  if (exist_row.iunitprice == undefined || exist_row.iunitprice == "" || exist_row.iunitprice <= 0) {
-					  App.showErrorDialog("操作失败", "最新未税报价不能为空！");
-					  return false;
-				  }
-				  if (exist_row.itaxunitprice == undefined || exist_row.itaxunitprice == "" || exist_row.itaxunitprice <= 0) {
-					  App.showErrorDialog("操作失败", "最新含税报价不能为空！");
-					  return false;
-				  }
-			  }
-
-			  if (exist_row.itaxrate == undefined || exist_row.itaxrate == "" || exist_row.itaxrate < 0) {
-				  App.showErrorDialog("操作失败", "税率不能为空！");
-				  return false;
-			  }
-			  if (exist_row.dstartdate == undefined || exist_row.dstartdate == "") {
-				  App.showErrorDialog("操作失败", "生效日期不能为空！");
-				  return false;
-			  }
-			  if (exist_row.denddate == undefined || exist_row.denddate == "") {
-				  App.showErrorDialog("操作失败", "有效日期不能为空！");
-				  return false;
-			  }
-		  }
-
-		  if ($('#type').val() == 2 && $('#state').val() == 5 && inventoryIdList.length != validInventoryIdList.length) {
-			  App.showErrorDialog("操作失败", "每个存货必须得有一个有效的！");
-			  return false;
+			  
 		  }
 
 		  return true;
 	  }, "");
 
 	  $("#form").validate({
-	    // define validation rules
 	    rules : {
 	      vendor : {
 	        required : true,
 	        checkTable : true
 	      },
-	      tax_rate : {
+	      company : {
 		      required : true
 	      },
-	      start_date : {
+	      store : {
 		      required : true
 	      },
-	      end_date : {
+	      estimated_arrival_date : {
 		      required : true
 	      },
 	    },
@@ -812,9 +627,16 @@ is_readonly = 0;
 	    invalidHandler : function(event, validator) {
 		    App.showErrorDialog("操作失败", "请输入正确的值");
 	    },
-
 	    submitHandler : function(form) {
 		    var data = table.rows().data().toArray();
+		    var postData = [];
+		    $.each(data, (key, item) => {
+		    	postData.push({
+		    		po_detail_id: item.purchaseOrderDetail.id,
+		    		delivered_quantity: item.delivered_quantity,
+		    		memo: item.memo
+		    	})
+		    });
 		    jQuery(form).ajaxSubmit({
 		      beforeSend : function() {
 			      App.blockUI();
@@ -823,12 +645,12 @@ is_readonly = 0;
 			      App.unblockUI();
 		      },
 		      data : {
-			      table : data
+			      table : postData
 		      },
 		      success : function(res, status, xhr, form) {
 			      if (res.success == 1) {
 				      App.showSuccessDialog("操作成功", function() {
-					      window.location.href = edit_url + res.data.id + "/edit";
+					      window.location.href = edit_url + res.data.code + "/edit";
 				      });
 			      } else {
 				      App.showErrorDialog("操作失败", res.errmsg);

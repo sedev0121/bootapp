@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.Store;
+import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.searchitem.StoreSearchItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
@@ -20,4 +21,10 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 	
 	@Query(value = "SELECT a.*, b.name company_name FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or b.name LIKE %?1%) and is_use_in_srm=?2", nativeQuery = true)
 	Page<StoreSearchItem> findBySearchTerm(String search, Integer usedState, Pageable pageable);
+	
+	@Query(value = "SELECT id code, name FROM store", nativeQuery = true)
+	Page<SearchItem> findForSelect(Pageable pageable);
+	
+	@Query(value = "SELECT id code, name FROM store where company_id=?1", nativeQuery = true)
+	Page<SearchItem> findForSelectOfCompany(Long companyId, Pageable pageable);
 }

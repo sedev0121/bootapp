@@ -185,7 +185,11 @@ public class DeliveryController extends CommonController {
 		
 		main.setCode(form.getCode());
 		main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
+		main.setCompany(companyRepository.findOneById(form.getCompany()));
+		main.setStore(storeRepository.findOneById(form.getStore()));
 		
+		main.setEstimatedArrivalDate(Utils.parseDate(form.getEstimated_arrival_date()));
+		main.setCreateDate(new Date());
 		Account account = this.getLoginAccount();
 		main.setCreater(account);
 

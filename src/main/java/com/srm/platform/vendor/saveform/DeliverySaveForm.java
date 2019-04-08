@@ -14,6 +14,9 @@ public class DeliverySaveForm {
 	private String code;
 	private String vendor;
 	private Integer state;
+	private Long company;
+	private Long store;
+	private String estimated_arrival_date;
 
 	private List<Map<String, String>> table;
 
@@ -23,6 +26,30 @@ public class DeliverySaveForm {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public String getEstimated_arrival_date() {
+		return estimated_arrival_date;
+	}
+
+	public void setEstimated_arrival_date(String estimated_arrival_date) {
+		this.estimated_arrival_date = estimated_arrival_date;
+	}
+
+	public Long getCompany() {
+		return company;
+	}
+
+	public void setCompany(Long company) {
+		this.company = company;
+	}
+
+	public Long getStore() {
+		return store;
+	}
+
+	public void setStore(Long store) {
+		this.store = store;
 	}
 
 	public String getCode() {

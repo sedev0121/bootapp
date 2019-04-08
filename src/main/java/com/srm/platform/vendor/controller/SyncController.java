@@ -379,7 +379,7 @@ public class SyncController {
 							detail.setMain(main);
 						}						
 
-						detail.setRowno(getIntegerValue(detailTemp, "ivouchrowno"));
+						detail.setRowNo(getIntegerValue(detailTemp, "ivouchrowno"));
 						detail.setUnitName(getStringValue(detailTemp, "cComUnitName"));
 						detail.setInventoryCode(getStringValue(detailTemp, "cInvCode"));
 						detail.setInventoryName(getStringValue(detailTemp, "cInvName"));

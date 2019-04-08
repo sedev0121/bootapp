@@ -13,6 +13,7 @@ import com.srm.platform.vendor.model.DeliveryMain;
 public interface DeliveryMainRepository extends JpaRepository<DeliveryMain, Long> {
 	
 	DeliveryMain findOneById(Long id);
+	
 	DeliveryMain findOneByCode(String code);
 	
 	@Query(value = "SELECT * FROM delivery_main a left join vendor b on a.vendor_code=b.code WHERE a.code like %?1% and b.name like %?2%", nativeQuery = true)

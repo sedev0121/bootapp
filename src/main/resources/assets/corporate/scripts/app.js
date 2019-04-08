@@ -75,6 +75,7 @@ var App = function() {
   };
   
   var select2_default_options = {
+  		placeholder: "请选择！",
       language: "zh-CN",
       ajax: {
           dataType: 'json',

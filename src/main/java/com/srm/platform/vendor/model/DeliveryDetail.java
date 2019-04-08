@@ -40,15 +40,40 @@ public class DeliveryDetail implements Serializable {
 	@ManyToOne()
 	private PurchaseOrderDetail purchaseOrderDetail;
 
+	@JsonProperty("devliverd_quantity")
 	private Double deliveredQuantity;
+	
+	@JsonProperty("devliver_number")
 	private String deliverNumber;
 
+	@JsonProperty("acceptedd_quantity")
+	private Double acceptedQuantity;
+	
+	private String memo;
+	
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	
+	public Double getAcceptedQuantity() {
+		return acceptedQuantity;
+	}
+
+	public void setAcceptedQuantity(Double acceptedQuantity) {
+		this.acceptedQuantity = acceptedQuantity;
+	}
+
+	public String getMemo() {
+		return memo;
+	}
+
+	public void setMemo(String memo) {
+		this.memo = memo;
 	}
 
 	public DeliveryMain getMain() {

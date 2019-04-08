@@ -3,40 +3,17 @@ package com.srm.platform.vendor.model;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.ColumnResult;
-import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.srm.platform.vendor.searchitem.PurchaseOrderDetailSearchResult;
 
 @Entity
-
-@SqlResultSetMapping(name = "PurchaseOrderDetailSearchResult", classes = {
-		@ConstructorResult(targetClass = PurchaseOrderDetailSearchResult.class, columns = {
-				@ColumnResult(name = "id", type = Long.class), 
-				@ColumnResult(name = "row_no", type = Integer.class),
-				@ColumnResult(name = "code"), 
-				@ColumnResult(name = "quantity", type = Double.class),
-				@ColumnResult(name = "inventory_name"),
-				@ColumnResult(name = "inventory_code"), 
-				@ColumnResult(name = "vendorname"),
-				@ColumnResult(name = "vendorcode"), 
-				@ColumnResult(name = "specs"), 
-				@ColumnResult(name = "unit_name"),
-				@ColumnResult(name = "arrive_date", type = Date.class),
-				@ColumnResult(name = "arrive_note"),
-				@ColumnResult(name = "remain_quantity", type = Double.class) }) })
 
 @Table(name = "purchase_order_detail")
 public class PurchaseOrderDetail {
@@ -65,6 +42,7 @@ public class PurchaseOrderDetail {
 
 	@JsonProperty(value = "row_no")
 	private Integer rowNo;
+	
 	private Double quantity;
 
 	private Double price;
@@ -235,11 +213,11 @@ public class PurchaseOrderDetail {
 		this.main = main;
 	}
 
-	public Integer getRowno() {
+	public Integer getRowNo() {
 		return rowNo;
 	}
 
-	public void setRowno(Integer rowNo) {
+	public void setRowNo(Integer rowNo) {
 		this.rowNo = rowNo;
 	}
 
