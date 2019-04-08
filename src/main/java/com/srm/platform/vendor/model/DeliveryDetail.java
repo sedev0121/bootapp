@@ -31,7 +31,7 @@ public class DeliveryDetail implements Serializable {
 	private Long id;
 
 	@NotFound(action = NotFoundAction.IGNORE)
-	@JoinColumn(name = "main_id")
+	@JoinColumn(name = "code")
 	@ManyToOne()
 	private DeliveryMain main;
 

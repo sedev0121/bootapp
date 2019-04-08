@@ -28,13 +28,8 @@
 						</div>
 						<div class="col-lg-3 col-md-3">
 							<label for="vendor">供应商:</label> 
-							<select id="vendor" name="vendor" class="form-control">
+							<select id="vendor" name="vendor" class="form-control" readonly>
 								<option th:if="${main.vendor != null}" th:value="${main.vendor?.code}" th:text="${main.vendor?.name}" selected="selected">NEC（日电）有限公司</option>
-							</select>
-						</div>
-						<div class="col-lg-3 col-md-3">
-							<label for="state">状态:</label> 
-							<select name="state" id="state" class="form-control" readonly>
 							</select>
 						</div>
 						<div class="col-lg-3 col-md-3">
@@ -57,6 +52,11 @@
 							<label for="store_address">仓库地址：</label> 
 							<input type="text" name="store_address" id="store_address" th:value="${main.store?.address}" class="form-control" readonly>
 						</div>						
+						<div class="col-lg-3 col-md-3">
+							<label for="state">状态:</label> 
+							<select name="state" id="state" class="form-control" readonly>
+							</select>
+						</div>
 					</div>
 					<div class="row margin-top-10">
 						<div class="col-lg-12">
@@ -377,23 +377,23 @@ is_readonly = 0;
 	      orderable : false,
 	      className : 'select-checkbox',
 	    }, {
-	      data : 'inventory_name',
+	      data : 'purchaseOrderDetail.code',
 	      title : '订单号',
 	    }, {
-	      data : 'inventory_name',
+	      data : 'purchaseOrderDetail.rowno',
 	      title : '编码',
 	    }, {
-	      data : 'inventory_name',
+	      data : 'purchaseOrderDetail.inventory_name',
 	      title : '存货名称',
 	    }, {
-	      data : 'inventory_code',
+	      data : 'purchaseOrderDetail.inventory_code',
 	      title : '存货代码',
 	    }, {
-	      data : 'unit_name',
+	      data : 'purchaseOrderDetail.unit_name',
 	      className : 'dt-center',
 	      title : '单位',
 	    }, {
-	      data : 'quantity',
+	      data : 'purchaseOrderDetail.quantity',
 	      className : 'dt-right',
 	      title : '订单数量',
 	    }, {
@@ -401,7 +401,7 @@ is_readonly = 0;
 	      className : 'dt-right',
 	      title : '订单箱数',
 	    }, {
-	      data : 'quantity',
+	      data : 'purchaseOrderDetail.quantity',
 	      className : 'dt-right',
 	      title : '订单已交数量',
 	    }, {
@@ -554,7 +554,7 @@ is_readonly = 0;
 			  import_table = $('#import_table').DataTable({
 			    ordering : true,
 			    select : {
-				    style : 'os'
+				    style : 'multi'
 			    },
 			    ajax : {
 			      url : /*[[@{/purchaseorder/details/search}]]*/'',
@@ -720,7 +720,7 @@ is_readonly = 0;
 
 				  temp.ivalid = 0;
 				  temp.name = item.name;
-				  temp.puunit_name = item.main_measure.name;
+				  temp.puunit_name = item.unit_name;
 				  temp.specs = item.specs;
 
 				  table.row.add(temp);

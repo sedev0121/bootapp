@@ -379,25 +379,36 @@ public class SyncController {
 							detail.setMain(main);
 						}						
 
+						detail.setRowno(getIntegerValue(detailTemp, "ivouchrowno"));
 						detail.setUnitName(getStringValue(detailTemp, "cComUnitName"));
 						detail.setInventoryCode(getStringValue(detailTemp, "cInvCode"));
 						detail.setInventoryName(getStringValue(detailTemp, "cInvName"));
 						detail.setInventoryClassCode(getStringValue(detailTemp, "cInvCCode"));
 						detail.setInventoryClassName(getStringValue(detailTemp, "cInvCName"));
+						detail.setQuantity(getDoubleValue(detailTemp, "iQuantity")); //数量
+
+						String arriveDateStr = getStringValue(detailTemp, "dArriveDate"); //计划到货日期
+						detail.setArriveDate(Utils.parseDateTime(arriveDateStr));
+
+						detail.setTaxPrice(getDoubleValue(detailTemp, "iTaxNatPrice")); //含税单价
+						detail.setSum(getDoubleValue(detailTemp, "iNatSum")); //含税金额
 						
-						detail.setQuantity(getDoubleValue(detailTemp, "iQuantity"));
-						detail.setMoney(getDoubleValue(detailTemp, "iNatMoney"));
-						detail.setSum(getDoubleValue(detailTemp, "iNatSum"));
+						detail.setTaxRate(getDoubleValue(detailTemp, "iPerTaxRate")); //税率 
+						
+						detail.setPrice(getDoubleValue(detailTemp, "iNatUnitPrice")); //去税单价
+						detail.setMoney(getDoubleValue(detailTemp, "iNatMoney")); //去税金额
 
-						detail.setPrice(getDoubleValue(detailTemp, "iNatUnitPrice"));
-						detail.setTaxprice(getDoubleValue(detailTemp, "iTaxNatPrice"));
-						detail.setRowno(getIntegerValue(detailTemp, "ivouchrowno"));
-
-						String arriveDateStr = getStringValue(detailTemp, "dArriveDate");
-						detail.setArrivedate(Utils.parseDateTime(arriveDateStr));
-
-						detail.setConfirmdate(detail.getArrivedate());
-						detail.setConfirmquantity(detail.getQuantity());
+						detail.setBackedQuantity(getDoubleValue(detailTemp, "fPoRetQuantity")); //退货数量 
+						detail.setArrivedQuantity(getDoubleValue(detailTemp, "iArrQTY")); //累计到货数量 
+						detail.setInvoicedQuantity(getDoubleValue(detailTemp, "iInvQTY")); //累计开票数量 
+						detail.setInvoicedMoney(getDoubleValue(detailTemp, "iNatInvMoney")); //累计开票金额 
+						
+						detail.setCloserName(getStringValue(detailTemp, "cbCloser")); //行关闭人 
+						
+						String closeDateStr = getStringValue(detailTemp, "cbCloseTime"); //行关闭时间  
+						detail.setCloseDate(Utils.parseDateTime(closeDateStr));
+						detail.setMemo(getStringValue(detailTemp, "cbMemo")); //表体备注 
+						
 
 						purchaseOrderDetailRepository.save(detail);
 					}

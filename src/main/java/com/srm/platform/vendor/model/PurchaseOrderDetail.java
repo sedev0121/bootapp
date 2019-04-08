@@ -25,23 +25,18 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderDetailSearchResult;
 @SqlResultSetMapping(name = "PurchaseOrderDetailSearchResult", classes = {
 		@ConstructorResult(targetClass = PurchaseOrderDetailSearchResult.class, columns = {
 				@ColumnResult(name = "id", type = Long.class), 
-				@ColumnResult(name = "rowno", type = Integer.class),
+				@ColumnResult(name = "row_no", type = Integer.class),
 				@ColumnResult(name = "code"), 
 				@ColumnResult(name = "quantity", type = Double.class),
-				@ColumnResult(name = "shipped_quantity", type = Double.class), 
 				@ColumnResult(name = "inventory_name"),
 				@ColumnResult(name = "inventory_code"), 
 				@ColumnResult(name = "vendorname"),
 				@ColumnResult(name = "vendorcode"), 
 				@ColumnResult(name = "specs"), 
 				@ColumnResult(name = "unit_name"),
-				@ColumnResult(name = "arrivedate", type = Date.class),
-				@ColumnResult(name = "last_ship_date", type = Date.class),
-				@ColumnResult(name = "confirmdate", type = Date.class), 
-				@ColumnResult(name = "arrivenote"),
-				@ColumnResult(name = "confirmnote"), 
-				@ColumnResult(name = "remain_quantity", type = Double.class) 
-				}) })
+				@ColumnResult(name = "arrive_date", type = Date.class),
+				@ColumnResult(name = "arrive_note"),
+				@ColumnResult(name = "remain_quantity", type = Double.class) }) })
 
 @Table(name = "purchase_order_detail")
 public class PurchaseOrderDetail {
@@ -55,43 +50,141 @@ public class PurchaseOrderDetail {
 
 	@JsonProperty(value = "unit_name")
 	private String unitName;
-	
+
 	@JsonProperty(value = "inventory_code")
 	private String inventoryCode;
-	
+
 	@JsonProperty(value = "inventory_name")
-	private String inventoryName;	
-	
+	private String inventoryName;
+
 	@JsonProperty(value = "inventory_class_code")
 	private String inventoryClassCode;
-	
+
 	@JsonProperty(value = "inventory_class_name")
 	private String inventoryClassName;
 
-	private Integer rowno;
+	@JsonProperty(value = "row_no")
+	private Integer rowNo;
 	private Double quantity;
 
-	@Column(name = "shipped_quantity")
-	private Double shippedQuantity;
 	private Double price;
-	private Double taxprice;
-	private Double tax;
+	@JsonProperty(value = "tax_price")
+	private Double taxPrice;
+
 	private Double money;
 	private Double sum;
-	private Double natprice;
-	private Double nattaxprice;
-	private Double natmoney;
-	private Double natsum;
-	private Double prepaymoney;
-	private Date arrivedate;
-	private Date confirmdate;
-	private String arrivenote;
-	private String confirmnote;
-	private Double confirmquantity;
-	private Date lastShipDate;
+	@JsonProperty(value = "nat_price")
+	private Double natPrice;
+	@JsonProperty(value = "nat_tax_price")
+	private Double natTaxPrice;
+	@JsonProperty(value = "nat_money")
+	private Double natMoney;
+	@JsonProperty(value = "nat_sum")
+	private Double natSum;
+	@JsonProperty(value = "prepay_money")
+	private Double prepayMoney;
+	@JsonProperty(value = "arrive_date")
+	private Date arriveDate;
+
+
+	@JsonProperty(value = "tax_rate")
+	private Double taxRate;
+	
+	@JsonProperty(value = "backed_quantity")
+	private Double backedQuantity;
+	
+	@JsonProperty(value = "arrived_quantity")
+	private Double arrivedQuantity;
+	
+	@JsonProperty(value = "invoiced_quantity")
+	private Double invoicedQuantity;
+	
+	@JsonProperty(value = "invoiced_money")
+	private Double invoicedMoney;
+	
+	@JsonProperty(value = "closer_name")
+	private String closerName;
+	
+	@JsonProperty(value = "close_date")
+	private Date closeDate;
+	
+	private String memo;
+	
+	@JsonProperty(value = "confirmed_quantity")
+	private Double confirmedQuantity;
+	
+	@JsonProperty(value = "confirmed_memo")
+	private String confirmedMemo;
+	
+	@JsonProperty(value = "comfirmed_date")
+	private Date confirmedDate;
 
 	public PurchaseOrderDetail() {
 
+	}
+
+	public Double getInvoicedMoney() {
+		return invoicedMoney;
+	}
+
+	public void setInvoicedMoney(Double invoicedMoney) {
+		this.invoicedMoney = invoicedMoney;
+	}
+
+	public Double getTaxRate() {
+		return taxRate;
+	}
+
+	public void setTaxRate(Double taxRate) {
+		this.taxRate = taxRate;
+	}
+
+	public Double getBackedQuantity() {
+		return backedQuantity;
+	}
+
+	public void setBackedQuantity(Double backedQuantity) {
+		this.backedQuantity = backedQuantity;
+	}
+
+	public Double getArrivedQuantity() {
+		return arrivedQuantity;
+	}
+
+	public void setArrivedQuantity(Double arrivedQuantity) {
+		this.arrivedQuantity = arrivedQuantity;
+	}
+
+	public Double getInvoicedQuantity() {
+		return invoicedQuantity;
+	}
+
+	public void setInvoicedQuantity(Double invoicedQuantity) {
+		this.invoicedQuantity = invoicedQuantity;
+	}
+
+	public String getCloserName() {
+		return closerName;
+	}
+
+	public void setCloserName(String closerName) {
+		this.closerName = closerName;
+	}
+
+	public Date getCloseDate() {
+		return closeDate;
+	}
+
+	public void setCloseDate(Date closeDate) {
+		this.closeDate = closeDate;
+	}
+
+	public String getMemo() {
+		return memo;
+	}
+
+	public void setMemo(String memo) {
+		this.memo = memo;
 	}
 
 	public String getInventoryCode() {
@@ -134,22 +227,6 @@ public class PurchaseOrderDetail {
 		this.id = id;
 	}
 
-	public Date getLastShipDate() {
-		return lastShipDate;
-	}
-
-	public void setLastShipDate(Date lastShipDate) {
-		this.lastShipDate = lastShipDate;
-	}
-
-	public Double getConfirmquantity() {
-		return confirmquantity;
-	}
-
-	public void setConfirmquantity(Double confirmquantity) {
-		this.confirmquantity = confirmquantity;
-	}
-
 	public PurchaseOrderMain getMain() {
 		return main;
 	}
@@ -159,11 +236,11 @@ public class PurchaseOrderDetail {
 	}
 
 	public Integer getRowno() {
-		return rowno;
+		return rowNo;
 	}
 
-	public void setRowno(Integer rowno) {
-		this.rowno = rowno;
+	public void setRowno(Integer rowNo) {
+		this.rowNo = rowNo;
 	}
 
 	public Double getQuantity() {
@@ -174,36 +251,12 @@ public class PurchaseOrderDetail {
 		this.quantity = quantity;
 	}
 
-	public Double getShippedQuantity() {
-		return shippedQuantity;
-	}
-
-	public void setShippedQuantity(Double shippedQuantity) {
-		this.shippedQuantity = shippedQuantity;
-	}
-
 	public Double getPrice() {
 		return price;
 	}
 
 	public void setPrice(Double price) {
 		this.price = price;
-	}
-
-	public Double getTax() {
-		return tax;
-	}
-
-	public void setTax(Double tax) {
-		this.tax = tax;
-	}
-
-	public Double getTaxprice() {
-		return taxprice;
-	}
-
-	public void setTaxprice(Double taxprice) {
-		this.taxprice = taxprice;
 	}
 
 	public Double getMoney() {
@@ -222,76 +275,60 @@ public class PurchaseOrderDetail {
 		this.sum = sum;
 	}
 
-	public Double getNatprice() {
-		return natprice;
+	public Double getTaxPrice() {
+		return taxPrice;
 	}
 
-	public void setNatprice(Double natprice) {
-		this.natprice = natprice;
+	public void setTaxPrice(Double taxPrice) {
+		this.taxPrice = taxPrice;
 	}
 
-	public Double getNattaxprice() {
-		return nattaxprice;
+	public Double getNatPrice() {
+		return natPrice;
 	}
 
-	public void setNattaxprice(Double nattaxprice) {
-		this.nattaxprice = nattaxprice;
+	public void setNatPrice(Double natPrice) {
+		this.natPrice = natPrice;
 	}
 
-	public Double getNatmoney() {
-		return natmoney;
+	public Double getNatTaxPrice() {
+		return natTaxPrice;
 	}
 
-	public void setNatmoney(Double natmoney) {
-		this.natmoney = natmoney;
+	public void setNatTaxPrice(Double natTaxPrice) {
+		this.natTaxPrice = natTaxPrice;
 	}
 
-	public Double getNatsum() {
-		return natsum;
+	public Double getNatMoney() {
+		return natMoney;
 	}
 
-	public void setNatsum(Double natsum) {
-		this.natsum = natsum;
+	public void setNatMoney(Double natMoney) {
+		this.natMoney = natMoney;
 	}
 
-	public Double getPrepaymoney() {
-		return prepaymoney;
+	public Double getNatSum() {
+		return natSum;
 	}
 
-	public void setPrepaymoney(Double prepaymoney) {
-		this.prepaymoney = prepaymoney;
+	public void setNatSum(Double natSum) {
+		this.natSum = natSum;
 	}
 
-	public Date getConfirmdate() {
-		return confirmdate;
+	public Double getPrepayMoney() {
+		return prepayMoney;
 	}
 
-	public void setConfirmdate(Date confirmdate) {
-		this.confirmdate = confirmdate;
+	public void setPrepayMoney(Double prepayMoney) {
+		this.prepayMoney = prepayMoney;
 	}
 
-	public Date getArrivedate() {
-		return arrivedate;
+	public Date getArriveDate() {
+		return arriveDate;
 	}
 
-	public void setArrivedate(Date arrivedate) {
-		this.arrivedate = arrivedate;
-	}
-
-	public String getArrivenote() {
-		return arrivenote;
-	}
-
-	public void setArrivenote(String arrivenote) {
-		this.arrivenote = arrivenote;
-	}
-
-	public String getConfirmnote() {
-		return confirmnote;
-	}
-
-	public void setConfirmnote(String confirmnote) {
-		this.confirmnote = confirmnote;
+	public void setArriveDate(Date arriveDate) {
+		this.arriveDate = arriveDate;
 	}
 
 	public String getInventoryClassCode() {

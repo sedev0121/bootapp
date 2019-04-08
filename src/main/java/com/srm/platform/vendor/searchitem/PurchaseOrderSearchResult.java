@@ -13,7 +13,7 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	private String vencode;
 	private Date audittime;
-	
+
 	private String vendorname;
 
 	private String deployername;
@@ -32,15 +32,15 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	private Float money;
 
-	private Float prepaymoney;
+	private Float prepay_money;
 
 	private Integer srmstate;
 
 	private String purchase_type_name;
 
-	public PurchaseOrderSearchResult(String code, String vencode, Date audittime, String state, String vendorname, String deployername,
-			String reviewername, Date deploydate, Date reviewdate, String maker, Date makedate, Float sum, Float money,
-			Integer srmstate, String purchase_type_name, Float prepaymoney) {
+	public PurchaseOrderSearchResult(String code, String vencode, Date audittime, String state, String vendorname,
+			String deployername, String reviewername, Date deploydate, Date reviewdate, String maker, Date makedate,
+			Float sum, Float money, Integer srmstate, String purchase_type_name, Float prepay_money) {
 		this.code = code;
 		this.setVencode(vencode);
 		this.setAudittime(audittime);
@@ -56,16 +56,16 @@ public class PurchaseOrderSearchResult implements Serializable {
 		this.money = money;
 		this.srmstate = srmstate;
 		this.purchase_type_name = purchase_type_name;
-		this.prepaymoney = prepaymoney;
+		this.prepay_money = prepay_money;
 
 	}
 
-	public Float getPrepaymoney() {
-		return prepaymoney;
+	public Float getPrepay_money() {
+		return prepay_money;
 	}
 
-	public void setPrepaymoney(Float prepaymoney) {
-		this.prepaymoney = prepaymoney;
+	public void setPrepay_money(Float prepay_money) {
+		this.prepay_money = prepay_money;
 	}
 
 	public static long getSerialversionuid() {

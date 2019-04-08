@@ -82,7 +82,7 @@
 	      data : 'code',
 	      title : '发货单号',
 	      render : function(data, display, record) {
-		      var url = edit_url + record.id + '/edit';
+		      var url = edit_url + data + '/edit';
 		      return '<a href="' + url + '">' + data + '</a>';
 	      },
 	    }, {

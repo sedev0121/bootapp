@@ -56,7 +56,7 @@ public class PurchaseOrderController extends CommonController {
 	protected String getOperationHistoryType() {
 		return "order";
 	};
-	
+
 	// 查询列表
 	@GetMapping({ "/", "" })
 	public String index() {
@@ -69,12 +69,12 @@ public class PurchaseOrderController extends CommonController {
 		if (main == null)
 			show404();
 
-//		checkVendor(main.getVendor());
+		// checkVendor(main.getVendor());
 
 		model.addAttribute("main", main);
 		return "purchaseorder/edit";
 	}
-	
+
 	@GetMapping({ "/{code}/read/{msgid}" })
 	public String read(@PathVariable("code") String code, @PathVariable("msgid") Long msgid, Model model) {
 		setReadDate(msgid);
@@ -119,12 +119,12 @@ public class PurchaseOrderController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT a.*, b.abbrname vendorname, c.realname deployername, d.realname reviewername, e.prepaymoney, e.money, e.sum ";
+		String selectQuery = "SELECT a.*, b.abbrname vendorname, c.realname deployername, d.realname reviewername, e.prepay_money, e.money, e.sum ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "FROM purchase_order_main a left join vendor b on a.vencode=b.code left join account c on a.deployer=c.id left join account d on a.reviewer=d.id "
-				+ "left join (select code, sum(prepaymoney) prepaymoney, sum(money) money, sum(sum) sum from purchase_order_detail group by code) e on a.code=e.code "
+				+ "left join (select code, sum(prepay_money) prepay_money, sum(money) money, sum(sum) sum from purchase_order_detail group by code) e on a.code=e.code "
 				+ "WHERE a.state='审核' ";
 
 		Map<String, Object> params = new HashMap<>();
@@ -138,18 +138,19 @@ public class PurchaseOrderController extends CommonController {
 			bodyQuery += " and a.srmstate>0 ";
 
 		} else {
-//			List<String> vendorList = this.getVendorListOfUser();
-//			
-//			if (vendorList.size() == 0) {
-//				return new PageImpl<PurchaseOrderSearchResult>(new ArrayList(), request, 0);
-//			}
-//			
-//			bodyQuery += " and b.code in :vendorList";
-//			params.put("vendorList", vendorList);
-//			if (!vendorStr.trim().isEmpty()) {
-//				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
-//				params.put("vendor", vendorStr.trim());
-//			}
+			// List<String> vendorList = this.getVendorListOfUser();
+			//
+			// if (vendorList.size() == 0) {
+			// return new PageImpl<PurchaseOrderSearchResult>(new ArrayList(), request, 0);
+			// }
+			//
+			// bodyQuery += " and b.code in :vendorList";
+			// params.put("vendorList", vendorList);
+			// if (!vendorStr.trim().isEmpty()) {
+			// bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like
+			// CONCAT('%',:vendor, '%')) ";
+			// params.put("vendor", vendorStr.trim());
+			// }
 		}
 
 		if (!code.trim().isEmpty()) {
@@ -229,24 +230,18 @@ public class PurchaseOrderController extends CommonController {
 
 		this.sendmessage(title, toList, String.format("/purchaseorder/%s/read", main.getCode()));
 		this.addOpertionHistory(main.getCode(), String.format("%s了订单", action));
-		
+
 		if (form.getTable() != null) {
 			for (Map<String, String> item : form.getTable()) {
 
 				PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneById(Long.parseLong(item.get("id")));
 				if (this.isVendor()) {
-					detail.setConfirmquantity(detail.getQuantity());
-					detail.setConfirmdate(Utils.parseDate(item.get("confirmdate")));
-					detail.setConfirmnote(item.get("confirmnote"));
 				} else {
-					if (item.get("prepaymoney") != null && !item.get("prepaymoney").isEmpty())
-						detail.setPrepaymoney(Double.parseDouble(item.get("prepaymoney")));
+					if (item.get("prepay_money") != null && !item.get("prepay_money").isEmpty())
+						detail.setPrepayMoney(Double.parseDouble(item.get("prepay_money")));
 					else
-						detail.setPrepaymoney(null);
-					detail.setArrivenote(item.get("arrivenote"));
-					detail.setConfirmquantity(detail.getQuantity());
-					detail.setConfirmdate(detail.getArrivedate());
-					detail.setConfirmnote(null);
+						detail.setPrepayMoney(null);
+//					detail.setArriveNote(item.get("arrive_note"));
 				}
 
 				purchaseOrderDetailRepository.save(detail);
@@ -256,10 +251,9 @@ public class PurchaseOrderController extends CommonController {
 		return main;
 	}
 
-
 	@RequestMapping(value = "/details/search", produces = "application/json")
 	public @ResponseBody Page<PurchaseOrderDetail> list_detail(@RequestParam Map<String, String> requestParams) {
-		
+
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
@@ -271,7 +265,7 @@ public class PurchaseOrderController extends CommonController {
 			order = "code";
 			break;
 		}
-		
+
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);

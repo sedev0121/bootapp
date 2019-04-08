@@ -16,10 +16,10 @@ public interface PurchaseOrderDetailRepository extends JpaRepository<PurchaseOrd
 
 	PurchaseOrderDetail findOneById(Long id);
 
-	@Query(value = "select * from purchase_order_detail where code= :code order by rowno", nativeQuery = true)
+	@Query(value = "select * from purchase_order_detail where code= :code order by row_no", nativeQuery = true)
 	List<PurchaseOrderDetail> findDetailsByCode(String code);
 
-	@Query(value = "select * from purchase_order_detail where code= :code and rowno=:rowno limit 1", nativeQuery = true)
+	@Query(value = "select * from purchase_order_detail where code= :code and row_no=:rowno limit 1", nativeQuery = true)
 	PurchaseOrderDetail findOneByCodeAndRowno(String code, String rowno);
 	
 	@Query(value = "select * from purchase_order_detail where code like %?1%", nativeQuery = true)

@@ -80,9 +80,9 @@ public class DeliveryController extends CommonController {
 	}
 
 	// 详细
-	@GetMapping({ "/{id}/edit" })
-	public String edit(@PathVariable("id") Long id, Model model) {
-		DeliveryMain main = deliveryMainRepository.findOneById(id);
+	@GetMapping({ "/{code}/edit" })
+	public String edit(@PathVariable("code") String code, Model model) {
+		DeliveryMain main = deliveryMainRepository.findOneByCode(code);
 		if (main == null)
 			show404();
 
@@ -92,13 +92,9 @@ public class DeliveryController extends CommonController {
 		return "delivery/edit";
 	}
 
-	@RequestMapping(value = "/{mainId}/details", produces = "application/json")
-	public @ResponseBody List<DeliveryDetail> details_ajax(@PathVariable("mainId") Long mainId) {
-		if (mainId == null) {
-			return new ArrayList<>();
-		}
-		
-		List<DeliveryDetail> list = deliveryDetailRepository.findDetailsByMainId(mainId);
+	@RequestMapping(value = "/{code}/details", produces = "application/json")
+	public @ResponseBody List<DeliveryDetail> details_ajax(@PathVariable("code") String code) {
+		List<DeliveryDetail> list = deliveryDetailRepository.findDetailsByCode(code);
 
 		return list;
 	}
