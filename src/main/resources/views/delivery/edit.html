@@ -118,7 +118,7 @@ is_readonly = 0;
 <script th:inline="javascript">
 	var editor, table;
   /*[+
-  var detail_url = [[@{|/delivery/${main.id==null?0:main.id}/details|}]];
+  var detail_url = [[@{|/delivery/${main.code}/details|}]];
   var edit_url = [[@{/delivery/}]];
   var del_url = [[@{|/delivery/${main.id}/delete|}]];
   +]*/
@@ -253,7 +253,7 @@ is_readonly = 0;
 	      orderable : false,
 	      className : 'select-checkbox',
 	    }, {
-	      data : 'purchaseOrderDetail.code',
+	      data : 'purchaseOrderDetail.main.code',
 	      title : '订单号',
 	    }, {
 	      data : 'purchaseOrderDetail.row_no',
@@ -633,7 +633,7 @@ is_readonly = 0;
 		    $.each(data, (key, item) => {
 		    	postData.push({
 		    		po_detail_id: item.purchaseOrderDetail.id,
-		    		delivered_quantity: item.delivered_quantity,
+		    		delivered_quantity: item.delivered_quantity || 0,
 		    		memo: item.memo
 		    	})
 		    });

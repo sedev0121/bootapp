@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.DeliveryDetail;
 import com.srm.platform.vendor.model.DeliveryMain;
+import com.srm.platform.vendor.model.StatementDetail;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
@@ -17,11 +18,11 @@ import com.srm.platform.vendor.model.DeliveryMain;
 public interface DeliveryDetailRepository extends JpaRepository<DeliveryDetail, Long> {
 	
 	DeliveryDetail findOneById(Long id);
-	
-	@Query(value = "SELECT * FROM delivery_detail WHERE code=?1", nativeQuery = true)
-	List<DeliveryDetail> findDetailsByCode(String mainCode);
+
+	@Query(value = "SELECT * FROM delivery_detail WHERE code=:code", nativeQuery = true)
+	List<DeliveryDetail> findDetailsByCode(String code);
 	
 	@Modifying
-	@Query(value = "delete FROM delivery_detail WHERE mainid= :mainId", nativeQuery = true)
-	void DeleteByMainId(Long mainId);
+	@Query(value = "delete FROM delivery_detail WHERE code= :code", nativeQuery = true)
+	void DeleteByCode(String code);
 }
