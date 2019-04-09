@@ -84,6 +84,20 @@ public class StoreController extends CommonController {
 		return result;
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/search", produces = "application/json")
+	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, Integer.MAX_VALUE, Direction.ASC, "name");
+		return storeRepository.findForSelect(request);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/search/{company_id}", produces = "application/json")
+	public Page<SearchItem> searchOfCompany(@PathVariable("company_id") Long companyId) {
+		PageRequest request = PageRequest.of(0, Integer.MAX_VALUE, Direction.ASC, "name");
+		return storeRepository.findForSelectOfCompany(companyId, request);
+	}
+	
 	private void checkPermission(Store store, Long functionActionId) {
 //		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
 //		boolean result = accountPermission.checkVendorPermission(store.getId());

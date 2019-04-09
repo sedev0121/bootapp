@@ -116,12 +116,12 @@ public class DeliveryController extends CommonController {
 
 	// 删除API
 //	@PreAuthorize("hasAuthority('询价管理-删除') or hasRole('ROLE_VENDOR')")
-	@GetMapping("/{id}/delete")
+	@GetMapping("/{code}/delete")
 	@Transactional
-	public @ResponseBody Boolean delete_ajax(@PathVariable("id") Long id) {
-		DeliveryMain main = deliveryMainRepository.findOneById(id);
+	public @ResponseBody Boolean delete_ajax(@PathVariable("code") String code) {
+		DeliveryMain main = deliveryMainRepository.findOneByCode(code);
 		if (main != null) {
-			deliveryDetailRepository.DeleteByMainId(id);
+			deliveryDetailRepository.DeleteByCode(code);
 			deliveryMainRepository.delete(main);
 		}
 
@@ -183,13 +183,35 @@ public class DeliveryController extends CommonController {
 			}
 		}
 		
+		main.setState(form.getState());
 		main.setCode(form.getCode());
 		main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
+		main.setCompany(companyRepository.findOneById(form.getCompany()));
+		main.setStore(storeRepository.findOneById(form.getStore()));
 		
+		main.setEstimatedArrivalDate(Utils.parseDate(form.getEstimated_arrival_date()));
+		main.setCreateDate(new Date());
 		Account account = this.getLoginAccount();
 		main.setCreater(account);
 
-		deliveryMainRepository.save(main);
+		main = deliveryMainRepository.save(main);
+		
+		if (form.getState() <= Constants.DELIVERY_STATE_SUBMIT) {
+
+			deliveryDetailRepository.deleteInBatch(deliveryDetailRepository.findDetailsByCode(main.getCode()));
+			
+			if (form.getTable() != null) {				
+				for (Map<String, String> row : form.getTable()) {
+					DeliveryDetail detail = new DeliveryDetail();
+					detail.setCode(main.getCode());
+					detail.setPurchaseOrderDetail(purchaseOrderDetailRepository.findOneById(Long.parseLong(row.get("po_detail_id"))));
+					detail.setDeliveredQuantity(Double.parseDouble(row.get("delivered_quantity")));
+					detail.setMemo(row.get("memo"));
+
+					detail = deliveryDetailRepository.save(detail);
+				}
+			}
+		}
 		
 		GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
 				main);
