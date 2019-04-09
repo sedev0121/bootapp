@@ -9,11 +9,11 @@
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right">
-				<a class="btn btn-primary" th:if="${main.state==1}" id="save"><i class="fa fa-save"></i> 保存</a> 
-				<a class="btn btn-primary" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
-				<a class="btn btn-primary" th:if="${main.state==1  || main.state==4}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
-				<a class="btn btn-primary" th:if="${main.state==2}" id="pass"><i class="fa fa-arrow-up"></i>确认</a> 
-				<a class="btn btn-primary" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="save"><i class="fa fa-save"></i> 保存</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==2}" id="pass"><i class="fa fa-arrow-up"></i>确认</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
 				<a class="btn btn-default" th:href="@{/delivery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -140,7 +140,7 @@
 	is_vendor = 1;
 </script>
 
-<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR') or hasRole('ROLE_BUYER') or hasAuthority('询价管理-新建/发布')">
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_BUYER') or hasAuthority('询价管理-新建/发布')">
 is_readonly = 0;
 </script>
 
@@ -427,14 +427,14 @@ is_readonly = 0;
 		  }
 	  });
 
-	  if (state == 1) {
+	  if (is_vendor && state == 1) {
 		  table.on('click', 'tbody td.vendor-edit', function(e) {
 			  editor.inline(this, {
 			    submit : 'allIfChanged',
 			    submitOnBlur : true
 			  });
 		  });
-	  } else if (state == 2) {
+	  } else if (!is_vendor && !is_readonly && state == 2) {
 		  table.on('click', 'tbody td.buyer-edit', function(e) {
 			  editor.inline(this, {
 			    submit : 'allIfChanged',
@@ -653,33 +653,6 @@ is_readonly = 0;
 		  $('#btn_search').trigger('click');
 	  });
 
-	  function copyRow() {
-		  var selected_data = table.rows('.selected').data().toArray();
-		  if (selected_data.length > 0) {
-			  var newRow = $.extend(true, {}, selected_data[0]);
-			  var copyRowNo = newRow.rowno;
-			  var newDataList = [];
-			  var isAfter = false;
-			  $.each(table.rows().data().toArray(), function(key, item) {
-				  if (item.rowno == copyRowNo) {
-					  newDataList.push(item);
-					  newRow.rowno++;
-					  newDataList.push(newRow)
-					  isAfter = true;
-				  } else {
-					  if (isAfter) {
-						  item.rowno++;
-					  }
-					  newDataList.push(item);
-				  }
-			  });
-
-			  table.clear().draw();
-			  table.rows.add(newDataList).draw();
-
-		  }
-	  }
-
 	  $("#btn_search").click(function() {
 		  import_table.draw();
 	  });
@@ -714,6 +687,8 @@ is_readonly = 0;
 				  temp.arrived_quantity = 0;
 				  temp.deliver_number = '';
 				  temp.memo = '';
+				  temp.buyer_memo = '';
+				  temp.state = 3;
 				  table.row.add(temp);
 			  }
 		  })
@@ -771,7 +746,7 @@ is_readonly = 0;
 		    		delivered_quantity: item.delivered_quantity || 0,
 		    		memo: item.memo,
 		    		buyer_memo: item.buyer_memo,
-		    		state: item.state,
+		    		state: item.state,		    		
 		    	})
 		    });
 		    jQuery(form).ajaxSubmit({

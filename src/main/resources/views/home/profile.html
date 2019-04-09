@@ -30,17 +30,8 @@
                 <input type="text" name="realname" class="form-control" th:value="${account.realname}" readonly>
               </div>
               <div class="col-lg-2 col-md-2 form-group">
-                <label for="unit_name">所属组织: </label>
-                <input type="hidden" id="unit" name="unit" th:value="${account.unit==null?'':account.unit.id}">
-                <input type="text" id="unit_name" name="unit_name" class="form-control" th:value="${account.unit==null?'':account.unit.name}" readonly>
-              </div>
-              <div class="col-lg-2 col-md-2 form-group">
                 <label for="duty">职位: </label>
                 <input type="text" id="duty" name="duty" th:value="${account.duty}" class="form-control" readonly>
-              </div>
-              <div class="col-lg-2 col-md-2 form-group hidden">
-                <label for="entry_date">入职日期: </label>
-                <input type="text" class="form-control datepicker" name="entry_date" id="entry_date" th:value="${#dates.format(account.entryTime, 'yyyy-MM-dd')}" readonly>
               </div>
             </fieldset>
             <fieldset>
@@ -66,28 +57,6 @@
             </fieldset>
             <fieldset>
               <legend>联系信息</legend>
-              <div class="row">
-                <div class="col-lg-2 col-md-2 form-group">
-                  <label for="document_date">微信: </label>
-                  <input type="text" id="weixin" name="weixin" class="form-control" th:value="${account.weixin}">
-                </div>
-                <div class="col-lg-2 col-md-2 form-group">
-                  <label for="document_date">QQ: </label>
-                  <input type="text" name="qq" class="form-control" th:value="${account.qq}">
-                </div>
-                <div class="col-lg-2 col-md-2 form-group">
-                  <label for="document_date">雅虎通: </label>
-                  <input type="text" name="yahoo" class="form-control" th:value="${account.yahoo}">
-                </div>
-                <div class="col-lg-2 col-md-2 form-group">
-                  <label for="document_date">GTalk: </label>
-                  <input type="text" name="gtalk" class="form-control" th:value="${account.gtalk}">
-                </div>
-                <div class="col-lg-4 col-md-4 form-group">
-                  <label for="document_date">旺旺: </label>
-                  <input type="text" name="wangwang" class="form-control" th:value="${account.wangwang}">
-                </div>                                                
-              </div>
               <div class="row">
                 <div class="col-lg-2 col-md-2 form-group">
                   <label for="effective_date">手机:</label>

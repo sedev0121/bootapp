@@ -255,7 +255,9 @@ public class SyncController {
 
 					vendor.setName(getStringValue(temp, "name"));
 					vendor.setAbbrname(getStringValue(temp, "abbrname"));
-					vendor.setSortCode(getStringValue(temp, "sort_code"));
+					
+					VendorClass vendorClass = vendorClassRepository.findOneByCode(getStringValue(temp, "sort_code"));
+					vendor.setVendorClass(vendorClass);
 					vendor.setIndustry(getStringValue(temp, "industry"));
 					vendor.setAddress(getStringValue(temp, "address"));
 					vendor.setBankOpen(getStringValue(temp, "bank_open"));

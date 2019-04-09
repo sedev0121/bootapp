@@ -5,7 +5,12 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "vendor")
@@ -17,7 +22,12 @@ public class Vendor implements Serializable {
 
 	private String name;
 	private String abbrname;
-	private String sortCode;
+	
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "sort_code")
+	@ManyToOne()
+	private VendorClass vendorClass;
+	
 	private String industry;
 	private String address;
 	private String phone;
@@ -56,12 +66,12 @@ public class Vendor implements Serializable {
 		this.abbrname = abbrname;
 	}
 
-	public String getSortCode() {
-		return sortCode;
+	public VendorClass getVendorClass() {
+		return vendorClass;
 	}
 
-	public void setSortCode(String sortCode) {
-		this.sortCode = sortCode;
+	public void setVendorClass(VendorClass vendorClass) {
+		this.vendorClass = vendorClass;
 	}
 
 	public String getIndustry() {

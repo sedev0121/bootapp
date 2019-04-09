@@ -9,9 +9,6 @@ import java.util.Map;
 
 import javax.persistence.Query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,19 +30,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.PermissionGroupUser;
-import com.srm.platform.vendor.model.PermissionUserScope;
 import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.CompanyRepository;
-import com.srm.platform.vendor.repository.PermissionGroupRepository;
-import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
-import com.srm.platform.vendor.repository.PermissionUserScopeRepository;
-import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.saveform.AccountSaveForm;
-import com.srm.platform.vendor.searchitem.AccountSearchItem;
-import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.PermissionScopeOfAccount;
-import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.searchitem.SellerSearchResult;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
@@ -174,8 +161,10 @@ public class SellerController extends AccountController {
 	public @ResponseBody GenericJsonResponse<Account> update_ajax(AccountSaveForm accountSaveForm) {
 
 		Account account = new Account();
+		account.setPassword(passwordEncoder.encode(accountSaveForm.getPassword()));
+		
 		if (accountSaveForm.getId() != null) {
-			account = accountRepository.findOneById(accountSaveForm.getId());
+			account = accountRepository.findOneById(accountSaveForm.getId());			
 		}
 
 		account.setUsername(accountSaveForm.getUsername());
@@ -208,6 +197,7 @@ public class SellerController extends AccountController {
 
 		Vendor newVendor = vendorRepository.findOneByCode(accountSaveForm.getVendor());
 		account.setVendor(newVendor);
+		account.setRealname(newVendor.getAbbrname());
 		account = accountRepository.save(account);
 
 		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, account);
@@ -218,8 +208,8 @@ public class SellerController extends AccountController {
 	private void checkPermission(Account account, Long functionActionId) {
 		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
 		boolean vendorResult = accountPermission.checkVendorPermission(account.getVendor().getCode());
-		boolean companyResult = accountPermission.checkCompanyPermission(account.getCompany().getId());
-		if (!(vendorResult || companyResult || isAdmin())) {
+//		boolean companyResult = accountPermission.checkCompanyPermission(account.getCompany().getId());
+		if (!(vendorResult || isAdmin())) {
 			show403();
 		}
 	}

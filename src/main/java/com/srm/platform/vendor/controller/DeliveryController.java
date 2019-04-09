@@ -1,22 +1,13 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Query;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
@@ -30,33 +21,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.DeliveryDetail;
 import com.srm.platform.vendor.model.DeliveryMain;
-import com.srm.platform.vendor.model.Notice;
-import com.srm.platform.vendor.model.PurchaseInDetail;
-import com.srm.platform.vendor.model.StatementDetail;
-import com.srm.platform.vendor.model.StatementMain;
-import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.InventoryRepository;
-import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.saveform.DeliverySaveForm;
-import com.srm.platform.vendor.saveform.VenPriceSaveForm;
-import com.srm.platform.vendor.searchitem.InquerySearchResult;
-import com.srm.platform.vendor.searchitem.VenPriceDetailItem;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
-import com.srm.platform.vendor.utility.U8InvoicePostData;
-import com.srm.platform.vendor.utility.U8InvoicePostEntry;
-import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
@@ -71,10 +44,11 @@ public class DeliveryController extends CommonController {
 	}
 
 	// 新建
-//	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
+	@PreAuthorize("hasRole('ROLE_VENDOR')")
 	@GetMapping({ "/add" })
 	public String add(Model model) {
 		DeliveryMain main = new DeliveryMain();
+		main.setVendor(getLoginAccount().getVendor());
 		model.addAttribute("main", main);
 		return "delivery/edit";
 	}
