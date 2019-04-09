@@ -590,3 +590,16 @@ a.save-history {
 .DTFC_LeftBodyWrapper .DTFC_Cloned {
 	border-top: none;
 }
+
+.table>tbody>tr>td.selecting {
+	padding: 2px;
+}
+
+div.DTE_Field select {
+	padding: 2px;
+	width: 50px;
+}
+
+div.DTE_Field_Type_select div.DTE_Field_Input {
+    padding-top: 2px;
+}

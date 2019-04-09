@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,18 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Account;
-import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.CompanyRepository;
-import com.srm.platform.vendor.repository.PermissionGroupRepository;
-import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
-import com.srm.platform.vendor.repository.PermissionUserScopeRepository;
-import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.searchitem.SearchItem;
 
 public class AccountController extends CommonController {
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-
+	@Autowired
+	protected PasswordEncoder passwordEncoder;
+	
 	@GetMapping("/{id}/delete")
 	public @ResponseBody Boolean delete(@PathVariable("id") Long id, Model model) {
 		Account account = accountRepository.findOneById(id);

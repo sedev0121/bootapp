@@ -6,6 +6,7 @@ import java.util.Map;
 public class AccountSaveForm {
 
 	private Long id;
+	private String password;
 	private String username;
 	private String realname;
 	private String unitname;
@@ -28,6 +29,15 @@ public class AccountSaveForm {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String getUsername() {

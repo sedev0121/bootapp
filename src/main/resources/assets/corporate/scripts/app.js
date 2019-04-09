@@ -20,7 +20,8 @@ var App = function() {
   var role_data = [{id:"ROLE_BUYER", text:"采购员"}, {id:"ROLE_VENDOR", text:"供应商"}, {id:"ROLE_ADMIN", text:"管理员"}];
   var account_state_data = [{id:1, text:"启用"}, {id:0, text:"停用"}];
   var used_state_data = [{id:1, text:"使用中"}, {id:0, text:"空置"}];
-  var delivery_state_data = [{id:1, text:"新建"}, {id:2, text:"申请"}, {id:3, text:"确认"}];
+  var delivery_state_data = [{id:1, text:"新建"}, {id:2, text:"已发布"}, {id:3, text:"审批"}, {id:4, text:"拒绝"}, {id:5, text:"部分审批"}, ];
+  var delivery_row_state_data = [{id:1, text:"新建"}, {id:2, text:"已发布"}, {id:3, text:"审批"}, {id:4, text:"拒绝"}];
   var statement_type_data = [{id:1, text:"采购对账"}, {id:2, text:"委外对账"}];
   var invoice_type_data = [{id:1, text:"专用发票"}, {id:2, text:"普通发票"}];
   
@@ -139,9 +140,16 @@ var App = function() {
       return parseFloat((+(Math.round(+(num + 'e' + length)) + 'e' + -length)).toFixed(length));
       
     },
+    floatVal: function(number) {
+    	if (!number) {
+    		return 0;
+    	} else {
+    		return parseFloat(number);
+    	}
+    },
     intNumber : function (i) {
-	  return App.formatNumber(i, 0);
-	},
+		  return App.formatNumber(i, 0);
+		},
     quantityNumber : function (i) {
       return App.formatNumber(i, 4);
     },
@@ -194,6 +202,9 @@ var App = function() {
     }, 
     getInqueryStateData: function() {
       return inquery_state_data;
+    },
+    getDeliveryStateData: function() {
+      return delivery_state_data;
     },
     getNoticeStateData: function() {
       return notice_state_data;
@@ -303,6 +314,9 @@ var App = function() {
     },
     getDeliveryStateOfId: function(id) {
       return getLabelOfId(delivery_state_data, id);
+    },
+    getDeliveryRowStateOfId: function(id) {
+      return getLabelOfId(delivery_row_state_data, id);
     },
     getNoticeStateOfId: function(id) {
       return getLabelOfId(notice_state_data, id);

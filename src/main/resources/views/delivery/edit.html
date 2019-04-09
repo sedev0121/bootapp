@@ -9,11 +9,11 @@
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right">
-				<a class="btn btn-primary" th:if="${main.state==1}" id="save"><i class="fa fa-save"></i> 保存</a> 
-				<a class="btn btn-primary" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
-				<a class="btn btn-primary" th:if="${main.state==1  || main.state==4}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
-				<a class="btn btn-primary" th:if="${main.state==2}" id="pass"><i class="fa fa-arrow-up"></i>通过</a> 
-				<a class="btn btn-primary" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a>
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="save"><i class="fa fa-save"></i> 保存</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==2}" id="pass"><i class="fa fa-arrow-up"></i>确认</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
 				<a class="btn btn-default" th:href="@{/delivery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -140,7 +140,7 @@
 	is_vendor = 1;
 </script>
 
-<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR') or hasRole('ROLE_BUYER') or hasAuthority('询价管理-新建/发布')">
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_BUYER') or hasAuthority('询价管理-新建/发布')">
 is_readonly = 0;
 </script>
 
@@ -169,7 +169,7 @@ is_readonly = 0;
 
 	  $(".select2").select2();
 	  $("#state").select2({
-	    data : App.getInqueryStateData(),
+	    data : App.getDeliveryStateData(),
 	    minimumResultsForSearch : -1
 	  }).select2("val", state.toString());
 	  
@@ -186,14 +186,18 @@ is_readonly = 0;
 	  if (is_vendor)
 		  $('#vendor').attr("readonly", true);
 
+	  if (state > 1) {
+	  	$('#estimated_arrival_date').attr("readonly", true);
+	  	$('#company').attr("readonly", true);
+	  	$('#store').attr("readonly", true);
+	  }
+	  
 	  var edit_mode = 'main';
 
 	  editor = new $.fn.dataTable.Editor({
 	    table : "#detail_table",
 	    idSrc : "rowno",
 	    fields : [ {
-		    name : "cinvcode"
-	    }, {
 	      label : "发货数量:",
 	      attr : {
 		      type : "number"
@@ -203,6 +207,15 @@ is_readonly = 0;
 	    }, {
 	      label : "备注:",
 	      name : "memo"
+	    }, {
+	    	type:  "select",
+	      name : "state",
+	      options: [
+          { label: "审批", value: "3" },
+          { label: "拒绝", value: "4" },
+      	]
+	    }, {
+	      name : "buyer_memo"
 	    } ],
 	    i18n : {
 	      remove : {
@@ -218,21 +231,26 @@ is_readonly = 0;
 		      system : "发生错误！"
 	      }
 	    }
-	  }).on('preSubmit', function(e, data, action) {
-		  if (action == 'remove') {
-			  return true;
+	  }).on('preOpen', function(e, data, action) {
+	  	
+		  var currentFieldName = e.currentTarget.s.includeFields[0];
+		  if (currentFieldName == "state") {
+		  	var modifier = editor.modifier();
+		  	$(modifier).addClass("selecting");	
 		  }
 
-		  var currentFieldName = e.currentTarget.s.includeFields[0];
-
-	  }).on('postEdit', function(e, json, data, action) {
-		  var table_data = table.rows().data().toArray();
-		  var prepay_sum = 0;
-		  $.each(table_data, function(key, item) {
-
-		  })
-	  }).on('postRemove', function(e, json, data, action) {
-
+	  }).on('preBlur', function(e, json, data, action) {
+	  	var currentFieldName = e.currentTarget.s.includeFields[0];
+		  if (currentFieldName == "state") {
+		  	var modifier = editor.modifier();
+		  	$(modifier).removeClass("selecting");	
+		  }
+	  }).on('close', function(e) {
+	  	var currentFieldName = e.currentTarget.s.includeFields[0];
+		  if (currentFieldName == "state") {
+		  	var modifier = editor.modifier();
+		  	$(modifier).removeClass("selecting");	
+		  }
 
 	  });
 
@@ -245,19 +263,7 @@ is_readonly = 0;
 	    buttons : [ {
 	      text : "添加物料",
 	      action : function(e, dt, node, config) {
-		      if (!$("#vendor").val()) {
-			      $('#vendor').focus();
-			      App.showErrorDialog("请选择供应商！");
-			      return false;
-		      }
-
 		      $('#import_dialog').modal('show');
-	      }
-	    }, {
-	      text : "复制行",
-	      enabled : false,
-	      action : function(e, dt, node, config) {
-		      copyRow();
 	      }
 	    }, {
 	      extend : "remove",
@@ -282,6 +288,7 @@ is_readonly = 0;
 	      data : null,
 	      defaultContent : ' ',
 	      width: "30px",
+	      visible: state == 1,
 	      orderable : false,
 	      className : 'select-checkbox',
 	    }, {
@@ -327,6 +334,7 @@ is_readonly = 0;
 	    }, {
 	      data : 'delivered_quantity',
 	      className : 'dt-right',
+	      className : 'vendor-edit',
 	      title : '发货数量',		 
 	    }, {
 	      data : 'delivered_quantity',
@@ -342,12 +350,23 @@ is_readonly = 0;
 	      title : '实收箱数',		 
 	    }, {
 	      data : 'deliver_number',
-	      className : 'dt-right',
 	      title : '批次',		 
 	    }, {
 	      data : 'memo',
-	      className : 'dt-right',
-	      title : '备注',		 
+	      className : 'vendor-edit',
+	      title : '供应商备注',		 
+	    }, {
+	      data : 'state',
+	      title : '行审批　　',	
+	      width: 100,
+	      visible: state > 1,
+	      className : 'buyer-edit',
+	      render : App.getDeliveryRowStateOfId
+	    }, {
+	      data : 'buyer_memo',
+	      visible: state > 1,
+	      className : 'buyer-edit',
+	      title : '采购方备注',		 
 	    } ],
 	    rowCallback : function(row, data) {
 		    // Set the checked state of the checkbox in the table
@@ -362,12 +381,12 @@ is_readonly = 0;
 			  				inventory_code: item.purchaseOrderDetail.inventory_code,
 			  				inventory_name: item.purchaseOrderDetail.inventory_name,
 			  				unit_name: item.purchaseOrderDetail.unit_name,
-			  				delivered_quantity: item.delivered_quantity,
-			  				accepted_quantity: item.accepted_quantity,
+			  				delivered_quantity: App.floatVal(item.delivered_quantity),
+			  				accepted_quantity: App.floatVal(item.accepted_quantity),
 			  		}	
 		  		} else {
-		  			summary_data[key].delivered_quantity += item.delivered_quantity;
-		  			summary_data[key].accepted_quantity += item.accepted_quantity;		  			
+		  			summary_data[key].delivered_quantity += App.floatVal(item.delivered_quantity);
+		  			summary_data[key].accepted_quantity += App.floatVal(item.accepted_quantity);		  			
 		  		}
 		  	});
 		  	
@@ -408,15 +427,22 @@ is_readonly = 0;
 		  }
 	  });
 
-	  if (state == 3 && !is_vendor && !is_readonly) {
-		  table.on('click', 'tbody td.ivalid', function(e) {
+	  if (is_vendor && state == 1) {
+		  table.on('click', 'tbody td.vendor-edit', function(e) {
 			  editor.inline(this, {
 			    submit : 'allIfChanged',
 			    submitOnBlur : true
 			  });
 		  });
-
+	  } else if (!is_vendor && !is_readonly && state == 2) {
+		  table.on('click', 'tbody td.buyer-edit', function(e) {
+			  editor.inline(this, {
+			    submit : 'allIfChanged',
+			    submitOnBlur : true
+			  });
+		  });
 	  }
+	  
 
 	  function reloadSummaryTable() {
 	  	if (summary_table) {
@@ -627,33 +653,6 @@ is_readonly = 0;
 		  $('#btn_search').trigger('click');
 	  });
 
-	  function copyRow() {
-		  var selected_data = table.rows('.selected').data().toArray();
-		  if (selected_data.length > 0) {
-			  var newRow = $.extend(true, {}, selected_data[0]);
-			  var copyRowNo = newRow.rowno;
-			  var newDataList = [];
-			  var isAfter = false;
-			  $.each(table.rows().data().toArray(), function(key, item) {
-				  if (item.rowno == copyRowNo) {
-					  newDataList.push(item);
-					  newRow.rowno++;
-					  newDataList.push(newRow)
-					  isAfter = true;
-				  } else {
-					  if (isAfter) {
-						  item.rowno++;
-					  }
-					  newDataList.push(item);
-				  }
-			  });
-
-			  table.clear().draw();
-			  table.rows.add(newDataList).draw();
-
-		  }
-	  }
-
 	  $("#btn_search").click(function() {
 		  import_table.draw();
 	  });
@@ -688,6 +687,8 @@ is_readonly = 0;
 				  temp.arrived_quantity = 0;
 				  temp.deliver_number = '';
 				  temp.memo = '';
+				  temp.buyer_memo = '';
+				  temp.state = 3;
 				  table.row.add(temp);
 			  }
 		  })
@@ -740,9 +741,12 @@ is_readonly = 0;
 		    var postData = [];
 		    $.each(data, (key, item) => {
 		    	postData.push({
+		    		id: item.id,
 		    		po_detail_id: item.purchaseOrderDetail.id,
 		    		delivered_quantity: item.delivered_quantity || 0,
-		    		memo: item.memo
+		    		memo: item.memo,
+		    		buyer_memo: item.buyer_memo,
+		    		state: item.state,		    		
 		    	})
 		    });
 		    jQuery(form).ajaxSubmit({
@@ -804,32 +808,18 @@ is_readonly = 0;
 		  $("#form").submit();
 	  });
 
-	  $("#confirm").click(function() {
+	  $("#pass").click(function() {
 		  editor.submit();
 		  $('#state').val(3);
 		  $("#form").submit();
 	  });
-
+	  
 	  $("#cancel").click(function() {
 		  editor.submit();
 		  $('#state').val(4);
 		  $("#form").submit();
 	  });
 
-	  $("#pass").click(function() {
-		  editor.submit();
-		  $('#state').val(5);
-		  $("#form").submit();
-	  });
 
-	  $("#verify").click(function() {
-		  $('#state').val(6);
-		  $("#form").submit();
-	  });
-
-	  $("#publish").click(function() {
-		  $('#state').val(7);
-		  $("#form").submit();
-	  });
   });
 </script>

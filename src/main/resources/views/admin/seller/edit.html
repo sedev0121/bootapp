@@ -22,7 +22,7 @@
 							<label for="username">用户名: </label> <input type="text" name="username" id="username" class="form-control" th:value="${account.username}" readonly>
 						</div>
 						<div class="col-md-3 form-group">
-							<label for="init_password">初始密码： </label> <input type="text" class="form-control" th:value="111" readonly>
+							<label for="init_password">初始密码： </label> <input type="text" name="password" class="form-control" th:value="111" readonly>
 						</div>
 						<div class="col-md-2 form-group">
 							<label for="state">状态: </label>
@@ -49,31 +49,10 @@
 							<label>供应商简称: </label> <input type="text" id="vendor_abbrname" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
 						</div>
 						<div class="col-md-3">
-							<label>所属地区: </label> <input type="text" id="vendor_abbrname" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>所属类别: </label> <input type="text" id="vendor_sort_code" class="form-control" readonly th:value="${account.vendor?.sortCode}" />
-						</div>
-						<div class="col-md-3">
-							<label>供货类别: </label> <input type="text" id="vendor_abbrname" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>供应商总公司: </label> <input type="text" id="vendor_abbrname" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
+							<label>所属类别: </label> <input type="text" id="vendor_sort_code" class="form-control" readonly th:value="${account.vendor?.vendorClass?.name}" />
 						</div>
 						<div class="col-md-3">
 							<label>所属行业: </label> <input type="text" id="vendor_industry" class="form-control" readonly th:value="${account.vendor?.industry}" />
-						</div>
-						<div class="col-md-3">
-							<label>对应客户: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>币种: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>税号: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>注册资金: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
 						</div>
 						<div class="col-md-3">
 							<label>开户银行: </label> <input type="text" id="vendor_bank_open" class="form-control" readonly th:value="${account.vendor?.bankOpen}" />
@@ -82,16 +61,7 @@
 							<label>银行账号: </label> <input type="text" id="vendor_bank_acc_number" class="form-control" readonly th:value="${account.vendor?.bankAccNumber}" />
 						</div>
 						<div class="col-md-3">
-							<label>法人: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>税率: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>分管部门: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>专营业务员: </label> <input type="text" id="vendor_contact" class="form-control" readonly th:value="${account.vendor?.contact}" />
+							<label>联系人: </label> <input type="text" id="vendor_contact" class="form-control" readonly th:value="${account.vendor?.contact}" />
 						</div>
 						<div class="col-md-3">
 							<label>电话: </label> <input type="text" id="vendor_phone" class="form-control" readonly th:value="${account.vendor?.phone}" />
@@ -103,43 +73,10 @@
 							<label>手机: </label> <input type="text" id="vendor_mobile" class="form-control" readonly th:value="${account.vendor?.mobile}" />
 						</div>
 						<div class="col-md-3">
-							<label>呼机: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>邮政编码: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>联系人: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
 							<label>Email地址: </label> <input type="text" id="vendor_email" class="form-control" readonly th:value="${account.vendor?.email}" />
-						</div>
-						<div class="col-md-3">
-							<label>结算方式: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
 						</div>
 						<div class="col-md-6">
 							<label>地址: </label> <input type="text" id="vendor_address" class="form-control" readonly th:value="${account.vendor?.address}" />
-						</div>
-						<div class="col-md-3">
-							<label>到货方式: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>到货仓库: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-6">
-							<label>到货地址: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>建档人: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>建档日期: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>变更人: </label> <input type="text" class="form-control" readonly th:value="${account.vendor?.abbrname}" />
-						</div>
-						<div class="col-md-3">
-							<label>变更日期: </label> <input type="text" id="vendor_timestamp" class="form-control" readonly th:value="${account.vendor?.timestamp}" />
 						</div>
 					</div>
 				</div>
