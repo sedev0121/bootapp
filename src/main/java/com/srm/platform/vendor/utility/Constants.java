@@ -68,6 +68,12 @@ public class Constants {
 	
 	public final static int DELIVERY_STATE_NEW = 1;
 	public final static int DELIVERY_STATE_SUBMIT = 2;
-	public final static int DELIVERY_STATE_REVIEW = 3;
+	public final static int DELIVERY_STATE_OK = 3;
 	public final static int DELIVERY_STATE_CANCEL = 4;
+	public final static int DELIVERY_STATE_PARTIAL_OK = 5;
+	
+	public final static int DELIVERY_ROW_STATE_NEW = 1;
+	public final static int DELIVERY_ROW_STATE_SUBMIT = 2;
+	public final static int DELIVERY_ROW_STATE_OK = 3;
+	public final static int DELIVERY_ROW_STATE_CANCEL = 4;
 }

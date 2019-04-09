@@ -208,7 +208,36 @@ public class DeliveryController extends CommonController {
 					detail.setDeliveredQuantity(Double.parseDouble(row.get("delivered_quantity")));
 					detail.setMemo(row.get("memo"));
 
+					if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
+						detail.setState(Constants.DELIVERY_ROW_STATE_OK);
+					}
 					detail = deliveryDetailRepository.save(detail);
+				}
+			}
+		} else {
+			if (form.getTable() != null) {	
+				boolean isAllOk = true;
+				for (Map<String, String> row : form.getTable()) {
+					DeliveryDetail detail = deliveryDetailRepository.findOneById(Long.parseLong(row.get("id")));
+					detail.setBuyerMemo(row.get("buyer_memo"));
+
+					Integer rowState = Integer.parseInt(row.get("state"));
+					if (rowState == Constants.DELIVERY_ROW_STATE_CANCEL) {
+						isAllOk = false;
+					}
+					
+					if (form.getState() == Constants.DELIVERY_STATE_OK) {
+						detail.setState(rowState);	
+					} else {
+						detail.setState(Constants.DELIVERY_ROW_STATE_CANCEL);
+					}
+					
+					detail = deliveryDetailRepository.save(detail);
+				}
+				
+				if (!isAllOk) {
+					main.setState(Constants.DELIVERY_STATE_PARTIAL_OK);
+					main = deliveryMainRepository.save(main);
 				}
 			}
 		}

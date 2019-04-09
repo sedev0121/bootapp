@@ -20,6 +20,7 @@ import org.hibernate.annotations.NotFoundAction;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.srm.platform.vendor.searchitem.BoxSearchResult;
 import com.srm.platform.vendor.searchitem.SellerSearchResult;
+import com.srm.platform.vendor.utility.Constants;
 
 @Entity
 @Table(name = "delivery_detail")
@@ -48,6 +49,11 @@ public class DeliveryDetail implements Serializable {
 	
 	private String memo;
 	
+	@JsonProperty("buyer_memo")
+	private String buyerMemo;
+	
+	private Integer state = Constants.DELIVERY_ROW_STATE_NEW;
+	
 	public Long getId() {
 		return id;
 	}
@@ -55,8 +61,23 @@ public class DeliveryDetail implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 	
+	public String getBuyerMemo() {
+		return buyerMemo;
+	}
+
+	public void setBuyerMemo(String buyerMemo) {
+		this.buyerMemo = buyerMemo;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
 	public Double getAcceptedQuantity() {
 		return acceptedQuantity;
 	}
