@@ -586,3 +586,7 @@ a.save-history {
 .history-content {
 	width: 100%;
 }
+
+.DTFC_LeftBodyWrapper .DTFC_Cloned {
+	border-top: none;
+}

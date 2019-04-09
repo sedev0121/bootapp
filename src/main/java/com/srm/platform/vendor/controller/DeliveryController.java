@@ -183,6 +183,7 @@ public class DeliveryController extends CommonController {
 			}
 		}
 		
+		main.setState(form.getState());
 		main.setCode(form.getCode());
 		main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
 		main.setCompany(companyRepository.findOneById(form.getCompany()));
