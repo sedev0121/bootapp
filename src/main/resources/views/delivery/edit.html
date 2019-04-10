@@ -4,7 +4,7 @@
 	<div class="container" layout:fragment="content">
 		<ul class="breadcrumb">
 			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
-			<li><a th:href="@{/devliery}">预发货单管理</a></li>
+			<li><a th:href="@{/delivery}">预发货单管理</a></li>
 			<li th:text="${#strings.contains(#request.requestURI,'add')} ?'新建预发货单':'预发货单明细'">议价单</li>
 		</ul>
 		<div class="btn-group-bar">
@@ -289,7 +289,7 @@ is_readonly = 0;
 	      data : 'purchaseOrderDetail.inventory_name',
 	      title : '存货名称',
 	    }, {
-	      data : 'purchaseOrderDetail.inventory_code',
+	      data : 'purchaseOrderDetail.inventory.code',
 	      title : '存货代码',
 	    }, {
 	      data : 'purchaseOrderDetail.unit_name',
@@ -303,6 +303,9 @@ is_readonly = 0;
 	      data : 'purchaseOrderDetail.quantity',
 	      className : 'dt-right',
 	      title : '订单箱数',
+	      render: function (data, display, record) {
+	        return App.getBoxCount(record.purchaseOrderDetail.quantity, record.purchaseOrderDetail.inventory.count_per_box);
+	      },
 	    }, {
 	      data : 'purchaseOrderDetail.arrived_quantity',
 	      className : 'dt-right',
@@ -311,14 +314,23 @@ is_readonly = 0;
 	      data : 'purchaseOrderDetail.arrived_quantity',
 	      className : 'dt-right',
 	      title : '订单已交箱数',
+	      render: function (data, display, record) {
+	        return App.getBoxCount(record.purchaseOrderDetail.arrived_quantity, record.purchaseOrderDetail.inventory.count_per_box);
+	      },
 	    }, {
 	      data : 'purchaseOrderDetail.arrived_quantity',
 	      className : 'dt-right',
 	      title : '订单未交数量',
+	      render: function (data, display, record) {
+	        return record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.arrived_quantity;
+	      },
 	    }, {
 	      data : 'purchaseOrderDetail.arrived_quantity',
 	      className : 'dt-right',
-	      title : '订单未交箱数',		 
+	      title : '订单未交箱数',		
+	      render: function (data, display, record) {
+	        return App.getBoxCount(record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.arrived_quantity, record.purchaseOrderDetail.inventory.count_per_box);
+	      },
 	    }, {
 	      data : 'delivered_quantity',
 	      className : 'dt-right',
@@ -328,6 +340,9 @@ is_readonly = 0;
 	      data : 'delivered_quantity',
 	      className : 'dt-right',
 	      title : '发货箱数',		 
+	      render: function (data, display, record) {
+	        return App.getBoxCount(record.delivered_quantity, record.purchaseOrderDetail.inventory.count_per_box);
+	      },
 	    }, {
 	      data : 'accepted_quantity',
 	      className : 'dt-right',
@@ -336,6 +351,9 @@ is_readonly = 0;
 	      data : 'accepted_quantity',
 	      className : 'dt-right',
 	      title : '实收箱数',		 
+	      render: function (data, display, record) {
+	        return App.getBoxCount(record.purchaseOrderDetail.accepted_quantity, record.purchaseOrderDetail.inventory.count_per_box);
+	      },
 	    }, {
 	      data : 'deliver_number',
 	      title : '批次',		 
@@ -363,18 +381,19 @@ is_readonly = 0;
 	    drawCallback: function( settings ) {
 	    	summary_data = {};	    	
 		  	$.each(this.api().rows().data().toArray(), function(key, item) {
-		  		var key = item.purchaseOrderDetail.inventory_code;
+		  		var key = item.purchaseOrderDetail.inventory.code;
 		  		if (!summary_data[key]) {
 		  			summary_data[key] = {
-			  				inventory_code: item.purchaseOrderDetail.inventory_code,
+			  				inventory_code: item.purchaseOrderDetail.inventory.code,
 			  				inventory_name: item.purchaseOrderDetail.inventory_name,
 			  				unit_name: item.purchaseOrderDetail.unit_name,
 			  				delivered_quantity: App.floatVal(item.delivered_quantity),
 			  				accepted_quantity: App.floatVal(item.accepted_quantity),
+			  				count_per_box: item.purchaseOrderDetail.inventory.count_per_box,
 			  		}	
 		  		} else {
 		  			summary_data[key].delivered_quantity += App.floatVal(item.delivered_quantity);
-		  			summary_data[key].accepted_quantity += App.floatVal(item.accepted_quantity);		  			
+		  			summary_data[key].accepted_quantity = App.floatVal(item.accepted_quantity);		  			
 		  		}
 		  	});
 		  	
@@ -501,6 +520,9 @@ is_readonly = 0;
 		      data : 'delivered_quantity',
 		      className : 'dt-right',
 		      title : '发货箱数',		 
+		      render: function (data, display, record) {
+		        return App.getBoxCount(record.delivered_quantity, record.count_per_box);
+		      },
 		    }, {
 		      data : 'accepted_quantity',
 		      className : 'dt-right',
@@ -508,7 +530,10 @@ is_readonly = 0;
 		    }, {
 		      data : 'accepted_quantity',
 		      className : 'dt-right',
-		      title : '实收箱数',		 
+		      title : '实收箱数',		
+		      render: function (data, display, record) {
+		      	return App.getBoxCount(record.accepted_quantity, record.count_per_box);
+		      },
 		    } ],
 		  });
 	  }
@@ -612,6 +637,9 @@ is_readonly = 0;
 				      return json.content;
 			      },
 			    },
+			    fixedColumns : {
+				    leftColumns : 5,
+			    },
 			    order: [ [1, 'asc'] ],
 			    columns : [ {
 			    	data : null,
@@ -629,7 +657,7 @@ is_readonly = 0;
 			      data : 'inventory_name',
 			      title : '存货名称',
 			    }, {
-			      data : 'inventory_code',
+			      data : 'inventory.code',
 			      title : '存货代码',
 			    }, {
 			      data : 'unit_name',
@@ -643,37 +671,53 @@ is_readonly = 0;
 			      data : 'quantity',
 			      className : 'dt-right',
 			      title : '订单箱数',
+			      render: function (data, display, record) {
+			        return App.getBoxCount(record.quantity, record.inventory.count_per_box);
+			      },
 			    }, {
-			      data : 'quantity',
+			      data : 'arrived_quantity',
 			      className : 'dt-right',
 			      title : '订单已交数量',
 			    }, {
-			      data : 'quantity',
+			      data : 'arrived_quantity',
 			      className : 'dt-right',
 			      title : '订单已交箱数',
+			      render: function (data, display, record) {
+			      	return App.getBoxCount(record.arrived_quantity, record.inventory.count_per_box);
+			      },
 			    }, {
 			      data : 'quantity',
 			      className : 'dt-right',
 			      title : '订单未交数量',
+			      render: function (data, display, record) {
+			      	return record.quantity - record.arrived_quantity;
+			      },
 			    }, {
 			      data : 'quantity',
 			      className : 'dt-right',
-			      title : '订单未交箱数',		 
+			      title : '订单未交箱数',
+			      render: function (data, display, record) {
+			      	return App.getBoxCount(record.quantity - record.arrived_quantity, record.inventory.count_per_box);
+			      }, 
 			    }, {
 			      data : 'quantity',
 			      className : 'dt-right',
+			      visible: false,
 			      title : '发货数量',		 
 			    }, {
 			      data : 'quantity',
 			      className : 'dt-right',
+			      visible: false,
 			      title : '发货箱数',		 
 			    }, {
 			      data : 'quantity',
 			      className : 'dt-right',
+			      visible: false,
 			      title : '实收数量',		 
 			    }, {
 			      data : 'quantity',
 			      className : 'dt-right',
+			      visible: false,
 			      title : '实收箱数',		 
 			    } ],
 			  });
