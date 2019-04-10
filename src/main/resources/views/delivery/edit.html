@@ -21,6 +21,7 @@
 			<div class="panel-body">
 				<form id="form" th:action="@{/delivery/update}" method="post" enctype="multipart/form-data">
 					<input type="hidden" name="id" id="id" th:value="${main.id}"/>
+					<input type="hidden" name="vendor" id="vendor" th:value="${main.vendor?.code}"/>
 					<div class="row">
 						<div class="col-lg-3 col-md-3">
 							<label for="code">单号: </label> 
@@ -28,9 +29,7 @@
 						</div>
 						<div class="col-lg-3 col-md-3">
 							<label for="vendor">供应商:</label> 
-							<select id="vendor" name="vendor" class="form-control" readonly>
-								<option th:if="${main.vendor != null}" th:value="${main.vendor?.code}" th:text="${main.vendor?.name}" selected="selected">NEC（日电）有限公司</option>
-							</select>
+							<input type="text" th:value="${main.vendor?.name}" class="form-control" readonly />
 						</div>
 						<div class="col-lg-3 col-md-3">
 							<label for="create_date">申请日期：</label> 
@@ -62,42 +61,41 @@
 							</select>
 						</div>
 					</div>
-					<div class="row margin-top-10">
-						<div class="col-lg-12">
-							<div class="tab-style-1" id="tabs">
-									<ul class="nav nav-tabs">
-										<li class="active"><a data-toggle="tab" href="#tab-1">汇总信息</a></li>
-										<li><a data-toggle="tab" href="#tab-2">明细</a></li>
-										<li><a data-toggle="tab" href="#tab-3">操作日志</a></li>
-										<li><a data-toggle="tab" href="#tab-4">附件</a></li>
-									</ul>
-									<div class="tab-content">
-										<div id="tab-1" class="tab-pane row-fluid fade in active">
-											<table id="summary_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-											</table>
-										</div>
-										<div id="tab-2" class="tab-pane row-fluid fade in">		
-											<table id="detail_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-											</table>				
-										</div>
-										<div id="tab-3" class="tab-pane row-fluid fade in">		
-											<div class="operations" id="operation_history">
-											</div>	
-											<div class="row edit-history">
-												<form id="history_form" th:action="@{/operation_history/update}" method="post">												
-													<textarea name="content" id="history_content" class="history-content" rows="5"></textarea>
-													<a class="btn btn-primary save-history" id="save_history"><i class="fa fa-plus"></i> 保存</a>
-												</form>											 
-											</div>								
-										</div>
-										<div id="tab-4" class="tab-pane row-fluid fade in">										
-										</div>
+				</form>
+				<div class="row margin-top-10">
+					<div class="col-lg-12">
+						<div class="tab-style-1" id="tabs">
+								<ul class="nav nav-tabs">
+									<li class="active"><a data-toggle="tab" href="#tab-1">汇总信息</a></li>
+									<li><a data-toggle="tab" href="#tab-2">明细</a></li>
+									<li><a data-toggle="tab" href="#tab-3">操作日志</a></li>
+									<li><a data-toggle="tab" href="#tab-4">附件</a></li>
+								</ul>
+								<div class="tab-content">
+									<div id="tab-1" class="tab-pane row-fluid fade in active">
+										<table id="summary_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
+									</div>
+									<div id="tab-2" class="tab-pane row-fluid fade in">		
+										<table id="detail_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>				
+									</div>
+									<div id="tab-3" class="tab-pane row-fluid fade in">		
+										<div class="operations" id="operation_history">
+										</div>	
+										<div class="row edit-history">
+											<form id="history_form" th:action="@{/operation_history/update}" method="post">											
+												<textarea name="content" id="history_content" class="history-content" rows="5"></textarea>
+												<a class="btn btn-primary save-history" id="save_history"><i class="fa fa-plus"></i> 保存</a>
+											</form>											 
+										</div>								
+									</div>
+									<div id="tab-4" class="tab-pane row-fluid fade in">										
 									</div>
 								</div>
-
-						</div>
+							</div>
 					</div>
-				</form>
+				</div>				
 			</div>
 		</div>
 		<div class="modal fade" id="import_dialog" role="dialog" aria-hidden="true">
@@ -140,7 +138,7 @@
 	is_vendor = 1;
 </script>
 
-<script th:inline="javascript" sec:authorize="hasRole('ROLE_BUYER') or hasAuthority('询价管理-新建/发布')">
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_BUYER')">
 is_readonly = 0;
 </script>
 
@@ -150,8 +148,10 @@ is_readonly = 0;
   var detail_url = [[@{|/delivery/${main.code}/details|}]];
   var edit_url = [[@{/delivery/}]];
   var del_url = [[@{|/delivery/${main.id}/delete|}]];
+  var history_url = [[@{|/operation_history/list/delivery/${main.code}}|]];
   +]*/
 
+  
   var vendor_search_url = /*[[@{/vendor/search}]]*/'';
   var state = /*[[${main.state}]]*/'';
   var company_search_url = /*[[@{/company/search}]]*/'';
@@ -174,7 +174,6 @@ is_readonly = 0;
 	  }).select2("val", state.toString());
 	  
 
-	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
 	  $("#company").select2(App.getSelect2Options(company_search_url));
 	  $("#store").select2();
 	  $('#company').change(function() {
@@ -182,9 +181,6 @@ is_readonly = 0;
 	  	$("#store").select2(App.getSelect2Options(store_url));
 	  	$("#store").val(null).trigger('change');
 	  });	  
-
-	  if (is_vendor)
-		  $('#vendor').attr("readonly", true);
 
 	  if (state > 1) {
 	  	$('#estimated_arrival_date').attr("readonly", true);
@@ -249,7 +245,7 @@ is_readonly = 0;
 	  var table_options = {
 	    serverSide : false,
 	    processing : false,
-	    select : (state == 1 && !is_readonly) ? {
+	    select : (state == 1 && is_vendor) ? {
 		    style : 'multi'
 	    } : false,
 	    buttons : [ {
@@ -388,7 +384,7 @@ is_readonly = 0;
       }
 	  };
 
-	  if ((state != 1 && state != 4) || is_readonly) {
+	  if ((state != 1) || !is_vendor) {
 		  table_options.buttons = [];
 	  }
 
@@ -435,6 +431,46 @@ is_readonly = 0;
 		  });
 	  }
 	  
+	  $('#save_history').click(function() {
+		  $("#history_form").ajaxSubmit({
+		    data : {
+		      target_type : "delivery",
+		      target_id : $('#code').val(),
+		    },
+		    beforeSend : function() {
+			    App.blockUI();
+		    },
+		    complete : function() {
+			    App.unblockUI();
+		    },
+		    success : function(res, status, xhr, form) {
+			    if (res.success == 1) {
+				    $('#history_content').val('');
+				    loadHistory();
+			    } else {
+				    App.showErrorDialog(res.errmsg);
+			    }
+		    },
+		    error : function(res, status, xhr, form) {
+			    App.showErrorDialog("操作失败", "请稍后重试");
+		    }
+		  });
+	  });
+
+	  
+	  function loadHistory() {
+		  $.get(history_url, function(data, status) {
+			  $('#operation_history').empty();
+			  $.each(data, function(key, item) {
+				  var time = "<div class='operation-time'>" + $.fn.time_renderer(item.create_date) + "</div>";
+				  var content = "<div class='operation-content'>【" + item.account.realname + "】" + item.content + "</div>";
+				  var record = "<div class='operation'>" + time + content + "</div>";
+				  $('#operation_history').append($(record));
+			  });
+		  });
+	  }
+
+	  loadHistory();
 
 	  function reloadSummaryTable() {
 	  	if (summary_table) {

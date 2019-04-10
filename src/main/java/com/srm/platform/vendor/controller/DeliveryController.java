@@ -2,6 +2,7 @@ package com.srm.platform.vendor.controller;
 
 import java.io.File;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,11 @@ import com.srm.platform.vendor.utility.Utils;
 //@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('询价管理-查看列表')")
 public class DeliveryController extends CommonController {
 
+	@Override
+	protected String getOperationHistoryType() {
+		return "delivery";
+	};
+	
 	// 查询列表
 	@GetMapping({ "", "/" })
 	public String index() {
@@ -73,6 +79,12 @@ public class DeliveryController extends CommonController {
 		return list;
 	}
 
+	@GetMapping({ "/{code}/read/{msgid}" })
+	public String read(@PathVariable("code") String code, @PathVariable("msgid") Long msgid, Model model) {
+		setReadDate(msgid);
+		return "redirect:/delivery/" + code + "/edit";
+	}
+	
 	@GetMapping("/{id}/deleteattach")
 //	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
 	public @ResponseBody Boolean deleteAttach(@PathVariable("id") Long id) {
@@ -169,6 +181,35 @@ public class DeliveryController extends CommonController {
 		main.setCreater(account);
 
 		main = deliveryMainRepository.save(main);
+		
+		String action = null;
+		List<Account> toList = new ArrayList<>();
+		
+		switch (form.getState()) {
+		case Constants.DELIVERY_STATE_NEW:
+			action = "保存";			
+			break;
+		case Constants.DELIVERY_STATE_SUBMIT:
+			action = "已发布";
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			break;
+		case Constants.DELIVERY_STATE_OK:
+			action = "审批";
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			break;
+		case Constants.DELIVERY_STATE_CANCEL:
+			action = "拒绝";
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			break;
+		case Constants.DELIVERY_STATE_PARTIAL_OK:
+			action = "部分审批";
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			break;
+		}
+		String title = String.format("预发货单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
+
+		this.sendmessage(title, toList, String.format("/delivery/%s/read", main.getCode()));
+		this.addOpertionHistory(main.getCode(), String.format("%s了预发货单", action));
 		
 		if (form.getState() <= Constants.DELIVERY_STATE_SUBMIT) {
 
