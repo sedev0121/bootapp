@@ -94,7 +94,7 @@ public class PurchaseOrderDetail {
 	@JsonProperty(value = "confirmed_memo")
 	private String confirmedMemo;
 	
-	@JsonProperty(value = "comfirmed_date")
+	@JsonProperty(value = "confirmed_date")
 	private Date confirmedDate;
 
 	public PurchaseOrderDetail() {
@@ -107,6 +107,30 @@ public class PurchaseOrderDetail {
 
 	public void setInvoicedMoney(Double invoicedMoney) {
 		this.invoicedMoney = invoicedMoney;
+	}
+	
+	public Double getConfirmedQuantity() {
+		return confirmedQuantity;
+	}
+
+	public void setConfirmedQuantity(Double confirmedQuantity) {
+		this.confirmedQuantity = confirmedQuantity;
+	}
+
+	public String getConfirmedMemo() {
+		return confirmedMemo;
+	}
+
+	public void setConfirmedMemo(String confirmedMemo) {
+		this.confirmedMemo = confirmedMemo;
+	}
+
+	public Date getConfirmedDate() {
+		return confirmedDate;
+	}
+
+	public void setConfirmedDate(Date confirmedDate) {
+		this.confirmedDate = confirmedDate;
 	}
 
 	public Double getTaxRate() {
