@@ -11,6 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+import org.springframework.lang.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
@@ -25,11 +29,14 @@ public class PurchaseOrderDetail {
 	@JoinColumn(name = "code", referencedColumnName = "code")
 	private PurchaseOrderMain main;
 
+	@Nullable
+	@NotFound(action = NotFoundAction.IGNORE)
+	@ManyToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumn(name = "inventory_code", referencedColumnName = "code")
+	private Inventory inventory;
+	
 	@JsonProperty(value = "unit_name")
 	private String unitName;
-
-	@JsonProperty(value = "inventory_code")
-	private String inventoryCode;
 
 	@JsonProperty(value = "inventory_name")
 	private String inventoryName;
@@ -99,6 +106,14 @@ public class PurchaseOrderDetail {
 
 	public PurchaseOrderDetail() {
 
+	}
+
+	public Inventory getInventory() {
+		return inventory;
+	}
+
+	public void setInventory(Inventory inventory) {
+		this.inventory = inventory;
 	}
 
 	public Double getInvoicedMoney() {
@@ -187,14 +202,6 @@ public class PurchaseOrderDetail {
 
 	public void setMemo(String memo) {
 		this.memo = memo;
-	}
-
-	public String getInventoryCode() {
-		return inventoryCode;
-	}
-
-	public void setInventoryCode(String inventoryCode) {
-		this.inventoryCode = inventoryCode;
 	}
 
 	public String getInventoryName() {

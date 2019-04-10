@@ -371,6 +371,8 @@ public class SyncController {
 						continue;
 					}
 					
+					boolean addDetailSuccess = true;					
+					
 					for (LinkedHashMap<String, Object> detailTemp : details) {
 						
 						PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByCodeAndRowno(main.getCode(),
@@ -383,7 +385,14 @@ public class SyncController {
 
 						detail.setRowNo(getIntegerValue(detailTemp, "ivouchrowno"));
 						detail.setUnitName(getStringValue(detailTemp, "cComUnitName"));
-						detail.setInventoryCode(getStringValue(detailTemp, "cInvCode"));
+						
+						Inventory inventory = inventoryRepository.findOneByCode(getStringValue(detailTemp, "cInvCode"));
+						
+						if (inventory == null) {
+							addDetailSuccess = false;
+							continue;
+						}
+						detail.setInventory(inventory);
 						detail.setInventoryName(getStringValue(detailTemp, "cInvName"));
 						detail.setInventoryClassCode(getStringValue(detailTemp, "cInvCCode"));
 						detail.setInventoryClassName(getStringValue(detailTemp, "cInvCName"));
@@ -415,12 +424,14 @@ public class SyncController {
 						purchaseOrderDetailRepository.save(detail);
 					}
 
-					if (main.getPurchaseTypeName().equals("普通采购")) {
-						pocodes.add(main.getPoid());
-					} else {
-						mocodes.add(main.getPoid());
-					}
-					totalCount++;
+					if (addDetailSuccess) {
+						if (main.getPurchaseTypeName().equals("普通采购")) {
+							pocodes.add(main.getPoid());
+						} else {
+							mocodes.add(main.getPoid());
+						}
+						totalCount++;
+					}					
 				}
 
 				if (pocodes.size() > 0 || mocodes.size() > 0) {

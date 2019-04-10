@@ -252,7 +252,7 @@
 	      data : 'inventory_name',
 	      title : '存货名称',
 	    }, {
-	      data : 'inventory_code',
+	      data : 'inventory.code',
 	      title : '存货代码',
 	    }, {
 	      data : 'unit_name',
@@ -266,6 +266,9 @@
 	      data : 'quantity',
 	      className : 'dt-right',
 	      title : '订单箱数',
+	      render: function (data, display, record) {
+	        return App.getBoxCount(record.quantity, record.inventory.count_per_box);
+	      },
 	    }, {
 	      data : 'arrived_quantity',
 	      className : 'dt-right',
@@ -274,14 +277,23 @@
 	      data : 'arrived_quantity',
 	      className : 'dt-right',
 	      title : '订单已交箱数',
+	      render: function (data, display, record) {
+	      	return App.getBoxCount(record.arrived_quantity, record.inventory.count_per_box);
+	      },
 	    }, {
 	      data : 'quantity',
 	      className : 'dt-right',
 	      title : '订单未交数量',
+	      render: function (data, display, record) {
+	      	return record.quantity - record.arrived_quantity;
+	      },
 	    }, {
 	      data : 'quantity',
 	      className : 'dt-right',
 	      title : '订单未交箱数',
+	      render: function (data, display, record) {
+	      	return App.getBoxCount(record.quantity - record.arrived_quantity, record.inventory.count_per_box);
+	      },
 	    }, {
 	      data : null,
 	      defaultContent : '',

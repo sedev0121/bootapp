@@ -132,6 +132,18 @@ var App = function() {
 
       return $.datepicker.formatDate('yymmdd', new Date()) + hours + minutes + seconds + millisecs;
     },
+    getBoxCount : function (total, countPerBox) {
+		  if (!countPerBox || !total) {
+		  	return '';
+		  } else {
+		  	var boxCount = parseFloat(total)/parseFloat(countPerBox);
+		  	var boxCountInt = parseInt(boxCount);
+		  	if ( boxCountInt != boxCount) {
+		  		boxCountInt++;
+		  	}
+		  	return boxCountInt;
+		  }
+		},
     formatNumber : function (i, length) {
       //var x = Math.pow(10, Number(length) + 1);      
       //return (Number(App.intVal(i)) + (1 / x)).toFixed(length);
