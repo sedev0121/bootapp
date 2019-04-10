@@ -242,6 +242,14 @@ public class PurchaseOrderController extends CommonController {
 				if (form.getState() == Constants.PURCHASE_ORDER_STATE_DEPLOY) {
 					detail.setConfirmedDate(detail.getArriveDate());
 					detail.setConfirmedQuantity(detail.getQuantity());
+					if (Integer.parseInt(item.get("close_state")) == Constants.PURCHASE_ORDER_ROW_CLOSE_STATE_YES) {
+						if (detail.getCloseDate() == null) {
+							detail.setCloseDate(new Date());
+							detail.setCloserName(getLoginAccount().getRealname());
+						}						
+					} else {
+						detail.setCloseDate(null);
+					}
 				} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CONFIRM || form.getState() == Constants.PURCHASE_ORDER_STATE_NEGOTIATE) {
 					detail.setConfirmedDate(Utils.parseDate(item.get("confirmed_date")));
 					detail.setConfirmedMemo(item.get("confirmed_memo"));

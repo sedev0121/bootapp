@@ -24,6 +24,9 @@ public class Constants {
 	public final static int PURCHASE_ORDER_STATE_CONFIRM = 5;
 	public final static int PURCHASE_ORDER_STATE_CLOSE = 6;
 
+	public final static int PURCHASE_ORDER_ROW_CLOSE_STATE_NO = 0;
+	public final static int PURCHASE_ORDER_ROW_CLOSE_STATE_YES = 1;
+	
 	public final static int PURCHASE_IN_STATE_WAIT = 0;
 	public final static int PURCHASE_IN_STATE_START = 1;
 	public final static int PURCHASE_IN_STATE_FINISH = 2;

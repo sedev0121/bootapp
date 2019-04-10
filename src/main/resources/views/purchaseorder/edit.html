@@ -12,11 +12,11 @@
 				<a class="btn btn-primary" id="deploy" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0)} "><i class="fa fa-undo"></i> 发布</a> 
 				<a class="btn btn-primary" id="negotiate" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==1)}" th:href="@{|/inquery/${main.code}/edit|}"><i class="fa fa-undo"></i> 发起议价</a> 
 				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
-				<a class="btn btn-primary" id="close" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate>=1}"><i class="fa fa-undo"></i> 关闭</a>
+				<a class="btn btn-primary" id="close"	sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate>=1}"><i class="fa fa-undo"></i> 关闭</a> 
 				<a class="btn btn-primary" id="negotiate" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-undo"></i> 申请协调</a> 
 				<a class="btn btn-primary" id="negotiate_ok" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate==2}"><i class="fa fa-arrow-up"></i> 协调同意</a> 
-				<a class="btn btn-primary" id="negotiate_cancel" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate==2}"><i class="fa fa-undo"></i> 协调拒绝</a>
-				<a class="btn btn-default" th:href="@{/purchaseorder}"><i	class="fa fa-arrow-left"></i> 返回列表</a>
+				<a class="btn btn-primary" id="negotiate_cancel" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate==2}"><i class="fa fa-undo"></i> 协调拒绝</a> 
+				<a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
 		<div class="panel panel-default">
@@ -82,23 +82,21 @@
 													<th colspan="14" class="dt-center">合计</th>
 													<th></th>
 													<th></th>
-													<th colspan="6"></th>
+													<th colspan="7"></th>
 												</tr>
 											</tfoot>
 										</table>
 									</div>
-									<div id="tab-2" class="tab-pane row-fluid fade in">		
-										<div class="operations" id="operation_history">
-										</div>	
+									<div id="tab-2" class="tab-pane row-fluid fade in">
+										<div class="operations" id="operation_history"></div>
 										<div class="row edit-history">
-											<form id="history_form" th:action="@{/operation_history/update}" method="post">												
+											<form id="history_form" th:action="@{/operation_history/update}" method="post">
 												<textarea name="content" id="history_content" class="history-content" rows="5"></textarea>
 												<a class="btn btn-primary save-history" id="save_history"><i class="fa fa-plus"></i> 保存</a>
-											</form>											 
-										</div>							
+											</form>
+										</div>
 									</div>
-									<div id="tab-3" class="tab-pane row-fluid fade in">										
-									</div>
+									<div id="tab-3" class="tab-pane row-fluid fade in"></div>
 								</div>
 							</div>
 						</div>
@@ -118,7 +116,7 @@
 <script th:inline="javascript">
 	/*[+
    var detail_url = [[@{/purchaseorder/}]] + [[${main.code}]] + "/details";
-	 var history_url = [[@{/operation_history/list/order/}]] + [[${main.code}]];
+   var history_url = [[@{/operation_history/list/order/}]] + [[${main.code}]];
    var submit_url = [[@{/purchaseorder/update}]];
    var state = [[${main.srmstate}]];
    +]*/
@@ -136,49 +134,49 @@
 	  var basic_table, prepay_table;
 
 	  $('#negotiate').click(function() {
-	  	
+
 	  });
-	  
+
 	  $('#save_history').click(function() {
-	  	$("#history_form").ajaxSubmit({
-	  		data : {
-	  			target_type: "order",
-	  			target_id: $('#code').val(),		      	
-	      },
-	      beforeSend: function(){
-          App.blockUI();
-        },
-        complete: function(){
-          App.unblockUI();
-        },
-        success: function(res, status, xhr, form) {
-          if (res.success == 1) {
-          	$('#history_content').val('');
-          	loadHistory();
-          }else{
-            App.showErrorDialog(res.errmsg);
-          }              
-        },
-        error: function (res, status, xhr, form) {
-          App.showErrorDialog("操作失败", "请稍后重试");
-        }
-      });
+		  $("#history_form").ajaxSubmit({
+		    data : {
+		      target_type : "order",
+		      target_id : $('#code').val(),
+		    },
+		    beforeSend : function() {
+			    App.blockUI();
+		    },
+		    complete : function() {
+			    App.unblockUI();
+		    },
+		    success : function(res, status, xhr, form) {
+			    if (res.success == 1) {
+				    $('#history_content').val('');
+				    loadHistory();
+			    } else {
+				    App.showErrorDialog(res.errmsg);
+			    }
+		    },
+		    error : function(res, status, xhr, form) {
+			    App.showErrorDialog("操作失败", "请稍后重试");
+		    }
+		  });
 	  });
-	  
+
 	  function loadHistory() {
-	  	$.get(history_url, function(data, status) {
-	  		$('#operation_history').empty();
-	  		$.each(data, function(key, item) {
-	  			var time = "<div class='operation-time'>" + $.fn.time_renderer(item.create_date) + "</div>";
-	  			var content = "<div class='operation-content'>【" + item.account.realname + "】"+ item.content + "</div>";
-	  			var record = "<div class='operation'>" + time + content + "</div>";
-	  			$('#operation_history').append($(record));
-	  		});
+		  $.get(history_url, function(data, status) {
+			  $('#operation_history').empty();
+			  $.each(data, function(key, item) {
+				  var time = "<div class='operation-time'>" + $.fn.time_renderer(item.create_date) + "</div>";
+				  var content = "<div class='operation-content'>【" + item.account.realname + "】" + item.content + "</div>";
+				  var record = "<div class='operation'>" + time + content + "</div>";
+				  $('#operation_history').append($(record));
+			  });
 		  });
 	  }
-	  
+
 	  loadHistory();
-	  
+
 	  $('#tabs').tabs({
 		  activate : function(event, ui) {
 		  }
@@ -195,12 +193,30 @@
 	      },
 	      name : "confirmed_date"
 	    }, {
+	      type : "select",
+	      name : "close_state",
+	      options : [ {
+	        label : "   ",
+	        value : "0"
+	      }, {
+	        label : "关闭",
+	        value : "1"
+	      }, ]
+	    }, {
 		    name : "confirmed_memo"
 	    } ],
-	  }).on('preSubmit', function(e, data, action) {
-		
-	  }).on('postEdit', function(e, json, data, action) {
-		
+	  }).on('preOpen', function(e, data, action) {
+		  var currentFieldName = e.currentTarget.s.includeFields[0];
+		  if (currentFieldName == "close_state") {
+			  var modifier = editor.modifier();
+			  $(modifier).addClass("selecting");
+		  }
+	  }).on('close', function(e) {
+		  var currentFieldName = e.currentTarget.s.includeFields[0];
+		  if (currentFieldName == "close_state") {
+			  var modifier = editor.modifier();
+			  $(modifier).removeClass("selecting");
+		  }
 	  });
 
 	  basic_table = $('#basic_info').DataTable({
@@ -213,15 +229,19 @@
 		      $.each(json, function(key, item) {
 			      item.arrive_date = $.fn.date_renderer(item.arrive_date);
 			      item.confirmed_date = $.fn.date_renderer(item.confirmed_date);
+			      item.close_state = item.close_date ? 1 : 0;
 		      })
 		      return json;
 	      },
 	    },
+	    fixedColumns : {
+		    leftColumns : 4,
+	    },
 	    columns : [ {
 	      data : null,
 	      defaultContent : '',
-	      width: "50px",
-	      visible: false,
+	      width : "50px",
+	      visible : false,
 	      orderable : false,
 	      className : 'select-checkbox',
 	    }, {
@@ -261,10 +281,10 @@
 	    }, {
 	      data : 'quantity',
 	      className : 'dt-right',
-	      title : '订单未交箱数',		 
+	      title : '订单未交箱数',
 	    }, {
 	      data : null,
-	      defaultContent: '',
+	      defaultContent : '',
 	      className : 'dt-right',
 	      title : '加急到货时间',
 	    }, {
@@ -297,6 +317,11 @@
 	      className : 'buyer-cell',
 	      title : '备注',
 	    }, {
+	      data : 'close_state',
+	      className : 'dt-center buyer-cell',
+	      render : App.getOrderCloseStateOfId,
+	      title : '　行关闭　',
+	    }, {
 	      data : 'confirmed_quantity',
 	      className : 'dt-right',
 	      title : '承诺交货数量',
@@ -315,6 +340,15 @@
 	    },
 	  });
 
+	  if (state == 0) {
+		  $('#basic_info').on('click', 'tbody td.buyer-cell', function(e) {
+			  editor.inline(this, {
+			    submit : 'allIfChanged',
+			    submitOnBlur : true
+			  });
+		  });
+	  }
+
 	  if (state == 1 && is_vendor) {
 		  $('#basic_info').on('click', 'tbody td.vendor-cell', function(e) {
 			  editor.inline(this, {
@@ -332,7 +366,8 @@
 			  small_data.push({
 			    id : item.id,
 			    confirmed_date : item.confirmed_date,
-			    confirmed_memo : item.confirmed_memo
+			    confirmed_memo : item.confirmed_memo,
+			    close_state : item.close_state
 			  });
 		  });
 
@@ -361,27 +396,27 @@
 
 	  $("#negotiate").click(function() {
 		  editor.submit();
-		  submit(2);		  
+		  submit(2);
 	  });
-	  
+
 	  $("#negotiate_ok").click(function() {
 		  editor.submit();
-		  submit(3);		  
+		  submit(3);
 	  });
-	  
+
 	  $("#negotiate_cancel").click(function() {
 		  editor.submit();
-		  submit(4);		  
+		  submit(4);
 	  });
-	  
+
 	  $("#confirm").click(function() {
 		  editor.submit();
 		  submit(5);
 	  });
-	  
+
 	  $("#close").click(function() {
 		  editor.submit();
-		  submit(6);		  
+		  submit(6);
 	  });
 
   });

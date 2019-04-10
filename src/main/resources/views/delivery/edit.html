@@ -238,20 +238,12 @@ is_readonly = 0;
 		  	var modifier = editor.modifier();
 		  	$(modifier).addClass("selecting");	
 		  }
-
-	  }).on('preBlur', function(e, json, data, action) {
-	  	var currentFieldName = e.currentTarget.s.includeFields[0];
-		  if (currentFieldName == "state") {
-		  	var modifier = editor.modifier();
-		  	$(modifier).removeClass("selecting");	
-		  }
 	  }).on('close', function(e) {
 	  	var currentFieldName = e.currentTarget.s.includeFields[0];
 		  if (currentFieldName == "state") {
 		  	var modifier = editor.modifier();
 		  	$(modifier).removeClass("selecting");	
 		  }
-
 	  });
 
 	  var table_options = {
