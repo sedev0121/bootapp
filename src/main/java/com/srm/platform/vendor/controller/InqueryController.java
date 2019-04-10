@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -69,9 +70,11 @@ public class InqueryController extends CommonController {
 
 	// 新建
 //	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
-	@GetMapping({ "/add" })
-	public String add(Model model) {
-		VenPriceAdjustMain main = new VenPriceAdjustMain(accountRepository);
+	@GetMapping({ "/add/{orderCode}" })
+	public String add(@PathVariable("orderCode") String orderCode, Model model) {
+		VenPriceAdjustMain main = new VenPriceAdjustMain();
+		main.setMaker(getLoginAccount());
+
 		model.addAttribute("main", main);
 		return "inquery/edit";
 	}

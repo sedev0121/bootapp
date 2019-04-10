@@ -10,7 +10,7 @@
 		<div class="btn-group-bar">
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
 				<a class="btn btn-primary" id="deploy" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0)} "><i class="fa fa-undo"></i> 发布</a> 
-				<a class="btn btn-primary" id="negotiate" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==1)}" th:href="@{|/inquery/${main.code}/edit|}"><i class="fa fa-undo"></i> 发起议价</a> 
+				<a class="btn btn-primary" id="negotiate" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==1)}" th:href="@{|/negotiation/${main.code}/add|}"><i class="fa fa-undo"></i> 发起议价</a> 
 				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
 				<a class="btn btn-primary" id="close"	sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate>=1}"><i class="fa fa-undo"></i> 关闭</a> 
 				<a class="btn btn-primary" id="negotiate" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-undo"></i> 申请协调</a> 
