@@ -24,7 +24,7 @@ var App = function() {
   var delivery_row_state_data = [{id:1, text:"新建"}, {id:2, text:"已发布"}, {id:3, text:"审批"}, {id:4, text:"拒绝"}];
   var statement_type_data = [{id:1, text:"采购对账"}, {id:2, text:"委外对账"}];
   var invoice_type_data = [{id:1, text:"专用发票"}, {id:2, text:"普通发票"}];
-  
+  var order_close_state_data = [{id:0, text:"  "}, {id:1, text:"关闭"}];
   var yes_no_data = [{id:1, text:"是"}, {id:0, text:"否"}];
   
   var getLabelOfId = function(store, id) {
@@ -317,6 +317,9 @@ var App = function() {
     },
     getDeliveryRowStateOfId: function(id) {
       return getLabelOfId(delivery_row_state_data, id);
+    },
+    getOrderCloseStateOfId: function(id) {
+      return getLabelOfId(order_close_state_data, id);
     },
     getNoticeStateOfId: function(id) {
       return getLabelOfId(notice_state_data, id);
