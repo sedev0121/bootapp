@@ -146,11 +146,10 @@ public class PurchaseOrderController extends CommonController {
 			//
 			// bodyQuery += " and b.code in :vendorList";
 			// params.put("vendorList", vendorList);
-			// if (!vendorStr.trim().isEmpty()) {
-			// bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like
-			// CONCAT('%',:vendor, '%')) ";
-			// params.put("vendor", vendorStr.trim());
-			// }
+			 if (!vendorStr.trim().isEmpty()) {
+				 bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
+				 params.put("vendor", vendorStr.trim());
+			 }
 		}
 
 		if (!code.trim().isEmpty()) {
@@ -203,10 +202,6 @@ public class PurchaseOrderController extends CommonController {
 		if (form.getState() == Constants.PURCHASE_ORDER_STATE_DEPLOY) {
 			main.setDeploydate(new Date());
 			main.setDeployer(account);
-		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_REVIEW
-				|| form.getState() == Constants.PURCHASE_ORDER_STATE_CANCEL) {
-			main.setReviewdate(new Date());
-			main.setReviewer(account);
 		}
 
 		main = purchaseOrderMainRepository.save(main);
@@ -219,11 +214,20 @@ public class PurchaseOrderController extends CommonController {
 			action = "发布";
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			break;
-		case Constants.PURCHASE_ORDER_STATE_REVIEW:
+		case Constants.PURCHASE_ORDER_STATE_NEGOTIATE:
+			action = "申请协调";
+			break;
+		case Constants.PURCHASE_ORDER_STATE_NEGOTIATE_OK:
+			action = "协调同意";
+			break;
+		case Constants.PURCHASE_ORDER_STATE_NEGOTIATE_CANCEL:
+			action = "协调拒绝";
+			break;
+		case Constants.PURCHASE_ORDER_STATE_CONFIRM:
 			action = "确认";
 			break;
-		case Constants.PURCHASE_ORDER_STATE_CANCEL:
-			action = "拒绝";
+		case Constants.PURCHASE_ORDER_STATE_CLOSE:
+			action = "关闭";
 			break;
 		}
 		String title = String.format("订单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
@@ -235,13 +239,12 @@ public class PurchaseOrderController extends CommonController {
 			for (Map<String, String> item : form.getTable()) {
 
 				PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneById(Long.parseLong(item.get("id")));
-				if (this.isVendor()) {
-				} else {
-					if (item.get("prepay_money") != null && !item.get("prepay_money").isEmpty())
-						detail.setPrepayMoney(Double.parseDouble(item.get("prepay_money")));
-					else
-						detail.setPrepayMoney(null);
-//					detail.setArriveNote(item.get("arrive_note"));
+				if (form.getState() == Constants.PURCHASE_ORDER_STATE_DEPLOY) {
+					detail.setConfirmedDate(detail.getArriveDate());
+					detail.setConfirmedQuantity(detail.getQuantity());
+				} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CONFIRM || form.getState() == Constants.PURCHASE_ORDER_STATE_NEGOTIATE) {
+					detail.setConfirmedDate(Utils.parseDate(item.get("confirmed_date")));
+					detail.setConfirmedMemo(item.get("confirmed_memo"));
 				}
 
 				purchaseOrderDetailRepository.save(detail);

@@ -9,10 +9,13 @@
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-				<a class="btn btn-primary" id="deploy" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0 or main.srmstate==3 ) AND main.state =='审核'} "><i class="fa fa-undo"></i> 发布</a> 
-				<a class="btn btn-primary" id="negotiate" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0 or main.srmstate==3 ) AND main.state =='审核'}" th:href="@{|/inquery/${main.code}/edit|}"><i class="fa fa-undo"></i> 发起议价</a> 
+				<a class="btn btn-primary" id="deploy" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0)} "><i class="fa fa-undo"></i> 发布</a> 
+				<a class="btn btn-primary" id="negotiate" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==1)}" th:href="@{|/inquery/${main.code}/edit|}"><i class="fa fa-undo"></i> 发起议价</a> 
 				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
-				<a class="btn btn-primary" id="cancel" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-undo"></i> 拒绝</a> 
+				<a class="btn btn-primary" id="close" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate>=1}"><i class="fa fa-undo"></i> 关闭</a>
+				<a class="btn btn-primary" id="negotiate" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-undo"></i> 申请协调</a> 
+				<a class="btn btn-primary" id="negotiate_ok" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate==2}"><i class="fa fa-arrow-up"></i> 协调同意</a> 
+				<a class="btn btn-primary" id="negotiate_cancel" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate==2}"><i class="fa fa-undo"></i> 协调拒绝</a>
 				<a class="btn btn-default" th:href="@{/purchaseorder}"><i	class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -106,6 +109,9 @@
 	</div>
 </body>
 </html>
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
+	is_vendor = 1;
+</script>
 <script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('订单管理-新建/发布')">
 	is_readonly = 0;
 </script>
@@ -182,60 +188,32 @@
 	    table : "#basic_info",
 	    idSrc : "id",
 	    fields : [ {
-		    name : "arrivenote"
-	    }, {
-	      attr : {
-		      type : 'number',
-	      },
-	      name : "confirmquantity"
-	    }, {
 	      type : "date",
 	      opts : {
 	        showOn : "focus",
 	        dateFormat : "yy-mm-dd",
 	      },
-	      name : "confirmdate"
+	      name : "confirmed_date"
 	    }, {
-		    name : "confirmnote"
+		    name : "confirmed_memo"
 	    } ],
 	  }).on('preSubmit', function(e, data, action) {
-		  $.each(data.data, function(key, item) {
-			  if (item.prepaymoney < 0)
-				  item.prepaymoney = -item.prepaymoney;
-		  })
-
+		
 	  }).on('postEdit', function(e, json, data, action) {
-		  var table_data = basic_table.rows().data().toArray();
-		  var prepay_sum = 0, money_total = 0;
-		  $.each(table_data, function(key, item) {
-			  prepay_sum += parseFloat(item.prepaymoney);
-
-		  })
-		  $("#prepay_total").val(prepay_sum);
+		
 	  });
 
 	  basic_table = $('#basic_info').DataTable({
 	    serverSide : false,
 	    processing : false,
-	    select : {
-	      style : 'multi',
-	      selector : 'td'
-	    },
+	    select : false,
 	    ajax : {
 	      url : detail_url,
 	      dataSrc : function(json) {
-		      var prepay_sum = 0, money_total = 0;
 		      $.each(json, function(key, item) {
-			      item.arrivedate = $.fn.date_renderer(item.arrivedate);
-			      item.confirmdate = $.fn.date_renderer(item.confirmdate);
-			      if (item.prepaymoney)
-				      prepay_sum += parseFloat(item.prepaymoney);
-
-			      money_total += parseFloat(item.money);
-
+			      item.arrive_date = $.fn.date_renderer(item.arrive_date);
+			      item.confirmed_date = $.fn.date_renderer(item.confirmed_date);
 		      })
-		      $("#prepay_total").val(prepay_sum);
-		      $("#money_total").val(money_total);
 		      return json;
 	      },
 	    },
@@ -243,6 +221,7 @@
 	      data : null,
 	      defaultContent : '',
 	      width: "50px",
+	      visible: false,
 	      orderable : false,
 	      className : 'select-checkbox',
 	    }, {
@@ -319,7 +298,7 @@
 	      title : '备注',
 	    }, {
 	      data : 'confirmed_quantity',
-	      className : 'dt-right vendor-cell',
+	      className : 'dt-right',
 	      title : '承诺交货数量',
 	    }, {
 	      data : 'confirmed_date',
@@ -336,24 +315,13 @@
 	    },
 	  });
 
-	  if ((state == 0 || state == 3) && !is_readonly) {
-		  $('#basic_info').on('click', 'tbody td.buyer-cell', function(e) {
-			  editor.inline(this, {
-			    submit : 'allIfChanged',
-			    submitOnBlur : true
-			  });
-		  });
-		  App.addKeyDownEditor(editor, 11, 11);
-	  }
-
-	  if (state == 1) {
+	  if (state == 1 && is_vendor) {
 		  $('#basic_info').on('click', 'tbody td.vendor-cell', function(e) {
 			  editor.inline(this, {
 			    submit : 'allIfChanged',
 			    submitOnBlur : true
 			  });
 		  });
-		  App.addKeyDownEditor(editor, 12, 14);
 	  }
 
 	  function submit(state) {
@@ -363,10 +331,8 @@
 		  $.each(data, function(key, item) {
 			  small_data.push({
 			    id : item.id,
-			    prepaymoney : item.prepaymoney,
-			    arrivenote : item.arrivenote,
-			    confirmdate : item.confirmdate,
-			    confirmnote : item.confirmnote
+			    confirmed_date : item.confirmed_date,
+			    confirmed_memo : item.confirmed_memo
 			  });
 		  });
 
@@ -393,49 +359,29 @@
 		  submit(1);
 	  });
 
+	  $("#negotiate").click(function() {
+		  editor.submit();
+		  submit(2);		  
+	  });
+	  
+	  $("#negotiate_ok").click(function() {
+		  editor.submit();
+		  submit(3);		  
+	  });
+	  
+	  $("#negotiate_cancel").click(function() {
+		  editor.submit();
+		  submit(4);		  
+	  });
+	  
 	  $("#confirm").click(function() {
 		  editor.submit();
-		  var data = basic_table.rows().data().toArray();
-		  var error_msg = 0;
-		  $.each(data, function(key, item) {
-			  if (item.confirmdate != item.arrivedate) {
-				  error_msg = "第" + item.row_no + "行物料承诺交货日期不一致！";
-				  return;
-			  }
-			  if (item.confirmquantity != item.quantity) {
-				  error_msg = "第" + item.row_no + "行物料承诺交货数量不一致！";
-				  return;
-			  }
-		  });
-
-		  if (!error_msg) {
-			  submit(2);
-		  } else {
-			  App.showErrorDialog(error_msg);
-		  }
-
+		  submit(5);
 	  });
-
-	  $("#cancel").click(function() {
+	  
+	  $("#close").click(function() {
 		  editor.submit();
-		  var data = basic_table.rows().data().toArray();
-		  var error_msg = 0;
-		  $.each(data, function(key, item) {
-			  if (item.confirmdate != item.arrivedate) {
-				  error_msg = "第" + item.row_no + "行物料承诺交货日期不一致！";
-				  return;
-			  }
-			  if (item.confirmquantity != item.quantity) {
-				  error_msg = "第" + item.row_no + "行物料承诺交货数量不一致！";
-				  return;
-			  }
-		  });
-
-		  if (error_msg) {
-			  submit(3);
-		  } else {
-			  App.showErrorDialog("没有物料承诺交货数量和承诺交货日期与需求不一致！");
-		  }
+		  submit(6);		  
 	  });
 
   });
