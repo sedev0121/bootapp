@@ -15,15 +15,15 @@ public interface NegotiationMainRepository extends JpaRepository<NegotiationMain
 	
 	NegotiationMain findOneByCode(String code);
 	
-	@Query(value = "SELECT * FROM negotiation_main a left join vendor b on a.vendor_code=b.code WHERE a.code like %?1% and b.name like %?2%", nativeQuery = true)
+	@Query(value = "SELECT * FROM negotiation_main a left join vendor b on a.vendor_code=b.code WHERE b.code like %?1% and b.name like %?2%", nativeQuery = true)
 	Page<NegotiationMain> findBySearchTerm(String code, String search, Pageable pageable);
 	
-	@Query(value = "SELECT * FROM negotiation_main a left join vendor b on a.vendor_code=b.code WHERE  a.code like %?1% and b.name like %?2% and a.state=?3", nativeQuery = true)
+	@Query(value = "SELECT * FROM negotiation_main a left join vendor b on a.vendor_code=b.code WHERE  b.code like %?1% and b.name like %?2% and a.state=?3", nativeQuery = true)
 	Page<NegotiationMain> findBySearchTerm(String code, String search, Integer state, Pageable pageable);
 	
-	@Query(value = "SELECT * FROM negotiation_main a left join vendor b on a.vendor_code=b.code WHERE a.code like %?1% and b.code=?2", nativeQuery = true)
+	@Query(value = "SELECT * FROM negotiation_main a left join vendor b on a.vendor_code=b.code WHERE b.code like %?1% and b.code=?2", nativeQuery = true)
 	Page<NegotiationMain> findBySearchTermForVendor(String code, String vendor, Pageable pageable);
 
-	@Query(value = "SELECT * FROM negotiation_main a left join vendor b on a.vendor_code=b.code WHERE  a.code like %?1% and b.code=?2 and a.state=?3", nativeQuery = true)
+	@Query(value = "SELECT * FROM negotiation_main a left join vendor b on a.vendor_code=b.code WHERE  b.code like %?1% and b.code=?2 and a.state=?3", nativeQuery = true)
 	Page<NegotiationMain> findBySearchTermForVendor(String code, String vendor, Integer state, Pageable pageable);
 }

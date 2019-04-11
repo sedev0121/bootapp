@@ -16,6 +16,7 @@ import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.Utils;
 
 @Entity
 @Table(name = "negotiation_detail")
@@ -51,11 +52,12 @@ public class NegotiationDetail implements Serializable {
 	
 	private String memo;
 	
+	
 	@JsonProperty("start_date")
 	private Date startDate = new Date();
 
 	@JsonProperty("end_date")
-	private Date endDate;
+	private Date endDate = Utils.getNegotiationEndDate();
 
 	
 	public NegotiationDetail() {

@@ -11,23 +11,11 @@
       <li class="active">议价单管理</li>
     </ul>
     <div class="search-content">
-        <div class="search-cell width-10 form-group">
-          <label for="start_date">生效日期: </label>
-          <input type="text" id="start_date" value="" class="form-control datepicker" />
-        </div>
-        <div class="search-cell width-10 form-group">
-          <label for="end_date">有效日期: </label>
-          <input type="text" id="end_date" value="" class="form-control datepicker" />
-        </div>
-        <div class="search-cell width-10 form-group" id="vendor_div">
+        <div class="search-cell width-4 form-group" id="vendor_div">
           <label for="vendor">供应商编码/名称：</label>
           <input type="text" id="vendor" class="form-control">
         </div>
-        <div class="search-cell width-10 form-group">
-          <label for="inventory">物料编码/名称:</label>
-          <input type="text" id="inventory" class="form-control">
-        </div>
-        <div class="search-cell width-10 form-group">
+        <div class="search-cell width-4 form-group">
           <label for="state">状态:</label>
           <select name="status" id="state" class="form-control">
           </select>
@@ -63,7 +51,7 @@ var edit_url = [[@{/negotiation/}]];
       $('#vendor_div').addClass('hidden');
     }
     $("#state").select2({
-      data : App.getInqueryStateDataWithAll(),
+      data : App.getNegotiationStateDataWithAll(),
       minimumResultsForSearch : -1
     });
 
@@ -84,10 +72,6 @@ var edit_url = [[@{/negotiation/}]];
             page_index : data.start / data.length + 1,
             vendor : $('#vendor').val(),
             state: $('#state').val(),
-            inventory : $('#inventory').val(),
-            start_date : $('#start_date').val(),
-            is_vendor:is_vendor,
-            end_date : $('#end_date').val()
           }
           return filter;
         },
@@ -120,7 +104,7 @@ var edit_url = [[@{/negotiation/}]];
         title : '状态',
         className: 'dt-center',
         createdCell: App.inqueryStateClass,
-        render : App.getInqueryStateOfId
+        render : App.getNegotiationStateOfId
       }, {
         data : 'maker.realname',
         className: 'dt-center',

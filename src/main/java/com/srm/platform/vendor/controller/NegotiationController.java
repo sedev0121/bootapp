@@ -85,9 +85,13 @@ public class NegotiationController extends CommonController {
 		return "negotiation/edit";
 	}
 
-	@RequestMapping(value = "/{code}/details", produces = "application/json")
-	public @ResponseBody List<DeliveryDetail> details_ajax(@PathVariable("code") String code) {
-		List<DeliveryDetail> list = deliveryDetailRepository.findDetailsByCode(code);
+	@RequestMapping(value = "/{code}/details/{orderCode}", produces = "application/json")
+	public @ResponseBody List<NegotiationDetail> details_ajax(@PathVariable("code") String code, @PathVariable("orderCode") String orderCode) {
+		List<NegotiationDetail> list = negotiationDetailRepository.findDetailsByCode(code);
+		
+		if (list.isEmpty()) {
+			list = negotiationDetailRepository.findDetailsByOrderCode(code, orderCode);
+		}
 
 		return list;
 	}
@@ -229,11 +233,12 @@ public class NegotiationController extends CommonController {
 			if (form.getTable() != null) {				
 				for (Map<String, String> row : form.getTable()) {
 					NegotiationDetail detail = new NegotiationDetail();
-					detail.setMain(main);		
+					detail.setMain(main);	
+					detail.setInventory(inventoryRepository.findOneByCode(row.get("inventory_code")));	
 					detail.setMaxQuantity(Double.parseDouble(row.get("max_quantity")));
 					detail.setPrice(Double.parseDouble(row.get("price")));
-					detail.setTaxPrice(Double.parseDouble(row.get("price")));
-					detail.setTaxRate(Double.parseDouble(row.get("price")));
+					detail.setTaxPrice(Double.parseDouble(row.get("tax_price")));
+					detail.setTaxRate(Double.parseDouble(row.get("tax_rate")));
 					detail.setStartDate(Utils.parseDate(row.get("start_date")));
 					detail.setEndDate(Utils.parseDate(row.get("end_date")));
 					detail.setValid(Integer.parseInt(row.get("valid")));

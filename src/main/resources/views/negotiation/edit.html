@@ -4,8 +4,8 @@
 	<div class="container" layout:fragment="content">
 		<ul class="breadcrumb">
 			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
-			<li><a th:href="@{/purchageorder}">订单管理</a></li>
-			<li><a th:href="@{/inquery}">议价单管理</a></li>
+			<li><a th:href="@{/purchaseorder}">订单管理</a></li>
+			<li><a th:href="@{/negotiation}">议价单管理</a></li>
 			<li th:text="${#strings.contains(#request.requestURI,'add')} ?'新建议价单':'询价议价细'">议价单</li>
 		</ul>
 		<div class="btn-group-bar">
@@ -114,7 +114,7 @@ is_readonly = 0;
 <script th:inline="javascript">
 	var editor, table;
   /*[+
-  var detail_url = [[@{|/negotiation/${main.code}/details|}]];
+  var detail_url = [[@{|/negotiation/${main.code}/details/${main.orderCode}|}]];
   var edit_url = [[@{/negotiation/}]];
   var del_url = [[@{|/negotiation/${main.code}/delete|}]];
   +]*/
@@ -126,7 +126,7 @@ is_readonly = 0;
 	  	  
 	  $(".select2").select2();
 	  $("#state").select2({
-	    data : App.getInqueryStateData(),
+	    data : App.getNegotiationStateData(),
 	    minimumResultsForSearch : -1
 	  }).select2("val", state.toString());
 	  
@@ -266,16 +266,16 @@ is_readonly = 0;
 	      className : 'dt-center',
 	      title : '行号',
 	    }, {
-	      data : 'cinvcode',
+	      data : 'inventory.code',
 	      title : '物料编码',
 	    }, {
-	      data : 'name',
+	      data : 'inventory.name',
 	      title : '物料名称'
 	    }, {
-	      data : 'specs',
+	      data : 'inventory.specs',
 	      title : '规格型号',
 	    }, {
-	      data : 'puunit_name',
+	      data : 'inventory.main_measure',
 	      className : 'dt-center',
 	      title : '单位',
 	    }, {
@@ -323,6 +323,7 @@ is_readonly = 0;
 
 	  if ((state != 1 && state != 4) || is_readonly) {
 		  table_options.buttons = [];
+		  $('#tax_rate').attr("readonly", true);
 	  }
 
 	  table = $('#example').DataTable(table_options);
@@ -478,6 +479,20 @@ is_readonly = 0;
 
 	    submitHandler : function(form) {
 		    var data = table.rows().data().toArray();
+		    var postData = [];
+		    $.each(data, (key, item) => {
+		    	postData.push({
+		    		inventory_code: item.inventory.code,
+		    		max_quantity: item.max_quantity,
+		    		price: item.price,
+		    		tax_price: item.tax_price,
+		    		tax_rate: item.tax_rate,
+		    		start_date: item.start_date,		    		
+		    		end_date: item.end_date,
+		    		memo: item.memo,
+		    		valid: item.valid,
+		    	})
+		    });
 		    jQuery(form).ajaxSubmit({
 		      beforeSend : function() {
 			      App.blockUI();
@@ -486,7 +501,7 @@ is_readonly = 0;
 			      App.unblockUI();
 		      },
 		      data : {
-			      table : data
+			      table : postData
 		      },
 		      success : function(res, status, xhr, form) {
 			      if (res.success == 1) {
