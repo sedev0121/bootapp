@@ -58,13 +58,35 @@
 							<label>确认日期: </label> <input type="text" th:value="${#dates.format(main.reviewDate, 'yyyy-MM-dd')}" class="form-control" readonly>
 						</div>
 					</div>
-					<div class="row margin-top-10">
-						<div class="col-lg-12">
-							<table id="example" name="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-							</table>
-						</div>
-					</div>
 				</form>
+				<div class="row margin-top-10">
+					<div class="col-lg-12">
+						<div class="tab-style-1" id="tabs">
+							<ul class="nav nav-tabs">
+								<li class="active"><a data-toggle="tab" href="#tab-1">明细</a></li>
+								<li><a data-toggle="tab" href="#tab-2">操作日志</a></li>
+							</ul>
+							<div class="tab-content">
+								<div id="tab-1" class="tab-pane row-fluid fade in active">
+									<table id="example" name="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+									</table>
+								</div>
+								<div id="tab-2" class="tab-pane row-fluid fade in">		
+									<div class="operations" id="operation_history">
+									</div>	
+									<div class="row edit-history">
+										<form id="history_form" th:action="@{/operation_history/update}" method="post">											
+											<textarea name="content" id="history_content" class="history-content" rows="5"></textarea>
+											<a class="btn btn-primary save-history" id="save_history"><i class="fa fa-plus"></i> 保存</a>
+										</form>											 
+									</div>								
+								</div>
+								<div id="tab-4" class="tab-pane row-fluid fade in">										
+								</div>
+							</div>
+						</div>						
+					</div>
+				</div>				
 			</div>
 		</div>
 		<div class="modal fade" id="import_dialog" role="dialog" aria-hidden="true">
@@ -117,6 +139,7 @@ is_readonly = 0;
   var detail_url = [[@{|/negotiation/${main.code}/details/${main.orderCode}|}]];
   var edit_url = [[@{/negotiation/}]];
   var del_url = [[@{|/negotiation/${main.code}/delete|}]];
+  var history_url = [[@{|/operation_history/list/negotiation/${main.code}}|]];
   +]*/
 
   var state = /*[[${main.state}]]*/'';
@@ -363,10 +386,6 @@ is_readonly = 0;
 
 	  }
 
-	  
-
-	  
-
 	  function copyRow() {
 		  var selected_data = table.rows('.selected').data().toArray();
 		  if (selected_data.length > 0) {
@@ -393,8 +412,6 @@ is_readonly = 0;
 
 		  }
 	  }
-
-	  
 
 	  $.validator.addMethod("checkTable", function(value, element) {
 		  var exist_data = table.rows().data().toArray();
@@ -579,5 +596,46 @@ is_readonly = 0;
 		  $('#state').val(7);
 		  $("#form").submit();
 	  });
+	  
+	  $('#save_history').click(function() {
+		  $("#history_form").ajaxSubmit({
+		    data : {
+		      target_type : "negotiation",
+		      target_id : $('#code').val(),
+		    },
+		    beforeSend : function() {
+			    App.blockUI();
+		    },
+		    complete : function() {
+			    App.unblockUI();
+		    },
+		    success : function(res, status, xhr, form) {
+			    if (res.success == 1) {
+				    $('#history_content').val('');
+				    loadHistory();
+			    } else {
+				    App.showErrorDialog(res.errmsg);
+			    }
+		    },
+		    error : function(res, status, xhr, form) {
+			    App.showErrorDialog("操作失败", "请稍后重试");
+		    }
+		  });
+	  });
+
+	  
+	  function loadHistory() {
+		  $.get(history_url, function(data, status) {
+			  $('#operation_history').empty();
+			  $.each(data, function(key, item) {
+				  var time = "<div class='operation-time'>" + $.fn.time_renderer(item.create_date) + "</div>";
+				  var content = "<div class='operation-content'>【" + item.account.realname + "】" + item.content + "</div>";
+				  var record = "<div class='operation'>" + time + content + "</div>";
+				  $('#operation_history').append($(record));
+			  });
+		  });
+	  }
+
+	  loadHistory();
   });
 </script>
