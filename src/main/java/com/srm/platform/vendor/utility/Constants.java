@@ -82,4 +82,15 @@ public class Constants {
 	public final static int DELIVERY_ROW_STATE_SUBMIT = 2;
 	public final static int DELIVERY_ROW_STATE_OK = 3;
 	public final static int DELIVERY_ROW_STATE_CANCEL = 4;
+	
+	public final static int VALID_YES = 1;
+	public final static int VALID_NO = 0;
+	
+	public final static double DEFAULT_TAX_RATE = 13;
+	
+	public final static int NEGOTIATION_STATE_NEW = 1;
+	public final static int NEGOTIATION_STATE_SUBMIT = 2;
+	public final static int NEGOTIATION_STATE_CONFIRM = 3;
+	public final static int NEGOTIATION_STATE_CANCEL = 4;
+	public final static int NEGOTIATION_STATE_DONE = 5;
 }

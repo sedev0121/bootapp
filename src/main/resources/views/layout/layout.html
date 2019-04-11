@@ -73,10 +73,10 @@
 			<!-- BEGIN NAVIGATION -->
 			<div class="header-navigation font-transform-inherit" sec:authorize="hasRole('ROLE_BUYER') or hasRole('ROLE_VENDOR')">
 				<ul>
-					<li class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/purchaseorder')} or ${#strings.startsWith(#request.requestURI,'/inquery')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">订单管理 </a>
+					<li class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/purchaseorder')} or ${#strings.startsWith(#request.requestURI,'/negotiation')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">订单管理 </a>
 						<ul class="dropdown-menu">
 							<li><a th:href="@{/purchaseorder}">订单管理</a></li>
-							<li><a th:href="@{/inquery}">议价单管理</a></li>
+							<li><a th:href="@{/negotiation}">议价单管理</a></li>
 						</ul>
 					</li>
 					<li th:classappend="${#strings.startsWith(#request.requestURI,'/delivery')} ? active : ''"><a th:href="@{/delivery}">发货管理</a></li>

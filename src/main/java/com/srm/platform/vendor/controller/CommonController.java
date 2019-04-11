@@ -51,6 +51,8 @@ import com.srm.platform.vendor.repository.FunctionActionRepository;
 import com.srm.platform.vendor.repository.FunctionRepository;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
+import com.srm.platform.vendor.repository.NegotiationDetailRepository;
+import com.srm.platform.vendor.repository.NegotiationMainRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.OperationHistoryRepository;
@@ -128,6 +130,12 @@ public class CommonController {
 	@Autowired
 	public SessionCounter sessionCounter;
 
+	@Autowired
+	public NegotiationMainRepository negotiationMainRepository;
+	
+	@Autowired
+	public NegotiationDetailRepository negotiationDetailRepository;
+	
 	@Autowired
 	public DeliveryMainRepository deliveryMainRepository;
 	
