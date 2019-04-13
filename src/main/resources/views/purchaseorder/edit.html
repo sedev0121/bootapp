@@ -79,10 +79,25 @@
 										<table id="basic_info" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
 											<tfoot>
 												<tr>
-													<th colspan="14" class="dt-center">合计</th>
+													<th colspan="6" class="dt-center">合计</th>
 													<th></th>
 													<th></th>
-													<th colspan="7"></th>
+													<th></th>
+													<th></th>
+													<th colspan="3"></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th colspan="3"></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th colspan="5"></th>
 												</tr>
 											</tfoot>
 										</table>
@@ -254,6 +269,11 @@
 	    }, {
 	      data : 'inventory.code',
 	      title : '存货代码',
+      }, {
+        data : null,
+        defaultContent: '',
+        className: 'dt-right',
+        title : '规格型号'
 	    }, {
 	      data : 'unit_name',
 	      className : 'dt-center',
@@ -262,6 +282,16 @@
 	      data : 'quantity',
 	      className : 'dt-right',
 	      title : '订单数量',
+      }, {
+        data : null,
+        defaultContent: '',
+        className: 'dt-right',
+        title : '换算率'
+      }, {
+        data : null,
+        defaultContent: '',
+        className: 'dt-right',
+        title : '订单件数'
 	    }, {
 	      data : 'quantity',
 	      className : 'dt-right',
@@ -269,10 +299,55 @@
 	      render: function (data, display, record) {
 	        return App.getBoxCount(record.quantity, record.inventory.count_per_box);
 	      },
+      }, {
+        data : null,
+        defaultContent: '',
+        className: 'dt-right',
+        title : '税率'
+      }, {
+	      data : 'price',
+	      className : 'dt-right',
+	      title : '未税单价',
+	    }, {
+	      data : 'tax_price',
+	      className : 'dt-right',
+	      title : '含税单价',
+	    }, {
+	      data : 'money',
+	      className : 'dt-right',
+	      title : '未税金额',
+      }, {
+        data : null,
+        defaultContent: '',
+        className: 'dt-right',
+        title : '税额'
+	    }, {
+	      data : 'sum',
+	      className : 'dt-right',
+	      title : '含税金额',
+	    }, {
+	      data : 'arrive_date',
+	      title : '需求日期',
+	      className : 'dt-center',
+	      render : $.fn.date_renderer,
+      }, {
+        data : null,
+        defaultContent: '',
+        className: 'dt-right',
+        title : '技术要求'
+	    }, {
+	      data : 'memo',
+	      className : 'buyer-cell',
+	      title : '购方备注',
 	    }, {
 	      data : 'arrived_quantity',
 	      className : 'dt-right',
 	      title : '订单已交数量',
+      }, {
+        data : null,
+        defaultContent: '',
+        className: 'dt-right',
+        title : '订单已交件数'
 	    }, {
 	      data : 'arrived_quantity',
 	      className : 'dt-right',
@@ -287,6 +362,11 @@
 	      render: function (data, display, record) {
 	      	return record.quantity - record.arrived_quantity;
 	      },
+      }, {
+        data : null,
+        defaultContent: '',
+        className: 'dt-right',
+        title : '订单未交件数'
 	    }, {
 	      data : 'quantity',
 	      className : 'dt-right',
@@ -298,41 +378,12 @@
 	      data : null,
 	      defaultContent : '',
 	      className : 'dt-right',
-	      title : '加急到货时间',
-	    }, {
-	      data : 'price',
-	      className : 'dt-right',
-	      title : '未税单价',
-	    }, {
-	      data : 'tax_price',
-	      className : 'dt-right',
-	      title : '含税单价',
-	    }, {
-	      data : 'money',
-	      className : 'dt-right',
-	      title : '未税金额',
-	    }, {
-	      data : 'sum',
-	      className : 'dt-right',
-	      title : '含税金额',
+	      title : '是否加急',
+	    
 	    }, {
 	      data : 'prepay_money',
 	      className : 'dt-right',
 	      title : '订金',
-	    }, {
-	      data : 'arrive_date',
-	      title : '需求日期',
-	      className : 'dt-center',
-	      render : $.fn.date_renderer,
-	    }, {
-	      data : 'memo',
-	      className : 'buyer-cell',
-	      title : '备注',
-	    }, {
-	      data : 'close_state',
-	      className : 'dt-center buyer-cell',
-	      render : App.getOrderCloseStateOfId,
-	      title : '　行关闭　',
 	    }, {
 	      data : 'confirmed_quantity',
 	      className : 'dt-right',
@@ -343,12 +394,27 @@
 	      className : 'dt-center vendor-cell',
 	      render : $.fn.date_renderer,
 	    }, {
+	      data : null,
+	      defaultContent : '',
+	      className : 'dt-right',
+	      title : '最后承诺交货日期',
+	    }, {
+	      data : 'close_state',
+	      className : 'dt-center buyer-cell',
+	      render : App.getOrderCloseStateOfId,
+	      title : '　行状态　',
+	    }, {
 	      data : 'confirmed_memo',
 	      className : 'vendor-cell',
 	      title : '供方备注',
 	    } ],
 	    footerCallback : function(row, data, start, end, display) {
-		    App.footerCallback(this.api(), [ [ 14, "cost" ], [ 15, "cost" ] ]);
+		    App.footerCallback(this.api(), [ 
+		    	[ 6, "cost" ], [ 8, "cost" ], [ 9, "cost" ], 
+		    	[ 13, "cost" ], [ 14, "cost" ], [ 15, "cost" ], 
+		    	[ 19, "cost" ], [ 20, "cost" ], [ 21, "cost" ],
+		    	[ 22, "cost" ], [ 24, "cost" ], [ 26, "cost" ]
+		    	]);
 	    },
 	  });
 

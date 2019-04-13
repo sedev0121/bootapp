@@ -275,6 +275,9 @@ is_readonly = 0;
 		      return json;
 	      },
 	    },
+	    fixedColumns: {
+        leftColumns: 4,
+    	},
 	    columns : [ {
 	      data : null,
 	      defaultContent : ' ',
@@ -302,7 +305,7 @@ is_readonly = 0;
 	    }, {
 	      data : 'max_quantity',
 	      className : 'dt-right maxquantity vendor-edit',
-	      title : '数量小于',
+	      title : '数量',
 	    }, {
 	      data : 'price',
 	      className : 'dt-right unitprice vendor-edit',
@@ -315,16 +318,21 @@ is_readonly = 0;
 	      data : 'tax_rate',
 	      className : 'dt-center taxrate vendor-edit',
 	      title : '税率',
-	    }, {
-	      data : 'start_date',
-	      render : $.fn.date_renderer,
-	      className : 'dt-center startdate vendor-edit',
-	      title : '生效日期',
-	    }, {
-	      data : 'end_date',
-	      render : $.fn.date_renderer,
-	      className : 'dt-center enddate vendor-edit',
-	      title : '有效日期'
+      }, {
+        data : null,
+        defaultContent: '',
+        className: 'dt-right',
+        title : '未税金额'
+      }, {
+        data : null,
+        defaultContent: '',
+        className: 'dt-right',
+        title : '税额'
+      }, {
+        data : null,
+        defaultContent: '',
+        className: 'dt-right',
+        title : '含税金额'
 	    }, {
 	      data : 'valid',
 	      title : '是否有效',
