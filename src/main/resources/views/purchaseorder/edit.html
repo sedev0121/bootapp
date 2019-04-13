@@ -23,46 +23,52 @@
 			<form id="form" th:action="@{/purchaseorder/update}" method="post"></form>
 			<div class="panel-body">
 				<div class="row">
-					<div class="col-md-3">
-						<label>业务类型： </label> <input type="text" id="code" class="form-control" th:value="${main.code}" readonly />
-					</div>
-					<div class="col-md-3">
-						<label>订单日期： </label> <input type="text" class="form-control" th:value="${#dates.format(main.audittime, 'yyyy-MM-dd')}" readonly />
-					</div>
-					<div class="col-md-3">
+					<div class="col-md-2">
 						<label>订单编号： </label> <input type="text" id="code" class="form-control" th:value="${main.code}" readonly />
 					</div>
-					<div class="col-md-3">
+					<div class="col-md-2">
+						<label>订单日期： </label> <input type="text" class="form-control" th:value="${#dates.format(main.audittime, 'yyyy-MM-dd')}" readonly />
+					</div>
+					<div class="col-md-2">
+						<label>采购类型： </label> <input type="text" class="form-control" th:value="${main.purchaseTypeName}" readonly />
+					</div>
+					<div class="col-md-2">
 						<label for="state">订单状态：</label> <select name="state" id="state" class="form-control" readonly>
 						</select>
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-md-3">
-						<label>采购类型： </label> <input type="text" class="form-control" th:value="${main.purchaseTypeName}" readonly />
+					<div class="col-md-2">
+						<label>创建人： </label> <input type="text" class="form-control" th:value="${main.vendor.name}" readonly />
 					</div>
-					<div class="col-md-3">
-						<label>供应商: </label> <input type="text" class="form-control" th:value="${main.vendor.name}" readonly />
+					<div class="col-md-2">
+						<label>创建日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.audittime, 'yyyy-MM-dd')}" readonly />
 					</div>
-					<div class="col-md-3">
-						<label>业务实体： </label> <input type="text" class="form-control" th:value="${main.vendor.name}" readonly />
+					<div class="col-md-2">
+						<label>发布人： </label> <input type="text" class="form-control" th:value="${main.vendor.name}" readonly />
+					</div>
+					<div class="col-md-2">
+						<label>发布日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.audittime, 'yyyy-MM-dd')}" readonly />
+					</div>
+					<div class="col-md-2">
+						<label>确认人： </label> <input type="text" class="form-control" th:value="${main.vendor.name}" readonly />
+					</div>
+					<div class="col-md-2">
+						<label>确认日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.audittime, 'yyyy-MM-dd')}" readonly />
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-md-3">
-						<label>业务员： </label> <input type="text" class="form-control" th:value="${main.reviewer?.realname}" readonly />
+					<div class="col-md-2">
+						<label>供应商: </label> <input type="text" class="form-control" th:value="${main.vendor.name}" readonly />
 					</div>
-					<div class="col-md-3">
-						<label>汇率： </label> <input type="text" class="form-control" th:value="${main.vendor.address}" readonly />
+					<div class="col-md-2">
+						<label>业务实体： </label> <input type="text" class="form-control" th:value="${main.vendor.name}" readonly />
 					</div>
-					<div class="col-md-3">
-						<label>付款条件： </label> <input type="text" class="form-control" th:value="${main.remark}" readonly />
+					<div class="col-md-2">
+						<label>收货仓库： </label> <input type="text" class="form-control" th:value="${main.reviewer?.realname}" readonly />
 					</div>
-					<div class="col-md-3">
-						<label>&nbsp;</label>
-						<div class="form-control no-border">
-							<input type="checkbox" name="sms"><label>短信</label> <input type="checkbox" name="email"><label>邮件</label>
-						</div>
+					<div class="col-md-6">
+						<label>订单摘要： </label> <input type="text" class="form-control" th:value="${main.vendor.address}" readonly />
 					</div>
 				</div>
 				<div class="row margin-top-10">
