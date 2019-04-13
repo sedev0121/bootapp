@@ -163,17 +163,13 @@ is_readonly = 0;
 	      attr : {
 		      type : "number"
 	      },
-	      id : "fmaxquantity",
-	      name : "fmaxquantity"
+	      name : "max_quantity"
 	    }, {
-	      label : "最新未税报价:",
-	      id : "iunitprice",
 	      attr : {
 		      type : "number"
 	      },
-	      name : "iunitprice"
+	      name : "price"
 	    }, {
-	      label : "税率:",
 	      attr : {
 		      type : "number"
 	      },
@@ -193,18 +189,16 @@ is_readonly = 0;
 	      },
 	      dateFormat : "yy-mm-dd",
 	    }, {
-	      label : "是否有效:",
 	      type : "checkbox",
 	      separator : "|",
 	      options : [ {
 	        label : '',
 	        value : 1
 	      } ],
-	      id : "ivalid",
-	      name : "ivalid"
+	      id : "valid",
+	      name : "valid"
 	    }, {
-	      label : "备注:",
-	      name : "cbodymemo"
+	      name : "memo"
 	    } ],
 	    i18n : {
 	      remove : {
@@ -227,13 +221,13 @@ is_readonly = 0;
 
 		  var currentFieldName = e.currentTarget.s.includeFields[0];
 
-		  if (currentFieldName == "ivalid") {
+		  if (currentFieldName == "valid") {
 			  if (editor.field(currentFieldName).val() == 1) {
 				  var table_data = table.rows().data().toArray();
 				  var id = 1;
 				  $.each(data.data, function(rowno, editRow) {
 					  $.each(table_data, function(key, item) {
-						  if (item.cinvcode == editRow.cinvcode) {
+						  if (item.inventory.code == editRow.inventory.code) {
 							  if (item.rowno != rowno) {
 								  item.ivalid = 0;
 							  }
@@ -241,7 +235,6 @@ is_readonly = 0;
 					  })
 				  });
 				  table.rows().invalidate();
-
 			  }
 			  return true;
 		  }
@@ -252,7 +245,6 @@ is_readonly = 0;
 			  item.rowno = id++;
 		  })
 		  table.rows().invalidate();
-
 	  });
 
 	  var table_options = {
@@ -283,8 +275,14 @@ is_readonly = 0;
 		      return json;
 	      },
 	    },
-
 	    columns : [ {
+	      data : null,
+	      defaultContent : ' ',
+	      width: "30px",
+	      visible: state == 1,
+	      orderable : false,
+	      className : 'select-checkbox',
+	    }, {
 	      data : 'rowno',
 	      className : 'dt-center',
 	      title : '行号',
@@ -303,11 +301,11 @@ is_readonly = 0;
 	      title : '单位',
 	    }, {
 	      data : 'max_quantity',
-	      className : 'dt-right maxquantity ',
+	      className : 'dt-right maxquantity vendor-edit',
 	      title : '数量小于',
 	    }, {
 	      data : 'price',
-	      className : 'dt-right unitprice ',
+	      className : 'dt-right unitprice vendor-edit',
 	      title : '最新未税报价',
 	    }, {
 	      data : 'tax_price',
@@ -315,22 +313,22 @@ is_readonly = 0;
 	      title : '最新含税报价',
 	    }, {
 	      data : 'tax_rate',
-	      className : 'dt-center taxrate ',
+	      className : 'dt-center taxrate vendor-edit',
 	      title : '税率',
 	    }, {
 	      data : 'start_date',
 	      render : $.fn.date_renderer,
-	      className : 'dt-center startdate',
+	      className : 'dt-center startdate vendor-edit',
 	      title : '生效日期',
 	    }, {
 	      data : 'end_date',
 	      render : $.fn.date_renderer,
-	      className : 'dt-center enddate',
+	      className : 'dt-center enddate vendor-edit',
 	      title : '有效日期'
 	    }, {
 	      data : 'valid',
 	      title : '是否有效',
-	      className : 'valid dt-center ',
+	      className : 'editor-valid dt-center buyer-edit',
 	      visible : state > 2 && type == 2,
 	      render : App.valid_render,
 	    }, {
@@ -352,38 +350,49 @@ is_readonly = 0;
 	  table = $('#example').DataTable(table_options);
 
 	  table.on('select', function(e, dt, type, indexes) {
-		  if ($('#type').val() == 2) {
-			  var selected_data = table.rows('.selected').data().toArray();
-			  if (selected_data.length > 0) {
-				  table.button(1).enable();
-			  } else {
-				  table.button(1).disable();
-			  }
+		  var selected_data = table.rows('.selected').data().toArray();
+		  
+		  if (selected_data.length == 1) {
+			  table.button(0).enable();
+		  } else {
+			  table.button(0).disable();
+		  }
+
+		  if (selected_data.length > 0) {
+			  table.button(1).enable();
 		  } else {
 			  table.button(1).disable();
 		  }
-
 	  }).on('deselect', function(e, dt, type, indexes) {
-		  if ($('#type').val() == 2) {
-			  var selected_data = table.rows('.selected').data().toArray();
-			  if (selected_data.length > 0) {
-				  table.button(1).enable();
-			  } else {
-				  table.button(1).disable();
-			  }
+		  var selected_data = table.rows('.selected').data().toArray();
+		  
+		  if (selected_data.length == 1) {
+			  table.button(0).enable();
+		  } else {
+			  table.button(0).disable();
+		  }
+		  
+		  if (selected_data.length > 0) {
+			  table.button(1).enable();
 		  } else {
 			  table.button(1).disable();
 		  }
 	  });
 
-	  if (state == 3 && !is_vendor && !is_readonly) {
-		  table.on('click', 'tbody td.ivalid', function(e) {
+	  if (is_vendor && state == 2) {
+		  table.on('click', 'tbody td.vendor-edit', function(e) {
 			  editor.inline(this, {
 			    submit : 'allIfChanged',
 			    submitOnBlur : true
 			  });
 		  });
-
+	  } else if (!is_vendor && state == 3) {
+		  table.on('click', 'tbody td.buyer-edit', function(e) {
+			  editor.inline(this, {
+			    submit : 'allIfChanged',
+			    submitOnBlur : true
+			  });
+		  });
 	  }
 
 	  function copyRow() {

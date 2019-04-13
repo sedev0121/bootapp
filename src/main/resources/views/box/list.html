@@ -258,6 +258,9 @@
 			      return json.content;
 		      },
 		    },
+		    fixedColumns: {
+	        leftColumns: 2,
+	    	},
 		    order : [ [ 1, 'asc' ] ],
 		    columns : [ {
 		      data : null,
@@ -267,7 +270,7 @@
 		      className : 'select-checkbox',
 		    }, {
 		      data : 'code',
-		      title : '序列号',
+		      title : '箱码',
 		      render: function (data, display, record) {
 		        return '<a onclick="edit(' + record.id + ')">' + data + '</a>';
 		      },
@@ -275,8 +278,50 @@
 		      data : 'spec',
 		      title : '规格',
 		    }, {
+		      data : 'spec',
+		      title : '绑定日期',
+		    }, {
+		      data : 'spec',
+		      title : '绑定属性',
+		    }, {
+		      data : 'spec',
+		      title : '绑定单位编码',
+		    }, {
+		      data : 'spec',
+		      title : '绑定单位名称',
+		    }, {
+		      data : 'spec',
+		      title : '发货单编号',
+		    }, {
+		      data : 'spec',
+		      title : '发货单行号',
+		    }, {
+		      data : 'spec',
+		      title : '订单编号',
+		    }, {
+		      data : 'spec',
+		      title : '订单行号',
+		    }, {
+		      data : 'spec',
+		      title : '货品编号',
+		    }, {
+		      data : 'spec',
+		      title : '货品名称',
+		    }, {
+		      data : 'spec',
+		      title : '规格型号',
+		    }, {
+		      data : 'spec',
+		      title : '绑定数量',
+		    }, {
+		      data : 'spec',
+		      title : '批次',
+		    }, {
 		      data : 'memo',
 		      title : '其他',
+		    }, {
+		      data : 'memo',
+		      title : '分类',
 		    }, {
 		      data : 'state',
 		      title : '启用/停用',
