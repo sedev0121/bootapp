@@ -164,7 +164,7 @@ var App = function() {
 		  return App.formatNumber(i, 0);
 		},
     quantityNumber : function (i) {
-      return App.formatNumber(i, 4);
+      return App.formatNumber(i, 2);
     },
     priceNumber : function (i) {
       return App.formatNumber(i, 6);

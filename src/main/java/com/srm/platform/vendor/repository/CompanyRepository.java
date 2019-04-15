@@ -16,4 +16,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 	
 	Company findOneById(Long id);
 	
+	@Query(value = "SELECT * FROM company where (name LIKE %?1% or code LIKE %?1%)", nativeQuery = true)
+	Page<Company> findBySearchTerm(String search, Pageable pageable);
+	
 }

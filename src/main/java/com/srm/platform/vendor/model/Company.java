@@ -17,7 +17,7 @@ public class Company {
 
 	private String name;
 
-	private String erp_id;
+	private String code;
 
 	public Company() {
 
@@ -39,12 +39,12 @@ public class Company {
 		this.name = name;
 	}
 
-	public String getErp_id() {
-		return erp_id;
+	public String getCode() {
+		return code;
 	}
 
-	public void setErp_id(String erp_id) {
-		this.erp_id = erp_id;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	
