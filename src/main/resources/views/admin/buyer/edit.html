@@ -143,7 +143,9 @@
   	$("#company").select2(App.getSelect2Options(company_search_url));
   	
   	var permission_scope_list = JSON.parse(scope_list);
-  	
+  	if (!permission_scope_list) {
+  		permission_scope_list = [];
+  	}
   	var permission_dimensions = {};
   	
   	function contains(scope_list, item) {

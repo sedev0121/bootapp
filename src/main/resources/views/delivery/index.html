@@ -4,7 +4,7 @@
 	<div class="container" layout:fragment="content">
 		<ul class="breadcrumb">
 			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
-			<li class="active">预发货单管理</li>
+			<li class="active">发货单管理</li>
 		</ul>
 		<div class="search-content">
 			<div class="search-cell width-10 form-group">
@@ -85,21 +85,26 @@
 		      return '<a href="' + url + '">' + data + '</a>';
 	      },
 	    }, {
+	    	orderable: false,
 	      data : 'vendor.name',
 	      visible : !is_vendor,
 	      title : '供应商名称',
 	    }, {
-	      data : 'vendor.name',
+	    	orderable: false,
+	      data : 'vendor.contact',
 	      title : '联系人',
 	    }, {
-	      data : 'vendor.name',
+	    	orderable: false,
+	      data : 'company.name',
 	      title : '业务实体',
 	    }, {
-	      data : 'vendor.name',
+	    	orderable: false,
+	      data : 'store.name',
 	      className : 'dt-center',
 	      title : '收货仓库',
 	    }, {
-	      data : 'vendor.name',
+	    	orderable: false,
+	      data : 'store.address',
 	      className : 'dt-center',
 	      title : '仓库地址',
 	    }, {

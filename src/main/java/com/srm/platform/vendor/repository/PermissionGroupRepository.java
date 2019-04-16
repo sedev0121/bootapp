@@ -46,6 +46,9 @@ public interface PermissionGroupRepository extends JpaRepository<PermissionGroup
 	@Query(value = "select a.*, b.account_id from permission_group a left join permission_group_user b on a.id=b.group_id and b.account_id=:accountId", nativeQuery = true)
 	List<PermissionAccount> findGroupListOfAccount(@Param("accountId") Long accountId);
 	
+	@Query(value = "select * from permission_group", nativeQuery = true)
+	List<PermissionAccount> findGroupList();
+	
 	@Query(value = "select a.*, b.dimensions from permission_user_scope a left join (select group_id, GROUP_CONCAT(dimension_id) dimensions from permission_group_dimension GROUP BY group_id) b on a.group_id=b.group_id where a.account_id=:accountId", nativeQuery = true)
 	List<PermissionScopeOfAccount> findScopeListOfAccount(@Param("accountId") Long accountId);
 	

@@ -8,9 +8,6 @@ import java.util.Map;
 
 import javax.persistence.Query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -32,14 +29,7 @@ import com.srm.platform.vendor.model.Function;
 import com.srm.platform.vendor.model.FunctionAction;
 import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.PermissionGroupUser;
-import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.FunctionActionRepository;
-import com.srm.platform.vendor.repository.FunctionRepository;
-import com.srm.platform.vendor.repository.PermissionGroupFunctionActionRepository;
-import com.srm.platform.vendor.repository.PermissionGroupRepository;
-import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.searchitem.AccountSearchItem;
-import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.BuyerSearchResult;
 import com.srm.platform.vendor.searchitem.PermissionAccount;
 import com.srm.platform.vendor.searchitem.ScopeAccountItem;
@@ -48,7 +38,7 @@ import com.srm.platform.vendor.searchitem.ScopeInventoryItem;
 import com.srm.platform.vendor.searchitem.ScopeStoreItem;
 import com.srm.platform.vendor.searchitem.ScopeVendorItem;
 import com.srm.platform.vendor.searchitem.SearchItem;
-import com.srm.platform.vendor.utility.AccountPermission;
+import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/permission_group")
@@ -246,8 +236,12 @@ public class PermissionController extends CommonController {
 
 	@ResponseBody
 	@RequestMapping("/list_of_account/{accountId}")
-	public List<PermissionAccount> getGroupListOfAccount(@PathVariable("accountId") Long accountId) {
-		return permissionGroupRepository.findGroupListOfAccount(accountId);
+	public List<PermissionAccount> getGroupListOfAccount(@PathVariable("accountId") String accountId) {
+		if (Utils.isEmpty(accountId)) {
+			return permissionGroupRepository.findGroupList();
+		} else {
+			return permissionGroupRepository.findGroupListOfAccount(Long.parseLong(accountId));	
+		}		
 	}
 
 	@ResponseBody
