@@ -45,9 +45,6 @@ import com.srm.platform.vendor.utility.Utils;
 @PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('权限管理-查看列表')")
 public class PermissionController extends CommonController {
 
-	private static Long LIST_FUNCTION_ACTION_ID = 12L;
-	private static Long EDIT_FUNCTION_ACTION_ID = 13L;
-
 	// 权限组管理->列表
 	@GetMapping("/list")
 	public @ResponseBody Page<PermissionGroup> list_ajax(@RequestParam Map<String, String> requestParams) {
@@ -80,8 +77,6 @@ public class PermissionController extends CommonController {
 		if (temp == null)
 			show404();
 
-		checkPermission(temp, LIST_FUNCTION_ACTION_ID);
-
 		model.addAttribute("permission_group", temp);
 
 		List<AccountSearchItem> accounts = permissionGroupRepository.findAccountsInGroupById(id);
@@ -102,8 +97,6 @@ public class PermissionController extends CommonController {
 
 		if (temp == null)
 			show404();
-
-		checkPermission(temp, LIST_FUNCTION_ACTION_ID);
 
 		List<Function> functionList = functionRepository.findAll();
 		List<FunctionAction> functionActionList = functionActionRepository.findAll();
@@ -297,10 +290,6 @@ public class PermissionController extends CommonController {
 	@RequestMapping("/list_of_inventory")
 	public List<ScopeInventoryItem> getInventoryList() {
 		return permissionGroupRepository.findInventoryList();
-	}
-
-	private void checkPermission(PermissionGroup permissionGroup, Long functionActionId) {
-
 	}
 
 }
