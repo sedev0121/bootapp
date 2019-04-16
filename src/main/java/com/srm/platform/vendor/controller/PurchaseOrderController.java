@@ -147,7 +147,7 @@ public class PurchaseOrderController extends CommonController {
 			// bodyQuery += " and b.code in :vendorList";
 			// params.put("vendorList", vendorList);
 			 if (!vendorStr.trim().isEmpty()) {
-				 bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
+				 bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.abbrname like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
 				 params.put("vendor", vendorStr.trim());
 			 }
 		}
