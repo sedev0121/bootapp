@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.Store;
 import com.srm.platform.vendor.searchitem.SearchItem;
-import com.srm.platform.vendor.searchitem.StoreSearchItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
@@ -16,11 +15,11 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
 	Store findOneById(Long id);
 	
-	@Query(value = "SELECT a.*, b.name company_name FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or b.name LIKE %?1%)", nativeQuery = true)
-	Page<StoreSearchItem> findBySearchTerm(String search, Pageable pageable);
+	@Query(value = "SELECT * FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or b.name LIKE %?1%)", nativeQuery = true)
+	Page<Store> findBySearchTerm(String search, Pageable pageable);
 	
-	@Query(value = "SELECT a.*, b.name company_name FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or b.name LIKE %?1%) and is_use_in_srm=?2", nativeQuery = true)
-	Page<StoreSearchItem> findBySearchTerm(String search, Integer usedState, Pageable pageable);
+	@Query(value = "SELECT * FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or b.name LIKE %?1%) and is_use_in_srm=?2", nativeQuery = true)
+	Page<Store> findBySearchTerm(String search, Integer usedState, Pageable pageable);
 	
 	@Query(value = "SELECT id code, name FROM store", nativeQuery = true)
 	Page<SearchItem> findForSelect(Pageable pageable);

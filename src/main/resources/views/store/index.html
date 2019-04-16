@@ -59,13 +59,11 @@
 	    columns : [ {
 	      data : 'name',
 	      title : '仓库名称',
-	      render : function(data, display, record) {
-		      var edit_url = /*[[@{/store/}]]*/'';
-		      edit_url += record.id + '/edit';
-		      return '<a href="' + edit_url + '">' + data + '</a>';
-	      },
 	    }, {
-	      data : 'company_name',
+	      data : 'code',
+	      title : '仓库编码',
+	    }, {
+	      data : 'company.name',
 	      title : '业务实体',
 	    }, {
 	      data : 'address',

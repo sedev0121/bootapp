@@ -24,6 +24,7 @@ import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Box;
 import com.srm.platform.vendor.model.BoxClass;
+import com.srm.platform.vendor.model.Store;
 import com.srm.platform.vendor.searchitem.BoxSearchResult;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
@@ -51,7 +52,7 @@ public class BoxController extends CommonController {
 
 	// 查询列表API
 	@RequestMapping(value = "/list/{classId}", produces = "application/json")
-	public @ResponseBody Page<BoxSearchResult> list_ajax(@PathVariable("classId") Long classId,
+	public @ResponseBody Page<Box> list_ajax(@PathVariable("classId") Long classId,
 			@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
@@ -64,49 +65,26 @@ public class BoxController extends CommonController {
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-
-		String selectQuery = "select * ";
-		String countQuery = "select count(*) ";
-		String orderBy = " order by " + order + " " + dir;
-
-		String bodyQuery = "from box where box_class_id= " + classId + " ";
-
-		Map<String, Object> params = new HashMap<>();
-
-		if (!code.trim().isEmpty()) {
-			bodyQuery += " and code like CONCAT('%',:code, '%') ";
-			params.put("code", code.trim());
+		Page<Box> result = null;
+		
+		Integer boxState = Integer.parseInt(state);
+		Integer usedState = Integer.parseInt(used);
+		if (boxState > -1) {
+			if (usedState > -1) {
+				result = boxRepository.findBySearchUsedAndState(code, usedState, boxState, classId, request);	
+			} else {
+				result = boxRepository.findBySearchAndState(code, boxState, classId, request);	
+			}
+				
+		} else {
+			if (usedState > -1) {
+				result = boxRepository.findBySearchAndUsed(code, usedState, classId, request);	
+			} else {
+				result = boxRepository.findBySearchTerm(code, classId, request);	
+			}
 		}
-
-		int temp = Integer.parseInt(state);
-		if (temp > -1) {
-			bodyQuery += " and state=:state";
-			params.put("state", temp);
-		}
-
-		temp = Integer.parseInt(used);
-		if (temp > -1) {
-			bodyQuery += " and used=:used";
-			params.put("used", temp);
-		}
-
-		countQuery += bodyQuery;
-		Query q = em.createNativeQuery(countQuery);
-
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			q.setParameter(entry.getKey(), entry.getValue());
-		}
-
-		BigInteger totalCount = (BigInteger) q.getSingleResult();
-
-		selectQuery += bodyQuery + orderBy;
-		q = em.createNativeQuery(selectQuery, "BoxSearchResult");
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			q.setParameter(entry.getKey(), entry.getValue());
-		}
-
-		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
-		return new PageImpl<BoxSearchResult>(list, request, totalCount.longValue());
+		
+		return result;
 	}
 
 	@Transactional
@@ -157,6 +135,10 @@ public class BoxController extends CommonController {
 				box.setState(0);
 			} else if ("empty".equals(key)) {
 				box.setUsed(0);
+				box.setBindDate(null);
+				box.setBindProperty(null);
+				box.setDelivery(null);
+				box.setQuantity(null);
 			}
 
 			box = boxRepository.save(box);

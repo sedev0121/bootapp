@@ -2,7 +2,12 @@ package com.srm.platform.vendor.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "store")
@@ -11,8 +16,13 @@ public class Store {
 	private Long id;
 
 	private String name;
+	private String code;
 
-	private Long companyId;
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "company_id")
+	@ManyToOne()
+	private Company company;
+	
 	private String address;
 	private Integer isAcceptSet;
 	private Integer isUseInSrm;
@@ -34,12 +44,20 @@ public class Store {
 		this.id = id;
 	}
 
-	public Long getCompanyId() {
-		return companyId;
+	public String getCode() {
+		return code;
 	}
 
-	public void setCompanyId(Long companyId) {
-		this.companyId = companyId;
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 
 	public String getAddress() {

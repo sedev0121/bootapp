@@ -603,3 +603,11 @@ div.DTE_Field select {
 div.DTE_Field_Type_select div.DTE_Field_Input {
     padding-top: 2px;
 }
+
+table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after,
+table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting_asc:after,
+table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting_desc:after,
+table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
+	content: "";
+}
+

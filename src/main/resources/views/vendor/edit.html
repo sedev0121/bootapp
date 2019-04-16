@@ -52,7 +52,7 @@
 						<label>Email地址: </label> <input type="text" id="vendor_email" class="form-control" readonly th:value="${data.email}" />
 					</div>
 					<div class="col-lg-4 col-md-4">
-						<label>所属类别: </label> <input type="text" id="vendor_sort_code" class="form-control" readonly th:value="${data.sortCode}" />
+						<label>所属类别: </label> <input type="text" id="vendor_sort_code" class="form-control" readonly th:value="${data.vendorClass.name}" />
 					</div>
 					<div class="col-lg-4 col-md-4">
 						<label>所属行业: </label> <input type="text" id="vendor_industry" class="form-control" readonly th:value="${data.industry}" />

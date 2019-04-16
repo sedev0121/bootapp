@@ -19,6 +19,7 @@ import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.model.VendorClass;
+import com.srm.platform.vendor.repository.BoxClassRepository;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
@@ -50,6 +51,9 @@ public class SyncController {
 	@Autowired
 	private VendorRepository vendorRepository;
 
+	@Autowired
+	private BoxClassRepository boxClassRepository;
+	
 	@Autowired
 	private PurchaseOrderMainRepository purchaseOrderMainRepository;
 
@@ -157,6 +161,7 @@ public class SyncController {
 					Inventory inventory = inventoryRepository.findOneByCode(getStringValue(temp, "code"));
 					if (inventory == null) {
 						inventory = new Inventory();
+						inventory.setBoxClass(boxClassRepository.findOneById(1L));
 					}
 
 					inventory.setCode(getStringValue(temp, "code"));

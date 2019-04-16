@@ -278,49 +278,120 @@
 		      data : 'spec',
 		      title : '规格',
 		    }, {
-		      data : 'spec',
+		      data : 'bind_date',
 		      title : '绑定日期',
 		    }, {
-		      data : 'spec',
+		      data : 'bind_property',
 		      title : '绑定属性',
 		    }, {
-		      data : 'spec',
+		      data : 'delivery.main.company.code',
 		      title : '绑定单位编码',
+		      orderable: false,
+		      render: function (data, display, record) {
+		      	if (!record.delivery) {
+		      		data = '';	
+		      	}
+		        return data;
+		      },
 		    }, {
-		      data : 'spec',
+		    	data : 'delivery.main.company.name',
 		      title : '绑定单位名称',
+		      orderable: false,
+		      render: function (data, display, record) {
+		      	if (!record.delivery) {
+		      		data = '';	
+		      	}
+		        return data;
+		      },
 		    }, {
-		      data : 'spec',
+		      data : 'delivery.main.code',
 		      title : '发货单编号',
+		      orderable: false,
+		      render: function (data, display, record) {
+		      	if (!record.delivery) {
+		      		data = '';	
+		      	}
+		        return data;
+		      },
 		    }, {
-		      data : 'spec',
+		      data : 'delivery.row_no.',
 		      title : '发货单行号',
+		      orderable: false,
+		      render: function (data, display, record) {
+		      	if (!record.delivery) {
+		      		data = '';	
+		      	}
+		        return data;
+		      },
 		    }, {
-		      data : 'spec',
+		      data : 'delivery.purchaseOrderDetail.main.code',
 		      title : '订单编号',
+		      orderable: false,
+		      render: function (data, display, record) {
+		      	if (!record.delivery) {
+		      		data = '';	
+		      	}
+		        return data;
+		      },
 		    }, {
-		      data : 'spec',
+		      data : 'delivery.purchaseOrderDetail.row_no',
 		      title : '订单行号',
+		      orderable: false,
+		      render: function (data, display, record) {
+		      	if (!record.delivery) {
+		      		data = '';	
+		      	}
+		        return data;
+		      },
 		    }, {
-		      data : 'spec',
+		      data : 'delivery.purchaseOrderDetail.inventory.code',
 		      title : '货品编号',
+		      orderable: false,
+		      render: function (data, display, record) {
+		      	if (!record.delivery) {
+		      		data = '';	
+		      	}
+		        return data;
+		      },
 		    }, {
-		      data : 'spec',
+		      data : 'delivery.purchaseOrderDetail.inventory.name',
 		      title : '货品名称',
+		      orderable: false,
+		      render: function (data, display, record) {
+		      	if (!record.delivery) {
+		      		data = '';	
+		      	}
+		        return data;
+		      },
 		    }, {
-		      data : 'spec',
+		      data : 'delivery.purchaseOrderDetail.inventory.specs',
 		      title : '规格型号',
+		      orderable: false,
+		      render: function (data, display, record) {
+		      	if (!record.delivery) {
+		      		data = '';	
+		      	}
+		        return data;
+		      },
 		    }, {
-		      data : 'spec',
+		      data : 'quantity',
 		      title : '绑定数量',
 		    }, {
-		      data : 'spec',
+		      data : 'delivery.deliver_number',
 		      title : '批次',
+		      orderable: false,
+		      render: function (data, display, record) {
+		      	if (!record.delivery) {
+		      		data = '';	
+		      	}
+		        return data;
+		      },
 		    }, {
 		      data : 'memo',
 		      title : '其他',
 		    }, {
-		      data : 'memo',
+		    	orderable: false,
+		      data : 'boxClass.name',
 		      title : '分类',
 		    }, {
 		      data : 'state',
