@@ -19,23 +19,27 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 @Entity
 
 @SqlResultSetMapping(name = "PurchaseOrderSearchResult", classes = {
-		@ConstructorResult(targetClass = PurchaseOrderSearchResult.class, columns = {
-				@ColumnResult(name = "code", type = String.class), 
-				@ColumnResult(name = "vencode", type = String.class), 
-				@ColumnResult(name = "audittime", type = Date.class),
-				@ColumnResult(name = "state", type = String.class),
-				@ColumnResult(name = "vendorname", type = String.class),
-				@ColumnResult(name = "deployername", type = String.class),
-				@ColumnResult(name = "reviewername", type = String.class),
-				@ColumnResult(name = "deploydate", type = Date.class),
-				@ColumnResult(name = "reviewdate", type = Date.class),
-				@ColumnResult(name = "maker", type = String.class), 
-				@ColumnResult(name = "makedate", type = Date.class),
-				@ColumnResult(name = "sum", type = Float.class), 
-				@ColumnResult(name = "money", type = Float.class),
-				@ColumnResult(name = "srmstate", type = Integer.class),
-				@ColumnResult(name = "purchase_type_name", type = String.class),
-				@ColumnResult(name = "prepay_money", type = Float.class) }) })
+	@ConstructorResult(targetClass = PurchaseOrderSearchResult.class, columns = {
+		@ColumnResult(name = "code", type = String.class), 
+		@ColumnResult(name = "vencode", type = String.class), 
+		@ColumnResult(name = "audittime", type = Date.class),
+		@ColumnResult(name = "state", type = String.class),
+		@ColumnResult(name = "vendorname", type = String.class),
+		@ColumnResult(name = "deployername", type = String.class),
+		@ColumnResult(name = "reviewername", type = String.class),
+		@ColumnResult(name = "deploydate", type = Date.class),
+		@ColumnResult(name = "reviewdate", type = Date.class),
+		@ColumnResult(name = "maker", type = String.class), 
+		@ColumnResult(name = "makedate", type = Date.class),
+		@ColumnResult(name = "sum", type = Float.class), 
+		@ColumnResult(name = "money", type = Float.class),
+		@ColumnResult(name = "srmstate", type = Integer.class),
+		@ColumnResult(name = "purchase_type_name", type = String.class),
+		@ColumnResult(name = "prepay_money", type = Float.class),
+		@ColumnResult(name = "verifier", type = String.class),
+		@ColumnResult(name = "closer", type = String.class) 
+	}) 
+})
 
 @Table(name = "purchase_order_main")
 public class PurchaseOrderMain {

@@ -107,10 +107,8 @@ var edit_url = [[@{/purchaseorder/}]];
         leftColumns: 3,
     	},
       columns : [ {
-        data : null,
-        defaultContent: '',
-        className: 'dt-center',
-        title : '订单类型',
+        data : 'purchase_type_name',
+        title : '订单类型'
       }, {
         data : 'code',
         title : '订单编号',
@@ -144,22 +142,22 @@ var edit_url = [[@{/purchaseorder/}]];
         title : '供应商简称'
       }, {
         data : null,
+        orderable: false,
         defaultContent: '',
         className: 'dt-right',
         title : '税率'
       }, {
         data : null,
         defaultContent: '',
+        orderable: false,
         className: 'dt-right',
         title : '币种'
       }, {
         data : null,
         defaultContent: '',
+        orderable: false,
         className: 'dt-right',
         title : '汇率'
-      }, {
-        data : 'purchase_type_name',
-        title : '订单类型'
       }, {
         data : 'sum',
         className: 'dt-right',
@@ -175,16 +173,19 @@ var edit_url = [[@{/purchaseorder/}]];
       }, {
         data : null,
         defaultContent: '',
+        orderable: false,
         className: 'dt-right',
         title : '购方备注'
       }, {
         data : null,
         defaultContent: '',
+        orderable: false,
         className: 'dt-right',
         title : '采购组织'
       }, {
         data : null,
         defaultContent: '',
+        orderable: false,
         className: 'dt-right',
         title : '采购员'
       }, {
@@ -198,24 +199,22 @@ var edit_url = [[@{/purchaseorder/}]];
         createdCell: App.getInqueryStateClass,
         render : App.getPurchaseOrderStateOfId
       }, {
-        data : null,
-        defaultContent: '',
-        className: 'dt-right',
+        data : 'maker',
+        className: 'dt-center',
         title : '制单人'
       }, {
-        data : null,
-        defaultContent: '',
-        className: 'dt-right',
+        data : 'makedate',
+        className: 'dt-center',
+        render : $.fn.date_renderer,
         title : '制单日期'
       }, {
-        data : null,
-        defaultContent: '',
-        className: 'dt-right',
+        data : 'verifier',
+        className: 'dt-center',
         title : '审核人'
       }, {
-        data : null,
-        defaultContent: '',
-        className: 'dt-right',
+        data : 'audittime',
+        className: 'dt-center',
+        render : $.fn.date_renderer,
         title : '审核日期'
       }, {
         data : 'deployername',
@@ -225,7 +224,7 @@ var edit_url = [[@{/purchaseorder/}]];
         data : 'deploydate',
         className: 'dt-center',
         title : '发布日期',
-        render : $.fn.date_renderer
+        render : $.fn.date_renderer,
       }, {
         data : 'reviewername',
         className: 'dt-center',
@@ -234,16 +233,15 @@ var edit_url = [[@{/purchaseorder/}]];
         data : 'reviewdate',
         className: 'dt-center',
         title : '确认日期',
-        render : $.fn.date_renderer
+        render : $.fn.date_renderer,
       }, {
-        data : null,
-        defaultContent: '',
-        className: 'dt-right',
+        data : 'closer',
+        className: 'dt-center',
         title : '关闭人'
       }, {
-        data : null,
-        defaultContent: '',
-        className: 'dt-right',
+        data : 'closedate',
+        render : $.fn.date_renderer,
+        className: 'dt-center',
         title : '关闭日期'
       } ],
       order: [  [ 1, "desc" ] ]      
