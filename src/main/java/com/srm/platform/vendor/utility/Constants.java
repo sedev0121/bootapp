@@ -18,11 +18,9 @@ public class Constants {
 
 	public final static int PURCHASE_ORDER_STATE_START = 0;
 	public final static int PURCHASE_ORDER_STATE_DEPLOY = 1;
-	public final static int PURCHASE_ORDER_STATE_NEGOTIATE = 2;
-	public final static int PURCHASE_ORDER_STATE_NEGOTIATE_OK = 3;
-	public final static int PURCHASE_ORDER_STATE_NEGOTIATE_CANCEL = 4;
-	public final static int PURCHASE_ORDER_STATE_CONFIRM = 5;
-	public final static int PURCHASE_ORDER_STATE_CLOSE = 6;
+	public final static int PURCHASE_ORDER_STATE_CONFIRM = 2;
+	public final static int PURCHASE_ORDER_STATE_CLOSE = 3;
+	public final static int PURCHASE_ORDER_STATE_CLOSE_ROW = 10;
 
 	public final static int PURCHASE_ORDER_ROW_CLOSE_STATE_NO = 0;
 	public final static int PURCHASE_ORDER_ROW_CLOSE_STATE_YES = 1;

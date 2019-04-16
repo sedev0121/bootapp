@@ -147,7 +147,7 @@ public class PurchaseOrderController extends CommonController {
 			// bodyQuery += " and b.code in :vendorList";
 			// params.put("vendorList", vendorList);
 			 if (!vendorStr.trim().isEmpty()) {
-				 bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
+				 bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.abbrname like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
 				 params.put("vendor", vendorStr.trim());
 			 }
 		}
@@ -198,7 +198,10 @@ public class PurchaseOrderController extends CommonController {
 
 		Account account = this.getLoginAccount();
 		PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(form.getCode());
-		main.setSrmstate(form.getState());
+		if (form.getState() != Constants.PURCHASE_ORDER_STATE_CLOSE_ROW) {
+			main.setSrmstate(form.getState());	
+		}			
+		
 		if (form.getState() == Constants.PURCHASE_ORDER_STATE_DEPLOY) {
 			main.setDeploydate(new Date());
 			main.setDeployer(account);
@@ -214,22 +217,17 @@ public class PurchaseOrderController extends CommonController {
 			action = "发布";
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			break;
-		case Constants.PURCHASE_ORDER_STATE_NEGOTIATE:
-			action = "申请协调";
-			break;
-		case Constants.PURCHASE_ORDER_STATE_NEGOTIATE_OK:
-			action = "协调同意";
-			break;
-		case Constants.PURCHASE_ORDER_STATE_NEGOTIATE_CANCEL:
-			action = "协调拒绝";
-			break;
 		case Constants.PURCHASE_ORDER_STATE_CONFIRM:
 			action = "确认";
 			break;
 		case Constants.PURCHASE_ORDER_STATE_CLOSE:
 			action = "关闭";
 			break;
+		case Constants.PURCHASE_ORDER_STATE_CLOSE_ROW:
+			action = "行关闭";
+			break;
 		}
+		
 		String title = String.format("订单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
 
 		this.sendmessage(title, toList, String.format("/purchaseorder/%s/read", main.getCode()));
@@ -240,6 +238,7 @@ public class PurchaseOrderController extends CommonController {
 
 				PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneById(Long.parseLong(item.get("id")));
 				if (form.getState() == Constants.PURCHASE_ORDER_STATE_DEPLOY) {
+					detail.setMemo(item.get("memo"));
 					detail.setConfirmedDate(detail.getArriveDate());
 					detail.setConfirmedQuantity(detail.getQuantity());
 					if (Integer.parseInt(item.get("close_state")) == Constants.PURCHASE_ORDER_ROW_CLOSE_STATE_YES) {
@@ -250,9 +249,12 @@ public class PurchaseOrderController extends CommonController {
 					} else {
 						detail.setCloseDate(null);
 					}
-				} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CONFIRM || form.getState() == Constants.PURCHASE_ORDER_STATE_NEGOTIATE) {
+				} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CONFIRM) {
 					detail.setConfirmedDate(Utils.parseDate(item.get("confirmed_date")));
 					detail.setConfirmedMemo(item.get("confirmed_memo"));
+				} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CLOSE_ROW) {
+					detail.setCloserName(this.getLoginAccount().getRealname());
+					detail.setCloseDate(new Date());					
 				}
 
 				purchaseOrderDetailRepository.save(detail);

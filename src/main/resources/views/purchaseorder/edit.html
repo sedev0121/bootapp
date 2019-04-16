@@ -9,13 +9,10 @@
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-				<a class="btn btn-primary" id="deploy" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0)} "><i class="fa fa-undo"></i> 发布</a> 
-				<a class="btn btn-primary" id="negotiate" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==1)}" th:href="@{|/negotiation/${main.code}/add|}"><i class="fa fa-undo"></i> 发起议价</a> 
-				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
-				<a class="btn btn-primary" id="close"	sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate>=1}"><i class="fa fa-undo"></i> 关闭</a> 
-				<a class="btn btn-primary" id="negotiate" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-undo"></i> 申请协调</a> 
-				<a class="btn btn-primary" id="negotiate_ok" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate==2}"><i class="fa fa-arrow-up"></i> 协调同意</a> 
-				<a class="btn btn-primary" id="negotiate_cancel" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate==2}"><i class="fa fa-undo"></i> 协调拒绝</a> 
+				<a class="btn btn-primary" id="deploy" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0)} "><i class="fa fa-share"></i> 发布</a> 
+				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a>
+				<a class="btn btn-primary" id="close_row"	sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate>=1}"><i class="fa fa-undo"></i> 行取消</a> 
+				<a class="btn btn-danger" id="close"	sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate>=1}"><i class="fa fa-remove"></i> 订单关闭</a> 
 				<a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -78,7 +75,6 @@
 								<ul class="nav nav-tabs">
 									<li class="active"><a data-toggle="tab" href="#tab-1">基本信息</a></li>
 									<li><a data-toggle="tab" href="#tab-2">操作日志</a></li>
-									<li><a data-toggle="tab" href="#tab-3">附件</a></li>
 								</ul>
 								<div class="tab-content">
 									<div id="tab-1" class="tab-pane row-fluid fade in active">
@@ -117,7 +113,6 @@
 											</form>
 										</div>
 									</div>
-									<div id="tab-3" class="tab-pane row-fluid fade in"></div>
 								</div>
 							</div>
 						</div>
@@ -153,10 +148,6 @@
 	  }).select2("val", state.toString());
 
 	  var basic_table, prepay_table;
-
-	  $('#negotiate').click(function() {
-
-	  });
 
 	  $('#save_history').click(function() {
 		  $("#history_form").ajaxSubmit({
@@ -214,17 +205,14 @@
 	      },
 	      name : "confirmed_date"
 	    }, {
-	      type : "select",
-	      name : "close_state",
-	      options : [ {
-	        label : "   ",
-	        value : "0"
-	      }, {
-	        label : "关闭",
-	        value : "1"
-	      }, ]
-	    }, {
 		    name : "confirmed_memo"
+	    }, {
+	      name : "memo"
+	    }, {
+	    	attr : {
+		      type : "number"
+	      },
+	      name : "confirmed_quantity"
 	    } ],
 	  }).on('preOpen', function(e, data, action) {
 		  var currentFieldName = e.currentTarget.s.includeFields[0];
@@ -243,7 +231,9 @@
 	  basic_table = $('#basic_info').DataTable({
 	    serverSide : false,
 	    processing : false,
-	    select : false,
+	    select : (!is_vendor) ? {
+		    style : 'multi'
+	    } : false,
 	    ajax : {
 	      url : detail_url,
 	      dataSrc : function(json) {
@@ -262,7 +252,6 @@
 	      data : null,
 	      defaultContent : '',
 	      width : "50px",
-	      visible : false,
 	      orderable : false,
 	      className : 'select-checkbox',
 	    }, {
@@ -405,10 +394,12 @@
 	      className : 'dt-right',
 	      title : '最后承诺交货日期',
 	    }, {
-	      data : 'close_state',
-	      className : 'dt-center buyer-cell',
-	      render : App.getOrderCloseStateOfId,
+	      data : 'close_date',
+	      className : 'dt-center',
 	      title : '　行状态　',
+	      render: function (data, display, record) {
+	      	return record.close_date?'关闭':'';
+	      },
 	    }, {
 	      data : 'confirmed_memo',
 	      className : 'vendor-cell',
@@ -446,9 +437,19 @@
 		  editor.submit();
 		  var data = basic_table.rows().data().toArray();
 		  var small_data = [];
+		  
+		  if (state == 10) {
+		  	data = basic_table.rows('.selected').data().toArray();
+		  	if (data.length == 0) {
+		  		App.showErrorDialog("操作失败", "请选择至少一行数据！");
+		  		return;
+		  	}
+		  }		  
+		  
 		  $.each(data, function(key, item) {
 			  small_data.push({
 			    id : item.id,
+			    memo: item.memo,			    
 			    confirmed_date : item.confirmed_date,
 			    confirmed_memo : item.confirmed_memo,
 			    close_state : item.close_state
@@ -478,30 +479,20 @@
 		  submit(1);
 	  });
 
-	  $("#negotiate").click(function() {
+	  $("#confirm").click(function() {
 		  editor.submit();
 		  submit(2);
 	  });
 
-	  $("#negotiate_ok").click(function() {
+	  $("#close").click(function() {
 		  editor.submit();
 		  submit(3);
 	  });
 
-	  $("#negotiate_cancel").click(function() {
+	  $("#close_row").click(function() {
 		  editor.submit();
-		  submit(4);
+		  submit(10);
 	  });
-
-	  $("#confirm").click(function() {
-		  editor.submit();
-		  submit(5);
-	  });
-
-	  $("#close").click(function() {
-		  editor.submit();
-		  submit(6);
-	  });
-
+	  
   });
 </script>

@@ -12,6 +12,11 @@ public class PurchaseOrderSearchResult implements Serializable {
 	private String state;
 
 	private String vencode;
+	
+	private String verifier;
+	
+	private String closer;
+	
 	private Date audittime;
 
 	private String vendorname;
@@ -40,7 +45,7 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	public PurchaseOrderSearchResult(String code, String vencode, Date audittime, String state, String vendorname,
 			String deployername, String reviewername, Date deploydate, Date reviewdate, String maker, Date makedate,
-			Float sum, Float money, Integer srmstate, String purchase_type_name, Float prepay_money) {
+			Float sum, Float money, Integer srmstate, String purchase_type_name, Float prepay_money, String verifier, String closer) {
 		this.code = code;
 		this.setVencode(vencode);
 		this.setAudittime(audittime);
@@ -57,6 +62,8 @@ public class PurchaseOrderSearchResult implements Serializable {
 		this.srmstate = srmstate;
 		this.purchase_type_name = purchase_type_name;
 		this.prepay_money = prepay_money;
+		this.verifier = verifier;
+		this.closer = closer;
 
 	}
 
@@ -70,6 +77,22 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public String getCloser() {
+		return closer;
+	}
+
+	public void setCloser(String closer) {
+		this.closer = closer;
+	}
+
+	public String getVerifier() {
+		return verifier;
+	}
+
+	public void setVerifier(String verifier) {
+		this.verifier = verifier;
 	}
 
 	public String getCode() {
