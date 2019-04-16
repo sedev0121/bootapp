@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.srm.platform.vendor.searchitem.BoxSearchResult;
 import com.srm.platform.vendor.searchitem.SellerSearchResult;
 
@@ -41,7 +42,20 @@ public class Box implements Serializable {
 	private String memo;
 	private Integer state;
 	private Integer used;
+	
+	@JsonProperty("bind_date")
+	private Date bindDate;
 
+	private Double quantity;
+	
+	@JsonProperty("bind_property")
+	private String bindProperty;
+	
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "delivery_detail_id")
+	@ManyToOne()
+	private DeliveryDetail delivery;
+	
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "box_class_id")
 	@ManyToOne()
@@ -57,6 +71,38 @@ public class Box implements Serializable {
 
 	public BoxClass getBoxClass() {
 		return boxClass;
+	}
+
+	public Date getBindDate() {
+		return bindDate;
+	}
+
+	public void setBindDate(Date bindDate) {
+		this.bindDate = bindDate;
+	}
+
+	public Double getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Double quantity) {
+		this.quantity = quantity;
+	}
+
+	public String getBindProperty() {
+		return bindProperty;
+	}
+
+	public void setBindProperty(String bindProperty) {
+		this.bindProperty = bindProperty;
+	}
+
+	public DeliveryDetail getDelivery() {
+		return delivery;
+	}
+
+	public void setDelivery(DeliveryDetail delivery) {
+		this.delivery = delivery;
 	}
 
 	public void setBoxClass(BoxClass boxClass) {

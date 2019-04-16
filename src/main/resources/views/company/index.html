@@ -11,10 +11,6 @@
 			<div class="search-cell width-20">
 				<label for="code">仓库编号/名称：</label> <input type="text" name="code" id="code" class="form-control">
 			</div>
-			<div class="search-cell width-10 form-group">
-				<label for="used">SRM使用：</label> <select name="used" id="used" class="form-control">
-				</select>
-			</div>
 			<div style="vertical-align: bottom" class="search-cell form-group">
 				<button class="btn btn-default" id="btn_search">
 					<i class="fa fa-search"></i> 查询
@@ -32,12 +28,10 @@
 </html>
 <script th:inline="javascript">
 	$(document).ready(function() {
-		$('#used').select2({data: App.getYesNoDataWithAll(), minimumResultsForSearch: -1});
-		
 	  var table_options = {
 	    ordering : true,
 	    ajax : {
-	      url : /*[[@{/store/list}]]*/'',
+	      url : /*[[@{/company/list}]]*/'',
 	      data : function(data) {
 		      var filter = {
 		        rows_per_page : data.length,
@@ -45,7 +39,6 @@
 		        order : data.columns[data.order[0].column].data,
 		        dir : data.order[0].dir,
 		        search : $('#code').val(),
-		        used : $('#used').val()
 		      }
 		      return filter;
 	      },
@@ -58,27 +51,10 @@
 	    order : [ [ 0, 'asc' ] ],
 	    columns : [ {
 	      data : 'name',
-	      title : '仓库名称',
+	      title : '名称',
 	    }, {
 	      data : 'code',
-	      title : '仓库编码',
-	    }, {
-	      data : 'company.name',
-	      title : '业务实体',
-	    }, {
-	      data : 'address',
-	      title : '仓库地址',
-	    }, {
-	      data : 'is_accept_set',
-	      title : '是否整箱收货',
-	      render: App.getYesNoOfId,
-	    }, {
-	      data : 'is_use_in_srm',
-	      title : '是否SRM使用',
-	      render: App.getYesNoOfId,
-	    }, {
-	      data : 'memo',
-	      title : '备注',
+	      title : '编码',
 	    } ],
 	  };
 
@@ -88,10 +64,6 @@
 		  table.draw();
 	  });
 
-	  $('#used').change(function() {
-	  	table.draw();
-	  });
-	  
 	  $('#code').keyup(function(e) {
 		  if (e.keyCode == 13)
 			  table.draw();

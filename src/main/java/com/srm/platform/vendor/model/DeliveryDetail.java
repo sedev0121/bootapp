@@ -31,7 +31,10 @@ public class DeliveryDetail implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String code;
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "code", referencedColumnName = "code")
+	@ManyToOne()
+	private DeliveryMain main;
 
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "order_detail_id")
@@ -40,6 +43,9 @@ public class DeliveryDetail implements Serializable {
 
 	@JsonProperty("delivered_quantity")
 	private Double deliveredQuantity;
+	
+	@JsonProperty("row_no")
+	private Integer rowNo;
 	
 	@JsonProperty("deliver_number")
 	private String deliverNumber;
@@ -62,6 +68,22 @@ public class DeliveryDetail implements Serializable {
 		this.id = id;
 	}
 	
+	public DeliveryMain getMain() {
+		return main;
+	}
+
+	public void setMain(DeliveryMain main) {
+		this.main = main;
+	}
+
+	public Integer getRowNo() {
+		return rowNo;
+	}
+
+	public void setRowNo(Integer rowNo) {
+		this.rowNo = rowNo;
+	}
+
 	public String getBuyerMemo() {
 		return buyerMemo;
 	}
@@ -92,14 +114,6 @@ public class DeliveryDetail implements Serializable {
 
 	public void setMemo(String memo) {
 		this.memo = memo;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
 	}
 
 	public PurchaseOrderDetail getPurchaseOrderDetail() {

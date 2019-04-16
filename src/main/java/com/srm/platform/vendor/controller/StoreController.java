@@ -59,7 +59,7 @@ public class StoreController extends CommonController {
 
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody Page<StoreSearchItem> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<Store> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
@@ -67,11 +67,15 @@ public class StoreController extends CommonController {
 		String search = requestParams.getOrDefault("search", "");
 		String used = requestParams.getOrDefault("used", "-1");
 
+		if (order.equals("company.name")) {
+			order = "b.name";
+		}
+		
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		Page<StoreSearchItem> result = null;
+		Page<Store> result = null;
 		
 		Integer usedState = Integer.parseInt(used);
 		if (usedState > -1) {

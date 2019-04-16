@@ -218,7 +218,7 @@ public class DeliveryController extends CommonController {
 			if (form.getTable() != null) {				
 				for (Map<String, String> row : form.getTable()) {
 					DeliveryDetail detail = new DeliveryDetail();
-					detail.setCode(main.getCode());
+					detail.setMain(main);
 					detail.setPurchaseOrderDetail(purchaseOrderDetailRepository.findOneById(Long.parseLong(row.get("po_detail_id"))));
 					detail.setDeliveredQuantity(Double.parseDouble(row.get("delivered_quantity")));
 					detail.setMemo(row.get("memo"));

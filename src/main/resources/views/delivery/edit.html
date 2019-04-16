@@ -281,16 +281,19 @@ is_readonly = 0;
 	      className : 'select-checkbox',
 	    }, {
 	      data : 'purchaseOrderDetail.main.code',
-	      title : '订单号',
+	      title : '订单编号',
 	    }, {
 	      data : 'purchaseOrderDetail.row_no',
-	      title : '编码',
-	    }, {
-	      data : 'purchaseOrderDetail.inventory_name',
-	      title : '存货名称',
+	      title : '订单行号',
 	    }, {
 	      data : 'purchaseOrderDetail.inventory.code',
-	      title : '存货代码',
+	      title : '货品编码',
+	    }, {
+	      data : 'purchaseOrderDetail.inventory_name',
+	      title : '货品名称',
+	    }, {
+	      data : 'purchaseOrderDetail.inventory_name',
+	      title : '规格型号',
 	    }, {
 	      data : 'purchaseOrderDetail.unit_name',
 	      className : 'dt-center',
@@ -300,22 +303,17 @@ is_readonly = 0;
 	      className : 'dt-right',
 	      title : '订单数量',
 	    }, {
+	      data : 'purchaseOrderDetail.inventory_name',
+	      title : '换算率',
+	    }, {
+	      data : 'purchaseOrderDetail.inventory_name',
+	      title : '订单件数',
+	    }, {
 	      data : 'purchaseOrderDetail.quantity',
 	      className : 'dt-right',
-	      title : '订单箱数',
+	      title : '订单件数',
 	      render: function (data, display, record) {
 	        return App.getBoxCount(record.purchaseOrderDetail.quantity, record.purchaseOrderDetail.inventory.count_per_box);
-	      },
-	    }, {
-	      data : 'purchaseOrderDetail.arrived_quantity',
-	      className : 'dt-right',
-	      title : '订单已交数量',
-	    }, {
-	      data : 'purchaseOrderDetail.arrived_quantity',
-	      className : 'dt-right',
-	      title : '订单已交箱数',
-	      render: function (data, display, record) {
-	        return App.getBoxCount(record.purchaseOrderDetail.arrived_quantity, record.purchaseOrderDetail.inventory.count_per_box);
 	      },
 	    }, {
 	      data : 'purchaseOrderDetail.arrived_quantity',
@@ -327,7 +325,7 @@ is_readonly = 0;
 	    }, {
 	      data : 'purchaseOrderDetail.arrived_quantity',
 	      className : 'dt-right',
-	      title : '订单未交箱数',		
+	      title : '订单未交件数',		
 	      render: function (data, display, record) {
 	        return App.getBoxCount(record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.arrived_quantity, record.purchaseOrderDetail.inventory.count_per_box);
 	      },
@@ -336,6 +334,13 @@ is_readonly = 0;
 	      className : 'dt-right',
 	      className : 'vendor-edit',
 	      title : '发货数量',		 
+	    }, {
+	      data : 'delivered_quantity',
+	      className : 'dt-right',
+	      title : '发货件数',		 
+	      render: function (data, display, record) {
+	        return App.getBoxCount(record.delivered_quantity, record.purchaseOrderDetail.inventory.count_per_box);
+	      },
 	    }, {
 	      data : 'delivered_quantity',
 	      className : 'dt-right',
@@ -348,6 +353,11 @@ is_readonly = 0;
 	      className : 'dt-right',
 	      title : '实收数量',		 
 	    }, {
+	    	data : null,
+	      defaultContent: '',
+	      className : 'dt-right',
+	      title : '实收件数',		 
+	    }, {
 	      data : 'accepted_quantity',
 	      className : 'dt-right',
 	      title : '实收箱数',		 
@@ -358,9 +368,14 @@ is_readonly = 0;
 	      data : 'deliver_number',
 	      title : '批次',		 
 	    }, {
+	      data : 'buyer_memo',
+	      visible: state > 1,
+	      className : 'buyer-edit',
+	      title : '购方备注',		  
+	    }, {
 	      data : 'memo',
 	      className : 'vendor-edit',
-	      title : '供应商备注',		 
+	      title : '供方备注',		 
 	    }, {
 	      data : 'state',
 	      title : '行审批　　',	
@@ -368,11 +383,7 @@ is_readonly = 0;
 	      visible: state > 1,
 	      className : 'buyer-edit',
 	      render : App.getDeliveryRowStateOfId
-	    }, {
-	      data : 'buyer_memo',
-	      visible: state > 1,
-	      className : 'buyer-edit',
-	      title : '采购方备注',		 
+
 	    } ],
 	    rowCallback : function(row, data) {
 		    // Set the checked state of the checkbox in the table
