@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,11 +35,9 @@ import com.srm.platform.vendor.utility.Utils;
 @Controller
 @RequestMapping(path = "/box")
 // @PreAuthorize("hasAuthority('供应商管理-查看列表')")
+@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('箱码管理-查看列表')")
 public class BoxController extends CommonController {
 
-	private static Long LIST_FUNCTION_ACTION_ID = 5L;
-
-	// 查询列表
 	@GetMapping({ "", "/" })
 	public String index() {
 		return "box/list";
@@ -50,7 +49,6 @@ public class BoxController extends CommonController {
 		return boxClassRepository.findBySearchTerm(search);
 	}
 
-	// 查询列表API
 	@RequestMapping(value = "/list/{classId}", produces = "application/json")
 	public @ResponseBody Page<Box> list_ajax(@PathVariable("classId") Long classId,
 			@RequestParam Map<String, String> requestParams) {
@@ -149,15 +147,6 @@ public class BoxController extends CommonController {
 		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
 
 		return jsonResponse;
-	}
-
-	private void checkPermission(String vendorCode, Long functionActionId) {
-		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
-		boolean result = accountPermission.checkVendorPermission(vendorCode);
-		if (!result) {
-			// TODO:
-			// show403();
-		}
 	}
 
 }
