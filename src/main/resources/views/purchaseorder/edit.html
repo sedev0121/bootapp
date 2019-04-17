@@ -9,10 +9,10 @@
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
-				<a class="btn btn-primary" id="deploy" sec:authorize="hasRole('ROLE_BUYER')" th:if="${(main.srmstate==0)} "><i class="fa fa-share"></i> 发布</a> 
+				<a class="btn btn-primary" id="deploy" sec:authorize="hasAuthority('订单管理-发布')" th:if="${(main.srmstate==0)} "><i class="fa fa-share"></i> 发布</a> 
 				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a>
-				<a class="btn btn-primary" id="close_row"	sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate>=1}"><i class="fa fa-undo"></i> 行取消</a> 
-				<a class="btn btn-danger" id="close"	sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.srmstate>=1}"><i class="fa fa-remove"></i> 订单关闭</a> 
+				<a class="btn btn-primary" id="close_row"	sec:authorize="hasAuthority('订单管理-行取消')"><i class="fa fa-undo"></i> 行取消</a> 
+				<a class="btn btn-danger" id="close"	sec:authorize="hasAuthority('订单管理-关闭')" th:if="${main.srmstate>=1}"><i class="fa fa-remove"></i> 订单关闭</a> 
 				<a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
