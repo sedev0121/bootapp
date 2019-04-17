@@ -45,12 +45,12 @@ import com.srm.platform.vendor.utility.Utils;
 public class DeliveryController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 18L;
-	
+
 	@Override
 	protected String getOperationHistoryType() {
 		return "delivery";
 	};
-	
+
 	// 查询列表
 	@GetMapping({ "", "/" })
 	public String index() {
@@ -74,7 +74,7 @@ public class DeliveryController extends CommonController {
 		if (main == null)
 			show404();
 
-		// checkVendor(main.getVendor());
+		checkPermission(main, LIST_FUNCTION_ACTION_ID);
 
 		model.addAttribute("main", main);
 		return "delivery/edit";
@@ -92,24 +92,26 @@ public class DeliveryController extends CommonController {
 		setReadDate(msgid);
 		return "redirect:/delivery/" + code + "/edit";
 	}
-	
+
 	@GetMapping("/{id}/deleteattach")
-//	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
+	// @PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
 	public @ResponseBody Boolean deleteAttach(@PathVariable("id") Long id) {
 		DeliveryMain main = deliveryMainRepository.findOneById(id);
 
-//		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_INQUERY) + File.separator
-//				+ main.getAttachFileName());
-//		if (attach.exists())
-//			attach.delete();
-//		main.setAttachFileName(null);
-//		main.setAttachOriginalName(null);
+		// File attach = new
+		// File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_INQUERY) +
+		// File.separator
+		// + main.getAttachFileName());
+		// if (attach.exists())
+		// attach.delete();
+		// main.setAttachFileName(null);
+		// main.setAttachOriginalName(null);
 		deliveryMainRepository.save(main);
 		return true;
 	}
 
 	// 删除API
-//	@PreAuthorize("hasAuthority('询价管理-删除') or hasRole('ROLE_VENDOR')")
+	// @PreAuthorize("hasAuthority('询价管理-删除') or hasRole('ROLE_VENDOR')")
 	@GetMapping("/{code}/delete")
 	@Transactional
 	public @ResponseBody Boolean delete_ajax(@PathVariable("code") String code) {
@@ -129,7 +131,7 @@ public class DeliveryController extends CommonController {
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "ccode");
 		String dir = requestParams.getOrDefault("dir", "asc");
-		
+
 		String vendorStr = requestParams.getOrDefault("vendor", "");
 		String stateStr = requestParams.getOrDefault("state", "0");
 		String code = requestParams.getOrDefault("code", "");
@@ -140,8 +142,8 @@ public class DeliveryController extends CommonController {
 		case "vendor.name":
 			order = "b.name";
 			break;
-		}		
-		
+		}
+
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
@@ -165,23 +167,23 @@ public class DeliveryController extends CommonController {
 			String subWhere = " 1=0 ";
 			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
 			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() ==0)) {
+			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
 				subWhere += " or a.company_id in :companyList";
 				params.put("companyList", allowedCompanyIdList);
 			}
-			
+
 			List<String> allowedVendorCodeList = accountPermission.getVendorList();
-			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() ==0)) {
+			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
 				subWhere += " or a.vendor_code in :vendorList";
 				params.put("vendorList", allowedVendorCodeList);
 			}
-			
+
 			List<Long> allowedStoreIdList = accountPermission.getStoreList();
-			if (!(allowedStoreIdList == null || allowedStoreIdList.size() ==0)) {
+			if (!(allowedStoreIdList == null || allowedStoreIdList.size() == 0)) {
 				subWhere += " or a.store_id in :storeList";
 				params.put("storeList", allowedStoreIdList);
 			}
-			
+
 			bodyQuery += " and (" + subWhere + ") ";
 		}
 
@@ -189,17 +191,17 @@ public class DeliveryController extends CommonController {
 			bodyQuery += " and a.code like CONCAT('%',:code, '%') ";
 			params.put("code", code.trim());
 		}
-		
+
 		if (!vendorStr.trim().isEmpty()) {
 			bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.abbrname like CONCAT('%',:vendor, '%'))";
 			params.put("vendor", vendorStr.trim());
 		}
-		
+
 		if (state > 0) {
 			bodyQuery += " and a.state=:state";
 			params.put("state", state);
 		}
-		
+
 		countQuery += bodyQuery;
 		Query q = em.createNativeQuery(countQuery);
 
@@ -225,7 +227,7 @@ public class DeliveryController extends CommonController {
 	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody GenericJsonResponse<DeliveryMain> update_ajax(DeliverySaveForm form, Principal principal) {
-		
+
 		DeliveryMain main = new DeliveryMain();
 		if (form.getId() != null) {
 			DeliveryMain old = deliveryMainRepository.findOneById(form.getId());
@@ -233,26 +235,26 @@ public class DeliveryController extends CommonController {
 				main = old;
 			}
 		}
-		
+
 		main.setState(form.getState());
 		main.setCode(form.getCode());
 		main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
 		main.setCompany(companyRepository.findOneById(form.getCompany()));
 		main.setStore(storeRepository.findOneById(form.getStore()));
-		
+
 		main.setEstimatedArrivalDate(Utils.parseDate(form.getEstimated_arrival_date()));
 		main.setCreateDate(new Date());
 		Account account = this.getLoginAccount();
 		main.setCreater(account);
 
 		main = deliveryMainRepository.save(main);
-		
+
 		String action = null;
 		List<Account> toList = new ArrayList<>();
-		
+
 		switch (form.getState()) {
 		case Constants.DELIVERY_STATE_NEW:
-			action = "保存";			
+			action = "保存";
 			break;
 		case Constants.DELIVERY_STATE_SUBMIT:
 			action = "已发布";
@@ -275,16 +277,17 @@ public class DeliveryController extends CommonController {
 
 		this.sendmessage(title, toList, String.format("/delivery/%s/read", main.getCode()));
 		this.addOpertionHistory(main.getCode(), String.format("%s了预发货单", action));
-		
+
 		if (form.getState() <= Constants.DELIVERY_STATE_SUBMIT) {
 
 			deliveryDetailRepository.deleteInBatch(deliveryDetailRepository.findDetailsByCode(main.getCode()));
-			
-			if (form.getTable() != null) {				
+
+			if (form.getTable() != null) {
 				for (Map<String, String> row : form.getTable()) {
 					DeliveryDetail detail = new DeliveryDetail();
 					detail.setMain(main);
-					detail.setPurchaseOrderDetail(purchaseOrderDetailRepository.findOneById(Long.parseLong(row.get("po_detail_id"))));
+					detail.setPurchaseOrderDetail(
+							purchaseOrderDetailRepository.findOneById(Long.parseLong(row.get("po_detail_id"))));
 					detail.setDeliveredQuantity(Double.parseDouble(row.get("delivered_quantity")));
 					detail.setMemo(row.get("memo"));
 
@@ -295,7 +298,7 @@ public class DeliveryController extends CommonController {
 				}
 			}
 		} else {
-			if (form.getTable() != null) {	
+			if (form.getTable() != null) {
 				boolean isAllOk = true;
 				for (Map<String, String> row : form.getTable()) {
 					DeliveryDetail detail = deliveryDetailRepository.findOneById(Long.parseLong(row.get("id")));
@@ -305,26 +308,26 @@ public class DeliveryController extends CommonController {
 					if (rowState == Constants.DELIVERY_ROW_STATE_CANCEL) {
 						isAllOk = false;
 					}
-					
+
 					if (form.getState() == Constants.DELIVERY_STATE_OK) {
-						detail.setState(rowState);	
+						detail.setState(rowState);
 					} else {
 						detail.setState(Constants.DELIVERY_ROW_STATE_CANCEL);
 					}
-					
+
 					detail = deliveryDetailRepository.save(detail);
 				}
-				
+
 				if (!isAllOk) {
 					main.setState(Constants.DELIVERY_STATE_PARTIAL_OK);
 					main = deliveryMainRepository.save(main);
 				}
 			}
 		}
-		
+
 		GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
 				main);
-		
+
 		return jsonResponse;
 	}
 
@@ -338,4 +341,34 @@ public class DeliveryController extends CommonController {
 				main.getAttachOriginalName());
 	}
 
+	private void checkPermission(DeliveryMain main, Long functionActionId) {
+		if (this.isVendor()) {
+			if (!main.getVendor().getCode().equals(this.getLoginAccount().getVendor().getCode())) {
+				show403();
+			}
+		} else {
+
+			AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
+			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+			List<String> allowedVendorCodeList = accountPermission.getVendorList();
+			List<Long> allowedStoreIdList = accountPermission.getStoreList();
+
+			boolean isValid = false;
+
+			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)
+					&& allowedCompanyIdList.contains(main.getCompany().getId())) {
+				isValid = true;
+			} else if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)
+					&& allowedVendorCodeList.contains(main.getVendor().getCode())) {
+				isValid = true;
+			} else if (!(allowedStoreIdList == null || allowedStoreIdList.size() == 0)
+					&& allowedStoreIdList.contains(main.getStore().getId())) {
+				isValid = true;
+			}
+
+			if (!isValid) {
+				show403();
+			}
+		}
+	}
 }
