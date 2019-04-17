@@ -1,14 +1,19 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Query;
+
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
@@ -29,15 +34,18 @@ import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.DeliverySaveForm;
+import com.srm.platform.vendor.searchitem.DeliverySearchResult;
+import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/delivery")
-//@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('询价管理-查看列表')")
 public class DeliveryController extends CommonController {
 
+	private static Long LIST_FUNCTION_ACTION_ID = 18L;
+	
 	@Override
 	protected String getOperationHistoryType() {
 		return "delivery";
@@ -116,7 +124,7 @@ public class DeliveryController extends CommonController {
 
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody Page<DeliveryMain> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<DeliverySearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "ccode");
@@ -138,22 +146,79 @@ public class DeliveryController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
+		String selectQuery = "select a.*, b.name vendor_name, b.contact, c.name company_name, d.name store_name, d.address store_address ";
+		String countQuery = "select count(*) ";
+		String orderBy = " order by " + order + " " + dir;
+
+		String bodyQuery = " FROM delivery_main a left join vendor b on a.vendor_code=b.code left join company c on a.company_id=c.id left join store d on a.store_id=d.id where 1=1 ";
+
+		Map<String, Object> params = new HashMap<>();
+
 		if (isVendor()) {
 			Vendor vendor = this.getLoginAccount().getVendor();
-			vendorStr = vendor == null ? "0" : vendor.getCode();
-			
-			if (state > 0) {
-				return deliveryMainRepository.findBySearchTermForVendor(code, vendorStr, state, request);
-			}else {
-				return deliveryMainRepository.findBySearchTermForVendor(code, vendorStr, request);
-			}
+			bodyQuery += " and b.code= :vendor";
+			params.put("vendor", vendor.getCode());
+
+			bodyQuery += " and a.state>=" + Constants.STATEMENT_STATE_REVIEW;
+
 		} else {
-			if (state > 0) {
-				return deliveryMainRepository.findBySearchTerm(code, vendorStr, state, request);
-			}else {
-				return deliveryMainRepository.findBySearchTerm(code, vendorStr, request);
+			String subWhere = " 1=0 ";
+			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() ==0)) {
+				subWhere += " or a.company_id in :companyList";
+				params.put("companyList", allowedCompanyIdList);
 			}
+			
+			List<String> allowedVendorCodeList = accountPermission.getVendorList();
+			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() ==0)) {
+				subWhere += " or a.vendor_code in :vendorList";
+				params.put("vendorList", allowedVendorCodeList);
+			}
+			
+			List<Long> allowedStoreIdList = accountPermission.getStoreList();
+			if (!(allowedStoreIdList == null || allowedStoreIdList.size() ==0)) {
+				subWhere += " or a.store_id in :storeList";
+				params.put("storeList", allowedStoreIdList);
+			}
+			
+			bodyQuery += " and (" + subWhere + ") ";
 		}
+
+		if (!code.trim().isEmpty()) {
+			bodyQuery += " and a.code like CONCAT('%',:code, '%') ";
+			params.put("code", code.trim());
+		}
+		
+		if (!vendorStr.trim().isEmpty()) {
+			bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.abbrname like CONCAT('%',:vendor, '%'))";
+			params.put("vendor", vendorStr.trim());
+		}
+		
+		if (state > 0) {
+			bodyQuery += " and a.state=:state";
+			params.put("state", state);
+		}
+		
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "DeliverySearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		return new PageImpl<DeliverySearchResult>(list, request, totalCount.longValue());
+
 	}
 
 	// 更新API

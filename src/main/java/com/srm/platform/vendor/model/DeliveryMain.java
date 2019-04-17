@@ -19,11 +19,29 @@ import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.srm.platform.vendor.searchitem.BoxSearchResult;
+import com.srm.platform.vendor.searchitem.DeliverySearchResult;
 import com.srm.platform.vendor.searchitem.SellerSearchResult;
+import com.srm.platform.vendor.searchitem.StatementSearchResult;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.Utils;
 
 @Entity
+
+@SqlResultSetMapping(name = "DeliverySearchResult", classes = {
+	@ConstructorResult(targetClass = DeliverySearchResult.class, columns = {
+		@ColumnResult(name = "id", type = Long.class), 
+		@ColumnResult(name = "code", type = String.class),
+		@ColumnResult(name = "company_name", type = String.class),
+		@ColumnResult(name = "vendor_name", type = String.class),
+		@ColumnResult(name = "store_name", type = String.class),
+		@ColumnResult(name = "store_address", type = String.class),
+		@ColumnResult(name = "contact", type = String.class),
+		@ColumnResult(name = "estimated_arrival_date", type = Date.class),
+		@ColumnResult(name = "create_date", type = Date.class),
+		@ColumnResult(name = "state", type = Integer.class) 
+	}) 
+})
+
 @Table(name = "delivery_main")
 public class DeliveryMain implements Serializable {
 	private static final long serialVersionUID = 5855332316773551036L;
@@ -33,8 +51,6 @@ public class DeliveryMain implements Serializable {
 	private Long id;
 
 	private String code;
-
-	private String contact;
 
 	private Integer state = Constants.DELIVERY_STATE_NEW;
 	
@@ -107,14 +123,6 @@ public class DeliveryMain implements Serializable {
 
 	public void setCode(String code) {
 		this.code = code;
-	}
-
-	public String getContact() {
-		return contact;
-	}
-
-	public void setContact(String contact) {
-		this.contact = contact;
 	}
 
 	public Integer getState() {

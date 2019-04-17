@@ -18,6 +18,6 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 	
 	//TODO: inventory class filter
 	@Query(value = "SELECT * FROM inventory a left join inventory_class b on a.sort_code=b.code WHERE a.code LIKE %?1% or a.name LIKE %?1% ", nativeQuery = true)
-	Page<Inventory> findBySearchTerm(String search, List<String> inventoryClassCodeList, Pageable pageable);
+	Page<Inventory> findBySearchTerm(String search, Pageable pageable);
 
 }

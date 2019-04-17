@@ -30,8 +30,6 @@ import com.srm.platform.vendor.utility.AccountPermission;
 @PreAuthorize("hasAuthority('基础资料-查看列表')")
 public class InventoryController extends CommonController {
 
-	private static Long LIST_FUNCTION_ACTION_ID = 31L;
-	
 	@PersistenceContext
 	private EntityManager em;
 
@@ -53,8 +51,6 @@ public class InventoryController extends CommonController {
 
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<Inventory> list_ajax(@RequestParam Map<String, String> requestParams) {
-		AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
-		List<String> allowedInventoryClassCodeList = accountPermission.getInventoryClassList();
 		
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
@@ -69,7 +65,7 @@ public class InventoryController extends CommonController {
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<Inventory> result = inventoryRepository.findBySearchTerm(search, allowedInventoryClassCodeList, request);
+		Page<Inventory> result = inventoryRepository.findBySearchTerm(search, request);
 
 		return result;
 	}
