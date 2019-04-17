@@ -12,8 +12,8 @@
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="save"><i class="fa fa-save"></i> 保存</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==2}" id="pass"><i class="fa fa-arrow-up"></i>确认</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+				<a class="btn btn-primary" sec:authorize="hasAuthority('发货单管理-确认/退回')" th:if="${main.state==2}" id="pass"><i class="fa fa-arrow-up"></i>确认</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('发货单管理-确认/退回')" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
 				<a class="btn btn-default" th:href="@{/delivery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>

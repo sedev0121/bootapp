@@ -30,17 +30,17 @@
 						<button class="btn btn-default" id="btn_search">
 							<i class="fa fa-search"></i> 查询
 						</button>
-						<button class="btn btn-primary" id="btn_generate">
+						<button sec:authorize="hasAuthority('箱码管理-生成箱码')" class="btn btn-primary" id="btn_generate">
 							<i class="fa fa-plus-circle"></i> 生成箱码
 						</button>
-						<button class="btn btn-info" id="btn_enable">
+						<button sec:authorize="hasAuthority('箱码管理-启用/停用')" class="btn btn-info" id="btn_enable">
 							<i class="fa fa-play"></i> 启用
 						</button>
-						<button class="btn btn-danger" id="btn_disable">
+						<button sec:authorize="hasAuthority('箱码管理-启用/停用')" class="btn btn-danger" id="btn_disable">
 							<i class="fa fa-stop"></i> 停用
 						</button>
-						<button class="btn btn-warning" id="btn_empty">
-							<i class="fa fa-trash"></i> 空置
+						<button sec:authorize="hasAuthority('箱码管理-解绑')" class="btn btn-warning" id="btn_empty">
+							<i class="fa fa-trash"></i> 解绑
 						</button>
 					</div>
 				</div>
