@@ -36,36 +36,36 @@
 				</div>
 				<div class="row">
 					<div class="col-md-2">
-						<label>创建人： </label> <input type="text" class="form-control" th:value="${main.vendor.name}" readonly />
+						<label>创建人： </label> <input type="text" class="form-control" th:value="${main.maker}" readonly />
 					</div>
 					<div class="col-md-2">
-						<label>创建日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.audittime, 'yyyy-MM-dd')}" readonly />
+						<label>创建日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.makedate, 'yyyy-MM-dd')}" readonly />
 					</div>
 					<div class="col-md-2">
-						<label>发布人： </label> <input type="text" class="form-control" th:value="${main.vendor.name}" readonly />
+						<label>发布人： </label> <input type="text" class="form-control" th:value="${main.deployer?.realname}" readonly />
 					</div>
 					<div class="col-md-2">
-						<label>发布日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.audittime, 'yyyy-MM-dd')}" readonly />
+						<label>发布日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.deploydate, 'yyyy-MM-dd')}" readonly />
 					</div>
 					<div class="col-md-2">
-						<label>确认人： </label> <input type="text" class="form-control" th:value="${main.vendor.name}" readonly />
+						<label>确认人： </label> <input type="text" class="form-control" th:value="${main.reviewer?.realname}" readonly />
 					</div>
 					<div class="col-md-2">
-						<label>确认日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.audittime, 'yyyy-MM-dd')}" readonly />
+						<label>确认日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.reviewdate, 'yyyy-MM-dd')}" readonly />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-2">
-						<label>供应商: </label> <input type="text" class="form-control" th:value="${main.vendor.name}" readonly />
+						<label>供应商: </label> <input type="text" class="form-control" th:value="${main.vendor?.name}" readonly />
 					</div>
 					<div class="col-md-2">
-						<label>业务实体： </label> <input type="text" class="form-control" th:value="${main.vendor.name}" readonly />
+						<label>业务实体： </label> <input type="text" class="form-control" readonly />
 					</div>
 					<div class="col-md-2">
-						<label>收货仓库： </label> <input type="text" class="form-control" th:value="${main.reviewer?.realname}" readonly />
+						<label>收货仓库： </label> <input type="text" class="form-control" readonly />
 					</div>
 					<div class="col-md-6">
-						<label>订单摘要： </label> <input type="text" class="form-control" th:value="${main.vendor.address}" readonly />
+						<label>订单摘要： </label> <input type="text" class="form-control" th:value="${main.remark}" readonly />
 					</div>
 				</div>
 				<div class="row margin-top-10">
