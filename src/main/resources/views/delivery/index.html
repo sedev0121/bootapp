@@ -85,26 +85,22 @@
 		      return '<a href="' + url + '">' + data + '</a>';
 	      },
 	    }, {
-	    	orderable: false,
-	      data : 'vendor.name',
+	      data : 'vendor_name',
 	      visible : !is_vendor,
 	      title : '供应商名称',
 	    }, {
-	    	orderable: false,
-	      data : 'vendor.contact',
+	    	visible : !is_vendor,
+	      data : 'contact',
 	      title : '联系人',
 	    }, {
-	    	orderable: false,
-	      data : 'company.name',
+	      data : 'company_name',
 	      title : '业务实体',
 	    }, {
-	    	orderable: false,
-	      data : 'store.name',
+	      data : 'store_name',
 	      className : 'dt-center',
 	      title : '收货仓库',
 	    }, {
-	    	orderable: false,
-	      data : 'store.address',
+	      data : 'store_address',
 	      className : 'dt-center',
 	      title : '仓库地址',
 	    }, {

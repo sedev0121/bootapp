@@ -1,6 +1,5 @@
 package com.srm.platform.vendor.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
@@ -18,15 +17,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.searchitem.VendorSearchItem;
-import com.srm.platform.vendor.utility.AccountPermission;
 
 // 供应商管理
 @Controller
 @RequestMapping(path = "/vendor")
 @PreAuthorize("hasAuthority('基础资料-查看列表')")
 public class VendorController extends CommonController {
-
-	private static Long LIST_FUNCTION_ACTION_ID = 5L;
 
 	// 查询列表
 	@GetMapping({ "", "/" })
@@ -49,13 +45,6 @@ public class VendorController extends CommonController {
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<VendorSearchItem> list_ajax(@RequestParam Map<String, String> requestParams) {
-		AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
-		List<String> allowedVendorCodeList = accountPermission.getVendorList();
-
-		if (allowedVendorCodeList == null || allowedVendorCodeList.size() == 0) {
-			return Page.empty();
-		}
-		
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
@@ -67,7 +56,7 @@ public class VendorController extends CommonController {
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
 		Page<VendorSearchItem> result = null;
-		result = vendorRepository.findBySearchTerm(search, allowedVendorCodeList, request);
+		result = vendorRepository.findVendorsBySearchTerm(search, request);
 		return result;
 	}
 
