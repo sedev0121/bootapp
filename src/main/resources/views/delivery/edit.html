@@ -189,7 +189,7 @@ is_readonly = 0;
 
 	  editor = new $.fn.dataTable.Editor({
 	    table : "#detail_table",
-	    idSrc : "rowno",
+	    idSrc : "row_no",
 	    fields : [ {
 	      label : "发货数量:",
 	      attr : {
@@ -224,6 +224,13 @@ is_readonly = 0;
 		      system : "发生错误！"
 	      }
 	    }
+	  }).on('postRemove', function(e, json, data, action) {
+		  var table_data = table.rows().data().toArray();
+		  var id = 1;
+		  $.each(table_data, function(key, item) {
+			  item.row_no = id++;
+		  })
+		  table.rows().invalidate();
 	  }).on('preOpen', function(e, data, action) {
 	  	
 		  var currentFieldName = e.currentTarget.s.includeFields[0];
@@ -259,7 +266,6 @@ is_readonly = 0;
 	      dataSrc : function(json) {
 		      var id = 1;
 		      $.each(json, function(key, item) {
-			      item.rowno = id++;
 			      item.dstartdate = $.fn.date_renderer(item.dstartdate);
 			      item.denddate = $.fn.date_renderer(item.denddate);
 		      });
@@ -277,10 +283,15 @@ is_readonly = 0;
 	      orderable : false,
 	      className : 'select-checkbox',
 	    }, {
+	      data : 'row_no',
+	      className : 'dt-center',
+	      title : '行号',
+	    }, {
 	      data : 'purchaseOrderDetail.main.code',
 	      title : '订单编号',
 	    }, {
 	      data : 'purchaseOrderDetail.row_no',
+	      className : 'dt-center',
 	      title : '订单行号',
 	    }, {
 	      data : 'purchaseOrderDetail.inventory.code',
@@ -751,7 +762,7 @@ is_readonly = 0;
 
 			  if (available) {
 				  var temp = {};
-				  temp.rowno = table.rows().data().toArray().length + 1;
+				  temp.row_no = table.rows().data().toArray().length + 1;
 				  temp.purchaseOrderDetail = item;
 				  temp.purchaseOrderDetail.code = item.main.code;
 				  temp.accepted_quantity = 0;

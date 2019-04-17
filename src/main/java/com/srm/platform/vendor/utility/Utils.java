@@ -142,6 +142,16 @@ public class Utils {
 
 		return id;
 	}
+	
+	public static String generateDeliveryNumber(String vendorCode) {
+		String id = "";
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+		id = dateFormat.format(new Date());
+
+		id += vendorCode;
+		return id;
+	}
 
 	public static String generateResetPassword() {
 		int max = 1000000;
