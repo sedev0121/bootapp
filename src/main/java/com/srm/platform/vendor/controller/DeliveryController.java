@@ -283,6 +283,7 @@ public class DeliveryController extends CommonController {
 			deliveryDetailRepository.deleteInBatch(deliveryDetailRepository.findDetailsByCode(main.getCode()));
 
 			if (form.getTable() != null) {
+				int rowNo = 1;
 				for (Map<String, String> row : form.getTable()) {
 					DeliveryDetail detail = new DeliveryDetail();
 					detail.setMain(main);
@@ -290,6 +291,9 @@ public class DeliveryController extends CommonController {
 							purchaseOrderDetailRepository.findOneById(Long.parseLong(row.get("po_detail_id"))));
 					detail.setDeliveredQuantity(Double.parseDouble(row.get("delivered_quantity")));
 					detail.setMemo(row.get("memo"));
+					detail.setRowNo(rowNo);
+					rowNo++;
+					detail.setDeliverNumber(Utils.generateDeliveryNumber(form.getVendor()));
 
 					if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
 						detail.setState(Constants.DELIVERY_ROW_STATE_OK);
