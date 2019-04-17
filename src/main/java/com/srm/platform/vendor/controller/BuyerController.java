@@ -9,9 +9,6 @@ import java.util.Map;
 
 import javax.persistence.Query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,19 +32,9 @@ import com.srm.platform.vendor.model.PermissionGroup;
 import com.srm.platform.vendor.model.PermissionGroupUser;
 import com.srm.platform.vendor.model.PermissionUserScope;
 import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.CompanyRepository;
-import com.srm.platform.vendor.repository.PermissionGroupRepository;
-import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
-import com.srm.platform.vendor.repository.PermissionUserScopeRepository;
-import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.saveform.AccountSaveForm;
-import com.srm.platform.vendor.searchitem.AccountSearchItem;
-import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.BuyerSearchResult;
 import com.srm.platform.vendor.searchitem.PermissionScopeOfAccount;
-import com.srm.platform.vendor.searchitem.SearchItem;
-import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 
 @Controller
@@ -55,10 +42,6 @@ import com.srm.platform.vendor.utility.GenericJsonResponse;
 @PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('采购员用户管理-查看列表')")
 public class BuyerController extends AccountController {	
 
-	private static Long LIST_FUNCTION_ACTION_ID = 6L;
-	private static Long EDIT_FUNCTION_ACTION_ID = 7L;
-	private static Long DELETE_FUNCTION_ACTION_ID = 8L;
-	
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
 	public String buyer(Model model) {
@@ -73,8 +56,6 @@ public class BuyerController extends AccountController {
 		if (account == null)
 			show404();
 
-		checkPermission(account, EDIT_FUNCTION_ACTION_ID);
-		
 		PermissionGroupUser temp = new PermissionGroupUser();
 		temp.setAccountId(account.getId());
 
@@ -251,15 +232,5 @@ public class BuyerController extends AccountController {
 		}
 
 		return jsonResponse;
-	}
-	
-	
-	private void checkPermission(Account account, Long functionActionId) {
-		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
-		boolean accountResult = accountPermission.checkAccountPermission(account.getId());
-		boolean companyResult = accountPermission.checkCompanyPermission(account.getCompany().getId());
-		if (!(accountResult || companyResult || isAdmin())) {
-			show403();
-		}
 	}
 }

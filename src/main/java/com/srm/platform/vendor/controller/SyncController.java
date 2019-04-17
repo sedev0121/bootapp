@@ -75,7 +75,7 @@ public class SyncController {
 
 	private String getStringValue(LinkedHashMap<String, Object> object, String key) {
 		String temp = String.valueOf(object.get(key));
-		if (temp != null && !temp.isEmpty() && !temp.equals("null")) {
+		if (!Utils.isEmpty(temp)) {
 			return String.valueOf(object.get(key));
 		}
 		return null;
@@ -83,7 +83,7 @@ public class SyncController {
 
 	private Integer getIntegerValue(LinkedHashMap<String, Object> object, String key) {
 		String temp = String.valueOf(object.get(key));
-		if (temp != null && !temp.isEmpty() && !temp.equals("null")) {
+		if (!Utils.isEmpty(temp)) {
 			return Integer.valueOf(temp);
 		}
 		return null;
@@ -91,7 +91,7 @@ public class SyncController {
 
 	private Double getDoubleValue(LinkedHashMap<String, Object> object, String key) {
 		String temp = String.valueOf(object.get(key));
-		if (temp != null && !temp.isEmpty() && !temp.equals("null")) {
+		if (!Utils.isEmpty(temp)) {
 			return Double.valueOf(temp);
 		}
 		return null;

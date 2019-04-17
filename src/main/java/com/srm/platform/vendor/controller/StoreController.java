@@ -30,28 +30,21 @@ import com.srm.platform.vendor.utility.AccountPermission;
 // 供应商管理
 @Controller
 @RequestMapping(path = "/store")
-//@PreAuthorize("hasAuthority('供应商管理-查看列表')")
 public class StoreController extends CommonController {
 
-	private static Long LIST_FUNCTION_ACTION_ID = 5L;
-
-
-
-	// 查询列表
+	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	@GetMapping({ "", "/" })
 	public String index() {
 		return "store/index";
 	}
 
-	// 修改
+	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	@GetMapping("/{id}/edit")
 	public String edit(@PathVariable("id") Long id, Model model) {
 		Store store = storeRepository.findOneById(id);
 		if (store == null)
 			show404();
 
-		checkPermission(store, LIST_FUNCTION_ACTION_ID);
-		
 		model.addAttribute("data", store);
 		return "store/edit";
 	}
@@ -102,13 +95,5 @@ public class StoreController extends CommonController {
 		return storeRepository.findForSelectOfCompany(companyId, request);
 	}
 	
-	private void checkPermission(Store store, Long functionActionId) {
-//		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
-//		boolean result = accountPermission.checkVendorPermission(store.getId());
-//		if (!result) {
-//			//TODO:
-////			show403();
-//		}
-	}
 
 }

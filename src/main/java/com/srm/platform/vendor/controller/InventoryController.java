@@ -27,7 +27,7 @@ import com.srm.platform.vendor.utility.AccountPermission;
 //商品档案表
 @Controller
 @RequestMapping(path = "/inventory")
-@PreAuthorize("hasAuthority('商品管理-查看列表')")
+@PreAuthorize("hasAuthority('基础资料-查看列表')")
 public class InventoryController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 31L;
@@ -36,27 +36,21 @@ public class InventoryController extends CommonController {
 	private EntityManager em;
 
 
-	// 查询列表
 	@GetMapping({ "/", "" })
 	public String index() {
 		return "inventory/index";
 	}
 
-	// 详细
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
 		Inventory main = inventoryRepository.findOneByCode(code);
 		if (main == null)
 			show404();
 		
-		//TODO: need to get inventory class code
-//		checkPermission(main.getCode(), LIST_FUNCTION_ACTION_ID);
-		
 		model.addAttribute("data", main);
 		return "inventory/edit";
 	}
 
-	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<Inventory> list_ajax(@RequestParam Map<String, String> requestParams) {
 		AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
@@ -80,12 +74,5 @@ public class InventoryController extends CommonController {
 		return result;
 	}
 	
-	private void checkPermission(String inventoryClassCode, Long functionActionId) {
-		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
-		boolean result = accountPermission.checkInventoryClassPermission(inventoryClassCode);
-		if (!result) {
-			show403();
-		}
-	}
 
 }

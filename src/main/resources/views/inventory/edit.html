@@ -1,80 +1,62 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}" >
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
 <head>
 </head>
 <body>
-  <div class="container"  layout:fragment="content">  
-      <ul class="breadcrumb">
-        <li>
-          <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
-        </li>
-        <li><a href="#">基础资料</a></li>
-        <li><a th:href="@{/inventory}">物料档案表</a></li>
-        <li class="active">详细信息</li>
-      </ul>
-      <div class="btn-group-bar">
-        <div class="text-right">
-            <a class="btn btn-default" th:href="@{/inventory}"><i class="fa fa-arrow-left"></i> 返回列表</a>
-        </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <div class="row">
-              <div class="col-md-3">
-                <label>存货编码: </label>
-                <input type="text" class="form-control" readonly th:value="${data.code}"/>
-              </div>
-              <div class="col-md-3">
-                <label>存货类别: </label>
-                <input type="text" class="form-control" readonly  th:value="${data.inventoryClass.name}"/>
-              </div>
-              <div class="col-md-3">
-                <label>存货名称: </label>
-                <input type="text" class="form-control" readonly th:value="${data.name}"/>
-              </div>
-              <div class="col-md-3">
-                <label>规格型号: </label>
-                <input type="text" class="form-control" readonly th:value="${data.specs}"/>
-              </div>
-              <div class="col-md-3">
-                <label>启用日期: </label>
-                <input type="text" class="form-control" readonly th:value="${#dates.format(data.startDate, 'yyyy-MM-dd')}"/>
-              </div>
-              <div class="col-md-3">
-                <label>变更日期: </label>
-                <input type="text" class="form-control" readonly th:value="${#dates.format(data.modifyDate, 'yyyy-MM-dd')}"/>
-              </div>
-
-              <div class="col-md-3">
-                <label>主计量单位: </label>
-                <input type="text" class="form-control" readonly th:value="${data.mainMeasure}"/>
-              </div>
-              <div class="col-md-3">
-                <label>默认仓库: </label>
-                <input type="text" class="form-control" readonly th:value="${data.defwarehouse}"/>
-              </div>
-              <div class="col-md-3">
-                <label>默认仓库名称: </label>
-                <input type="text" class="form-control" readonly th:value="${data.defwarehousename}"/>
-              </div>
-              <div class="col-md-3">
-                <label>进项税率: </label>
-                <input type="text" class="form-control" readonly th:value="${data.iimptaxrate}"/>
-              </div>
-              <div class="col-md-3">
-                <label>装箱类别: </label>
-                <input type="text" class="form-control" readonly th:value="${data.boxClass?.name}"/>
-              </div>
-              <div class="col-md-3">
-                <label>每箱数量: </label>
-                <input type="text" class="form-control" readonly th:value="${data.countPerBox}"/>
-              </div>
-
-              
-          </div>
-        </div>
-  </div>  
+	<div class="container" layout:fragment="content">
+		<ul class="breadcrumb">
+			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+			<li><a href="#">基础资料</a></li>
+			<li><a th:href="@{/inventory}">物料档案表</a></li>
+			<li class="active">详细信息</li>
+		</ul>
+		<div class="btn-group-bar">
+			<div class="text-right">
+				<a class="btn btn-default" th:href="@{/inventory}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-3">
+						<label>存货编码: </label> <input type="text" class="form-control" readonly th:value="${data.code}" />
+					</div>
+					<div class="col-md-3">
+						<label>存货类别: </label> <input type="text" class="form-control" readonly th:value="${data.inventoryClass.name}" />
+					</div>
+					<div class="col-md-3">
+						<label>存货名称: </label> <input type="text" class="form-control" readonly th:value="${data.name}" />
+					</div>
+					<div class="col-md-3">
+						<label>规格型号: </label> <input type="text" class="form-control" readonly th:value="${data.specs}" />
+					</div>
+					<div class="col-md-3">
+						<label>启用日期: </label> <input type="text" class="form-control" readonly th:value="${#dates.format(data.startDate, 'yyyy-MM-dd')}" />
+					</div>
+					<div class="col-md-3">
+						<label>变更日期: </label> <input type="text" class="form-control" readonly th:value="${#dates.format(data.modifyDate, 'yyyy-MM-dd')}" />
+					</div>
+					<div class="col-md-3">
+						<label>主计量单位: </label> <input type="text" class="form-control" readonly th:value="${data.mainMeasure}" />
+					</div>
+					<div class="col-md-3">
+						<label>默认仓库: </label> <input type="text" class="form-control" readonly th:value="${data.defwarehouse}" />
+					</div>
+					<div class="col-md-3">
+						<label>默认仓库名称: </label> <input type="text" class="form-control" readonly th:value="${data.defwarehousename}" />
+					</div>
+					<div class="col-md-3">
+						<label>进项税率: </label> <input type="text" class="form-control" readonly th:value="${data.iimptaxrate}" />
+					</div>
+					<div class="col-md-3">
+						<label>装箱类别: </label> <input type="text" class="form-control" readonly th:value="${data.boxClass?.name}" />
+					</div>
+					<div class="col-md-3">
+						<label>每箱数量: </label> <input type="text" class="form-control" readonly th:value="${data.countPerBox}" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
-
-

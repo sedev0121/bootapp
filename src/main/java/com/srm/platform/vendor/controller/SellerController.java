@@ -42,10 +42,6 @@ import com.srm.platform.vendor.utility.GenericJsonResponse;
 @PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('供应商用户管理-查看列表')")
 public class SellerController extends AccountController {
 	
-	private static Long LIST_FUNCTION_ACTION_ID = 9L;
-	private static Long EDIT_FUNCTION_ACTION_ID = 10L;
-	private static Long DELETE_FUNCTION_ACTION_ID = 11L;
-
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
 	public String buyer(Model model) {
@@ -116,8 +112,6 @@ public class SellerController extends AccountController {
 		if (account == null)
 			show404();
 
-		checkPermission(account, EDIT_FUNCTION_ACTION_ID);
-		
 		PermissionGroupUser temp = new PermissionGroupUser();
 		temp.setAccountId(account.getId());
 
@@ -203,14 +197,5 @@ public class SellerController extends AccountController {
 		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, account);
 
 		return jsonResponse;
-	}	
-	
-	private void checkPermission(Account account, Long functionActionId) {
-		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
-		boolean vendorResult = accountPermission.checkVendorPermission(account.getVendor().getCode());
-//		boolean companyResult = accountPermission.checkCompanyPermission(account.getCompany().getId());
-		if (!(vendorResult || isAdmin())) {
-			show403();
-		}
 	}
 }

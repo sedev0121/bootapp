@@ -255,25 +255,14 @@ select[readonly].select2-hidden-accessible+.select2-container .select2-selection
 	background-color: #4B77BE;
 }
 
-.inquery_state_1 {
-	color: #4B77BE;
-}
-
 #submit {
 	background-color: #32C5D2;
-}
-
-.inquery_state_2 {
-	color: #32C5D2;
 }
 
 #confirm, #review_ok {
 	background-color: #1BA39C;
 }
 
-.inquery_state_3 {
-	color: #1BA39C;
-}
 
 #delete {
 	color: #fff;
@@ -285,22 +274,53 @@ select[readonly].select2-hidden-accessible+.select2-container .select2-selection
 	background-color: red;
 }
 
-.inquery_state_4 {
-	color: red;
-}
-
 #pass {
 	background-color: #8E44AD;
 }
 
-.inquery_state_5 {
-	color: #8E44AD;
-}
 
 #verify {
 	background-color: #C49F47;
 }
 
+
+#export {
+	background-color: #2AB4C0;
+	color: white;
+}
+
+#import {
+	background-color: #3598DC;
+	color: white;
+}
+
+
+.delivery_state_1,
+.inquery_state_1 {
+	color: #4B77BE;
+}
+
+.delivery_state_2,
+.inquery_state_2 {
+	color: #32C5D2;
+}
+
+.delivery_state_3,
+.inquery_state_3 {
+	color: #1BA39C;
+}
+
+.delivery_state_4,
+.inquery_state_4 {
+	color: red;
+}
+
+.delivery_state_5,
+.inquery_state_5 {
+	color: #8E44AD;
+}
+
+.delivery_state_6,
 .inquery_state_6 {
 	color: #C49F47;
 }
@@ -311,16 +331,6 @@ select[readonly].select2-hidden-accessible+.select2-container .select2-selection
 
 .inquery_state_7 {
 	color: grey;
-}
-
-#export {
-	background-color: #2AB4C0;
-	color: white;
-}
-
-#import {
-	background-color: #3598DC;
-	color: white;
 }
 
 .dt-center {

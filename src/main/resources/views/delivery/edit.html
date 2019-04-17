@@ -4,8 +4,8 @@
 	<div class="container" layout:fragment="content">
 		<ul class="breadcrumb">
 			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
-			<li><a th:href="@{/delivery}">预发货单管理</a></li>
-			<li th:text="${#strings.contains(#request.requestURI,'add')} ?'新建预发货单':'预发货单明细'">议价单</li>
+			<li><a th:href="@{/delivery}">发货单管理</a></li>
+			<li th:text="${#strings.contains(#request.requestURI,'add')} ?'新建发货单':'发货单明细'">议价单</li>
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right">
@@ -69,7 +69,6 @@
 									<li class="active"><a data-toggle="tab" href="#tab-1">汇总信息</a></li>
 									<li><a data-toggle="tab" href="#tab-2">明细</a></li>
 									<li><a data-toggle="tab" href="#tab-3">操作日志</a></li>
-									<li><a data-toggle="tab" href="#tab-4">附件</a></li>
 								</ul>
 								<div class="tab-content">
 									<div id="tab-1" class="tab-pane row-fluid fade in active">
@@ -89,8 +88,6 @@
 												<a class="btn btn-primary save-history" id="save_history"><i class="fa fa-plus"></i> 保存</a>
 											</form>											 
 										</div>								
-									</div>
-									<div id="tab-4" class="tab-pane row-fluid fade in">										
 									</div>
 								</div>
 							</div>
@@ -421,25 +418,17 @@ is_readonly = 0;
 	  table = $('#detail_table').DataTable(table_options);
 
 	  table.on('select', function(e, dt, type, indexes) {
-		  if ($('#type').val() == 2) {
-			  var selected_data = table.rows('.selected').data().toArray();
-			  if (selected_data.length > 0) {
-				  table.button(1).enable();
-			  } else {
-				  table.button(1).disable();
-			  }
+	  	var selected_data = table.rows('.selected').data().toArray();
+		  if (selected_data.length > 0) {
+			  table.button(1).enable();
 		  } else {
 			  table.button(1).disable();
 		  }
 
 	  }).on('deselect', function(e, dt, type, indexes) {
-		  if ($('#type').val() == 2) {
-			  var selected_data = table.rows('.selected').data().toArray();
-			  if (selected_data.length > 0) {
-				  table.button(1).enable();
-			  } else {
-				  table.button(1).disable();
-			  }
+	  	var selected_data = table.rows('.selected').data().toArray();
+		  if (selected_data.length > 0) {
+			  table.button(1).enable();
 		  } else {
 			  table.button(1).disable();
 		  }

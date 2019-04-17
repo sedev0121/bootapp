@@ -22,6 +22,14 @@ public class Utils {
 		return dateFormat;
 	}
 
+	public static boolean isEmpty(String str) {
+		if (str != null && !str.isEmpty() && !str.equals("null")) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	public static Date parseDate(String dateStr) {
 		Date date = null;
 
