@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
@@ -48,6 +49,8 @@ import com.srm.platform.vendor.utility.Utils;
 @RequestMapping(path = "/purchaseorder")
 @PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('订单管理-查看列表')")
 public class PurchaseOrderController extends CommonController {
+
+	private static Long LIST_FUNCTION_ACTION_ID = 14L;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -69,8 +72,8 @@ public class PurchaseOrderController extends CommonController {
 		if (main == null)
 			show404();
 
-		// checkVendor(main.getVendor());
-
+		checkPermission(main, LIST_FUNCTION_ACTION_ID);
+		
 		model.addAttribute("main", main);
 		return "purchaseorder/edit";
 	}
@@ -138,18 +141,27 @@ public class PurchaseOrderController extends CommonController {
 			bodyQuery += " and a.srmstate>0 ";
 
 		} else {
-			// List<String> vendorList = this.getVendorListOfUser();
-			//
-			// if (vendorList.size() == 0) {
-			// return new PageImpl<PurchaseOrderSearchResult>(new ArrayList(), request, 0);
-			// }
-			//
-			// bodyQuery += " and b.code in :vendorList";
-			// params.put("vendorList", vendorList);
-			 if (!vendorStr.trim().isEmpty()) {
-				 bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.abbrname like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
-				 params.put("vendor", vendorStr.trim());
-			 }
+			String subWhere = " 1=0 ";
+			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			List<String> allowedVendorCodeList = accountPermission.getVendorList();
+			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
+				subWhere += " or a.vencode in :vendorList";
+				params.put("vendorList", allowedVendorCodeList);
+			}
+
+			List<Long> allowedAccountIdList = accountPermission.getAccountList();
+			if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)) {
+				subWhere += " or a.deployer in :accountList";
+				params.put("accountList", allowedAccountIdList);
+			}
+
+			bodyQuery += " and (" + subWhere + ") ";
+
+		}
+
+		if (!vendorStr.trim().isEmpty()) {
+			bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.abbrname like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
+			params.put("vendor", vendorStr.trim());
 		}
 
 		if (!code.trim().isEmpty()) {
@@ -199,9 +211,9 @@ public class PurchaseOrderController extends CommonController {
 		Account account = this.getLoginAccount();
 		PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(form.getCode());
 		if (form.getState() != Constants.PURCHASE_ORDER_STATE_CLOSE_ROW) {
-			main.setSrmstate(form.getState());	
-		}			
-		
+			main.setSrmstate(form.getState());
+		}
+
 		if (form.getState() == Constants.PURCHASE_ORDER_STATE_DEPLOY) {
 			main.setDeploydate(new Date());
 			main.setDeployer(account);
@@ -227,7 +239,7 @@ public class PurchaseOrderController extends CommonController {
 			action = "行关闭";
 			break;
 		}
-		
+
 		String title = String.format("订单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
 
 		this.sendmessage(title, toList, String.format("/purchaseorder/%s/read", main.getCode()));
@@ -245,7 +257,7 @@ public class PurchaseOrderController extends CommonController {
 						if (detail.getCloseDate() == null) {
 							detail.setCloseDate(new Date());
 							detail.setCloserName(getLoginAccount().getRealname());
-						}						
+						}
 					} else {
 						detail.setCloseDate(null);
 					}
@@ -254,7 +266,7 @@ public class PurchaseOrderController extends CommonController {
 					detail.setConfirmedMemo(item.get("confirmed_memo"));
 				} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CLOSE_ROW) {
 					detail.setCloserName(this.getLoginAccount().getRealname());
-					detail.setCloseDate(new Date());					
+					detail.setCloseDate(new Date());
 				}
 
 				purchaseOrderDetailRepository.save(detail);
@@ -278,17 +290,45 @@ public class PurchaseOrderController extends CommonController {
 			order = "code";
 			break;
 		}
-		
+
 		Vendor vendor = getLoginAccount().getVendor();
 		if (vendor == null) {
 			return Page.empty();
 		}
-		
+
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<PurchaseOrderDetail> result = purchaseOrderDetailRepository.searchAllOfOneVendor(search, vendor.getCode(), request);
+		Page<PurchaseOrderDetail> result = purchaseOrderDetailRepository.searchAllOfOneVendor(search, vendor.getCode(),
+				request);
 
 		return result;
+	}
+	
+	private void checkPermission(PurchaseOrderMain main, Long functionActionId) {
+		if (this.isVendor()) {
+			if (!main.getVendor().getCode().equals(this.getLoginAccount().getVendor().getCode())) {
+				show403();
+			}
+		} else {
+
+			AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
+			List<String> allowedVendorCodeList = accountPermission.getVendorList();
+			List<Long> allowedAccountIdList = accountPermission.getAccountList();
+
+			boolean isValid = false;
+
+			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)
+					&& allowedVendorCodeList.contains(main.getVendor().getCode())) {
+				isValid = true;
+			} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)
+					&& allowedAccountIdList.contains(main.getDeployer().getId())) {
+				isValid = true;
+			}
+
+			if (!isValid) {
+				show403();
+			}
+		}
 	}
 }
