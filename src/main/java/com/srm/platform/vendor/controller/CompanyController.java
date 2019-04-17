@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import com.srm.platform.vendor.searchitem.StoreSearchItem;
 // 供应商管理
 @Controller
 @RequestMapping(path = "/company")
+@PreAuthorize("hasAuthority('基础资料-查看列表')")
 public class CompanyController extends CommonController {
 
 	@ResponseBody
@@ -27,13 +29,11 @@ public class CompanyController extends CommonController {
 		return companyRepository.findForSelect(request);
 	}
 
-	// 查询列表
 	@GetMapping({ "", "/" })
 	public String index() {
 		return "company/index";
 	}
 
-	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<Company> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));

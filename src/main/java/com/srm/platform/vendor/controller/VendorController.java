@@ -3,7 +3,6 @@ package com.srm.platform.vendor.controller;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.searchitem.VendorSearchItem;
 import com.srm.platform.vendor.utility.AccountPermission;
@@ -25,7 +23,7 @@ import com.srm.platform.vendor.utility.AccountPermission;
 // 供应商管理
 @Controller
 @RequestMapping(path = "/vendor")
-@PreAuthorize("hasAuthority('供应商管理-查看列表')")
+@PreAuthorize("hasAuthority('基础资料-查看列表')")
 public class VendorController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 5L;
@@ -43,8 +41,6 @@ public class VendorController extends CommonController {
 		if (vendor == null)
 			show404();
 
-		checkPermission(code, LIST_FUNCTION_ACTION_ID);
-		
 		model.addAttribute("data", vendor);
 		return "vendor/edit";
 	}
@@ -102,14 +98,6 @@ public class VendorController extends CommonController {
 	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
 		return vendorRepository.findVendorNotCreatAccount(search, request);
-	}
-	
-	private void checkPermission(String vendorCode, Long functionActionId) {
-		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
-		boolean result = accountPermission.checkVendorPermission(vendorCode);
-		if (!result) {
-			show403();
-		}
 	}
 
 }

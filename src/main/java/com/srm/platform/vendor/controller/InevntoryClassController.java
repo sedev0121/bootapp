@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,10 +23,8 @@ import com.srm.platform.vendor.utility.AccountPermission;
 // 供应商管理
 @Controller
 @RequestMapping(path = "/inventoryclass")
-// @PreAuthorize("hasAuthority('供应商管理-查看列表')")
+@PreAuthorize("hasAuthority('基础资料-查看列表')")
 public class InevntoryClassController extends CommonController {
-
-	private static Long LIST_FUNCTION_ACTION_ID = 5L;
 
 	// 查询列表
 	@GetMapping({ "", "/" })
@@ -39,8 +38,6 @@ public class InevntoryClassController extends CommonController {
 		InventoryClass inventoryClass = inventoryClassRepository.findOneByCode(code);
 		if (inventoryClass == null)
 			show404();
-
-		checkPermission(code, LIST_FUNCTION_ACTION_ID);
 
 		model.addAttribute("data", inventoryClass);
 		return "inventoryclass/edit";
@@ -62,15 +59,6 @@ public class InevntoryClassController extends CommonController {
 		Page<VendorSearchItem> result = null;
 		result = inventoryClassRepository.findBySearchTerm(search, request);
 		return result;
-	}
-
-	private void checkPermission(String vendorCode, Long functionActionId) {
-		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
-		boolean result = accountPermission.checkVendorPermission(vendorCode);
-		if (!result) {
-			// TODO:
-			// show403();
-		}
 	}
 
 }
