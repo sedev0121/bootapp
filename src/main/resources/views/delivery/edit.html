@@ -418,25 +418,17 @@ is_readonly = 0;
 	  table = $('#detail_table').DataTable(table_options);
 
 	  table.on('select', function(e, dt, type, indexes) {
-		  if ($('#type').val() == 2) {
-			  var selected_data = table.rows('.selected').data().toArray();
-			  if (selected_data.length > 0) {
-				  table.button(1).enable();
-			  } else {
-				  table.button(1).disable();
-			  }
+	  	var selected_data = table.rows('.selected').data().toArray();
+		  if (selected_data.length > 0) {
+			  table.button(1).enable();
 		  } else {
 			  table.button(1).disable();
 		  }
 
 	  }).on('deselect', function(e, dt, type, indexes) {
-		  if ($('#type').val() == 2) {
-			  var selected_data = table.rows('.selected').data().toArray();
-			  if (selected_data.length > 0) {
-				  table.button(1).enable();
-			  } else {
-				  table.button(1).disable();
-			  }
+	  	var selected_data = table.rows('.selected').data().toArray();
+		  if (selected_data.length > 0) {
+			  table.button(1).enable();
 		  } else {
 			  table.button(1).disable();
 		  }

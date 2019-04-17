@@ -30,14 +30,15 @@ import com.srm.platform.vendor.utility.AccountPermission;
 // 供应商管理
 @Controller
 @RequestMapping(path = "/store")
-@PreAuthorize("hasAuthority('基础资料-查看列表')")
 public class StoreController extends CommonController {
 
+	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	@GetMapping({ "", "/" })
 	public String index() {
 		return "store/index";
 	}
 
+	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	@GetMapping("/{id}/edit")
 	public String edit(@PathVariable("id") Long id, Model model) {
 		Store store = storeRepository.findOneById(id);

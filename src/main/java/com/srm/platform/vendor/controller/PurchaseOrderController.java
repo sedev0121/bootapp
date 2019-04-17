@@ -278,11 +278,16 @@ public class PurchaseOrderController extends CommonController {
 			order = "code";
 			break;
 		}
-
+		
+		Vendor vendor = getLoginAccount().getVendor();
+		if (vendor == null) {
+			return Page.empty();
+		}
+		
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<PurchaseOrderDetail> result = purchaseOrderDetailRepository.searchAll(search, request);
+		Page<PurchaseOrderDetail> result = purchaseOrderDetailRepository.searchAllOfOneVendor(search, vendor.getCode(), request);
 
 		return result;
 	}

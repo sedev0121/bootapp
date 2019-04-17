@@ -19,7 +19,6 @@ import com.srm.platform.vendor.searchitem.StoreSearchItem;
 // 供应商管理
 @Controller
 @RequestMapping(path = "/company")
-@PreAuthorize("hasAuthority('基础资料-查看列表')")
 public class CompanyController extends CommonController {
 
 	@ResponseBody
@@ -29,6 +28,7 @@ public class CompanyController extends CommonController {
 		return companyRepository.findForSelect(request);
 	}
 
+	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	@GetMapping({ "", "/" })
 	public String index() {
 		return "company/index";

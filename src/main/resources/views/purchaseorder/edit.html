@@ -253,6 +253,7 @@
 	      defaultContent : '',
 	      width : "50px",
 	      orderable : false,
+	      visible: !is_vendor,
 	      className : 'select-checkbox',
 	    }, {
 	      data : 'row_no',
@@ -264,6 +265,12 @@
 	    }, {
 	      data : 'inventory.code',
 	      title : '存货代码',
+	      render: function (data, display, record) {
+	      	if (!record.inventory) {
+	      		data = '';	
+	      	}
+	        return data;
+	      },
       }, {
         data : null,
         defaultContent: '',
