@@ -77,6 +77,10 @@ public class PurchaseOrderMain {
 	private Date lockdate;
 
 	@ManyToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumn(name = "company_id", referencedColumnName = "id")
+	private Company company;
+	
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "deployer", referencedColumnName = "id")
 	private Account deployer;
 	private Date deploydate;
@@ -96,6 +100,14 @@ public class PurchaseOrderMain {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 
 	public Account getDeployer() {

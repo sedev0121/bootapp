@@ -18,6 +18,9 @@ import com.srm.platform.vendor.model.StatementDetail;
 public interface DeliveryDetailRepository extends JpaRepository<DeliveryDetail, Long> {
 	
 	DeliveryDetail findOneById(Long id);
+	
+	@Query(value = "SELECT * FROM delivery_detail WHERE code=:code and row_no=:rowNo", nativeQuery = true)
+	DeliveryDetail findOneByCodeAndRowNo(String code, Integer rowNo);
 
 	@Query(value = "SELECT * FROM delivery_detail WHERE code=:code", nativeQuery = true)
 	List<DeliveryDetail> findDetailsByCode(String code);

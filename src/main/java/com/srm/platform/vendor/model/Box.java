@@ -32,6 +32,8 @@ import com.srm.platform.vendor.searchitem.SellerSearchResult;
 @Table(name = "box")
 public class Box implements Serializable {
 	private static final long serialVersionUID = 5855332316773551036L;
+	public static final Integer BOX_IS_USING = 1;
+	public static final Integer BOX_IS_EMPTY = 0;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
