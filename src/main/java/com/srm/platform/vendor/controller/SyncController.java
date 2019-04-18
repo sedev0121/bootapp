@@ -20,6 +20,7 @@ import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.model.VendorClass;
 import com.srm.platform.vendor.repository.BoxClassRepository;
+import com.srm.platform.vendor.repository.CompanyRepository;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
@@ -53,6 +54,9 @@ public class SyncController {
 
 	@Autowired
 	private BoxClassRepository boxClassRepository;
+	
+	@Autowired
+	private CompanyRepository companyRepository;
 	
 	@Autowired
 	private PurchaseOrderMainRepository purchaseOrderMainRepository;
@@ -378,6 +382,8 @@ public class SyncController {
 					
 					boolean addDetailSuccess = true;					
 					
+					String companyCode = null;
+					
 					for (LinkedHashMap<String, Object> detailTemp : details) {
 						
 						PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByCodeAndRowno(main.getCode(),
@@ -390,6 +396,13 @@ public class SyncController {
 
 						detail.setRowNo(getIntegerValue(detailTemp, "ivouchrowno"));
 						detail.setUnitName(getStringValue(detailTemp, "cComUnitName"));
+						
+						String tempCompanyCode = getStringValue(detailTemp, "cFactoryCode"); //业务实体编码 
+						
+						if (companyCode == null) {
+							companyCode = tempCompanyCode;
+						}
+						
 						
 						Inventory inventory = inventoryRepository.findOneByCode(getStringValue(detailTemp, "cInvCode"));
 						
@@ -410,6 +423,7 @@ public class SyncController {
 						detail.setSum(getDoubleValue(detailTemp, "iNatSum")); //含税金额
 						
 						detail.setTaxRate(getDoubleValue(detailTemp, "iPerTaxRate")); //税率 
+						detail.setPrepayMoney(getDoubleValue(detailTemp, "Deposit")); //定金 
 						
 						detail.setPrice(getDoubleValue(detailTemp, "iNatUnitPrice")); //去税单价
 						detail.setMoney(getDoubleValue(detailTemp, "iNatMoney")); //去税金额
@@ -429,6 +443,10 @@ public class SyncController {
 						purchaseOrderDetailRepository.save(detail);
 					}
 
+					if (companyCode != null) {
+						main.setCompany(companyRepository.findOneByCode(companyCode));
+					}
+					
 					if (addDetailSuccess) {
 						if (main.getPurchaseTypeName().equals("普通采购")) {
 							pocodes.add(main.getPoid());
