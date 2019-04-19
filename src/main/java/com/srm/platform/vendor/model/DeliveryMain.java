@@ -81,6 +81,14 @@ public class DeliveryMain implements Serializable {
 	@ManyToOne()
 	private Account creater;
 
+	@JsonProperty("confirm_date")
+	private Date confirmDate;
+	
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "confirmer_id")
+	@ManyToOne()
+	private Account confirmer;
+	
 	public DeliveryMain() {
 		this.code = Utils.generateId();
 	}
@@ -99,6 +107,22 @@ public class DeliveryMain implements Serializable {
 
 	public void setStore(Store store) {
 		this.store = store;
+	}
+
+	public Date getConfirmDate() {
+		return confirmDate;
+	}
+
+	public void setConfirmDate(Date confirmDate) {
+		this.confirmDate = confirmDate;
+	}
+
+	public Account getConfirmer() {
+		return confirmer;
+	}
+
+	public void setConfirmer(Account confirmer) {
+		this.confirmer = confirmer;
 	}
 
 	public Company getCompany() {
