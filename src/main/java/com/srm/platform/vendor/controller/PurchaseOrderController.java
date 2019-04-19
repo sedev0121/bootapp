@@ -122,13 +122,13 @@ public class PurchaseOrderController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT a.*, b.abbrname vendorname, c.realname deployername, d.realname reviewername, e.prepay_money, e.money, e.sum ";
+		String selectQuery = "SELECT a.*, b.abbrname vendorname, f.name companyname, c.realname deployername, d.realname reviewername, e.prepay_money, e.money, e.sum ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "FROM purchase_order_main a left join vendor b on a.vencode=b.code left join account c on a.deployer=c.id left join account d on a.reviewer=d.id "
 				+ "left join (select code, sum(prepay_money) prepay_money, sum(money) money, sum(sum) sum from purchase_order_detail group by code) e on a.code=e.code "
-				+ "WHERE a.state='审核' ";
+				+ "left join company f on a.company_id=f.id WHERE a.state='审核' ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -155,6 +155,12 @@ public class PurchaseOrderController extends CommonController {
 				params.put("accountList", allowedAccountIdList);
 			}
 
+			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
+				subWhere += " or a.company_id in :companyList";
+				params.put("companyList", allowedCompanyIdList);
+			}
+			
 			bodyQuery += " and (" + subWhere + ") ";
 
 		}
@@ -318,7 +324,8 @@ public class PurchaseOrderController extends CommonController {
 			AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
 			List<String> allowedVendorCodeList = accountPermission.getVendorList();
 			List<Long> allowedAccountIdList = accountPermission.getAccountList();
-
+			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+			
 			boolean isValid = false;
 
 			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)
@@ -326,6 +333,9 @@ public class PurchaseOrderController extends CommonController {
 				isValid = true;
 			} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)
 					&& allowedAccountIdList.contains(main.getDeployer().getId())) {
+				isValid = true;
+			} else if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)
+					&& main.getCompany() != null && allowedCompanyIdList.contains(main.getCompany().getId())) {
 				isValid = true;
 			}
 

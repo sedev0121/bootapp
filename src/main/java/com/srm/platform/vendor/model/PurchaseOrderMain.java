@@ -25,6 +25,7 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 		@ColumnResult(name = "audittime", type = Date.class),
 		@ColumnResult(name = "state", type = String.class),
 		@ColumnResult(name = "vendorname", type = String.class),
+		@ColumnResult(name = "companyname", type = String.class),
 		@ColumnResult(name = "deployername", type = String.class),
 		@ColumnResult(name = "reviewername", type = String.class),
 		@ColumnResult(name = "deploydate", type = Date.class),
