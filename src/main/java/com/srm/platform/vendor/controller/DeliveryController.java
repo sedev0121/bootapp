@@ -183,6 +183,12 @@ public class DeliveryController extends CommonController {
 				subWhere += " or a.store_id in :storeList";
 				params.put("storeList", allowedStoreIdList);
 			}
+			
+			List<Long> allowedAccountIdList = accountPermission.getAccountList();
+			if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)) {
+				subWhere += " or a.confirmer_id in :accountList";
+				params.put("accountList", allowedAccountIdList);
+			}
 
 			bodyQuery += " and (" + subWhere + ") ";
 		}
@@ -236,16 +242,24 @@ public class DeliveryController extends CommonController {
 			}
 		}
 
-		main.setState(form.getState());
-		main.setCode(form.getCode());
-		main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
-		main.setCompany(companyRepository.findOneById(form.getCompany()));
-		main.setStore(storeRepository.findOneById(form.getStore()));
-
-		main.setEstimatedArrivalDate(Utils.parseDate(form.getEstimated_arrival_date()));
-		main.setCreateDate(new Date());
 		Account account = this.getLoginAccount();
-		main.setCreater(account);
+
+		if (form.getState() <= Constants.DELIVERY_STATE_SUBMIT) {
+			main.setCode(form.getCode());
+			main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
+			main.setCompany(companyRepository.findOneById(form.getCompany()));
+			main.setStore(storeRepository.findOneById(form.getStore()));
+
+			main.setEstimatedArrivalDate(Utils.parseDate(form.getEstimated_arrival_date()));
+			main.setCreateDate(new Date());
+			main.setCreater(account);
+		} else {
+			main.setConfirmDate(new Date());
+			main.setConfirmer(account);
+		}
+		
+		main.setState(form.getState());
+		
 
 		main = deliveryMainRepository.save(main);
 
@@ -356,7 +370,8 @@ public class DeliveryController extends CommonController {
 			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
 			List<String> allowedVendorCodeList = accountPermission.getVendorList();
 			List<Long> allowedStoreIdList = accountPermission.getStoreList();
-
+			List<Long> allowedAccountIdList = accountPermission.getAccountList();
+			
 			boolean isValid = false;
 
 			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)
@@ -367,6 +382,9 @@ public class DeliveryController extends CommonController {
 				isValid = true;
 			} else if (!(allowedStoreIdList == null || allowedStoreIdList.size() == 0)
 					&& allowedStoreIdList.contains(main.getStore().getId())) {
+				isValid = true;
+			} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)
+					&& main.getConfirmer() != null && allowedAccountIdList.contains(main.getConfirmer().getId())) {
 				isValid = true;
 			}
 

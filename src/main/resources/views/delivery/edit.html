@@ -31,31 +31,37 @@
 							<label for="vendor">供应商:</label> 
 							<input type="text" th:value="${main.vendor?.name}" class="form-control" readonly />
 						</div>
-						<div class="col-lg-3 col-md-3">
+						<div class="col-lg-2 col-md-2">
 							<label for="create_date">申请日期：</label> 
 							<input type="text" name="create_date" id="create_date" th:value="${#dates.format(main?.createDate, 'yyyy-MM-dd')}" class="form-control datepicker" readonly>
 						</div>
-						<div class="col-lg-3 col-md-3">
+						<div class="col-lg-2 col-md-2">
 							<label for="estimated_arrival_date">预计到货日期：</label> 
 							<input type="text" name="estimated_arrival_date" id="estimated_arrival_date" th:value="${#dates.format(main?.estimatedArrivalDate, 'yyyy-MM-dd')}" class="form-control datepicker">
 						</div>
+					</div>
+					<div class="row">
 						<div class="col-lg-3 col-md-3">
 							<label for="company">业务实体：</label> 
 							<select name="company" id="company" class="form-control">
 								<option th:if="${main.company != null}" th:value="${main.company?.id}" th:text="${main.company?.name}" selected="selected">NEC（日电）有限公司</option>
 							</select>
 						</div>
-						<div class="col-lg-6 col-md-6">
+						<div class="col-lg-3 col-md-3">
 							<label for="store">收货仓库：</label> 
 							<select name="store" id="store" class="form-control">
 								<option th:if="${main.store != null}" th:value="${main.store?.id}" th:text="${main.store?.name}" selected="selected">NEC（日电）有限公司</option>
 							</select>
 						</div>
-						<div class="col-lg-3 col-md-3 hidden">
-							<label for="store_address">仓库地址：</label> 
-							<input type="text" id="store_address" th:value="${main.store?.address}" class="form-control" readonly>
-						</div>						
-						<div class="col-lg-3 col-md-3">
+						<div class="col-lg-2 col-md-2">
+							<label for="confirmer">确认人：</label> 
+							<input type="text" th:value="${main.confirmer?.realname}" class="form-control datepicker" readonly>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="confirm_date">确认日期：</label> 
+							<input type="text" th:value="${#dates.format(main.confirmDate, 'yyyy-MM-dd')}" class="form-control datepicker" readonly>
+						</div>
+						<div class="col-lg-2 col-md-2">
 							<label for="state">状态:</label> 
 							<select name="state" id="state" class="form-control" readonly>
 							</select>
