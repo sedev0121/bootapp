@@ -31,9 +31,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
+	private String [] publicUrls = new String [] {
+            "/api/**",
+            "/login",
+            "/logout"
+    };
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().ignoringAntMatchers("/login").and().authorizeRequests().antMatchers("/assets/**", "/**").permitAll()
+		http.csrf().ignoringAntMatchers(publicUrls).and().authorizeRequests().antMatchers("/assets/**", "/**").permitAll()
 				.anyRequest().authenticated().and().formLogin().loginPage("/login").failureUrl("/login?error=1")
 				.permitAll().defaultSuccessUrl("/").and().logout().permitAll().logoutUrl("/logout")
 				.logoutSuccessUrl("/login?logout").deleteCookies("remember-me").deleteCookies("JSESSIONID")

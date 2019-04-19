@@ -11,7 +11,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -93,9 +95,6 @@ public class ApiController {
 				this.cancelPurchaseInState(main);
 				sendmessage(main);
 				return 1;
-				
-				
-				
 			} else {
 				return 0;
 			}
@@ -167,22 +166,12 @@ public class ApiController {
 
 	}
 
-	private String getStringValue(Map<String, Object> object, String key) {
-		String temp = String.valueOf(object.get(key));
-		if (!Utils.isEmpty(temp)) {
-			return String.valueOf(object.get(key));
-		}
-		return null;
-	}
-	
-	private List<LinkedHashMap<String, Object>> getDetailMap(Map<String, Object> object, String key) {
-		return (List<LinkedHashMap<String, Object>>) object.get(key);
-	}
+
 	
 	@ResponseBody
 	@RequestMapping({ "/pda" })
-	public Map<String, Object> pda(@RequestParam Map<String, Object> requestParams) {
-		String method = getStringValue(requestParams, "method");
+	public Map<String, Object> pda(@RequestBody Map<String, Object> requestParams) {
+		String method = String.valueOf(requestParams.get("method"));
 		Object content = requestParams.get("content");
 		
 		Map<String, Object> response = null;
@@ -237,7 +226,7 @@ public class ApiController {
 		boxRepository.save(box);
 		
 		response.put("error_code", RESPONSE_SUCCESS);
-		response.put("msg", "已成功解绑编号为DCDS-55666的箱码信息");
+		response.put("msg", "已成功解绑编号为" + boxCode + "的箱码信息");
 		
 		return response;
 	}
@@ -296,6 +285,9 @@ public class ApiController {
 		box1.setCode(boxCode2);
 		box2.setCode(boxCode1);
 		
+		box1 = boxRepository.save(box1);
+		box2 = boxRepository.save(box2);
+		
 		response.put("error_code", RESPONSE_SUCCESS);
 		response.put("msg", "更换成功");
 		
@@ -352,6 +344,8 @@ public class ApiController {
 		box.setQuantity(quantity);
 		box.setBindDate(new Date());
 		box.setUsed(Box.BOX_IS_USING);
+		
+		box = boxRepository.save(box);
 		
 		response.put("error_code", RESPONSE_SUCCESS);
 		response.put("msg", "提交成功");
