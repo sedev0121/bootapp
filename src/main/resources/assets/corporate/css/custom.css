@@ -531,7 +531,7 @@ table.dataTable tr.selected td.select-checkbox:after, table.dataTable tr.selecte
 }
 
 .select-checkbox {
-	min-width: 50px;
+	width: 30px;
 }
 
 .footer-right {
