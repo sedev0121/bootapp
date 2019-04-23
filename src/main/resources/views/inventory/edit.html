@@ -12,14 +12,16 @@
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right">
+				<a class="btn btn-primary" id="save"><i class="fa fa-share"></i> 保存</a> 
 				<a class="btn btn-default" th:href="@{/inventory}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-body">
+				<form id="form" th:action="@{/inventory/update}" method="post">				
 				<div class="row">
 					<div class="col-md-3">
-						<label>存货编码: </label> <input type="text" class="form-control" readonly th:value="${data.code}" />
+						<label>存货编码: </label> <input type="text" name="code" class="form-control" readonly th:value="${data.code}" />
 					</div>
 					<div class="col-md-3">
 						<label>存货类别: </label> <input type="text" class="form-control" readonly th:value="${data.inventoryClass.name}" />
@@ -49,14 +51,84 @@
 						<label>进项税率: </label> <input type="text" class="form-control" readonly th:value="${data.iimptaxrate}" />
 					</div>
 					<div class="col-md-3">
-						<label>装箱类别: </label> <input type="text" class="form-control" readonly th:value="${data.boxClass?.name}" />
+						<label>装箱类别: </label> 
+						<select name="box" id="box" class="form-control">
+							<option th:if="${data.boxClass != null}" th:value="${data.boxClass?.id}" th:text="${data.boxClass?.name}" selected="selected"></option>
+						</select>						
 					</div>
 					<div class="col-md-3">
-						<label>每箱数量: </label> <input type="text" class="form-control" readonly th:value="${data.countPerBox}" />
+						<label>每箱数量: </label> <input type="number" class="form-control" name="count_per_box" id="count_per_box" th:value="${data.countPerBox}" />
 					</div>
 				</div>
+				</form>
 			</div>
 		</div>
 	</div>
 </body>
 </html>
+
+<script th:inline="javascript">
+	var box_url = /*[[@{|/box/class/search|}]]*/'';
+	var edit_url = /*[[@{|/inventory/|}]]*/'';
+
+  $(document).ready(function() {
+
+	  $("#box").select2(App.getSelect2Options(box_url));
+	  
+	  $("#form").validate({
+	    // define validation rules
+	    rules : {
+	    	box : {
+		      required : true
+	      },
+	      count_per_box : {
+		      required : true,
+		      digits: true
+	      },	      
+	    },
+	    messages : {
+	    	box : {
+	    		required : "该用户名已在使用！"
+	      },
+	      count_per_box : {
+	      	required : "不能为空！",
+	      	digits: "请输入整数！"
+	      },
+	    },
+
+	    //display error alert on form submit
+	    invalidHandler : function(event, validator) {
+		    App.showErrorDialog("输入有误", "请输入正确的值");
+	    },
+
+	    submitHandler : function(form) {
+		    jQuery(form).ajaxSubmit({
+		      beforeSend : function() {
+			      App.blockUI();
+		      },
+		      complete : function() {
+			      App.unblockUI();
+		      },
+		      success : function(res, status, xhr, form) {
+			      if (res.success == 1) {
+				      App.showSuccessDialog("操作成功", function() {
+					      window.location.href = edit_url + res.data.code + "/edit";
+				      });
+			      } else {
+				      App.showErrorDialog("操作失败", res.errmsg);
+			      }
+		      },
+		      error : function(res, status, xhr, form) {
+			      App.showErrorDialog("操作失败", "请输入正确的值");
+		      }
+		    });
+	    }
+	  });
+	  
+	  $("#save").click(function() {
+		  $("#form").submit();
+	  });
+	  
+  })
+  
+</script>

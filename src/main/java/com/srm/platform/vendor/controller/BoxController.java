@@ -27,6 +27,7 @@ import com.srm.platform.vendor.model.Box;
 import com.srm.platform.vendor.model.BoxClass;
 import com.srm.platform.vendor.model.Store;
 import com.srm.platform.vendor.searchitem.BoxSearchResult;
+import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.Utils;
@@ -43,6 +44,13 @@ public class BoxController extends CommonController {
 		return "box/list";
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/class/search", produces = "application/json")
+	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, Integer.MAX_VALUE, Direction.ASC, "name");
+		return boxClassRepository.findForSelect(search, request);
+	}
+	
 	@RequestMapping(value = "/class/list", produces = "application/json")
 	public @ResponseBody List<BoxClass> list_class(@RequestParam Map<String, String> requestParams) {
 		String search = requestParams.getOrDefault("search", "");
