@@ -85,14 +85,14 @@ public class StoreController extends CommonController {
 	@RequestMapping(value = "/search", produces = "application/json")
 	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
 		PageRequest request = PageRequest.of(0, Integer.MAX_VALUE, Direction.ASC, "name");
-		return storeRepository.findForSelect(request);
+		return storeRepository.findForSelect(search, request);
 	}
 	
 	@ResponseBody
 	@RequestMapping(value = "/search/{company_id}", produces = "application/json")
-	public Page<SearchItem> searchOfCompany(@PathVariable("company_id") Long companyId) {
+	public Page<SearchItem> searchOfCompany(@PathVariable("company_id") Long companyId, @RequestParam(value = "q") String search) {
 		PageRequest request = PageRequest.of(0, Integer.MAX_VALUE, Direction.ASC, "name");
-		return storeRepository.findForSelectOfCompany(companyId, request);
+		return storeRepository.findForSelectOfCompany(companyId, search, request);
 	}
 	
 

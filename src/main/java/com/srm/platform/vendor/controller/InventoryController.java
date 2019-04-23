@@ -12,17 +12,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.srm.platform.vendor.model.Box;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.searchitem.InventorySearchItem;
 import com.srm.platform.vendor.utility.AccountPermission;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
+import com.srm.platform.vendor.utility.Utils;
 
 //商品档案表
 @Controller
@@ -74,5 +79,30 @@ public class InventoryController extends CommonController {
 		return result;
 	}
 	
+	@Transactional
+	@PostMapping("/update")
+	public @ResponseBody GenericJsonResponse<Inventory> update_ajax(@RequestParam Map<String, String> requestParams) {
+
+		String code = requestParams.get("code");
+		String boxIdStr = requestParams.get("box");
+		String countPerBoxStr = requestParams.get("count_per_box");
+
+		Inventory main = inventoryRepository.findOneByCode(code);
+
+		GenericJsonResponse<Inventory> jsonResponse;
+		
+		
+		if (main == null) {
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, null, main);
+		} else {
+			main.setBoxClass(boxClassRepository.findOneById(Long.parseLong(boxIdStr)));
+			main.setCountPerBox(Integer.parseInt(countPerBoxStr));
+
+			main = inventoryRepository.save(main);
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, main);
+		}		
+
+		return jsonResponse;
+	}
 
 }
