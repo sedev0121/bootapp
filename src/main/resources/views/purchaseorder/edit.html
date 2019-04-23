@@ -247,6 +247,11 @@
 			      item.arrive_date = $.fn.date_renderer(item.arrive_date);
 			      item.confirmed_date = $.fn.date_renderer(item.confirmed_date);
 			      item.close_state = item.close_date ? 1 : 0;
+			      item.box_quantity = App.getBoxCount(item.quantity, item.inventory.count_per_box);
+			      item.tax = App.costNumber(item.sum - item.money);
+			      item.arrived_box_quantity = App.getBoxCount(item.arrived_quantity, item.inventory.count_per_box);
+			      item.not_arrived_quantity = item.quantity - item.arrived_quantity;
+			      item.not_arrived_box_quantity = App.getBoxCount(item.not_arrived_quantity, item.inventory.count_per_box);
 		      })
 		      return json;
 	      },
@@ -301,12 +306,9 @@
         className: 'dt-right',
         title : '订单件数'
 	    }, {
-	      data : 'quantity',
+	      data : 'box_quantity',
 	      className : 'dt-right',
 	      title : '订单箱数',
-	      render: function (data, display, record) {
-	        return App.getBoxCount(record.quantity, record.inventory.count_per_box);
-	      },
       }, {
         data : 'tax_rate',
         className: 'dt-right',
@@ -324,12 +326,9 @@
 	      className : 'dt-right',
 	      title : '未税金额',
       }, {
-        data : null,
+        data : 'tax',
         className: 'dt-right',
         title : '税额',
-       	render: function (data, display, record) {
- 	        return App.costNumber(record.sum - record.money);
- 	      },
 	    }, {
 	      data : 'sum',
 	      className : 'dt-right',
@@ -358,31 +357,22 @@
         className: 'dt-right',
         title : '订单已交件数'
 	    }, {
-	      data : 'arrived_quantity',
+	      data : 'arrived_box_quantity',
 	      className : 'dt-right',
 	      title : '订单已交箱数',
-	      render: function (data, display, record) {
-	      	return App.getBoxCount(record.arrived_quantity, record.inventory.count_per_box);
-	      },
 	    }, {
-	      data : 'quantity',
+	      data : 'not_arrived_quantity',
 	      className : 'dt-right',
 	      title : '订单未交数量',
-	      render: function (data, display, record) {
-	      	return record.quantity - record.arrived_quantity;
-	      },
       }, {
         data : null,
         defaultContent: '',
         className: 'dt-right',
         title : '订单未交件数'
 	    }, {
-	      data : 'quantity',
+	      data : 'not_arrived_box_quantity',
 	      className : 'dt-right',
 	      title : '订单未交箱数',
-	      render: function (data, display, record) {
-	      	return App.getBoxCount(record.quantity - record.arrived_quantity, record.inventory.count_per_box);
-	      },
 	    }, {
 	      data : null,
 	      defaultContent : '',

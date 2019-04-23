@@ -10,12 +10,22 @@
           <li><a href="#">基础资料</a></li>
           <li class="active">存货档案表</li>
         </ul>
-        <div class="search-content form-inline">
-            <div class="search-cell width-18">
-                <label for="product_name">存货编码/名称:</label>
-                <input type="text" id="product_name" class="form-control">
-              <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-            </div>
+        <div class="search-content">
+          <div class="search-cell width-18">
+              <label for="inventory">存货编码/名称/规格型号:</label>
+              <input type="text" id="inventory" class="form-control">            
+          </div>
+          <div class="search-cell width-10">
+						<label for="inventory_class">货品类别名称/编码:</label> 
+						<input type="text" id="inventory_class" class="form-control"> 
+					</div>
+					<div class="search-cell width-10">
+						<label for="box_class">装箱类别名称/编码:</label> 
+						<input type="text" id="box_class" class="form-control"> 
+					</div>
+					<div style="vertical-align: bottom" class="search-cell width-15">
+		        <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+		      </div>
         </div>
         <div class="row">
           <div class="col-lg-12">
@@ -54,7 +64,9 @@
             page_index : data.start / data.length + 1,
             order : data.columns[data.order[0].column].data,
             dir : data.order[0].dir,
-            search : $('#product_name').val()
+            inventory : $('#inventory').val(),
+            inventory_class : $('#inventory_class').val(),
+            box_class : $('#box_class').val()
           }
           return filter;
         },
@@ -67,7 +79,7 @@
       fixedColumns: {
         leftColumns: 3,
     	},
-      order: [ [1, 'asc'] ],
+      order: [ [0, 'asc'] ],
       columns : [ {
         data : 'code',
         title : '存货编码',
@@ -102,14 +114,13 @@
         title : '进项税率',
       }, {
         data : 'defwarehousename',
-        title : '默认仓库名称',
+        title : '默认仓库',
       }, {
         data : 'boxClass.name',
         title : '装箱类别',
-        orderable: false,
         render : function(data, display, record) {
         	if (record.boxClass) {
-        		return record.boxClass.name;
+        		return record.boxClass.code + " " + record.boxClass.name;
         	} else {
         		return "";
         	}
@@ -117,7 +128,27 @@
       }, {
       	className: 'dt-center',
         data : 'count_per_box',
-        title : '每箱数量',
+        title : '单位包装量',
+      }, {
+      	className: 'dt-center',
+        data : null,
+        defaultContent: '',
+        title : '采购',
+      }, {
+      	className: 'dt-center',
+      	data : null,
+        defaultContent: '',
+        title : '进口',
+      }, {
+      	className: 'dt-center',
+      	data : null,
+        defaultContent: '',
+        title : '委外',
+      }, {
+      	className: 'dt-center',
+      	data : null,
+        defaultContent: '',
+        title : '资产',
       }, {
         data : 'start_date',
         title : '启用日期',
@@ -140,7 +171,7 @@
       table.draw();
     });
 
-    $('#product_name').keyup(function(e) {
+    $('#inventory, #inventory_class, #box_class').keyup(function(e) {
       if (e.keyCode == 13)
         table.draw();
     });

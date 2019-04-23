@@ -30,8 +30,8 @@ public interface VendorRepository extends JpaRepository<Vendor, Long> {
 
 	Vendor findOneByCode(String code);
 
-	@Query(value = "SELECT * FROM vendor where (code LIKE %?1% or abbrname LIKE %?1% or name LIKE %?1%)", nativeQuery = true)
-	Page<VendorSearchItem> findVendorsBySearchTerm(String search, Pageable pageable);
+	@Query(value = "SELECT * FROM vendor a left join vendor_class b on a.sort_code=b.code where (a.name LIKE %?1% or a.code LIKE %?1% or a.abbrname LIKE %?1%) and (b.code LIKE %?2% or b.name LIKE %?2%)", nativeQuery = true)
+	Page<Vendor> findVendorsBySearchTerm(String vendor, String vendorClass, Pageable pageable);
 
 	@Query(value = "SELECT a.*, group_concat(concat(p.name, '(', p.code, ')'), ' ') provide_name FROM vendor a left join vendor_provide b on a.code=b.vendor_code left join provide_class p on b.provide_id=p.id where p.id is not null and (a.code LIKE %?1% or a.name LIKE %?1%) group by a.code", countQuery = "SELECT count(a.code) FROM vendor a left join vendor_provide b on a.code=b.vendor_code left join provide_class p on b.provide_id=p.id where p.id is not null and (a.code LIKE %?1% or a.name LIKE %?1%) group by a.code", nativeQuery = true)
 	Page<VendorSearchItem> findBySearchTermForAdmin(String search, Pageable pageable);

@@ -44,19 +44,24 @@ public class VendorController extends CommonController {
 
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody Page<VendorSearchItem> list_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody Page<Vendor> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
 		String dir = requestParams.getOrDefault("dir", "asc");
-		String search = requestParams.getOrDefault("search", "");
+		String vendor = requestParams.getOrDefault("vendor", "");
+		String vendorClass = requestParams.getOrDefault("vendor_class", "");
 
+		if (order.equals("vendorClass.name")) {
+			order = "b.name";
+		}		
+		
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		Page<VendorSearchItem> result = null;
-		result = vendorRepository.findVendorsBySearchTerm(search, request);
+		Page<Vendor> result = null;
+		result = vendorRepository.findVendorsBySearchTerm(vendor, vendorClass, request);
 		return result;
 	}
 

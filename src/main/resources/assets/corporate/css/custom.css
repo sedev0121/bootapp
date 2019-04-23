@@ -624,3 +624,8 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
 .DTFC_LeftBodyLiner {
 	overflow-x: hidden;
 }
+
+.code-column {
+	width: 100px;
+	text-align: center;
+}

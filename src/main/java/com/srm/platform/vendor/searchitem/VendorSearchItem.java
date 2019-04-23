@@ -27,4 +27,6 @@ public interface VendorSearchItem {
 	String getContact();
 	String getIndustry();
 	String getSort_code();
+	
+	String getVendor_class_name();
 }
