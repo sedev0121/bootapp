@@ -7,12 +7,19 @@
 			<li><a href="#">基础资料</a></li>
 			<li class="active">供应商管理</li>
 		</ul>
-		<div class="search-content form-inline">
+		<div class="search-content">
 			<div class="search-cell width-10">
-				<label for="product_name">供应商名称/编码:</label> 
-				<input type="text" id="product_name" class="form-control"> 
-				<a class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</a>
+				<label for="vendor_class">供应商分类名称/编码:</label> 
+				<input type="text" id="vendor_class" class="form-control"> 
 			</div>
+			<div class="search-cell width-10">
+				<label for="vendor">供应商名称/编码:</label> 
+				<input type="text" id="vendor" class="form-control"> 
+			</div>
+			<div style="vertical-align: bottom" class="search-cell width-15">
+        <a class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</a>
+      </div>
+			
 		</div>
 		<div class="row">
 			<div class="col-lg-12">
@@ -35,7 +42,8 @@
 		        page_index : data.start / data.length + 1,
 		        order : data.columns[data.order[0].column].data,
 		        dir : data.order[0].dir,
-		        search : $('#product_name').val()
+		        vendor : $('#vendor').val(),
+		        vendor_class : $('#vendor_class').val()
 		      }
 		      return filter;
 	      },
@@ -48,8 +56,11 @@
 	    fixedColumns: {
         leftColumns: 3,
     	},
-	    order: [ [1, 'asc'] ],
+	    order: [ [2, 'asc'] ],
 	    columns : [ {
+	      data : 'vendorClass.name',
+	      title : '供应商分类',
+	    }, {
 	      data : 'code',
 	      title : '供应商编码',
 	      render : function(data, display, record) {
@@ -94,7 +105,7 @@
 		  table.draw();
 	  });
 
-	  $('#product_name').keyup(function(e) {
+	  $('#vendor, #vendor_class').keyup(function(e) {
 		  if (e.keyCode == 13)
 			  table.draw();
 	  });

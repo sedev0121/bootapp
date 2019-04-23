@@ -56,16 +56,20 @@ public class InventoryController extends CommonController {
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "name");
 		String dir = requestParams.getOrDefault("dir", "asc");
-		String search = requestParams.getOrDefault("search", "");
+		String inventory = requestParams.getOrDefault("inventory", "");
+		String inventoryClass = requestParams.getOrDefault("inventory_class", "");
+		String boxClass = requestParams.getOrDefault("box_class", "");
 
 		if ("inventoryClass.name".equals(order)) {
 			order = "b.name";
+		}else if ("boxClass.name".equals(order)) {
+			order = "c.name";
 		}
 		
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<Inventory> result = inventoryRepository.findBySearchTerm(search, request);
+		Page<Inventory> result = inventoryRepository.findBySearchTerm(inventory, inventoryClass, boxClass, request);
 
 		return result;
 	}

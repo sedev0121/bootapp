@@ -8,6 +8,8 @@ public class PurchaseOrderSaveForm {
 	private String code;
 
 	private Integer state;
+	
+	private Long store;
 
 	private List<Map<String, String>> table;
 
@@ -17,6 +19,15 @@ public class PurchaseOrderSaveForm {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	
+	public Long getStore() {
+		return store;
+	}
+
+	public void setStore(Long store) {
+		this.store = store;
 	}
 
 	public Integer getState() {

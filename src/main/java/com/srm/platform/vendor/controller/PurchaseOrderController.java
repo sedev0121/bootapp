@@ -128,7 +128,7 @@ public class PurchaseOrderController extends CommonController {
 
 		String bodyQuery = "FROM purchase_order_main a left join vendor b on a.vencode=b.code left join account c on a.deployer=c.id left join account d on a.reviewer=d.id "
 				+ "left join (select code, sum(prepay_money) prepay_money, sum(money) money, sum(sum) sum from purchase_order_detail group by code) e on a.code=e.code "
-				+ "left join company f on a.company_id=f.id WHERE a.state='审核' ";
+				+ "left join company f on a.company_id=f.id WHERE a.state='审核' and a.company_id is not null ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -221,6 +221,7 @@ public class PurchaseOrderController extends CommonController {
 		}
 
 		if (form.getState() == Constants.PURCHASE_ORDER_STATE_DEPLOY) {
+			main.setStore(storeRepository.findOneById(form.getStore()));
 			main.setDeploydate(new Date());
 			main.setDeployer(account);
 		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CONFIRM) {

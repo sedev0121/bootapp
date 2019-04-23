@@ -531,7 +531,7 @@ table.dataTable tr.selected td.select-checkbox:after, table.dataTable tr.selecte
 }
 
 .select-checkbox {
-	min-width: 50px;
+	width: 30px;
 }
 
 .footer-right {
@@ -623,4 +623,9 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
 
 .DTFC_LeftBodyLiner {
 	overflow-x: hidden;
+}
+
+.code-column {
+	width: 100px;
+	text-align: center;
 }

@@ -82,6 +82,10 @@ public class PurchaseOrderMain {
 	private Company company;
 	
 	@ManyToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumn(name = "store_id", referencedColumnName = "id")
+	private Store store;
+	
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "deployer", referencedColumnName = "id")
 	private Account deployer;
 	private Date deploydate;
@@ -109,6 +113,14 @@ public class PurchaseOrderMain {
 
 	public void setCompany(Company company) {
 		this.company = company;
+	}
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
 	}
 
 	public Account getDeployer() {

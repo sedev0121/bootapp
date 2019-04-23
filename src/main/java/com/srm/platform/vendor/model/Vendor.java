@@ -12,6 +12,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "vendor")
 public class Vendor implements Serializable {
@@ -31,14 +33,22 @@ public class Vendor implements Serializable {
 	private String industry;
 	private String address;
 	private String phone;
+	
+	@JsonProperty("bank_open")
 	private String bankOpen;
+	
+	@JsonProperty("bank_acc_number")
 	private String bankAccNumber;
 	private String fax;
 	private String email;
 
 	private String contact;
 	private String mobile;
+	
+	@JsonProperty("receive_site")
 	private String receiveSite;
+	
+	@JsonProperty("end_date")
 	private Date endDate;
 	private String memo;
 

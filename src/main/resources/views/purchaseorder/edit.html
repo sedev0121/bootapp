@@ -62,7 +62,10 @@
 						<label>业务实体： </label> <input type="text" class="form-control" th:value="${main.company?.name}" readonly />
 					</div>
 					<div class="col-md-2">
-						<label>收货仓库： </label> <input type="text" class="form-control" readonly />
+						<label>收货仓库： </label>
+						<select name="store" id="store" class="form-control">
+							<option th:if="${main.store != null}" th:value="${main.store?.id}" th:text="${main.store?.name}" selected="selected"></option>
+						</select>
 					</div>
 					<div class="col-md-6">
 						<label>订单摘要： </label> <input type="text" class="form-control" th:value="${main.remark}" readonly />
@@ -133,6 +136,7 @@
 	/*[+
    var detail_url = [[@{/purchaseorder/}]] + [[${main.code}]] + "/details";
    var history_url = [[@{/operation_history/list/order/}]] + [[${main.code}]];
+   var store_url = [[@{/store/search/}]] + [[${main.company.id}]];
    var submit_url = [[@{/purchaseorder/update}]];
    var state = [[${main.srmstate}]];
    +]*/
@@ -147,6 +151,8 @@
 	    minimumResultsForSearch : -1
 	  }).select2("val", state.toString());
 
+	  $("#store").select2(App.getSelect2Options(store_url));
+	  
 	  var basic_table, prepay_table;
 
 	  $('#save_history').click(function() {
@@ -241,6 +247,11 @@
 			      item.arrive_date = $.fn.date_renderer(item.arrive_date);
 			      item.confirmed_date = $.fn.date_renderer(item.confirmed_date);
 			      item.close_state = item.close_date ? 1 : 0;
+			      item.box_quantity = App.getBoxCount(item.quantity, item.inventory.count_per_box);
+			      item.tax = App.costNumber(item.sum - item.money);
+			      item.arrived_box_quantity = App.getBoxCount(item.arrived_quantity, item.inventory.count_per_box);
+			      item.not_arrived_quantity = item.quantity - item.arrived_quantity;
+			      item.not_arrived_box_quantity = App.getBoxCount(item.not_arrived_quantity, item.inventory.count_per_box);
 		      })
 		      return json;
 	      },
@@ -251,9 +262,9 @@
 	    columns : [ {
 	      data : null,
 	      defaultContent : '',
-	      width : "50px",
 	      orderable : false,
 	      visible: !is_vendor,
+	      title : '选择',
 	      className : 'select-checkbox',
 	    }, {
 	      data : 'row_no',
@@ -295,15 +306,11 @@
         className: 'dt-right',
         title : '订单件数'
 	    }, {
-	      data : 'quantity',
+	      data : 'box_quantity',
 	      className : 'dt-right',
 	      title : '订单箱数',
-	      render: function (data, display, record) {
-	        return App.getBoxCount(record.quantity, record.inventory.count_per_box);
-	      },
       }, {
-        data : null,
-        defaultContent: '',
+        data : 'tax_rate',
         className: 'dt-right',
         title : '税率'
       }, {
@@ -319,10 +326,9 @@
 	      className : 'dt-right',
 	      title : '未税金额',
       }, {
-        data : null,
-        defaultContent: '',
+        data : 'tax',
         className: 'dt-right',
-        title : '税额'
+        title : '税额',
 	    }, {
 	      data : 'sum',
 	      className : 'dt-right',
@@ -351,31 +357,22 @@
         className: 'dt-right',
         title : '订单已交件数'
 	    }, {
-	      data : 'arrived_quantity',
+	      data : 'arrived_box_quantity',
 	      className : 'dt-right',
 	      title : '订单已交箱数',
-	      render: function (data, display, record) {
-	      	return App.getBoxCount(record.arrived_quantity, record.inventory.count_per_box);
-	      },
 	    }, {
-	      data : 'quantity',
+	      data : 'not_arrived_quantity',
 	      className : 'dt-right',
 	      title : '订单未交数量',
-	      render: function (data, display, record) {
-	      	return record.quantity - record.arrived_quantity;
-	      },
       }, {
         data : null,
         defaultContent: '',
         className: 'dt-right',
         title : '订单未交件数'
 	    }, {
-	      data : 'quantity',
+	      data : 'not_arrived_box_quantity',
 	      className : 'dt-right',
 	      title : '订单未交箱数',
-	      render: function (data, display, record) {
-	      	return App.getBoxCount(record.quantity - record.arrived_quantity, record.inventory.count_per_box);
-	      },
 	    }, {
 	      data : null,
 	      defaultContent : '',
@@ -429,6 +426,8 @@
 			    submitOnBlur : true
 			  });
 		  });
+	  }else{
+	  	$("#store").attr("readonly", true);
 	  }
 
 	  if (state == 1 && is_vendor) {
@@ -466,6 +465,7 @@
 		  $('#form').ajaxSubmit({
 		    data : {
 		      code : $('#code').val(),
+		      store: $('#store').val(),
 		      state : state,
 		      table : small_data
 		    },
