@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+</head>
+<body>
+	<div class="container" layout:fragment="content">
+		<ul class="breadcrumb">
+			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+			<li><a href="#">基础资料</a></li>
+			<li class="active">箱码分类</li>
+		</ul>
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-6" style="margin-bottom: 20px;">
+						<i class="fa fa-sitemap"></i> 箱码分类
+						<div id="tree_3"></div>
+					</div>
+					<div class="col-md-6">
+						<div class="clearfix">
+							<h3 class="pull-left">箱码分类信息</h3><a class="btn btn-primary btn-add-boxclass" id="add"><i class="fa fa-plus"></i> </a>
+						</div>						
+						<form id="form" th:action="@{/classofbox/update}" method="post">  
+              <input type="hidden" id="id" name="id">
+							<div class="form-group row">
+								<label for="code" class="col-sm-3 col-form-label">箱码分类编码:</label>
+								<div class="col-sm-9">
+									<input type="text" id="code" name="code" class="form-control">
+								</div>
+							</div>
+							<div class="form-group row">
+								<label for="name" class="col-sm-3 col-form-label">箱码分类名称:</label>
+								<div class="col-sm-9">
+									<input type="text" id="name" name="name" class="form-control">
+								</div>
+							</div>
+							<div class="text-center">
+								<a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a> 
+								<a class="btn btn-danger" id="del"><i class="fa fa-remove"></i> 删除</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+</body>
+</html>
+<script th:inline="javascript">
+	var url = /*[[@{/classofbox/all}]]*/'';
+	var del_url = /*[[@{/classofbox/}]]*/'';
+  jQuery(document).ready(function() {
+	  jQuery("#tree_3").jstree({
+	    core : {
+	      check_callback : function(operation, node, node_parent, node_position, more) {
+
+	      },
+	      data : function(node, cb) {
+		      $.ajax({
+			      url : url
+		      }).done(function(data) {
+			      cb(data);
+		      });
+	      }
+	    },
+	    state : {
+		    key : "demo1"
+	    },
+	    plugins : [ "state", "types" ]
+	  }).on("select_node.jstree", function(e, data) {
+	  	$('#id').val(data.node.original.id);
+		  $('#code').val(data.node.original.code);
+		  $('#name').val(data.node.original.name);
+		  $('#del').show();
+	  });
+	  
+	  $('#add').click(function() {
+	  	$('#id').val('');
+		  $('#code').val('');
+		  $('#name').val('');
+		  $('#del').hide();		  
+	  });
+	  
+	  $("#form" ).validate({
+      // define validation rules
+      rules: {
+      	code: {
+          required: true
+        }, 
+        name: {
+          required: true
+        }, 
+      },     
+      //display error alert on form submit  
+      invalidHandler: function(event, validator) {
+        App.showErrorDialog("输入有误", "请输入正确的值");
+      },
+      submitHandler: function (form) {
+        jQuery(form).ajaxSubmit({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          }, 
+          success: function(res, status, xhr, form) {
+      			if (res.success == 1){
+      			  App.showSuccessDialog("操作成功", function(){
+      				  $("#tree_3").jstree("refresh");
+      			  });
+      			}else{
+      			  App.showErrorDialog("操作失败", res.errmsg);
+      			}            
+          },
+          error: function (res, status, xhr, form) {
+            App.showErrorDialog("操作失败", "请输入正确的值");
+          }
+        });
+      }
+    }); 
+	  
+	  $("#save").click(function() {
+      $("#form").submit();            
+    });
+    
+    $("#del").click(function(){
+    	var id = $('#id').val();
+    	if (!id) {
+    		App.showErrorDialog("操作失败", "请选择一个分类");
+    		return;
+    	}  
+    	
+    	var url = del_url + id + "/delete";
+    	App.showConfirmDialog('确定要删除吗?', function(){
+        $.get(url, function(res, status){
+        	if (res.success == 1){
+    			  App.showSuccessDialog("操作成功", function(){
+    				  $("#tree_3").jstree("refresh");
+    			  });
+    			}else{
+    			  App.showErrorDialog("操作失败", res.errmsg);
+    			}   
+        });
+      });      	
+    });
+    
+  });
+</script>

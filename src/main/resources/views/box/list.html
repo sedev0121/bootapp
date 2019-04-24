@@ -211,6 +211,9 @@
 	    columns : [ {
 	      data : 'name',
 	      title : '全部分类',
+	      render: function(data, type, record) {
+	      	return record.code + " " + record.name
+	      }
 	    } ],
 	    drawCallback : function(settings) {
 		    $('#box_class_table tbody tr:first').click();
@@ -265,6 +268,7 @@
 		    columns : [ {
 		      data : null,
 		      defaultContent : '',
+		      title : '选择',
 		      orderable : false,
 		      className : 'select-checkbox',
 		    }, {

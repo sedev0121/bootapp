@@ -638,3 +638,10 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
     font-size: inherit;
     line-height: 1.5;
 }
+
+.btn-add-boxclass {
+	padding: 5px 9px;
+	border-radius: 15px;
+	margin-left: 5px;
+	margin-top: -2px;
+}
