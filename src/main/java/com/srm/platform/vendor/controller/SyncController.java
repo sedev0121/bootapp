@@ -354,9 +354,16 @@ public class SyncController {
 					main.setMakedate(Utils.parseDateTime(getStringValue(temp, "cmaketime")));
 
 					main.setCloser(getStringValue(temp, "cCloser"));
-					main.setMakedate(Utils.parseDateTime(getStringValue(temp, "dCloseTime")));
+					main.setClosedate(Utils.parseDateTime(getStringValue(temp, "dCloseTime")));
 
 					main.setRemark(getStringValue(temp, "cMemo"));
+					
+					main.setDepartment(getStringValue(temp, "cDepName"));
+					main.setPerson(getStringValue(temp, "cPersonName"));
+					main.setCurrency(getStringValue(temp, "cexch_name"));
+					
+					main.setExchangeRate(this.getDoubleValue(temp, "nflat"));
+					main.setCurrency(getStringValue(temp, "cexch_name"));
 
 					String state = "";
 					switch (cState) {
@@ -383,6 +390,7 @@ public class SyncController {
 					boolean addDetailSuccess = true;					
 					
 					String companyCode = null;
+					Double taxRate = null;
 					
 					for (LinkedHashMap<String, Object> detailTemp : details) {
 						
@@ -422,7 +430,13 @@ public class SyncController {
 						detail.setTaxPrice(getDoubleValue(detailTemp, "iTaxNatPrice")); //含税单价
 						detail.setSum(getDoubleValue(detailTemp, "iNatSum")); //含税金额
 						
-						detail.setTaxRate(getDoubleValue(detailTemp, "iPerTaxRate")); //税率 
+						Double tempTaxRate = getDoubleValue(detailTemp, "iPerTaxRate");
+						detail.setTaxRate(tempTaxRate); //税率 
+						
+						if (taxRate == null) {
+							taxRate = tempTaxRate;
+						}
+						
 						detail.setPrepayMoney(getDoubleValue(detailTemp, "Deposit")); //定金 
 						
 						detail.setPrice(getDoubleValue(detailTemp, "iNatUnitPrice")); //去税单价
@@ -443,9 +457,15 @@ public class SyncController {
 						purchaseOrderDetailRepository.save(detail);
 					}
 
+					if (taxRate != null) {
+						main.setTaxRate(taxRate);
+					}
+					
 					if (companyCode != null) {
 						main.setCompany(companyRepository.findOneByCode(companyCode));
 					}
+					
+					purchaseOrderMainRepository.save(main);
 					
 					if (addDetailSuccess) {
 						if (main.getPurchaseTypeName().equals("普通采购")) {

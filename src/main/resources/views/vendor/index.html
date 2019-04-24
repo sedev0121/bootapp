@@ -58,8 +58,11 @@
     	},
 	    order: [ [2, 'asc'] ],
 	    columns : [ {
-	      data : 'vendorClass.name',
+	      data : 'vendorClass.code',
 	      title : '供应商分类',
+	      render : function(data, display, record) {		      
+		      return record.vendorClass.code + " " + record.vendorClass.name;
+	      },
 	    }, {
 	      data : 'code',
 	      title : '供应商编码',
