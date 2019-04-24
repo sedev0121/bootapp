@@ -7,6 +7,7 @@ import javax.persistence.Table;
 import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "inventory_class")
@@ -22,6 +23,9 @@ public class InventoryClass {
 	@JsonIgnore
 	@Nullable
 	private Integer endRankFlag;
+	
+	@JsonProperty("parent_code")
+	private String parentCode;
 
 	public String getCode() {
 		return code;
@@ -29,6 +33,18 @@ public class InventoryClass {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public String getParentCode() {
+		return parentCode;
+	}
+
+	public void setParentCode(String parentCode) {
+		this.parentCode = parentCode;
+	}
+
+	public Integer getEndRankFlag() {
+		return endRankFlag;
 	}
 
 	public String getName() {
