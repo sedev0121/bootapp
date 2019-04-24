@@ -17,10 +17,15 @@ public interface BoxClassRepository extends JpaRepository<BoxClass, Long> {
 
 	BoxClass findOneById(Long id);
 	
-	@Query(value = "SELECT * FROM box_class WHERE name like %?1%", nativeQuery = true)
+	BoxClass findOneByCode(String code);
+	
+	@Query(value = "SELECT * FROM box_class WHERE name like %?1% order by code asc", nativeQuery = true)
 	List<BoxClass> findBySearchTerm(String search);
 	
-	@Query(value = "SELECT id code, name FROM box_class where name like %?1%", nativeQuery = true)
+	@Query(value = "SELECT id code, name FROM box_class where code like %?1% or name like %?1% order by code asc", nativeQuery = true)
 	Page<SearchItem> findForSelect(String search, Pageable pageable);
+	
+	@Query(value = "SELECT * FROM box_class order by code asc", nativeQuery = true)
+	List<BoxClass> findAllNodes();
 	
 }
