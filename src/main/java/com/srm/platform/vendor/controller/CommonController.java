@@ -315,10 +315,11 @@ public class CommonController {
 		return null;
 	};
 	
-	public void addOpertionHistory(String targetId, String content) {
+	public void addOpertionHistory(String targetId, String action, String content) {
 		OperationHistory operationHistory = new OperationHistory();
 		operationHistory.setTargetId(targetId);
 		operationHistory.setTargetType(this.getOperationHistoryType());
+		operationHistory.setAction(action);
 		operationHistory.setContent(content);
 		operationHistory.setAccount(this.getLoginAccount());
 

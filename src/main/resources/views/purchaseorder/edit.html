@@ -10,9 +10,9 @@
 		<div class="btn-group-bar">
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
 				<a class="btn btn-primary" id="deploy" sec:authorize="hasAuthority('订单管理-发布')" th:if="${(main.srmstate==0)} "><i class="fa fa-share"></i> 发布</a> 
-				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a>
-				<a class="btn btn-primary" id="close_row"	sec:authorize="hasAuthority('订单管理-行取消')"><i class="fa fa-undo"></i> 行取消</a> 
-				<a class="btn btn-danger" id="close"	sec:authorize="hasAuthority('订单管理-关闭')" th:if="${main.srmstate>=1}"><i class="fa fa-remove"></i> 订单关闭</a> 
+				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
+				<a class="btn btn-primary" id="close_row" sec:authorize="hasAuthority('订单管理-行取消')"><i class="fa fa-undo"></i> 行取消</a> 
+				<a class="btn btn-danger" id="close" sec:authorize="hasAuthority('订单管理-关闭')" th:if="${main.srmstate>=1}"><i class="fa fa-remove"></i> 订单关闭</a> 
 				<a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -62,8 +62,7 @@
 						<label>业务实体： </label> <input type="text" class="form-control" th:value="${main.company?.name}" readonly />
 					</div>
 					<div class="col-md-2">
-						<label>收货仓库： </label>
-						<select name="store" id="store" class="form-control">
+						<label>收货仓库： </label> <select name="store" id="store" class="form-control">
 							<option th:if="${main.store != null}" th:value="${main.store?.id}" th:text="${main.store?.name}" selected="selected"></option>
 						</select>
 					</div>
@@ -108,17 +107,38 @@
 										</table>
 									</div>
 									<div id="tab-2" class="tab-pane row-fluid fade in">
-										<div class="operations" id="operation_history"></div>
 										<div class="row edit-history">
-											<form id="history_form" th:action="@{/operation_history/update}" method="post">
-												<textarea name="content" id="history_content" class="history-content" rows="5"></textarea>
-												<a class="btn btn-primary save-history" id="save_history"><i class="fa fa-plus"></i> 保存</a>
-											</form>
+											<a class="btn btn-primary save-history" id="show_modal_btn"><i class="fa fa-plus"></i> 添加日志</a>
 										</div>
+										<table id="history_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
 									</div>
 								</div>
 							</div>
 						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">添加日志</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="history_form" th:action="@{/operation_history/update}" method="post">
+							<input type="hidden" name="action" value="添加日志"/>
+							<div class="row">
+								<div class="col-md-12">
+									<textarea name="content" placeholder="请输入日志内容" id="history_content" class="history-content" rows="5"></textarea>
+								</div>
+							</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+						<button type="button" class="btn btn-primary" id="save_history">保存</button>
 					</div>
 				</div>
 			</div>
@@ -152,10 +172,15 @@
 	  }).select2("val", state.toString());
 
 	  $("#store").select2(App.getSelect2Options(store_url));
-	  
-	  var basic_table, prepay_table;
+
+	  var basic_table, history_table;
 
 	  $('#save_history').click(function() {
+	  	if (!$('#history_content').val()) {
+	  		App.showErrorDialog("日志内容不能为空！");
+	  		return;
+	  	}
+	  	
 		  $("#history_form").ajaxSubmit({
 		    data : {
 		      target_type : "order",
@@ -170,7 +195,8 @@
 		    success : function(res, status, xhr, form) {
 			    if (res.success == 1) {
 				    $('#history_content').val('');
-				    loadHistory();
+				    history_table.ajax.reload();
+				    $('#history_dialog').modal('hide'); 
 			    } else {
 				    App.showErrorDialog(res.errmsg);
 			    }
@@ -179,25 +205,6 @@
 			    App.showErrorDialog("操作失败", "请稍后重试");
 		    }
 		  });
-	  });
-
-	  function loadHistory() {
-		  $.get(history_url, function(data, status) {
-			  $('#operation_history').empty();
-			  $.each(data, function(key, item) {
-				  var time = "<div class='operation-time'>" + $.fn.time_renderer(item.create_date) + "</div>";
-				  var content = "<div class='operation-content'>【" + item.account.realname + "】" + item.content + "</div>";
-				  var record = "<div class='operation'>" + time + content + "</div>";
-				  $('#operation_history').append($(record));
-			  });
-		  });
-	  }
-
-	  loadHistory();
-
-	  $('#tabs').tabs({
-		  activate : function(event, ui) {
-		  }
 	  });
 
 	  editor = new $.fn.dataTable.Editor({
@@ -213,9 +220,9 @@
 	    }, {
 		    name : "confirmed_memo"
 	    }, {
-	      name : "memo"
+		    name : "memo"
 	    }, {
-	    	attr : {
+	      attr : {
 		      type : "number"
 	      },
 	      name : "confirmed_quantity"
@@ -263,7 +270,7 @@
 	      data : null,
 	      defaultContent : '',
 	      orderable : false,
-	      visible: !is_vendor,
+	      visible : !is_vendor,
 	      title : '选择',
 	      className : 'select-checkbox',
 	    }, {
@@ -276,17 +283,17 @@
 	    }, {
 	      data : 'inventory.code',
 	      title : '存货代码',
-	      render: function (data, display, record) {
-	      	if (!record.inventory) {
-	      		data = '';	
-	      	}
-	        return data;
+	      render : function(data, display, record) {
+		      if (!record.inventory) {
+			      data = '';
+		      }
+		      return data;
 	      },
-      }, {
-        data : null,
-        defaultContent: '',
-        className: 'dt-right',
-        title : '规格型号'
+	    }, {
+	      data : null,
+	      defaultContent : '',
+	      className : 'dt-right',
+	      title : '规格型号'
 	    }, {
 	      data : 'unit_name',
 	      className : 'dt-center',
@@ -295,25 +302,25 @@
 	      data : 'quantity',
 	      className : 'dt-right',
 	      title : '订单数量',
-      }, {
-        data : null,
-        defaultContent: '',
-        className: 'dt-right',
-        title : '换算率'
-      }, {
-        data : null,
-        defaultContent: '',
-        className: 'dt-right',
-        title : '订单件数'
+	    }, {
+	      data : null,
+	      defaultContent : '',
+	      className : 'dt-right',
+	      title : '换算率'
+	    }, {
+	      data : null,
+	      defaultContent : '',
+	      className : 'dt-right',
+	      title : '订单件数'
 	    }, {
 	      data : 'box_quantity',
 	      className : 'dt-right',
 	      title : '订单箱数',
-      }, {
-        data : 'tax_rate',
-        className: 'dt-right',
-        title : '税率'
-      }, {
+	    }, {
+	      data : 'tax_rate',
+	      className : 'dt-right',
+	      title : '税率'
+	    }, {
 	      data : 'price',
 	      className : 'dt-right',
 	      title : '未税单价',
@@ -325,10 +332,10 @@
 	      data : 'money',
 	      className : 'dt-right',
 	      title : '未税金额',
-      }, {
-        data : 'tax',
-        className: 'dt-right',
-        title : '税额',
+	    }, {
+	      data : 'tax',
+	      className : 'dt-right',
+	      title : '税额',
 	    }, {
 	      data : 'sum',
 	      className : 'dt-right',
@@ -338,11 +345,11 @@
 	      title : '需求日期',
 	      className : 'dt-center',
 	      render : $.fn.date_renderer,
-      }, {
-        data : null,
-        defaultContent: '',
-        className: 'dt-right',
-        title : '技术要求'
+	    }, {
+	      data : null,
+	      defaultContent : '',
+	      className : 'dt-right',
+	      title : '技术要求'
 	    }, {
 	      data : 'memo',
 	      className : 'buyer-cell',
@@ -351,11 +358,11 @@
 	      data : 'arrived_quantity',
 	      className : 'dt-right',
 	      title : '订单已交数量',
-      }, {
-        data : null,
-        defaultContent: '',
-        className: 'dt-right',
-        title : '订单已交件数'
+	    }, {
+	      data : null,
+	      defaultContent : '',
+	      className : 'dt-right',
+	      title : '订单已交件数'
 	    }, {
 	      data : 'arrived_box_quantity',
 	      className : 'dt-right',
@@ -364,11 +371,11 @@
 	      data : 'not_arrived_quantity',
 	      className : 'dt-right',
 	      title : '订单未交数量',
-      }, {
-        data : null,
-        defaultContent: '',
-        className: 'dt-right',
-        title : '订单未交件数'
+	    }, {
+	      data : null,
+	      defaultContent : '',
+	      className : 'dt-right',
+	      title : '订单未交件数'
 	    }, {
 	      data : 'not_arrived_box_quantity',
 	      className : 'dt-right',
@@ -378,7 +385,7 @@
 	      defaultContent : '',
 	      className : 'dt-right',
 	      title : '是否加急',
-	    
+
 	    }, {
 	      data : 'prepay_money',
 	      className : 'dt-right',
@@ -401,8 +408,8 @@
 	      data : 'close_date',
 	      className : 'dt-center',
 	      title : '　行状态　',
-	      render: function (data, display, record) {
-	      	return record.close_date?'关闭':'';
+	      render : function(data, display, record) {
+		      return record.close_date ? '关闭' : '';
 	      },
 	    }, {
 	      data : 'confirmed_memo',
@@ -410,13 +417,50 @@
 	      title : '供方备注',
 	    } ],
 	    footerCallback : function(row, data, start, end, display) {
-		    App.footerCallback(this.api(), [ 
-		    	[ 6, "cost" ], [ 8, "cost" ], [ 9, "cost" ], 
-		    	[ 13, "cost" ], [ 14, "cost" ], [ 15, "cost" ], 
-		    	[ 19, "cost" ], [ 20, "cost" ], [ 21, "cost" ],
-		    	[ 22, "cost" ], [ 24, "cost" ], [ 26, "cost" ]
-		    	]);
+		    App.footerCallback(this.api(), [ [ 6, "cost" ], [ 8, "cost" ], [ 9, "cost" ], [ 13, "cost" ], [ 14, "cost" ], [ 15, "cost" ], [ 19, "cost" ], [ 20, "cost" ], [ 21, "cost" ], [ 22, "cost" ], [ 24, "cost" ], [ 26, "cost" ] ]);
 	    },
+	  });
+
+	  function load_history_table() {
+	  	
+	  }
+	  history_table = $('#history_table').DataTable({
+	    serverSide : false,
+	    processing : false,
+	    ajax : {
+	      url : history_url,
+	      dataSrc : function(json) {
+		      return json;
+	      },
+	    },
+	    order : [ [ 0, 'desc' ] ],
+	    columns : [ {
+	      data : 'create_date',
+	      title : '日期',
+	      className : 'dt-center',
+	      render : $.fn.time_renderer,
+	    }, {
+	      data : 'action',
+	      title : '动作',
+	      className : 'dt-center',
+	    }, {
+	      data : 'account.realname',
+	      title : '操作人',
+	      className : 'dt-center',
+	    }, {
+	      data : 'content',
+	      title : '说明',
+	    } ],
+	  });
+
+	  $('.detail-tabs a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+		  if (history_table) {
+			  history_table.columns.adjust();
+		  }
+
+		  if (basic_table) {
+			  basic_table.columns.adjust();
+		  }
 	  });
 
 	  if (state == 0) {
@@ -426,8 +470,8 @@
 			    submitOnBlur : true
 			  });
 		  });
-	  }else{
-	  	$("#store").attr("readonly", true);
+	  } else {
+		  $("#store").attr("readonly", true);
 	  }
 
 	  if (state == 1 && is_vendor) {
@@ -440,45 +484,59 @@
 	  }
 
 	  function submit(state) {
-		  editor.submit();
+		  editor.submit();	  
+		  
 		  var data = basic_table.rows().data().toArray();
 		  var small_data = [];
-		  
+
 		  if (state == 10) {
-		  	data = basic_table.rows('.selected').data().toArray();
-		  	if (data.length == 0) {
-		  		App.showErrorDialog("操作失败", "请选择至少一行数据！");
-		  		return;
-		  	}
-		  }		  
+			  data = basic_table.rows('.selected').data().toArray();
+			  if (data.length == 0) {
+				  App.showErrorDialog("操作失败", "请选择至少一行数据！");
+				  return;
+			  }
+		  }
+
+		  var confirmMessage = "";
+		  if (state == 1) {
+		  	confirmMessage = "发布订单";
+		  } else if (state == 2) {
+		  	confirmMessage = "确认订单";
+		  } else if (state == 3) {
+		  	confirmMessage = "关闭订单";
+		  } else if (state == 10) {
+		  	confirmMessage = "行取消";
+		  }
 		  
-		  $.each(data, function(key, item) {
-			  small_data.push({
-			    id : item.id,
-			    memo: item.memo,			    
-			    confirmed_date : item.confirmed_date,
-			    confirmed_memo : item.confirmed_memo,
-			    close_state : item.close_state
+		  App.showInputConfirmDialog('确定要' + confirmMessage + '吗?', function(submit_content) {
+		  	$.each(data, function(key, item) {
+				  small_data.push({
+				    id : item.id,
+				    memo : item.memo,
+				    confirmed_date : item.confirmed_date,
+				    confirmed_memo : item.confirmed_memo,
+				    close_state : item.close_state
+				  });
 			  });
-		  });
 
-		  $('#form').ajaxSubmit({
-		    data : {
-		      code : $('#code').val(),
-		      store: $('#store').val(),
-		      state : state,
-		      table : small_data
-		    },
-		    success : function(res, status, xhr, form) {
-			    App.showSuccessDialog("操作成功", function() {
-				    window.location.reload(true);
-			    });
-		    },
-		    error : function(res, status, xhr, form) {
-			    App.showErrorDialog("操作失败", "请输入正确的值");
-		    }
-		  });
-
+			  $('#form').ajaxSubmit({
+			    data : {
+			      code : $('#code').val(),
+			      store : $('#store').val(),
+			      state : state,
+			      table : small_data,
+			      content: submit_content,
+			    },
+			    success : function(res, status, xhr, form) {
+				    App.showSuccessDialog("操作成功", function() {
+					    window.location.reload(true);
+				    });
+			    },
+			    error : function(res, status, xhr, form) {
+				    App.showErrorDialog("操作失败", "请输入正确的值");
+			    }
+			  });
+	    });
 	  }
 
 	  $("#deploy").click(function() {
@@ -500,6 +558,9 @@
 		  editor.submit();
 		  submit(10);
 	  });
-	  
+
+	  $('#show_modal_btn').click(function() {
+	  	$('#history_dialog').modal('show'); 
+	  });
   });
 </script>

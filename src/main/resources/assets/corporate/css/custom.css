@@ -587,6 +587,7 @@ table.dataTable tr.selected td.select-checkbox:after, table.dataTable tr.selecte
 a.save-history {
 	float: right;
 	display: block;
+	margin-bottom: 5px;
 }
 
 .row.edit-history {

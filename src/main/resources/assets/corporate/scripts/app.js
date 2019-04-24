@@ -479,6 +479,25 @@ var App = function() {
         }
       })
     },
+    showInputConfirmDialog: function(title, ok_callback,cancel_callback) {
+      swal({
+        title: title,
+        type: 'warning',
+        showCancelButton: true,
+        html: $("<input type='text' class='form-control' placeholder='请输入说明' id='submit_content'>"),
+        confirmButtonText: '是',
+        cancelButtonText: '否'
+      }).then((result) => {
+        if (result.value) {
+        	var submit_content = $('#submit_content').val();
+          if (ok_callback)
+            ok_callback(submit_content);
+        }else{
+          if (cancel_callback)
+            cancel_callback();
+        }
+      })
+    },
   }
 }();
 

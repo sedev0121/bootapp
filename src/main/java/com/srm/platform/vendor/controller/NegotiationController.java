@@ -224,7 +224,7 @@ public class NegotiationController extends CommonController {
 		String title = String.format("议价单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), getLoginAccount().getRealname(), action);
 
 		this.sendmessage(title, toList, String.format("/negotiation/%s/read", main.getCode()));
-		this.addOpertionHistory(main.getCode(), String.format("%s了议价单", action));
+		this.addOpertionHistory(main.getCode(), action, String.format("%s了议价单", action));
 		
 		if (form.getState() <= Constants.NEGOTIATION_STATE_SUBMIT) {
 
