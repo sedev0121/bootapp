@@ -1,5 +1,7 @@
 package com.srm.platform.vendor.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +19,6 @@ public interface InventoryClassRepository extends JpaRepository<InventoryClass, 
 	
 	@Query(value = "SELECT * FROM inventory_class where (code LIKE %?1% or name LIKE %?1%)", nativeQuery = true)
 	Page<VendorSearchItem> findBySearchTerm(String search, Pageable pageable);
+	
+	List<InventoryClass> findByParentCode(String parentCode);
 }

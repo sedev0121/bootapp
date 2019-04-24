@@ -1,5 +1,8 @@
 package com.srm.platform.vendor.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +62,35 @@ public class InevntoryClassController extends CommonController {
 		Page<VendorSearchItem> result = null;
 		result = inventoryClassRepository.findBySearchTerm(search, request);
 		return result;
+	}
+
+
+	@GetMapping("/{parent_code}/children")
+	public @ResponseBody List<Map<String, Object>> list_ajax(@PathVariable("parent_code") String parentCode) {
+		if ("0".equals(parentCode)) {
+			parentCode = null;
+		}
+		
+		List<InventoryClass> children = inventoryClassRepository.findByParentCode(parentCode);
+
+		InventoryClass temp;
+		List<InventoryClass> tempChildren;
+
+		Map<String, Object> row = new HashMap<>();
+		List<Map<String, Object>> response = new ArrayList<>();
+		for (int i = 0; i < children.size(); i++) {
+
+			temp = children.get(i);
+			tempChildren = inventoryClassRepository.findByParentCode(temp.getCode());
+			row = new HashMap<>();
+			row.put("id", temp.getCode());
+			row.put("name", temp.getName());
+			row.put("text", String.format("(%s) %s", temp.getCode(), temp.getName()));
+			row.put("children", tempChildren.size() > 0 ? true : false);
+			response.add(row);
+		}
+
+		return response;
 	}
 
 }

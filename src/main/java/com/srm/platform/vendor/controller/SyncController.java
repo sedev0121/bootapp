@@ -126,6 +126,7 @@ public class SyncController {
 					}
 
 					inventoryClass.setName(getStringValue(temp, "name"));
+					inventoryClass.setParentCode(getStringValue(temp, "upcode"));
 					inventoryClass.setEndRankFlag(getIntegerValue(temp, "end_rank_flag"));
 					inventoryClass.setRank(getIntegerValue(temp, "rank"));
 
