@@ -32,13 +32,18 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 		@ColumnResult(name = "reviewdate", type = Date.class),
 		@ColumnResult(name = "maker", type = String.class), 
 		@ColumnResult(name = "makedate", type = Date.class),
-		@ColumnResult(name = "sum", type = Float.class), 
-		@ColumnResult(name = "money", type = Float.class),
+		@ColumnResult(name = "sum", type = Double.class), 
+		@ColumnResult(name = "money", type = Double.class),
 		@ColumnResult(name = "srmstate", type = Integer.class),
 		@ColumnResult(name = "purchase_type_name", type = String.class),
-		@ColumnResult(name = "prepay_money", type = Float.class),
+		@ColumnResult(name = "prepay_money", type = Double.class),
 		@ColumnResult(name = "verifier", type = String.class),
-		@ColumnResult(name = "closer", type = String.class) 
+		@ColumnResult(name = "closer", type = String.class),
+		@ColumnResult(name = "department", type = String.class),
+		@ColumnResult(name = "person", type = String.class),
+		@ColumnResult(name = "tax_rate", type = Double.class),
+		@ColumnResult(name = "exchange_rate", type = Double.class),
+		@ColumnResult(name = "currency", type = String.class)
 	}) 
 })
 
@@ -76,6 +81,18 @@ public class PurchaseOrderMain {
 
 	private String locker;
 	private Date lockdate;
+	
+	@JsonProperty("tax_rate")
+	private Double taxRate;
+	
+	private String currency;
+	
+	@JsonProperty("exchange_rate")
+	private Double exchangeRate;
+	
+	private String department;
+	private String person;
+	
 
 	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "company_id", referencedColumnName = "id")
@@ -105,6 +122,46 @@ public class PurchaseOrderMain {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Double getTaxRate() {
+		return taxRate;
+	}
+
+	public void setTaxRate(Double taxRate) {
+		this.taxRate = taxRate;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public Double getExchangeRate() {
+		return exchangeRate;
+	}
+
+	public void setExchangeRate(Double exchangeRate) {
+		this.exchangeRate = exchangeRate;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public String getPerson() {
+		return person;
+	}
+
+	public void setPerson(String person) {
+		this.person = person;
 	}
 
 	public Company getCompany() {

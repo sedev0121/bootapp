@@ -35,19 +35,26 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	private Date makedate;
 
-	private Float sum;
+	private Double sum;
 
-	private Float money;
+	private Double money;
 
-	private Float prepay_money;
+	private Double prepay_money;
 
 	private Integer srmstate;
 
 	private String purchase_type_name;
+	
+	private String department;
+	private String person;
+	private Double tax_rate;
+	private Double exchange_rate;
+	private String currency;
 
 	public PurchaseOrderSearchResult(String code, String vencode, Date audittime, String state, String vendorname, String companyname,
 			String deployername, String reviewername, Date deploydate, Date reviewdate, String maker, Date makedate,
-			Float sum, Float money, Integer srmstate, String purchase_type_name, Float prepay_money, String verifier, String closer) {
+			Double sum, Double money, Integer srmstate, String purchase_type_name, Double prepay_money, String verifier, String closer, 
+			String department, String person, Double tax_rate, Double exchange_rate, String currency ) {
 		this.code = code;
 		this.setVencode(vencode);
 		this.setAudittime(audittime);
@@ -67,15 +74,61 @@ public class PurchaseOrderSearchResult implements Serializable {
 		this.prepay_money = prepay_money;
 		this.verifier = verifier;
 		this.closer = closer;
+		
+		this.department = department;
+		this.person = person;
+		this.tax_rate = tax_rate;
+		this.exchange_rate = exchange_rate;
+		this.currency = currency;
 
 	}
 
-	public Float getPrepay_money() {
+	public Double getPrepay_money() {
 		return prepay_money;
 	}
 
-	public void setPrepay_money(Float prepay_money) {
+	public void setPrepay_money(Double prepay_money) {
 		this.prepay_money = prepay_money;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public String getPerson() {
+		return person;
+	}
+
+	public void setPerson(String person) {
+		this.person = person;
+	}
+
+	public Double getTax_rate() {
+		return tax_rate;
+	}
+
+	public void setTax_rate(Double tax_rate) {
+		this.tax_rate = tax_rate;
+	}
+
+	public Double getExchange_rate() {
+		return exchange_rate;
+	}
+
+	public void setExchange_rate(Double exchange_rate) {
+		this.exchange_rate = exchange_rate;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 
 	public String getCompanyname() {
@@ -178,19 +231,19 @@ public class PurchaseOrderSearchResult implements Serializable {
 		this.makedate = makedate;
 	}
 
-	public Float getSum() {
+	public Double getSum() {
 		return sum;
 	}
 
-	public void setSum(Float sum) {
+	public void setSum(Double sum) {
 		this.sum = sum;
 	}
 
-	public Float getMoney() {
+	public Double getMoney() {
 		return money;
 	}
 
-	public void setMoney(Float money) {
+	public void setMoney(Double money) {
 		this.money = money;
 	}
 

@@ -52,8 +52,8 @@ public class VendorController extends CommonController {
 		String vendor = requestParams.getOrDefault("vendor", "");
 		String vendorClass = requestParams.getOrDefault("vendor_class", "");
 
-		if (order.equals("vendorClass.name")) {
-			order = "b.name";
+		if (order.equals("vendorClass.code")) {
+			order = "b.code";
 		}		
 		
 		page_index--;
