@@ -12,6 +12,7 @@ public class DeliverySaveForm {
 
 	private Long id;
 	private String code;
+	private String content;
 	private String vendor;
 	private Integer state;
 	private Long company;
@@ -28,6 +29,14 @@ public class DeliverySaveForm {
 		this.id = id;
 	}
 	
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
 	public String getEstimated_arrival_date() {
 		return estimated_arrival_date;
 	}

@@ -86,14 +86,11 @@
 										</table>				
 									</div>
 									<div id="tab-3" class="tab-pane row-fluid fade in">		
-										<div class="operations" id="operation_history">
-										</div>	
 										<div class="row edit-history">
-											<form id="history_form" th:action="@{/operation_history/update}" method="post">											
-												<textarea name="content" id="history_content" class="history-content" rows="5"></textarea>
-												<a class="btn btn-primary save-history" id="save_history"><i class="fa fa-plus"></i> 保存</a>
-											</form>											 
-										</div>								
+											<a class="btn btn-primary save-history" id="show_modal_btn"><i class="fa fa-plus"></i> 添加日志</a>
+										</div>
+										<table id="history_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>							
 									</div>
 								</div>
 							</div>
@@ -133,8 +130,31 @@
 				</div>
 			</div>
 		</div>
+		<div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">添加日志</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="history_form" th:action="@{/operation_history/update}" method="post">
+							<input type="hidden" name="action" value="添加日志"/>
+							<div class="row">
+								<div class="col-md-12">
+									<textarea name="content" placeholder="请输入日志内容" id="history_content" class="history-content" rows="5"></textarea>
+								</div>
+							</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+						<button type="button" class="btn btn-primary" id="save_history">保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	</div>
+	
 </body>
 </html>
 <script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
@@ -146,7 +166,7 @@ is_readonly = 0;
 </script>
 
 <script th:inline="javascript">
-	var editor, summary_table, table, summary_data;
+	var editor, summary_table, table, history_table, summary_data;
   /*[+
   var detail_url = [[@{|/delivery/${main.code}/details|}]];
   var edit_url = [[@{/delivery/}]];
@@ -467,9 +487,14 @@ is_readonly = 0;
 	  }
 	  
 	  $('#save_history').click(function() {
+	  	if (!$('#history_content').val()) {
+	  		App.showErrorDialog("日志内容不能为空！");
+	  		return;
+	  	}
+	  	
 		  $("#history_form").ajaxSubmit({
 		    data : {
-		      target_type : "delivery",
+		    	target_type : "delivery",
 		      target_id : $('#code').val(),
 		    },
 		    beforeSend : function() {
@@ -481,7 +506,8 @@ is_readonly = 0;
 		    success : function(res, status, xhr, form) {
 			    if (res.success == 1) {
 				    $('#history_content').val('');
-				    loadHistory();
+				    history_table.ajax.reload();
+				    $('#history_dialog').modal('hide'); 
 			    } else {
 				    App.showErrorDialog(res.errmsg);
 			    }
@@ -492,20 +518,34 @@ is_readonly = 0;
 		  });
 	  });
 
-	  
-	  function loadHistory() {
-		  $.get(history_url, function(data, status) {
-			  $('#operation_history').empty();
-			  $.each(data, function(key, item) {
-				  var time = "<div class='operation-time'>" + $.fn.time_renderer(item.create_date) + "</div>";
-				  var content = "<div class='operation-content'>【" + item.account.realname + "】" + item.content + "</div>";
-				  var record = "<div class='operation'>" + time + content + "</div>";
-				  $('#operation_history').append($(record));
-			  });
-		  });
-	  }
-
-	  loadHistory();
+	  history_table = $('#history_table').DataTable({
+	    serverSide : false,
+	    processing : false,
+	    ajax : {
+	      url : history_url,
+	      dataSrc : function(json) {
+		      return json;
+	      },
+	    },
+	    order : [ [ 0, 'desc' ] ],
+	    columns : [ {
+	      data : 'create_date',
+	      title : '日期',
+	      className : 'dt-center',
+	      render : $.fn.time_renderer,
+	    }, {
+	      data : 'action',
+	      title : '动作',
+	      className : 'dt-center',
+	    }, {
+	      data : 'account.realname',
+	      title : '操作人',
+	      className : 'dt-center',
+	    }, {
+	      data : 'content',
+	      title : '说明',
+	    } ],
+	  });
 
 	  function reloadSummaryTable() {
 	  	if (summary_table) {
@@ -563,6 +603,10 @@ is_readonly = 0;
       
       if (summary_table) {
       	summary_table.columns.adjust();
+      }
+      
+      if (history_table) {
+      	history_table.columns.adjust();
       }
       
   	});
@@ -836,29 +880,44 @@ is_readonly = 0;
 		    		state: item.state,		    		
 		    	})
 		    });
-		    jQuery(form).ajaxSubmit({
-		      beforeSend : function() {
-			      App.blockUI();
-		      },
-		      complete : function() {
-			      App.unblockUI();
-		      },
-		      data : {
-			      table : postData
-		      },
-		      success : function(res, status, xhr, form) {
-			      if (res.success == 1) {
-				      App.showSuccessDialog("操作成功", function() {
-					      window.location.href = edit_url + res.data.code + "/edit";
-				      });
-			      } else {
-				      App.showErrorDialog("操作失败", res.errmsg);
+		    
+		    var confirmMessage = "";
+			  if (state == 1) {
+			  	confirmMessage = "保存";
+			  } else if (state == 2) {
+			  	confirmMessage = "提交";
+			  } else if (state == 3) {
+			  	confirmMessage = "确认";
+			  } else if (state == 4) {
+			  	confirmMessage = "退回";
+			  }
+			  
+			  App.showInputConfirmDialog('确定要' + confirmMessage + '发货单吗?', function(submit_content) {
+			  	jQuery(form).ajaxSubmit({
+			      beforeSend : function() {
+				      App.blockUI();
+			      },
+			      complete : function() {
+				      App.unblockUI();
+			      },
+			      data : {
+				      table : postData,
+				      content: submit_content,
+			      },
+			      success : function(res, status, xhr, form) {
+				      if (res.success == 1) {
+					      App.showSuccessDialog("操作成功", function() {
+						      window.location.href = edit_url + res.data.code + "/edit";
+					      });
+				      } else {
+					      App.showErrorDialog("操作失败", res.errmsg);
+				      }
+			      },
+			      error : function(res, status, xhr, form) {
+				      App.showErrorDialog("操作失败", "请输入正确的值");
 			      }
-		      },
-		      error : function(res, status, xhr, form) {
-			      App.showErrorDialog("操作失败", "请输入正确的值");
-		      }
-		    });
+			    });
+			  });		    
 	    }
 	  });
 
@@ -906,7 +965,10 @@ is_readonly = 0;
 		  $('#state').val(4);
 		  $("#form").submit();
 	  });
-
+	  
+	  $('#show_modal_btn').click(function() {
+	  	$('#history_dialog').modal('show'); 
+	  });
 
   });
 </script>

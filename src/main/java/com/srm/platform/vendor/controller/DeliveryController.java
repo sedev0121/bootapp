@@ -290,7 +290,7 @@ public class DeliveryController extends CommonController {
 		String title = String.format("预发货单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
 
 		this.sendmessage(title, toList, String.format("/delivery/%s/read", main.getCode()));
-		this.addOpertionHistory(main.getCode(), action, String.format("%s了预发货单", action));
+		this.addOpertionHistory(main.getCode(), action, form.getContent());
 		if (form.getState() <= Constants.DELIVERY_STATE_SUBMIT) {
 
 			deliveryDetailRepository.deleteInBatch(deliveryDetailRepository.findDetailsByCode(main.getCode()));
