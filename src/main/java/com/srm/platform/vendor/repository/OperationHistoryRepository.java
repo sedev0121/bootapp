@@ -13,7 +13,7 @@ public interface OperationHistoryRepository extends JpaRepository<OperationHisto
 	
 	OperationHistory findOneById(Long id);
 	
-	@Query(value = "SELECT * FROM operation_history where target_type=?1 and target_id=?2 order by create_date asc", nativeQuery = true)
+	@Query(value = "SELECT * FROM operation_history where target_type=?1 and target_id=?2 order by create_date desc", nativeQuery = true)
 	List<OperationHistory> findByTarget(String targetType, String targetId);
 
 }

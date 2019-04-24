@@ -39,6 +39,7 @@ public class OperationHistoryController extends CommonController {
 	@PostMapping("/update")
 	public @ResponseBody GenericJsonResponse<OperationHistory> update_ajax(@RequestParam Map<String, String> requestParams) {
 
+		String action = requestParams.getOrDefault("action", null);
 		String content = requestParams.getOrDefault("content", null);
 		String id = requestParams.getOrDefault("id", null);
 		String targetType = requestParams.getOrDefault("target_type", null);
@@ -52,7 +53,8 @@ public class OperationHistoryController extends CommonController {
 		
 		operationHistory.setTargetId(targetId);
 		operationHistory.setTargetType(targetType);		
-		operationHistory.setContent(content);		
+		operationHistory.setAction(action);
+		operationHistory.setContent(content);	
 		operationHistory.setAccount(this.getLoginAccount());
 
 		operationHistory = operationHistoryRepository.save(operationHistory);

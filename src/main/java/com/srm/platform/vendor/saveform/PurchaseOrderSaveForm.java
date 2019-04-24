@@ -6,7 +6,7 @@ import java.util.Map;
 public class PurchaseOrderSaveForm {
 
 	private String code;
-
+	private String content;
 	private Integer state;
 	
 	private Long store;
@@ -22,6 +22,14 @@ public class PurchaseOrderSaveForm {
 	}
 
 	
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
 	public Long getStore() {
 		return store;
 	}
