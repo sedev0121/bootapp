@@ -227,6 +227,9 @@ public class PurchaseOrderController extends CommonController {
 		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CONFIRM) {
 			main.setReviewdate(new Date());
 			main.setReviewer(account);
+		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CLOSE) {
+			main.setClosedate(new Date());
+			main.setCloser(account.getRealname());
 		}
 
 		main = purchaseOrderMainRepository.save(main);

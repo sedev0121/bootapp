@@ -26,6 +26,7 @@ import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.searchitem.StoreSearchItem;
 import com.srm.platform.vendor.searchitem.VendorSearchItem;
 import com.srm.platform.vendor.utility.AccountPermission;
+import com.srm.platform.vendor.utility.Utils;
 
 // 供应商管理
 @Controller
@@ -59,7 +60,12 @@ public class StoreController extends CommonController {
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
 		String used = requestParams.getOrDefault("used", "-1");
+		String company = requestParams.getOrDefault("company", "-1");
 
+		if (Utils.isEmpty(company)) {
+			company = "-1";
+		}
+		
 		if (order.equals("company.name")) {
 			order = "b.name";
 		}
@@ -71,10 +77,21 @@ public class StoreController extends CommonController {
 		Page<Store> result = null;
 		
 		Integer usedState = Integer.parseInt(used);
-		if (usedState > -1) {
-			result = storeRepository.findBySearchTerm(search, usedState, request);	
-		} else {
-			result = storeRepository.findBySearchTerm(search, request);
+		Long companyId = Long.parseLong(company);
+		
+		if (usedState > -1) {			
+			if (companyId > -1) {
+				result = storeRepository.findByUsedAndCompany(search, usedState, companyId, request);	
+			} else {
+				result = storeRepository.findBySearchTerm(search, usedState, request);	
+			}
+			
+		} else {			
+			if (companyId > -1) {
+				result = storeRepository.findBySearchTermAndCompany(search, companyId, request);	
+			} else {
+				result = storeRepository.findBySearchTerm(search, request);	
+			}
 		}
 		
 		

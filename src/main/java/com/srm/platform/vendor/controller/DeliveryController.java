@@ -159,9 +159,7 @@ public class DeliveryController extends CommonController {
 		if (isVendor()) {
 			Vendor vendor = this.getLoginAccount().getVendor();
 			bodyQuery += " and b.code= :vendor";
-			params.put("vendor", vendor.getCode());
-
-			bodyQuery += " and a.state>=" + Constants.STATEMENT_STATE_REVIEW;
+			params.put("vendor", vendor.getCode());			
 
 		} else {
 			String subWhere = " 1=0 ";
@@ -191,6 +189,7 @@ public class DeliveryController extends CommonController {
 			}
 
 			bodyQuery += " and (" + subWhere + ") ";
+			bodyQuery += " and a.state>=" + Constants.STATEMENT_STATE_REVIEW;
 		}
 
 		if (!code.trim().isEmpty()) {

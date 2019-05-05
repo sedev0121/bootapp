@@ -17,6 +17,8 @@ public class PurchaseOrderSearchResult implements Serializable {
 	
 	private String closer;
 	
+	private Date closedate;
+	
 	private Date audittime;
 
 	private String vendorname;
@@ -54,7 +56,7 @@ public class PurchaseOrderSearchResult implements Serializable {
 	public PurchaseOrderSearchResult(String code, String vencode, Date audittime, String state, String vendorname, String companyname,
 			String deployername, String reviewername, Date deploydate, Date reviewdate, String maker, Date makedate,
 			Double sum, Double money, Integer srmstate, String purchase_type_name, Double prepay_money, String verifier, String closer, 
-			String department, String person, Double tax_rate, Double exchange_rate, String currency ) {
+			String department, String person, Double tax_rate, Double exchange_rate, String currency, Date closedate ) {
 		this.code = code;
 		this.setVencode(vencode);
 		this.setAudittime(audittime);
@@ -80,6 +82,7 @@ public class PurchaseOrderSearchResult implements Serializable {
 		this.tax_rate = tax_rate;
 		this.exchange_rate = exchange_rate;
 		this.currency = currency;
+		this.closedate = closedate;
 
 	}
 
@@ -149,6 +152,14 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	public void setCloser(String closer) {
 		this.closer = closer;
+	}
+
+	public Date getClosedate() {
+		return closedate;
+	}
+
+	public void setClosedate(Date closedate) {
+		this.closedate = closedate;
 	}
 
 	public String getVerifier() {

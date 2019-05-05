@@ -12,6 +12,10 @@
 				<label for="code">仓库编号/名称：</label> <input type="text" name="code" id="code" class="form-control">
 			</div>
 			<div class="search-cell width-10 form-group">
+				<label for="company">业务实体：</label> <select name="company" id="company" class="form-control">
+				</select>
+			</div>
+			<div class="search-cell width-10 form-group">
 				<label for="used">SRM使用：</label> <select name="used" id="used" class="form-control">
 				</select>
 			</div>
@@ -31,8 +35,12 @@
 </body>
 </html>
 <script th:inline="javascript">
+var company_search_url = /*[[@{/company/search}]]*/'';
+
 	$(document).ready(function() {
 		$('#used').select2({data: App.getYesNoDataWithAll(), minimumResultsForSearch: -1});
+		var options = $.extend(true, App.getSelect2OptionsWithAll(company_search_url), {minimumResultsForSearch: -1, placeholder: " "});
+		$("#company").select2(options);
 		
 	  var table_options = {
 	    ordering : true,
@@ -45,6 +53,7 @@
 		        order : data.columns[data.order[0].column].data,
 		        dir : data.order[0].dir,
 		        search : $('#code').val(),
+		        company : $('#company').val(),
 		        used : $('#used').val()
 		      }
 		      return filter;
@@ -88,7 +97,7 @@
 		  table.draw();
 	  });
 
-	  $('#used').change(function() {
+	  $('#used, #company').change(function() {
 	  	table.draw();
 	  });
 	  

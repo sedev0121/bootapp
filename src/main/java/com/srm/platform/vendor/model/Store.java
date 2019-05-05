@@ -9,6 +9,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "store")
 public class Store {
@@ -24,8 +26,13 @@ public class Store {
 	private Company company;
 	
 	private String address;
+	
+	@JsonProperty("is_accept_set")
 	private Integer isAcceptSet;
+	
+	@JsonProperty("is_use_in_srm")
 	private Integer isUseInSrm;
+	
 	private String memo;
 
 	public String getName() {

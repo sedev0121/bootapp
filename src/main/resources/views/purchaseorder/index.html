@@ -233,6 +233,11 @@ var edit_url = [[@{/purchaseorder/}]];
         className: 'dt-center',
         title : '关闭日期'
       } ],
+      rowCallback: function (row, data) {
+        if (data.srmstate == 3) {
+            $(row).addClass('closed');
+        }
+    	},
       order: [  [ 2, "desc" ] ]      
     });
 

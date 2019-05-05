@@ -47,6 +47,18 @@ public class Inventory {
 	@JsonProperty(value = "count_per_box")
 	private Integer countPerBox;
 
+	@JsonProperty(value = "is_asset")
+	private Integer isAsset;
+	
+	@JsonProperty(value = "is_import")
+	private Integer isImport;
+	
+	@JsonProperty(value = "is_purchase")
+	private Integer isPurchase;
+	
+	@JsonProperty(value = "is_weiwai")
+	private Integer isWeiwai;
+	
 	public Inventory() {
 
 	}
@@ -81,6 +93,38 @@ public class Inventory {
 
 	public void setSpecs(String specs) {
 		this.specs = specs;
+	}
+
+	public Integer getIsAsset() {
+		return isAsset;
+	}
+
+	public void setIsAsset(Integer isAsset) {
+		this.isAsset = isAsset;
+	}
+
+	public Integer getIsImport() {
+		return isImport;
+	}
+
+	public void setIsImport(Integer isImport) {
+		this.isImport = isImport;
+	}
+
+	public Integer getIsPurchase() {
+		return isPurchase;
+	}
+
+	public void setIsPurchase(Integer isPurchase) {
+		this.isPurchase = isPurchase;
+	}
+
+	public Integer getIsWeiwai() {
+		return isWeiwai;
+	}
+
+	public void setIsWeiwai(Integer isWeiwai) {
+		this.isWeiwai = isWeiwai;
 	}
 
 	public InventoryClass getInventoryClass() {
