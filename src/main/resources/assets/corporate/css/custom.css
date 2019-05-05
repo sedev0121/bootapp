@@ -649,3 +649,7 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
 .closed {
 	color: red !important;
 }
+
+.editable {
+	color: #4B77BE !important;
+}

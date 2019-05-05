@@ -281,9 +281,6 @@
 	      className : 'dt-center',
 	      title : '行号',
 	    }, {
-	      data : 'inventory_name',
-	      title : '货品名称',
-	    }, {
 	      data : 'inventory.code',
 	      title : '货品代码',
 	      render : function(data, display, record) {
@@ -292,6 +289,9 @@
 		      }
 		      return data;
 	      },
+	    }, {
+	      data : 'inventory_name',
+	      title : '货品名称',
 	    }, {
 	      data : null,
 	      defaultContent : '',

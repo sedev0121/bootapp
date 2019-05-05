@@ -72,18 +72,18 @@
 					<div class="col-lg-12">
 						<div class="tab-style-1" id="tabs">
 								<ul class="nav nav-tabs">
-									<li class="active"><a data-toggle="tab" href="#tab-1">汇总信息</a></li>
-									<li><a data-toggle="tab" href="#tab-2">明细</a></li>
+									<li class="active"><a data-toggle="tab" href="#tab-1">明细</a></li>
+									<li><a data-toggle="tab" href="#tab-2">汇总信息</a></li>
 									<li><a data-toggle="tab" href="#tab-3">操作日志</a></li>
 								</ul>
 								<div class="tab-content">
-									<div id="tab-1" class="tab-pane row-fluid fade in active">
-										<table id="summary_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-										</table>
-									</div>
-									<div id="tab-2" class="tab-pane row-fluid fade in">		
+									<div id="tab-1" class="tab-pane row-fluid fade in active">		
 										<table id="detail_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
 										</table>				
+									</div>
+									<div id="tab-2" class="tab-pane row-fluid fade in">
+										<table id="summary_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
 									</div>
 									<div id="tab-3" class="tab-pane row-fluid fade in">		
 										<div class="row edit-history">
@@ -279,7 +279,7 @@ is_readonly = 0;
 		    style : 'multi'
 	    } : false,
 	    buttons : [ {
-	      text : "添加物料",
+	      text : "添加订单货品",
 	      action : function(e, dt, node, config) {
 		      $('#import_dialog').modal('show');
 	      }
@@ -366,7 +366,7 @@ is_readonly = 0;
 	    }, {
 	      data : 'delivered_quantity',
 	      className : 'dt-right',
-	      className : 'vendor-edit',
+	      className : 'vendor-edit' + (!is_vendor?'':' editable'),
 	      title : '发货数量',		 
 	    }, {
 	      data : 'delivered_quantity',
@@ -404,18 +404,18 @@ is_readonly = 0;
 	    }, {
 	      data : 'buyer_memo',
 	      visible: state > 1,
-	      className : 'buyer-edit',
+	      className : 'buyer-edit' + (is_vendor?'':' editable'),
 	      title : '购方备注',		  
 	    }, {
 	      data : 'memo',
-	      className : 'vendor-edit',
+	      className : 'vendor-edit' + (!is_vendor?'':' editable'),
 	      title : '供方备注',		 
 	    }, {
 	      data : 'state',
 	      title : '行审批　　',	
 	      width: 100,
 	      visible: state > 1,
-	      className : 'buyer-edit',
+	      className : 'buyer-edit' + (is_vendor?'':' editable'),
 	      render : App.getDeliveryRowStateOfId
 
 	    } ],
@@ -563,11 +563,11 @@ is_readonly = 0;
 		    ajax: false,
 		    data: summary_data,
 		    columns : [ {
-		      data : 'inventory_name',
-		      title : '货品名称',
-		    }, {
 		      data : 'inventory_code',
 		      title : '货品代码',
+		    }, {
+		      data : 'inventory_name',
+		      title : '货品名称',
 		    }, {
 		      data : 'unit_name',
 		      className : 'dt-center',
@@ -579,6 +579,13 @@ is_readonly = 0;
 		    }, {
 		      data : 'delivered_quantity',
 		      className : 'dt-right',
+		      title : '发货件数',
+		      render: function (data, display, record) {
+		        return App.getBoxCount(record.delivered_quantity, record.count_per_box);
+		      },
+		    }, {
+		      data : 'delivered_quantity',
+		      className : 'dt-right',
 		      title : '发货箱数',		 
 		      render: function (data, display, record) {
 		        return App.getBoxCount(record.delivered_quantity, record.count_per_box);
@@ -587,6 +594,13 @@ is_readonly = 0;
 		      data : 'accepted_quantity',
 		      className : 'dt-right',
 		      title : '实收数量',		 
+		    }, {
+		      data : 'accepted_quantity',
+		      className : 'dt-right',
+		      title : '实收件数',
+		      render: function (data, display, record) {
+		        return App.getBoxCount(record.accepted_quantity, record.count_per_box);
+		      },
 		    }, {
 		      data : 'accepted_quantity',
 		      className : 'dt-right',
@@ -803,11 +817,10 @@ is_readonly = 0;
 		  var selected_data = import_table.rows('.selected').data().toArray();
 		  var exist_data = table.rows().data().toArray();
 		  $.each(selected_data, function(key, item) {
-
 			  var available = true;
 			  for (i = 0; i < exist_data.length; i++) {
 				  exist_row = exist_data[i];
-				  if (exist_row.purchaseOrderDetail.code == item.main.code) {
+				  if (exist_row.purchaseOrderDetail.id == item.id) {
 					  available = false;
 					  break;
 				  }
