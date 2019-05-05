@@ -8,11 +8,11 @@
             <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
           </li>
           <li><a href="#">基础资料</a></li>
-          <li class="active">存货档案表</li>
+          <li class="active">采购目录表</li>
         </ul>
         <div class="search-content">
           <div class="search-cell width-18">
-              <label for="inventory">存货编码/名称/规格型号:</label>
+              <label for="inventory">货品编码/名称/规格型号:</label>
               <input type="text" id="inventory" class="form-control">            
           </div>
           <div class="search-cell width-10">
@@ -82,7 +82,7 @@
       order: [ [0, 'asc'] ],
       columns : [ {
         data : 'code',
-        title : '存货编码',
+        title : '货品编码',
         render : function(data, display, record) {
           var edit_url = /*[[@{/inventory/}]]*/'';
           edit_url += record.code + '/edit';
@@ -90,10 +90,10 @@
         },
       }, {
         data : 'name',
-        title : '存货名称',    
+        title : '货品名称',    
       }, {
         data : 'inventoryClass.name',
-        title : '存货类别',   
+        title : '货品类别',   
         render : function(data, display, record) {
         	if (record.inventoryClass) {
         		return record.inventoryClass.name;
@@ -131,23 +131,23 @@
         title : '单位包装量',
       }, {
       	className: 'dt-center',
-        data : null,
-        defaultContent: '',
+      	data : 'is_purchase',
+        render: App.getYesNoOfId,
         title : '采购',
       }, {
       	className: 'dt-center',
-      	data : null,
-        defaultContent: '',
+      	data : 'is_import',
+        render: App.getYesNoOfId,
         title : '进口',
       }, {
       	className: 'dt-center',
-      	data : null,
-        defaultContent: '',
+      	data : 'is_weiwai',
+        render: App.getYesNoOfId,
         title : '委外',
       }, {
       	className: 'dt-center',
-      	data : null,
-        defaultContent: '',
+      	data : 'is_asset',
+        render: App.getYesNoOfId,
         title : '资产',
       }, {
         data : 'start_date',

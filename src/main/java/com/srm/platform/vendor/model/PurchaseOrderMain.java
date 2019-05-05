@@ -43,7 +43,8 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 		@ColumnResult(name = "person", type = String.class),
 		@ColumnResult(name = "tax_rate", type = Double.class),
 		@ColumnResult(name = "exchange_rate", type = Double.class),
-		@ColumnResult(name = "currency", type = String.class)
+		@ColumnResult(name = "currency", type = String.class),
+		@ColumnResult(name = "closedate", type = Date.class),
 	}) 
 })
 

@@ -645,3 +645,7 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
 	margin-left: 5px;
 	margin-top: -2px;
 }
+
+.closed {
+	color: red !important;
+}

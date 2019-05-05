@@ -7,7 +7,7 @@
 		<ul class="breadcrumb">
 			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
 			<li><a href="#">基础资料</a></li>
-			<li><a th:href="@{/vendor}">存货分类管理</a></li>
+			<li><a th:href="@{/vendor}">货品分类管理</a></li>
 			<li class="active">详细信息</li>
 		</ul>
 		<div class="btn-group-bar">
@@ -19,10 +19,10 @@
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-md-4">
-						<label>存货分类编码: </label> <input type="text" name="code" id="vendor_code" class="form-control select-vendor" readonly th:value="${data.code}" />
+						<label>货品分类编码: </label> <input type="text" name="code" id="vendor_code" class="form-control select-vendor" readonly th:value="${data.code}" />
 					</div>
 					<div class="col-md-8">
-						<label>存货分类名称: </label> <input type="text" id="vendor_name" class="form-control select-vendor" readonly th:value="${data.name}" />
+						<label>货品分类名称: </label> <input type="text" id="vendor_name" class="form-control select-vendor" readonly th:value="${data.name}" />
 					</div>					
 				</div>
 			</div>

@@ -11,13 +11,12 @@
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
 				<a class="btn btn-primary" id="deploy" sec:authorize="hasAuthority('订单管理-发布')" th:if="${(main.srmstate==0)} "><i class="fa fa-share"></i> 发布</a> 
 				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
-				<a class="btn btn-primary" id="close_row" sec:authorize="hasAuthority('订单管理-行取消')"><i class="fa fa-undo"></i> 行取消</a> 
+				<a class="btn btn-primary" id="close_row" sec:authorize="hasAuthority('订单管理-行取消')"><i class="fa fa-undo"></i> 行关闭</a> 
 				<a class="btn btn-danger" id="close" sec:authorize="hasAuthority('订单管理-关闭')" th:if="${main.srmstate>=1}"><i class="fa fa-remove"></i> 订单关闭</a> 
 				<a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
 		<div class="panel panel-default">
-			<form id="form" th:action="@{/purchaseorder/update}" method="post"></form>
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-md-2">
@@ -61,11 +60,15 @@
 					<div class="col-md-2">
 						<label>业务实体： </label> <input type="text" class="form-control" th:value="${main.company?.name}" readonly />
 					</div>
+					<form id="form" th:action="@{/purchaseorder/update}" method="post">
+					<input type="hidden" id="save_state"/>
 					<div class="col-md-2">
-						<label>收货仓库： </label> <select name="store" id="store" class="form-control">
+						<label>收货仓库： </label> 
+						<select name="store" id="store" class="form-control">
 							<option th:if="${main.store != null}" th:value="${main.store?.id}" th:text="${main.store?.name}" selected="selected"></option>
 						</select>
 					</div>
+					</form>
 					<div class="col-md-6">
 						<label>订单摘要： </label> <input type="text" class="form-control" th:value="${main.remark}" readonly />
 					</div>
@@ -108,7 +111,7 @@
 									</div>
 									<div id="tab-2" class="tab-pane row-fluid fade in">
 										<div class="row edit-history">
-											<a class="btn btn-primary save-history" id="show_modal_btn"><i class="fa fa-plus"></i> 添加日志</a>
+											<a class="btn btn-primary save-history" id="show_modal_btn"><i class="fa fa-plus"></i> 添加说明</a>
 										</div>
 										<table id="history_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
 										</table>
@@ -124,15 +127,15 @@
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="exampleModalLabel">添加日志</h5>
+						<h5 class="modal-title" id="exampleModalLabel">添加说明</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
 						<form id="history_form" th:action="@{/operation_history/update}" method="post">
-							<input type="hidden" name="action" value="添加日志"/>
+							<input type="hidden" name="action" value="添加说明"/>
 							<div class="row">
 								<div class="col-md-12">
-									<textarea name="content" placeholder="请输入日志内容" id="history_content" class="history-content" rows="5"></textarea>
+									<textarea name="content" placeholder="请输入说明" id="history_content" class="history-content" rows="5"></textarea>
 								</div>
 							</div>
 					</div>
@@ -279,10 +282,10 @@
 	      title : '行号',
 	    }, {
 	      data : 'inventory_name',
-	      title : '存货名称',
+	      title : '货品名称',
 	    }, {
 	      data : 'inventory.code',
-	      title : '存货代码',
+	      title : '货品代码',
 	      render : function(data, display, record) {
 		      if (!record.inventory) {
 			      data = '';
@@ -416,6 +419,11 @@
 	      className : 'vendor-cell',
 	      title : '供方备注',
 	    } ],
+	    rowCallback: function (row, data) {
+        if (data.close_date) {
+            $(row).addClass('closed');
+        }
+    	},
 	    footerCallback : function(row, data, start, end, display) {
 		    App.footerCallback(this.api(), [ [ 6, "cost" ], [ 8, "cost" ], [ 9, "cost" ], [ 13, "cost" ], [ 14, "cost" ], [ 15, "cost" ], [ 19, "cost" ], [ 20, "cost" ], [ 21, "cost" ], [ 22, "cost" ], [ 24, "cost" ], [ 26, "cost" ] ]);
 	    },
@@ -435,15 +443,18 @@
 	    columns : [ {
 	      data : 'create_date',
 	      title : '日期',
+	      width: '150px',
 	      className : 'dt-center',
 	      render : $.fn.time_renderer,
 	    }, {
 	      data : 'action',
 	      title : '动作',
+	      width: '100px',
 	      className : 'dt-center',
 	    }, {
 	      data : 'account.realname',
 	      title : '操作人',
+	      width: '150px',
 	      className : 'dt-center',
 	    }, {
 	      data : 'content',
@@ -481,9 +492,25 @@
 		  });
 	  }
 
-	  function submit(state) {
+	  $("#form").validate({
+	    rules : {
+	    	store : {
+	        required : true,
+	      },
+	    },
+
+	    //display error alert on form submit  
+	    invalidHandler : function(event, validator) {
+		    App.showErrorDialog("操作失败", "请输入正确的值");
+	    },
+	    submitHandler : function(form) {
+	    	submit();
+	    }
+	  });
+	  
+	  function submit() {
 		  editor.submit();	  
-		  
+		  var state = $('#save_state').val();
 		  var data = basic_table.rows().data().toArray();
 		  var small_data = [];
 
@@ -503,7 +530,7 @@
 		  } else if (state == 3) {
 		  	confirmMessage = "关闭订单";
 		  } else if (state == 10) {
-		  	confirmMessage = "行取消";
+		  	confirmMessage = "行关闭";
 		  }
 		  
 		  App.showInputConfirmDialog('确定要' + confirmMessage + '吗?', function(submit_content) {
@@ -518,6 +545,12 @@
 			  });
 
 			  $('#form').ajaxSubmit({
+			  	beforeSend : function() {
+			      App.blockUI();
+		      },
+		      complete : function() {
+			      App.unblockUI();
+		      },
 			    data : {
 			      code : $('#code').val(),
 			      store : $('#store').val(),
@@ -539,22 +572,26 @@
 
 	  $("#deploy").click(function() {
 		  editor.submit();
-		  submit(1);
+		  $('#save_state').val(1);
+		  $("#form").submit();
 	  });
 
 	  $("#confirm").click(function() {
 		  editor.submit();
-		  submit(2);
+		  $('#save_state').val(2);
+		  $("#form").submit();
 	  });
 
 	  $("#close").click(function() {
 		  editor.submit();
-		  submit(3);
+		  $('#save_state').val(3);
+		  $("#form").submit();
 	  });
 
 	  $("#close_row").click(function() {
 		  editor.submit();
-		  submit(10);
+		  $('#save_state').val(10);
+		  $("#form").submit();
 	  });
 
 	  $('#show_modal_btn').click(function() {

@@ -21,13 +21,13 @@
 				<form id="form" th:action="@{/inventory/update}" method="post">				
 				<div class="row">
 					<div class="col-md-3">
-						<label>存货编码: </label> <input type="text" name="code" class="form-control" readonly th:value="${data.code}" />
+						<label>货品编码: </label> <input type="text" name="code" class="form-control" readonly th:value="${data.code}" />
 					</div>
 					<div class="col-md-3">
-						<label>存货类别: </label> <input type="text" class="form-control" readonly th:value="${data.inventoryClass.name}" />
+						<label>货品类别: </label> <input type="text" class="form-control" readonly th:value="${data.inventoryClass.name}" />
 					</div>
 					<div class="col-md-3">
-						<label>存货名称: </label> <input type="text" class="form-control" readonly th:value="${data.name}" />
+						<label>货品名称: </label> <input type="text" class="form-control" readonly th:value="${data.name}" />
 					</div>
 					<div class="col-md-3">
 						<label>规格型号: </label> <input type="text" class="form-control" readonly th:value="${data.specs}" />
@@ -57,7 +57,7 @@
 						</select>						
 					</div>
 					<div class="col-md-3">
-						<label>每箱数量: </label> <input type="number" class="form-control" name="count_per_box" id="count_per_box" th:value="${data.countPerBox}" />
+						<label>单位包装量: </label> <input type="number" class="form-control" name="count_per_box" id="count_per_box" th:value="${data.countPerBox}" />
 					</div>
 				</div>
 				</form>

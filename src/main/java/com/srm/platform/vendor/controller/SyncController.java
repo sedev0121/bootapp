@@ -178,6 +178,12 @@ public class SyncController {
 					inventory.setDefwarehouse(getStringValue(temp, "defwarehouse"));
 					inventory.setDefwarehousename(getStringValue(temp, "defwarehousename"));
 					inventory.setIimptaxrate(getDoubleValue(temp, "iimptaxrate"));
+					
+					inventory.setIsAsset(getIntegerValue(temp, "bInvAsset"));
+					inventory.setIsImport(getIntegerValue(temp, "bImport"));
+					inventory.setIsPurchase(getIntegerValue(temp, "bPurchase"));
+					inventory.setIsWeiwai(getIntegerValue(temp, "bProxyForeign"));
+					
 
 					inventory.setStartDate(Utils.parseDateTime(getStringValue(temp, "start_date")));
 					inventory.setEndDate(Utils.parseDateTime(getStringValue(temp, "end_date")));

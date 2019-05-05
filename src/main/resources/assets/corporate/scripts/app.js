@@ -205,6 +205,18 @@ var App = function() {
     getSelect2Options: function(search_url) {
       return $.extend(true, {ajax:{url:search_url}}, select2_default_options);
     },
+    getSelect2OptionsWithAll: function(search_url) {
+      return $.extend(true, select2_default_options, {      	
+      	ajax:{
+      		url:search_url, 
+      		processResults: function(data, page) {
+            return {
+            	results: [{id:-1, text:"　"}, ...data.content]
+	          };
+	      	},
+	      }
+      });
+    },
     getSelect2TagOptions: function(search_url) {
       return $.extend(true, {
         maximumSelectionLength: 15,
