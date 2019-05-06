@@ -51,6 +51,9 @@ import com.srm.platform.vendor.utility.Utils;
 public class PurchaseOrderController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 14L;
+	private static Long DEPLOY_FUNCTION_ACTION_ID = 15L;
+	private static Long CLOSE_FUNCTION_ACTION_ID = 16L;
+	private static Long CLOSE_ROW_FUNCTION_ACTION_ID = 17L;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -75,6 +78,10 @@ public class PurchaseOrderController extends CommonController {
 		checkPermission(main, LIST_FUNCTION_ACTION_ID);
 		
 		model.addAttribute("main", main);
+		model.addAttribute("canDeploy", hasPermission(main, DEPLOY_FUNCTION_ACTION_ID));
+		model.addAttribute("canClose", hasPermission(main, CLOSE_FUNCTION_ACTION_ID));
+		model.addAttribute("canCloseRow", hasPermission(main, CLOSE_ROW_FUNCTION_ACTION_ID));
+		
 		return "purchaseorder/edit";
 	}
 
@@ -347,5 +354,27 @@ public class PurchaseOrderController extends CommonController {
 				show403();
 			}
 		}
+	}
+	
+	private boolean hasPermission(PurchaseOrderMain main, Long functionActionId) {
+		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
+		List<String> allowedVendorCodeList = accountPermission.getVendorList();
+		List<Long> allowedAccountIdList = accountPermission.getAccountList();
+		List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+		
+		boolean isValid = false;
+
+		if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)
+				&& allowedVendorCodeList.contains(main.getVendor().getCode())) {
+			isValid = true;
+		} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)
+				&& allowedAccountIdList.contains(main.getDeployer().getId())) {
+			isValid = true;
+		} else if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)
+				&& main.getCompany() != null && allowedCompanyIdList.contains(main.getCompany().getId())) {
+			isValid = true;
+		}
+
+		return isValid;
 	}
 }

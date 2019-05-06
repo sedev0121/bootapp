@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.DeliveryDetail;
 import com.srm.platform.vendor.model.DeliveryMain;
+import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.DeliverySaveForm;
@@ -45,6 +46,7 @@ import com.srm.platform.vendor.utility.Utils;
 public class DeliveryController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 18L;
+	private static Long CONFIRM_FUNCTION_ACTION_ID = 19L;
 
 	@Override
 	protected String getOperationHistoryType() {
@@ -77,6 +79,7 @@ public class DeliveryController extends CommonController {
 		checkPermission(main, LIST_FUNCTION_ACTION_ID);
 
 		model.addAttribute("main", main);
+		model.addAttribute("canConfirm", hasPermission(main, CONFIRM_FUNCTION_ACTION_ID));
 		return "delivery/edit";
 	}
 
@@ -189,7 +192,7 @@ public class DeliveryController extends CommonController {
 			}
 
 			bodyQuery += " and (" + subWhere + ") ";
-			bodyQuery += " and a.state>=" + Constants.STATEMENT_STATE_REVIEW;
+			bodyQuery += " and a.state>=" + Constants.DELIVERY_STATE_SUBMIT;
 		}
 
 		if (!code.trim().isEmpty()) {
@@ -390,5 +393,31 @@ public class DeliveryController extends CommonController {
 				show403();
 			}
 		}
+	}
+	
+	private boolean hasPermission(DeliveryMain main, Long functionActionId) {
+		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
+		List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+		List<String> allowedVendorCodeList = accountPermission.getVendorList();
+		List<Long> allowedStoreIdList = accountPermission.getStoreList();
+		List<Long> allowedAccountIdList = accountPermission.getAccountList();
+		
+		boolean isValid = false;
+
+		if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)
+				&& allowedCompanyIdList.contains(main.getCompany().getId())) {
+			isValid = true;
+		} else if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)
+				&& allowedVendorCodeList.contains(main.getVendor().getCode())) {
+			isValid = true;
+		} else if (!(allowedStoreIdList == null || allowedStoreIdList.size() == 0)
+				&& allowedStoreIdList.contains(main.getStore().getId())) {
+			isValid = true;
+		} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)
+				&& main.getConfirmer() != null && allowedAccountIdList.contains(main.getConfirmer().getId())) {
+			isValid = true;
+		}
+
+		return isValid;
 	}
 }
