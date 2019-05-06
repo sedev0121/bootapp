@@ -551,7 +551,7 @@ $(document).ready(function() {
 	$.extend(true, $.fn.DataTable.defaults, {
 		processing : true,
 		serverSide : true,
-		lengthChange : true,
+		lengthChange : false,
 		searching : false,
 		ordering: false,
 		scrollX : true,
