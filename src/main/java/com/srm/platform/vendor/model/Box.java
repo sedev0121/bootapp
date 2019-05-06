@@ -40,8 +40,6 @@ public class Box implements Serializable {
 	private Long id;
 	private String code;
 
-	private String spec;
-	private String memo;
 	private Integer state;
 	private Integer used;
 	
@@ -117,22 +115,6 @@ public class Box implements Serializable {
 
 	public void setCode(String code) {
 		this.code = code;
-	}
-
-	public String getSpec() {
-		return spec;
-	}
-
-	public void setSpec(String spec) {
-		this.spec = spec;
-	}
-
-	public String getMemo() {
-		return memo;
-	}
-
-	public void setMemo(String memo) {
-		this.memo = memo;
 	}
 
 	public Integer getState() {

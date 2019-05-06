@@ -1,8 +1,10 @@
 package com.srm.platform.vendor.utility;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 public class Utils {
@@ -141,6 +143,17 @@ public class Utils {
 		id += String.format("%03d", rand);
 
 		return id;
+	}
+	
+	public static List<String> generateStaticBoxCode(String classCode, String serialNumberStr, Integer count) {
+		Long serialNumber = Long.parseLong(serialNumberStr);
+		List<String> codeList = new ArrayList<String>();
+		String temp;
+		for (int i= 0; i< count; i++) {			
+			temp = String.format("A%s%06d", classCode, serialNumber + i + 1);
+			codeList.add(temp);
+		}
+		return codeList;
 	}
 	
 	public static String generateDeliveryNumber(String vendorCode) {

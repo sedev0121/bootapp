@@ -97,29 +97,32 @@ public class BoxController extends CommonController {
 	@PostMapping("/update")
 	public @ResponseBody GenericJsonResponse<Box> update_ajax(@RequestParam Map<String, String> requestParams) {
 
-		Box box = new Box();
-		String id = requestParams.get("id");
-		String spec = requestParams.get("spec");
-		String memo = requestParams.get("memo");
+		GenericJsonResponse<Box> jsonResponse;
+		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
+		
+		String serialNumberStr = requestParams.get("serial_number");
+		String countStr = requestParams.get("count");
 		String classId = requestParams.get("class_id");
 
-		if (id != null && !id.isEmpty()) {
-			box = boxRepository.findOneById(Long.valueOf(id));
+		if (classId == null) {
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "请选择箱码分类！", null);
 		} else {
-			box.setCode(Utils.generateId());
-			box.setState(1);
-			box.setUsed(0);
-			box.setBoxClass(boxClassRepository.findOneById(Long.valueOf(classId)));
+			BoxClass boxClass = boxClassRepository.findOneById(Long.valueOf(classId));
+			if (boxClass == null) {
+				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "箱码分类不存在", null);
+			} else {
+				Integer count = Integer.valueOf(countStr);
+				List<String> boxCodeList = Utils.generateStaticBoxCode(boxClass.getCode(), serialNumberStr, count);
+				for(String code : boxCodeList) {
+					Box box = new Box();
+					box.setCode(code);
+					box.setState(1);
+					box.setUsed(0);
+					box.setBoxClass(boxClass);
+					box = boxRepository.save(box);		
+				}
+			}
 		}
-
-		box.setSpec(spec);
-		box.setMemo(memo);
-
-		box = boxRepository.save(box);
-
-		GenericJsonResponse<Box> jsonResponse;
-
-		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, box);
 
 		return jsonResponse;
 	}
