@@ -632,6 +632,7 @@ $(document).ready(function() {
 	    required: "不能为空",
 	    email: "无效的邮箱格式",
 	    number: "请输入数值",
+	    digits: "请输入数字",
 	    equalTo: "请再输入同样的值",
 	    maxlength: jQuery.validator.format("长度不能大于{0}"),
 	    minlength: jQuery.validator.format("长度不能小于{0}"),
