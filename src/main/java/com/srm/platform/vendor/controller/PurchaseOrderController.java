@@ -304,6 +304,8 @@ public class PurchaseOrderController extends CommonController {
 		String order = requestParams.getOrDefault("order", "name");
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
+		String company = requestParams.getOrDefault("company", null);
+		String store = requestParams.getOrDefault("store", null);
 
 		switch (order) {
 		case "main.code":
@@ -312,14 +314,17 @@ public class PurchaseOrderController extends CommonController {
 		}
 
 		Vendor vendor = getLoginAccount().getVendor();
-		if (vendor == null) {
+		if (vendor == null || company == null || store == null) {
 			return Page.empty();
 		}
+		
+		Long companyId = Long.parseLong(company);
+		Long storeId = Long.parseLong(store);
 
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<PurchaseOrderDetail> result = purchaseOrderDetailRepository.searchAllOfOneVendor(search, vendor.getCode(),
+		Page<PurchaseOrderDetail> result = purchaseOrderDetailRepository.searchAllOfOneVendor(search, vendor.getCode(), companyId, storeId, 
 				request);
 
 		return result;

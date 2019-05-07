@@ -34,4 +34,7 @@ public interface BoxRepository extends JpaRepository<Box, Long> {
 	@Query(value = "SELECT * FROM box where code LIKE %?1% and used=?2 and state=?3 and box_class_id=?4", nativeQuery = true)
 	Page<Box> findBySearchUsedAndState(String search, Integer used, Integer state, Long classId, Pageable pageable);
 	
+	@Query(value = "SELECT max(code) FROM box where box_class_id=?1", nativeQuery = true)
+	String findMaxSerial(Long classId);
+	
 }

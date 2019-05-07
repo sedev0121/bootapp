@@ -92,6 +92,19 @@ public class BoxController extends CommonController {
 		
 		return result;
 	}
+	
+	@RequestMapping(value = "/max_serial/{classId}")
+	public @ResponseBody String maxSeiralNumber(@PathVariable("classId") Long classId) {
+		
+		String maxSerialNumber = boxRepository.findMaxSerial(classId);	
+		
+		if (maxSerialNumber == null) {
+			maxSerialNumber = "000000";
+		} else {
+			maxSerialNumber = maxSerialNumber.substring(Math.max(maxSerialNumber.length() - 6, 0));
+		}
+		return maxSerialNumber;
+	}
 
 	@Transactional
 	@PostMapping("/update")
