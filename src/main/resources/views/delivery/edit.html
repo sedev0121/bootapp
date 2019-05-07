@@ -281,7 +281,7 @@ is_readonly = 0;
 	    buttons : [ {
 	      text : "添加订单货品",
 	      action : function(e, dt, node, config) {
-		      $('#import_dialog').modal('show');
+	      	showImportDialog();		      
 	      }
 	    }, {
 	      extend : "remove",
@@ -685,7 +685,18 @@ is_readonly = 0;
 	  }
 
 	  onChangeType();
-
+		function showImportDialog() {
+			if (!$('#company').val()) {
+				App.showErrorDialog("操作失败", "请选择业务实体！");
+				return;
+			} else if (!$('#store').val()) {
+				App.showErrorDialog("操作失败", "请选择收货仓库！");
+  			return;
+  		}
+  
+			$('#import_dialog').modal('show');	
+		}
+	  
 	  var import_table;
 
 	  $('.modal').on('shown.bs.modal', function() {
@@ -704,7 +715,9 @@ is_readonly = 0;
 				        page_index : data.start / data.length + 1,
 				        order : data.columns[data.order[0].column].data,
 				        dir : data.order[0].dir,
-				        search : $('#search_inventory').val()
+				        search : $('#search_inventory').val(),
+				        company: $('#company').val(),
+				        store: $('#store').val()
 				      }
 				      return filter;
 			      },
