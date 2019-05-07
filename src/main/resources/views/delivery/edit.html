@@ -102,13 +102,13 @@
 			<div class="modal-dialog" role="document" style="width: 1000px;">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="exampleModalLabel">选择物料</h5>
+						<h5 class="modal-title" id="exampleModalLabel">选择货品</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body form-horizontal">
 						<div class="search-content form-inline">
 							<div class="search-cell width-6">
-								<label for="search_inventory">物料编码/名称：</label> <input type="text" id="search_inventory" class="form-control">
+								<label for="search_inventory">货品编码/名称：</label> <input type="text" id="search_inventory" class="form-control">
 							</div>
 							<div style="vertical-align: bottom" class="search-cell width-15">
 								<button class="btn btn-default" id="btn_search">
@@ -242,7 +242,7 @@ is_readonly = 0;
 	        title : "删除",
 	        submit : "是",
 	        confirm : {
-	          _ : "确定要删除%d行物料吗?",
+	          _ : "确定要删除%d行货品吗?",
 	          1 : "确定要删除吗?"
 	        }
 	      },
@@ -787,15 +787,18 @@ is_readonly = 0;
 			      visible: false,
 			      title : '发货箱数',		 
 			    }, {
-			      data : 'quantity',
+			      data : 'arrived_quantity',
 			      className : 'dt-right',
 			      visible: false,
 			      title : '实收数量',		 
 			    }, {
-			      data : 'quantity',
+			      data : 'arrived_quantity',
 			      className : 'dt-right',
 			      visible: false,
-			      title : '实收箱数',		 
+			      title : '实收箱数',	
+			      render: function (data, display, record) {
+			      	return App.getBoxCount(record.arrived_quantity, record.inventory.count_per_box);
+			      },
 			    } ],
 			  });
 		  }
@@ -847,16 +850,17 @@ is_readonly = 0;
 
 	  $.validator.addMethod("checkTable", function(value, element) {
 		  var exist_data = table.rows().data().toArray();
-		  var inventoryIdList = [];
-		  validInventoryIdList = [];
+		 
 		  for (i = 0; i < exist_data.length; i++) {
-			  exist_row = exist_data[i];
-
-			  if ($.inArray(exist_row.cinvcode, inventoryIdList) < 0)
-				  inventoryIdList.push(exist_row.cinvcode);
-
-			  if (exist_row.ivalid == 1)
-				  validInventoryIdList.push(exist_row.cinvcode);
+			  var exist_row = exist_data[i];
+			  
+			  if (!exist_row.delivered_quantity || exist_row.delivered_quantity == 0) {
+				  App.showErrorDialog("操作失败", "发货数量不能为空！");
+				  return false;
+			  } else if (exist_row.delivered_quantity > exist_row.purchaseOrderDetail.quantity - exist_row.purchaseOrderDetail.arrived_quantity) {
+			  	App.showErrorDialog("操作失败", "发货数量不能大于订单未交数量！");
+				  return false;
+			  }
 			  
 		  }
 
@@ -873,7 +877,8 @@ is_readonly = 0;
 		      required : true
 	      },
 	      store : {
-		      required : true
+		      required : true,
+		      checkTable : true
 	      },
 	      estimated_arrival_date : {
 		      required : true
