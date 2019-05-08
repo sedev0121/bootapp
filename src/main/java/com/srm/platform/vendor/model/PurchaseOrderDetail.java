@@ -50,6 +50,9 @@ public class PurchaseOrderDetail {
 	@JsonProperty(value = "row_no")
 	private Integer rowNo;
 	
+	@JsonProperty(value = "original_id")
+	private String originalId;
+	
 	private Double quantity;
 
 	private Double price;
@@ -114,6 +117,14 @@ public class PurchaseOrderDetail {
 
 	public void setInventory(Inventory inventory) {
 		this.inventory = inventory;
+	}
+
+	public String getOriginalId() {
+		return originalId;
+	}
+
+	public void setOriginalId(String originalId) {
+		this.originalId = originalId;
 	}
 
 	public Double getInvoicedMoney() {
