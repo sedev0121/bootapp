@@ -360,24 +360,24 @@ is_readonly = 0;
 	        return App.getBoxCount(record.purchaseOrderDetail.quantity, record.purchaseOrderDetail.inventory.count_per_box);
 	      },
 	    }, {
-	      data : 'purchaseOrderDetail.arrived_quantity',
+	      data : null,
 	      className : 'dt-right',
 	      title : '订单未交数量',
 	      render: function (data, display, record) {
-	        return record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.arrived_quantity;
+	        return record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.arrived_quantity - record.purchaseOrderDetail.delivered_quantity;
 	      },
 	    }, {
-	      data : 'purchaseOrderDetail.arrived_quantity',
+	    	data : null,
 	      className : 'dt-right',
 	      title : '订单未交件数',		
 	      render: function (data, display, record) {
-	        return App.getBoxCount(record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.arrived_quantity, record.purchaseOrderDetail.inventory.count_per_box);
+	        return App.getBoxCount(record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.arrived_quantity - record.purchaseOrderDetail.delivered_quantity, record.purchaseOrderDetail.inventory.count_per_box);
 	      },
 	    }, {
 	      data : 'delivered_quantity',
 	      className : 'dt-right',
 	      className : 'vendor-edit' + (!is_vendor?'':' editable'),
-	      title : '发货数量',		 
+	      title : '发货数量',		
 	    }, {
 	      data : 'delivered_quantity',
 	      className : 'dt-right',
@@ -409,6 +409,24 @@ is_readonly = 0;
 	      title : '实收箱数',		 
 	      render: function (data, display, record) {
 	        return App.getBoxCount(record.purchaseOrderDetail.arrived_quantity, record.purchaseOrderDetail.inventory.count_per_box);
+	      },
+	    }, {
+	      data : 'purchaseOrderDetail.delivered_quantity',
+	      className : 'dt-right',
+	      title : '已发货数量',		 
+	    }, {
+	    	data : null,
+	      className : 'dt-right',
+	      title : '已发货件数',	
+	      render: function (data, display, record) {
+	      	return App.getBoxCount(record.purchaseOrderDetail.delivered_quantity, record.purchaseOrderDetail.inventory.count_per_box);
+	      },
+	    }, {
+	    	data : null,
+	      className : 'dt-right',
+	      title : '已发货箱数',	
+	      render: function (data, display, record) {
+	      	return App.getBoxCount(record.purchaseOrderDetail.delivered_quantity, record.purchaseOrderDetail.inventory.count_per_box);
 	      },
 	    }, {
 	      data : 'deliver_number',
@@ -445,7 +463,7 @@ is_readonly = 0;
 			  				inventory_name: item.purchaseOrderDetail.inventory_name,
 			  				unit_name: item.purchaseOrderDetail.unit_name,
 			  				delivered_quantity: App.floatVal(item.delivered_quantity),
-			  				accepted_quantity: App.floatVal(item.accepted_quantity),
+			  				arrived_quantity: App.floatVal(item.purchaseOrderDetail.arrived_quantity),
 			  				count_per_box: item.purchaseOrderDetail.inventory.count_per_box,
 			  		}	
 		  		} else {
@@ -603,22 +621,22 @@ is_readonly = 0;
 		        return App.getBoxCount(record.delivered_quantity, record.count_per_box);
 		      },
 		    }, {
-		      data : 'accepted_quantity',
+		      data : 'arrived_quantity',
 		      className : 'dt-right',
 		      title : '实收数量',		 
 		    }, {
-		      data : 'accepted_quantity',
+		      data : 'arrived_quantity',
 		      className : 'dt-right',
 		      title : '实收件数',
 		      render: function (data, display, record) {
-		        return App.getBoxCount(record.accepted_quantity, record.count_per_box);
+		        return App.getBoxCount(record.arrived_quantity, record.count_per_box);
 		      },
 		    }, {
 		      data : 'accepted_quantity',
 		      className : 'dt-right',
 		      title : '实收箱数',		
 		      render: function (data, display, record) {
-		      	return App.getBoxCount(record.accepted_quantity, record.count_per_box);
+		      	return App.getBoxCount(record.arrived_quantity, record.count_per_box);
 		      },
 		    } ],
 		  });
@@ -793,34 +811,33 @@ is_readonly = 0;
 			      className : 'dt-right',
 			      title : '订单未交数量',
 			      render: function (data, display, record) {
-			      	return record.quantity - record.arrived_quantity;
+			      	return record.quantity - record.arrived_quantity - record.delivered_quantity;
 			      },
 			    }, {
 			      data : 'quantity',
 			      className : 'dt-right',
 			      title : '订单未交箱数',
 			      render: function (data, display, record) {
-			      	return App.getBoxCount(record.quantity - record.arrived_quantity, record.inventory.count_per_box);
+			      	return App.getBoxCount(record.quantity - record.arrived_quantity - record.delivered_quantity, record.inventory.count_per_box);
 			      }, 
 			    }, {
-			      data : 'quantity',
+			      data : 'delivered_quantity',
 			      className : 'dt-right',
-			      visible: false,
-			      title : '发货数量',		 
+			      title : '已发货数量',		 
 			    }, {
-			      data : 'quantity',
+			      data : 'delivered_quantity',
 			      className : 'dt-right',
-			      visible: false,
-			      title : '发货箱数',		 
+			      title : '已发货箱数',	
+			      render: function (data, display, record) {
+			      	return App.getBoxCount(record.delivered_quantity, record.inventory.count_per_box);
+			      },
 			    }, {
 			      data : 'arrived_quantity',
 			      className : 'dt-right',
-			      visible: false,
 			      title : '实收数量',		 
 			    }, {
 			      data : 'arrived_quantity',
 			      className : 'dt-right',
-			      visible: false,
 			      title : '实收箱数',	
 			      render: function (data, display, record) {
 			      	return App.getBoxCount(record.arrived_quantity, record.inventory.count_per_box);
@@ -858,9 +875,9 @@ is_readonly = 0;
 				  var temp = {};
 				  temp.row_no = table.rows().data().toArray().length + 1;
 				  temp.purchaseOrderDetail = item;
+				  temp.delivered_quantity = item.quantity - item.arrived_quantity - item.delivered_quantity;
 				  temp.purchaseOrderDetail.code = item.main.code;
-				  temp.accepted_quantity = 0;
-				  temp.delivered_quantity = 0;
+				  temp.accepted_quantity = 0;				  
 				  temp.arrived_quantity = 0;
 				  temp.deliver_number = '';
 				  temp.memo = '';
