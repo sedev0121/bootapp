@@ -87,6 +87,9 @@ public class PurchaseOrderDetail {
 	@JsonProperty(value = "invoiced_quantity")
 	private Double invoicedQuantity;
 	
+	@JsonProperty(value = "delivered_quantity")
+	private Double deliveredQuantity;
+	
 	@JsonProperty(value = "invoiced_money")
 	private Double invoicedMoney;
 	
@@ -117,6 +120,14 @@ public class PurchaseOrderDetail {
 
 	public void setInventory(Inventory inventory) {
 		this.inventory = inventory;
+	}
+
+	public Double getDeliveredQuantity() {
+		return deliveredQuantity;
+	}
+
+	public void setDeliveredQuantity(Double deliveredQuantity) {
+		this.deliveredQuantity = deliveredQuantity;
 	}
 
 	public String getOriginalId() {

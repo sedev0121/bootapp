@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.DeliveryDetail;
 import com.srm.platform.vendor.model.DeliveryMain;
+import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
@@ -120,6 +121,17 @@ public class DeliveryController extends CommonController {
 	public @ResponseBody Boolean delete_ajax(@PathVariable("code") String code) {
 		DeliveryMain main = deliveryMainRepository.findOneByCode(code);
 		if (main != null) {
+			
+			List<DeliveryDetail> detailList = deliveryDetailRepository.findDetailsByCode(code);
+			
+			for(DeliveryDetail detail : detailList) {
+				PurchaseOrderDetail purchaseOrderDetail = detail.getPurchaseOrderDetail();
+				Double lastDeliveredQuantity = purchaseOrderDetail.getDeliveredQuantity();
+				Double currentDeliveredQuantity = detail.getDeliveredQuantity();
+				purchaseOrderDetail.setDeliveredQuantity(lastDeliveredQuantity - currentDeliveredQuantity);
+				purchaseOrderDetailRepository.save(purchaseOrderDetail);	
+			}			
+			
 			deliveryDetailRepository.DeleteByCode(code);
 			deliveryMainRepository.delete(main);
 		}
@@ -294,7 +306,7 @@ public class DeliveryController extends CommonController {
 		this.sendmessage(title, toList, String.format("/delivery/%s/read", main.getCode()));
 		this.addOpertionHistory(main.getCode(), action, form.getContent());
 		if (form.getState() <= Constants.DELIVERY_STATE_SUBMIT) {
-
+			
 			deliveryDetailRepository.deleteInBatch(deliveryDetailRepository.findDetailsByCode(main.getCode()));
 
 			if (form.getTable() != null) {
@@ -326,6 +338,15 @@ public class DeliveryController extends CommonController {
 					Integer rowState = Integer.parseInt(row.get("state"));
 					if (rowState == Constants.DELIVERY_ROW_STATE_CANCEL) {
 						isAllOk = false;
+					} else {
+						PurchaseOrderDetail purchaseOrderDetail = detail.getPurchaseOrderDetail();
+						Double lastDeliveredQuantity = purchaseOrderDetail.getDeliveredQuantity();
+						Double currentDeliveredQuantity = detail.getDeliveredQuantity();
+						if (lastDeliveredQuantity == null) {
+							lastDeliveredQuantity = 0D;
+						}
+						purchaseOrderDetail.setDeliveredQuantity(lastDeliveredQuantity + currentDeliveredQuantity);
+						purchaseOrderDetailRepository.save(purchaseOrderDetail);
 					}
 
 					if (form.getState() == Constants.DELIVERY_STATE_OK) {
