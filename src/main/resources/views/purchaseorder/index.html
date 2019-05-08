@@ -6,9 +6,7 @@
         <li>
           <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
-        <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/vendor/purchageorder}">订单管理</a></li>
-        <li class="active" sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/vendor/purchageorder}">订单确认</a></li>
-        <li class="active" sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/vendor/purchageorder}">订单管理</a></li>
+        <li class="active">订单管理</li>
       </ul>
 
       <div class="search-content">

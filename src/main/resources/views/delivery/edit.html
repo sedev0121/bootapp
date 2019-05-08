@@ -170,7 +170,7 @@ is_readonly = 0;
   /*[+
   var detail_url = [[@{|/delivery/${main.code}/details|}]];
   var edit_url = [[@{/delivery/}]];
-  var del_url = [[@{|/delivery/${main.id}/delete|}]];
+  var del_url = [[@{|/delivery/${main.code}/delete|}]];
   var history_url = [[@{|/operation_history/list/delivery/${main.code}}|]];
   +]*/
 
@@ -182,6 +182,8 @@ is_readonly = 0;
 
   $(document).ready(function() {
 
+  	$(".datepicker").datepicker();
+  	
 	  App.bs_input_file();
 	  $('#start_date').datepicker({
 		  minDate : new Date()
@@ -257,7 +259,17 @@ is_readonly = 0;
 			  item.row_no = id++;
 		  })
 		  table.rows().invalidate();
-	  }).on('preOpen', function(e, data, action) {
+	  }).on('preSubmit', function(e, data, action) {
+	  	var currentFieldName = e.currentTarget.s.includeFields[0];
+		  if (currentFieldName == "delivered_quantity") {
+		  	$.each(data.data, function(key, item){  
+		  		if (item.delivered_quantity) {
+		  			item.delivered_quantity = parseInt(item.delivered_quantity);
+			  	}
+        });
+		  		
+		  }
+	  }).on('preEdit', function(e, data, action) {
 	  	
 		  var currentFieldName = e.currentTarget.s.includeFields[0];
 		  if (currentFieldName == "state") {
@@ -338,6 +350,7 @@ is_readonly = 0;
 	      title : '订单数量',
 	    }, {
 	      data : 'purchaseOrderDetail.inventory.count_per_box',
+	      className : 'dt-right',
 	      title : '换算率',
 	    }, {
 	      data : 'purchaseOrderDetail.quantity',
