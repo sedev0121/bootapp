@@ -387,7 +387,7 @@ public class SyncController {
 
 					purchaseOrderMainRepository.save(main);
 
-					purchaseOrderDetailRepository.deleteAll(purchaseOrderDetailRepository.findDetailsByCode(main.getCode()));
+//					purchaseOrderDetailRepository.deleteAll(purchaseOrderDetailRepository.findDetailsByCode(main.getCode()));
 					
 					List<LinkedHashMap<String, Object>> details = getDetailMap(temp, "details");
 					if (details == null || details.size() == 0) {
@@ -400,14 +400,15 @@ public class SyncController {
 					Double taxRate = null;
 					
 					for (LinkedHashMap<String, Object> detailTemp : details) {
-						
-						PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByCodeAndRowno(main.getCode(),
-								getStringValue(detailTemp, "ivouchrowno"));
+						String originalID = getStringValue(detailTemp, "ID");
+						PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByOriginalId(originalID);
 
 						if (detail == null) {
 							detail = new PurchaseOrderDetail();
 							detail.setMain(main);
-						}						
+						} else {
+							logger.info("exist=" + originalID);
+						}
 
 						detail.setRowNo(getIntegerValue(detailTemp, "ivouchrowno"));
 						detail.setUnitName(getStringValue(detailTemp, "cComUnitName"));
@@ -418,10 +419,11 @@ public class SyncController {
 							companyCode = tempCompanyCode;
 						}
 						
-						
-						Inventory inventory = inventoryRepository.findOneByCode(getStringValue(detailTemp, "cInvCode"));
+						String inventoryCode = getStringValue(detailTemp, "cInvCode");
+						Inventory inventory = inventoryRepository.findOneByCode(inventoryCode);
 						
 						if (inventory == null) {
+							logger.info("inventory null=" + inventoryCode);
 							addDetailSuccess = false;
 							continue;
 						}
@@ -444,6 +446,7 @@ public class SyncController {
 							taxRate = tempTaxRate;
 						}
 						
+						detail.setOriginalId(originalID); //表体唯一id
 						detail.setPrepayMoney(getDoubleValue(detailTemp, "Deposit")); //定金 
 						
 						detail.setPrice(getDoubleValue(detailTemp, "iNatUnitPrice")); //去税单价

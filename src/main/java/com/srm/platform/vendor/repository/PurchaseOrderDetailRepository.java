@@ -15,7 +15,9 @@ import com.srm.platform.vendor.model.PurchaseOrderDetail;
 public interface PurchaseOrderDetailRepository extends JpaRepository<PurchaseOrderDetail, Long> {
 
 	PurchaseOrderDetail findOneById(Long id);
-
+	
+	PurchaseOrderDetail findOneByOriginalId(String originalId);
+	
 	@Query(value = "select * from purchase_order_detail where code= :code order by row_no", nativeQuery = true)
 	List<PurchaseOrderDetail> findDetailsByCode(String code);
 
