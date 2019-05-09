@@ -187,6 +187,7 @@ table.DTFC_Cloned.table-striped>tbody>tr>td.even:hover ) {
 
 span.error {
 	color: #e6400c;
+	font-size: 14px;
 }
 
 #forget-page a {
