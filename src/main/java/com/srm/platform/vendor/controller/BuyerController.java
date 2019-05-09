@@ -157,7 +157,8 @@ public class BuyerController extends AccountController {
 		Account account = new Account();
 		if (accountSaveForm.getId() != null) {
 			account = accountRepository.findOneById(accountSaveForm.getId());
-
+		} else {
+			account.setPassword(passwordEncoder.encode(accountSaveForm.getPassword()));
 		}
 
 		account.setUsername(accountSaveForm.getUsername());
@@ -195,13 +196,6 @@ public class BuyerController extends AccountController {
 			account.setStopDate(new Date());
 		}
 
-		if (accountSaveForm.getVendor() != null && !accountSaveForm.getVendor().isEmpty()) {
-			Vendor newVendor = vendorRepository.findOneByCode(accountSaveForm.getVendor());
-			vendorRepository.save(newVendor);
-			account.setVendor(newVendor);
-		} else {
-			account.setVendor(null);
-		}
 		account = accountRepository.save(account);
 
 		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, account);
