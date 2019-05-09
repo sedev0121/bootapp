@@ -155,10 +155,12 @@ public class SellerController extends AccountController {
 	public @ResponseBody GenericJsonResponse<Account> update_ajax(AccountSaveForm accountSaveForm) {
 
 		Account account = new Account();
-		account.setPassword(passwordEncoder.encode(accountSaveForm.getPassword()));
+		
 		
 		if (accountSaveForm.getId() != null) {
 			account = accountRepository.findOneById(accountSaveForm.getId());			
+		} else {
+			account.setPassword(passwordEncoder.encode(accountSaveForm.getPassword()));	
 		}
 
 		account.setUsername(accountSaveForm.getUsername());
