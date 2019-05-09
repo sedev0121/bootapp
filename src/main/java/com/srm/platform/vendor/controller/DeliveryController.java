@@ -121,17 +121,6 @@ public class DeliveryController extends CommonController {
 	public @ResponseBody Boolean delete_ajax(@PathVariable("code") String code) {
 		DeliveryMain main = deliveryMainRepository.findOneByCode(code);
 		if (main != null) {
-			
-			List<DeliveryDetail> detailList = deliveryDetailRepository.findDetailsByCode(code);
-			
-			for(DeliveryDetail detail : detailList) {
-				PurchaseOrderDetail purchaseOrderDetail = detail.getPurchaseOrderDetail();
-				Double lastDeliveredQuantity = purchaseOrderDetail.getDeliveredQuantity();
-				Double currentDeliveredQuantity = detail.getDeliveredQuantity();
-				purchaseOrderDetail.setDeliveredQuantity(lastDeliveredQuantity - currentDeliveredQuantity);
-				purchaseOrderDetailRepository.save(purchaseOrderDetail);	
-			}			
-			
 			deliveryDetailRepository.DeleteByCode(code);
 			deliveryMainRepository.delete(main);
 		}
