@@ -21,16 +21,18 @@ import com.srm.platform.vendor.searchitem.VendorSearchItem;
 // 供应商管理
 @Controller
 @RequestMapping(path = "/vendor")
-@PreAuthorize("hasAuthority('基础资料-查看列表')")
+
 public class VendorController extends CommonController {
 
 	// 查询列表
+	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	@GetMapping({ "", "/" })
 	public String index() {
 		return "vendor/index";
 	}
 
 	// 修改
+	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	@GetMapping("/{code}/edit")
 	public String edit(@PathVariable("code") String code, Model model) {
 		Vendor vendor = vendorRepository.findOneByCode(code);
@@ -43,6 +45,7 @@ public class VendorController extends CommonController {
 
 
 	// 查询列表API
+	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<Vendor> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
@@ -66,6 +69,7 @@ public class VendorController extends CommonController {
 	}
 
 	// 查询列表API
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('基础资料-查看列表')")
 	@RequestMapping(value = "/listall", produces = "application/json")
 	public @ResponseBody Page<VendorSearchItem> list_all_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
@@ -87,6 +91,7 @@ public class VendorController extends CommonController {
 		return result;
 	}
 
+	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	@ResponseBody
 	@RequestMapping(value = "/search", produces = "application/json")
 	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
