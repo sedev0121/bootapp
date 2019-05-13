@@ -336,26 +336,7 @@ public class PurchaseOrderController extends CommonController {
 				show403();
 			}
 		} else {
-
-			AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
-			List<String> allowedVendorCodeList = accountPermission.getVendorList();
-			List<Long> allowedAccountIdList = accountPermission.getAccountList();
-			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-			
-			boolean isValid = false;
-
-			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)
-					&& allowedVendorCodeList.contains(main.getVendor().getCode())) {
-				isValid = true;
-			} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)
-					&& allowedAccountIdList.contains(main.getDeployer().getId())) {
-				isValid = true;
-			} else if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)
-					&& main.getCompany() != null && allowedCompanyIdList.contains(main.getCompany().getId())) {
-				isValid = true;
-			}
-
-			if (!isValid) {
+			if (!hasPermission(main, functionActionId)) {
 				show403();
 			}
 		}
@@ -370,9 +351,11 @@ public class PurchaseOrderController extends CommonController {
 		boolean isValid = false;
 
 		if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)
+				&& main.getVendor() != null
 				&& allowedVendorCodeList.contains(main.getVendor().getCode())) {
 			isValid = true;
-		} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)
+		} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0) 
+				&& main.getDeployer() != null 
 				&& allowedAccountIdList.contains(main.getDeployer().getId())) {
 			isValid = true;
 		} else if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)

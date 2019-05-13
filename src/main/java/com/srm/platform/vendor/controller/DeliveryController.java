@@ -376,30 +376,7 @@ public class DeliveryController extends CommonController {
 				show403();
 			}
 		} else {
-
-			AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
-			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-			List<String> allowedVendorCodeList = accountPermission.getVendorList();
-			List<Long> allowedStoreIdList = accountPermission.getStoreList();
-			List<Long> allowedAccountIdList = accountPermission.getAccountList();
-			
-			boolean isValid = false;
-
-			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)
-					&& allowedCompanyIdList.contains(main.getCompany().getId())) {
-				isValid = true;
-			} else if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)
-					&& allowedVendorCodeList.contains(main.getVendor().getCode())) {
-				isValid = true;
-			} else if (!(allowedStoreIdList == null || allowedStoreIdList.size() == 0)
-					&& allowedStoreIdList.contains(main.getStore().getId())) {
-				isValid = true;
-			} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)
-					&& main.getConfirmer() != null && allowedAccountIdList.contains(main.getConfirmer().getId())) {
-				isValid = true;
-			}
-
-			if (!isValid) {
+			if (!hasPermission(main, functionActionId)) {
 				show403();
 			}
 		}
@@ -415,15 +392,19 @@ public class DeliveryController extends CommonController {
 		boolean isValid = false;
 
 		if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)
+				&& main.getCompany() != null
 				&& allowedCompanyIdList.contains(main.getCompany().getId())) {
 			isValid = true;
 		} else if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)
+				&& main.getVendor() != null
 				&& allowedVendorCodeList.contains(main.getVendor().getCode())) {
 			isValid = true;
 		} else if (!(allowedStoreIdList == null || allowedStoreIdList.size() == 0)
+				&& main.getStore() != null
 				&& allowedStoreIdList.contains(main.getStore().getId())) {
 			isValid = true;
 		} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)
+				&& main.getConfirmer() != null
 				&& main.getConfirmer() != null && allowedAccountIdList.contains(main.getConfirmer().getId())) {
 			isValid = true;
 		}
