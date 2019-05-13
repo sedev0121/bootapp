@@ -22,10 +22,13 @@ import org.thymeleaf.util.StringUtils;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Box;
 import com.srm.platform.vendor.model.DeliveryDetail;
+import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.model.PurchaseInDetail;
+import com.srm.platform.vendor.model.PurchaseOrderDetail;
+import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.repository.AccountRepository;
@@ -37,6 +40,8 @@ import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
+import com.srm.platform.vendor.u8api.RestApiClient;
+import com.srm.platform.vendor.u8api.RestApiResponse;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.Utils;
@@ -48,6 +53,9 @@ public class ApiController {
 
 	private static final String RESPONSE_SUCCESS = "1";
 	private static final String RESPONSE_FAIL = "2";
+	
+	@Autowired
+	private RestApiClient apiClient;
 	
 	@Autowired
 	private StatementMainRepository statementMainRepository;
@@ -308,10 +316,9 @@ public class ApiController {
 			return response;
 		}
 		
-
 		Map<String, String> data = content.get(0);
 		String quantityStr = data.get("quantity");
-		String deliveryRowNoStr = data.get("line_code");
+		String deliveryRowNoStr = String.valueOf(data.get("line_code"));
 		String boxCode = data.get("BoxCode");
 		
 		if (quantityStr == null || deliveryRowNoStr == null || boxCode == null) {
@@ -346,6 +353,8 @@ public class ApiController {
 		box.setUsed(Box.BOX_IS_USING);
 		
 		box = boxRepository.save(box);
+		
+		RestApiResponse u8Response = postForArrivalVouch(box);
 		
 		response.put("error_code", RESPONSE_SUCCESS);
 		response.put("msg", "提交成功");
@@ -406,5 +415,56 @@ public class ApiController {
 		
 		
 		return response;
+	}
+	
+	
+	private RestApiResponse postForArrivalVouch(Box box) {
+		
+		if (box == null) {
+			return null;
+		} else {
+			
+			DeliveryDetail deliveryDetail = box.getDelivery();
+			if (deliveryDetail == null) {
+				return null;
+			}
+			
+			DeliveryMain deliveryMain = deliveryDetail.getMain();
+			PurchaseOrderDetail orderDetail = deliveryDetail.getPurchaseOrderDetail();
+			PurchaseOrderMain orderMain = orderDetail.getMain();
+			
+			Map<String, Object> postData = new HashMap<>();
+			postData.put("ccode", deliveryMain.getCode());
+			postData.put("ddate", Utils.formatDateTime(deliveryMain.getEstimatedArrivalDate()));
+			postData.put("cvencode", deliveryMain.getVendor().getCode());
+			postData.put("itaxrate", orderDetail.getTaxRate());
+			postData.put("cmemo", deliveryDetail.getMemo());
+			postData.put("cpocode", orderMain.getCode());
+			postData.put("cbustype", orderMain.getPurchaseTypeName());
+			
+			
+			List<Map<String, Object>> detailList = new ArrayList<Map<String, Object>>();
+			
+			Map<String, Object> detailData = new HashMap<>();
+			detailData.put("cinvcode", orderDetail.getInventory().getCode());
+			detailData.put("qty", box.getQuantity());
+			detailData.put("itaxrate", orderDetail.getTaxRate());
+			detailData.put("iposid", orderDetail.getOriginalId());
+			detailData.put("cpocode", orderMain.getCode());
+			detailData.put("ivouchrowno", deliveryDetail.getRowNo());
+			detailData.put("fprice", orderDetail.getPrice());
+			detailData.put("famount", orderDetail.getMoney());
+			detailData.put("ftaxprice", orderDetail.getTaxPrice());
+			detailData.put("ftaxamount", orderDetail.getSum());
+			
+			detailList.add(detailData);
+			
+			postData.put("detail", detailList);
+			
+			RestApiResponse response = apiClient.postForArrivalVouch(postData);
+			
+			return response;
+		}
+		
 	}
 }

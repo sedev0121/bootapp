@@ -104,6 +104,19 @@ public class RestApiClient {
 		
 		return postForConfirm("SRM_pomo", content);
 	}
+	
+	public RestApiResponse postForArrivalVouch(Map<String, Object> content) {
+		
+		String url = appProperties.getData_url();
+
+		Map<String, Object> postData = new HashMap<>();
+		postData.put("classname", "SRM_ArrivalVouch");
+		postData.put("method", "createArrivalVouch");
+		postData.put("content", content);
+
+		return post(url, postData, null, true);
+		
+	}
 
 	private RestApiResponse postForData(String classname, String dataField) {
 		String url = appProperties.getData_url();
@@ -150,7 +163,7 @@ public class RestApiClient {
 
 		return post(url, postData, null, true);
 	}
-
+	
 	private RestApiResponse post(String url, Map<String, Object> postData, String dataField, boolean checkToken) {
 		if (checkToken) {
 			checkToken();
