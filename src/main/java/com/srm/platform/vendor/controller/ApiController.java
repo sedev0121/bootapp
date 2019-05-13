@@ -355,9 +355,14 @@ public class ApiController {
 		box = boxRepository.save(box);
 		
 		RestApiResponse u8Response = postForArrivalVouch(box);
+		if (u8Response.isSuccess()) {
+			response.put("error_code", RESPONSE_SUCCESS);
+			response.put("msg", "提交成功");	
+		} else {
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", u8Response.getErrmsg());
+		}
 		
-		response.put("error_code", RESPONSE_SUCCESS);
-		response.put("msg", "提交成功");
 		
 		return response;
 	}
