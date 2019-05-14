@@ -18,10 +18,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.srm.platform.vendor.searchitem.BoxSearchResult;
 import com.srm.platform.vendor.searchitem.DeliverySearchResult;
-import com.srm.platform.vendor.searchitem.SellerSearchResult;
-import com.srm.platform.vendor.searchitem.StatementSearchResult;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.Utils;
 

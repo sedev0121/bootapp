@@ -23,10 +23,23 @@ import com.srm.platform.vendor.searchitem.SellerSearchResult;
 
 @SqlResultSetMapping(name = "BoxSearchResult", classes = {
 		@ConstructorResult(targetClass = BoxSearchResult.class, columns = {
-				@ColumnResult(name = "id", type = String.class), @ColumnResult(name = "code", type = String.class),
-				@ColumnResult(name = "spec", type = String.class), @ColumnResult(name = "memo", type = String.class),
+				@ColumnResult(name = "id", type = String.class), 
+				@ColumnResult(name = "code", type = String.class),
+				@ColumnResult(name = "bind_date", type = Date.class), 
+				@ColumnResult(name = "box_class_name", type = String.class), 
+				@ColumnResult(name = "bind_property", type = String.class), 
+				@ColumnResult(name = "vendor_code", type = String.class), 
+				@ColumnResult(name = "vendor_name", type = String.class), 
+				@ColumnResult(name = "inventory_code", type = String.class), 
+				@ColumnResult(name = "inventory_name", type = String.class), 
+				@ColumnResult(name = "inventory_spec", type = String.class), 
+				@ColumnResult(name = "delivery_code", type = String.class), 
+				@ColumnResult(name = "deliver_number", type = String.class), 
+				@ColumnResult(name = "quantity", type = Double.class), 
 				@ColumnResult(name = "state", type = String.class),
-				@ColumnResult(name = "used", type = String.class) }) })
+				@ColumnResult(name = "used", type = String.class) 
+				}) 
+		})
 
 @Entity
 @Table(name = "box")
