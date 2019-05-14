@@ -64,10 +64,8 @@ public class Box implements Serializable {
 	@JsonProperty("bind_property")
 	private String bindProperty;
 	
-	@NotFound(action = NotFoundAction.IGNORE)
-	@JoinColumn(name = "delivery_detail_id")
-	@ManyToOne()
-	private DeliveryDetail delivery;
+	private String deliveryCode;
+	private String inventoryCode;
 	
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "box_class_id")
@@ -110,12 +108,21 @@ public class Box implements Serializable {
 		this.bindProperty = bindProperty;
 	}
 
-	public DeliveryDetail getDelivery() {
-		return delivery;
+
+	public String getDeliveryCode() {
+		return deliveryCode;
 	}
 
-	public void setDelivery(DeliveryDetail delivery) {
-		this.delivery = delivery;
+	public void setDeliveryCode(String deliveryCode) {
+		this.deliveryCode = deliveryCode;
+	}
+
+	public String getInventoryCode() {
+		return inventoryCode;
+	}
+
+	public void setInventoryCode(String inventoryCode) {
+		this.inventoryCode = inventoryCode;
 	}
 
 	public void setBoxClass(BoxClass boxClass) {

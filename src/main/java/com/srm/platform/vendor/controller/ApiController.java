@@ -228,7 +228,8 @@ public class ApiController {
 		
 		box.setBindDate(null);
 		box.setBindProperty(null);
-		box.setDelivery(null);
+		box.setDeliveryCode(null);
+		box.setInventoryCode(null);
 		box.setQuantity(0D);
 		box.setUsed(Box.BOX_IS_EMPTY);
 		boxRepository.save(box);
@@ -347,7 +348,8 @@ public class ApiController {
 			return response;
 		}
 		
-		box.setDelivery(deliveryDetail);
+		//TODO
+//		box.setDelivery(deliveryDetail);
 		box.setQuantity(quantity);
 		box.setBindDate(new Date());
 		box.setUsed(Box.BOX_IS_USING);
@@ -390,7 +392,8 @@ public class ApiController {
 			return response;
 		}
 		
-		DeliveryDetail deliveryDetail = box.getDelivery();		
+		//TODO:
+		DeliveryDetail deliveryDetail = null;		
 		if (deliveryDetail == null) {
 			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
@@ -429,7 +432,8 @@ public class ApiController {
 			return null;
 		} else {
 			
-			DeliveryDetail deliveryDetail = box.getDelivery();
+			//TODO:
+			DeliveryDetail deliveryDetail = null;
 			if (deliveryDetail == null) {
 				return null;
 			}

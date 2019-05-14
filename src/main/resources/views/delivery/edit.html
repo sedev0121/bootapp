@@ -13,59 +13,48 @@
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
 				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="pass"><i class="fa fa-arrow-up"></i>确认</a> 
-				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3}" id="print"><i class="fa fa-print"></i> 打印</a>
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3}" id="print_float"><i class="fa fa-print"></i> 打印浮动箱码</a>
-				<a class="btn btn-default" th:href="@{/delivery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="cancel"><i class="fa fa-undo"></i> 退回</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3}" id="print"><i class="fa fa-print"></i> 打印</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3}" id="print_float"><i class="fa fa-print"></i> 打印浮动箱码</a> <a class="btn btn-default" th:href="@{/delivery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-body">
 				<form id="form" th:action="@{/delivery/update}" method="post" enctype="multipart/form-data">
-					<input type="hidden" name="id" id="id" th:value="${main.id}"/>
-					<input type="hidden" name="vendor" id="vendor" th:value="${main.vendor?.code}"/>
+					<input type="hidden" name="id" id="id" th:value="${main.id}" /> <input type="hidden" name="vendor" id="vendor" th:value="${main.vendor?.code}" />
 					<div class="row">
 						<div class="col-lg-3 col-md-3">
-							<label for="code">单号: </label> 
-							<input type="text" id="code" name="code" th:value="${main.code}" class="form-control" readonly />
+							<label for="code">单号: </label> <input type="text" id="code" name="code" th:value="${main.code}" class="form-control" readonly />
 						</div>
 						<div class="col-lg-3 col-md-3">
-							<label for="vendor">供应商:</label> 
-							<input type="text" th:value="${main.vendor?.name}" class="form-control" readonly />
+							<label for="vendor">供应商:</label> <input type="text" th:value="${main.vendor?.name}" class="form-control" readonly />
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label for="create_date">申请日期：</label> 
-							<input type="text" name="create_date" id="create_date" th:value="${#dates.format(main?.createDate, 'yyyy-MM-dd')}" class="form-control datepicker" readonly>
+							<label for="create_date">申请日期：</label> <input type="text" name="create_date" id="create_date" th:value="${#dates.format(main?.createDate, 'yyyy-MM-dd')}" class="form-control datepicker" readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label for="estimated_arrival_date">预计到货日期：</label> 
-							<input type="text" name="estimated_arrival_date" id="estimated_arrival_date" th:value="${#dates.format(main?.estimatedArrivalDate, 'yyyy-MM-dd')}" class="form-control datepicker">
+							<label for="estimated_arrival_date">预计到货日期：</label> <input type="text" name="estimated_arrival_date" id="estimated_arrival_date" th:value="${#dates.format(main?.estimatedArrivalDate, 'yyyy-MM-dd')}" class="form-control datepicker">
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-lg-3 col-md-3">
-							<label for="company">业务实体：</label> 
-							<select name="company" id="company" class="form-control">
+							<label for="company">业务实体：</label> <select name="company" id="company" class="form-control">
 								<option th:if="${main.company != null}" th:value="${main.company?.id}" th:text="${main.company?.name}" selected="selected">NEC（日电）有限公司</option>
 							</select>
 						</div>
 						<div class="col-lg-3 col-md-3">
-							<label for="store">收货仓库：</label> 
-							<select name="store" id="store" class="form-control">
+							<label for="store">收货仓库：</label> <select name="store" id="store" class="form-control">
 								<option th:if="${main.store != null}" th:value="${main.store?.id}" th:text="${main.store?.name}" selected="selected">NEC（日电）有限公司</option>
 							</select>
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label for="confirmer">确认人：</label> 
-							<input type="text" th:value="${main.confirmer?.realname}" class="form-control datepicker" readonly>
+							<label for="confirmer">确认人：</label> <input type="text" th:value="${main.confirmer?.realname}" class="form-control datepicker" readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label for="confirm_date">确认日期：</label> 
-							<input type="text" th:value="${#dates.format(main.confirmDate, 'yyyy-MM-dd')}" class="form-control datepicker" readonly>
+							<label for="confirm_date">确认日期：</label> <input type="text" th:value="${#dates.format(main.confirmDate, 'yyyy-MM-dd')}" class="form-control datepicker" readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label for="state">状态:</label> 
-							<select name="state" id="state" class="form-control" readonly>
+							<label for="state">状态:</label> <select name="state" id="state" class="form-control" readonly>
 							</select>
 						</div>
 					</div>
@@ -73,31 +62,31 @@
 				<div class="row margin-top-10">
 					<div class="col-lg-12">
 						<div class="tab-style-1" id="tabs">
-								<ul class="nav nav-tabs">
-									<li class="active"><a data-toggle="tab" href="#tab-1">明细</a></li>
-									<li><a data-toggle="tab" href="#tab-2">汇总信息</a></li>
-									<li><a data-toggle="tab" href="#tab-3">操作日志</a></li>
-								</ul>
-								<div class="tab-content">
-									<div id="tab-1" class="tab-pane row-fluid fade in active">		
-										<table id="detail_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-										</table>				
+							<ul class="nav nav-tabs">
+								<li class="active"><a data-toggle="tab" href="#tab-1">明细</a></li>
+								<li><a data-toggle="tab" href="#tab-2">汇总信息</a></li>
+								<li><a data-toggle="tab" href="#tab-3">操作日志</a></li>
+							</ul>
+							<div class="tab-content">
+								<div id="tab-1" class="tab-pane row-fluid fade in active">
+									<table id="detail_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+									</table>
+								</div>
+								<div id="tab-2" class="tab-pane row-fluid fade in">
+									<table id="summary_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+									</table>
+								</div>
+								<div id="tab-3" class="tab-pane row-fluid fade in">
+									<div class="row edit-history">
+										<a class="btn btn-primary save-history" id="show_modal_btn"><i class="fa fa-plus"></i> 添加说明</a>
 									</div>
-									<div id="tab-2" class="tab-pane row-fluid fade in">
-										<table id="summary_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-										</table>
-									</div>
-									<div id="tab-3" class="tab-pane row-fluid fade in">		
-										<div class="row edit-history">
-											<a class="btn btn-primary save-history" id="show_modal_btn"><i class="fa fa-plus"></i> 添加说明</a>
-										</div>
-										<table id="history_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-										</table>							
-									</div>
+									<table id="history_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+									</table>
 								</div>
 							</div>
+						</div>
 					</div>
-				</div>				
+				</div>
 			</div>
 		</div>
 		<div class="modal fade" id="import_dialog" role="dialog" aria-hidden="true">
@@ -136,12 +125,12 @@
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="exampleModalLabel">  添加说明</h5>
+						<h5 class="modal-title" id="exampleModalLabel">添加说明</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
 						<form id="history_form" th:action="@{/operation_history/update}" method="post">
-							<input type="hidden" name="action" value=" 添加说明"/>
+							<input type="hidden" name="action" value=" 添加说明" />
 							<div class="row">
 								<div class="col-md-12">
 									<textarea name="content" placeholder="请输入说明" id="history_content" class="history-content" rows="5"></textarea>
@@ -156,43 +145,22 @@
 				</div>
 			</div>
 		</div>
-		<div class="modal fade" id="floating_box_code_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="exampleModalLabel">  浮动箱码</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
-					</div>
-					<div class="modal-body">
-						<form id="history_form" th:action="@{/operation_history/update}" method="post">
-							
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-						<button type="button" class="btn btn-primary" id="save_history">确认打印</button>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
-	
 </body>
 </html>
 <script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
 	is_vendor = 1;
 </script>
-
 <script th:inline="javascript" sec:authorize="hasRole('ROLE_BUYER')">
 is_readonly = 0;
 </script>
-
 <script th:inline="javascript">
 	var editor, summary_table, table, history_table, summary_data;
   /*[+
   var detail_url = [[@{|/delivery/${main.code}/details|}]];
   var edit_url = [[@{/delivery/}]];
   var del_url = [[@{|/delivery/${main.code}/delete|}]];
+  var floating_box_list_url = [[@{|/delivery/${main.code}/floating_box|}]];
   var history_url = [[@{|/operation_history/list/delivery/${main.code}}|]];
   +]*/
 
@@ -1059,8 +1027,37 @@ is_readonly = 0;
 	    win.focus();
 	  });
 	  
-	  $("#print_float").click(function() {
-	  	$('#floating_box_code_dialog').modal('show'); 
+	  $("#print_float").click(function() {	  	
+	  	$.get(floating_box_list_url, function(data, status) {
+	  		var csv_string = "";
+		    var column_seperator = ",";
+		    
+		    for(var row_index=0; row_index< data.length; row_index++) {
+	        var row_data = data[row_index];
+	        csv_string += row_data.code + column_seperator;
+	        csv_string += row_data.inventory_name + column_seperator;
+	        csv_string += row_data.inventory_spec + column_seperator;
+	        csv_string += "\n";
+        }
+	  		
+	  		var blob = new Blob([ csv_string ], {
+	        type : "application/csv;charset=utf-8;"
+		    });
+	
+		    if (window.navigator.msSaveBlob) {
+		        navigator.msSaveBlob(blob, filename);
+		    } else {
+		        // FOR OTHER BROWSERS
+		        var link = document.createElement("a");
+		        var csvUrl = URL.createObjectURL(blob);
+		        link.href = csvUrl;
+		        link.style = "visibility:hidden";
+		        link.download = "浮动箱码列表.csv";
+		        document.body.appendChild(link);
+		        link.click();
+		        document.body.removeChild(link);
+		    }
+		  }); 
 	  });
 	  
 	  $('#show_modal_btn').click(function() {

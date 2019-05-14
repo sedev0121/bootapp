@@ -194,7 +194,8 @@ public class BoxController extends CommonController {
 				box.setUsed(0);
 				box.setBindDate(null);
 				box.setBindProperty(null);
-				box.setDelivery(null);
+				box.setDeliveryCode(null);
+				box.setInventoryCode(null);
 				box.setQuantity(null);
 			}
 
