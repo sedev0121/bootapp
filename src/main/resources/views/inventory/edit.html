@@ -54,6 +54,7 @@
 						<label>装箱类别: </label> 
 						<select name="box" id="box" class="form-control">
 							<option th:if="${data.boxClass != null}" th:value="${data.boxClass?.id}" th:text="${data.boxClass?.name}" selected="selected"></option>
+							<option th:if="${data.boxClass == null}" value="-1" selected="selected">浮动箱码</option>
 						</select>						
 					</div>
 					<div class="col-md-3">
@@ -73,7 +74,7 @@
 
   $(document).ready(function() {
 
-	  $("#box").select2(App.getSelect2Options(box_url));
+	  $("#box").select2(App.getSelect2OptionsWithFirstOption(box_url, {id:-1, text:"浮动箱码"}));
 	  
 	  $("#form").validate({
 	    // define validation rules

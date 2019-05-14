@@ -147,10 +147,30 @@
 									<textarea name="content" placeholder="请输入说明" id="history_content" class="history-content" rows="5"></textarea>
 								</div>
 							</div>
+						</form>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
 						<button type="button" class="btn btn-primary" id="save_history">保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="floating_box_code_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">  浮动箱码</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="history_form" th:action="@{/operation_history/update}" method="post">
+							
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+						<button type="button" class="btn btn-primary" id="save_history">确认打印</button>
 					</div>
 				</div>
 			</div>
@@ -1040,9 +1060,7 @@ is_readonly = 0;
 	  });
 	  
 	  $("#print_float").click(function() {
-	  	var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=zl%2FshdSrm.cpt&orderid=" + $('#code').val();
-	  	var win = window.open(url, '_blank');
-	    win.focus();
+	  	$('#floating_box_code_dialog').modal('show'); 
 	  });
 	  
 	  $('#show_modal_btn').click(function() {
