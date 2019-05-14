@@ -41,8 +41,6 @@ public class DeliveryDetail implements Serializable {
 	@JsonProperty("row_no")
 	private Integer rowNo;
 	
-	@JsonProperty("deliver_number")
-	private String deliverNumber;
 
 	@JsonProperty("accepted_quantity")
 	private Double acceptedQuantity;
@@ -124,14 +122,6 @@ public class DeliveryDetail implements Serializable {
 
 	public void setDeliveredQuantity(Double deliveredQuantity) {
 		this.deliveredQuantity = deliveredQuantity;
-	}
-
-	public String getDeliverNumber() {
-		return deliverNumber;
-	}
-
-	public void setDeliverNumber(String deliverNumber) {
-		this.deliverNumber = deliverNumber;
 	}
 
 }

@@ -416,7 +416,7 @@ public class ApiController {
 		temp.put("name", inventory.getName());
 		temp.put("specs", inventory.getSpecs());
 		temp.put("quantity", String.valueOf(box.getQuantity()));
-		temp.put("serial", "");
+		temp.put("serial", deliveryMain.getDeliverNumber());
 		temp.put("order_code", box.getDeliveryCode());
 		data.add(temp);
 		
@@ -466,7 +466,7 @@ public class ApiController {
 			temp.put("specs", inventory.getSpecs());
 			temp.put("quantity", String.valueOf(detail.getPurchaseOrderDetail().getQuantity()));
 			temp.put("Shipped", String.valueOf(detail.getDeliveredQuantity()));
-			temp.put("serial", detail.getDeliverNumber());
+			temp.put("serial", deliveryMain.getDeliverNumber());
 			data.add(temp);
 		}
 		
