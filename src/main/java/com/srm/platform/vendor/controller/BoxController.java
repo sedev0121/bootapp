@@ -27,6 +27,7 @@ import com.srm.platform.vendor.model.Box;
 import com.srm.platform.vendor.model.BoxClass;
 import com.srm.platform.vendor.model.Store;
 import com.srm.platform.vendor.searchitem.BoxSearchResult;
+import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
@@ -58,7 +59,7 @@ public class BoxController extends CommonController {
 	}
 
 	@RequestMapping(value = "/list/{classId}", produces = "application/json")
-	public @ResponseBody Page<Box> list_ajax(@PathVariable("classId") Long classId,
+	public @ResponseBody Page<BoxSearchResult> list_ajax(@PathVariable("classId") Long classId,
 			@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "3"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
@@ -71,26 +72,60 @@ public class BoxController extends CommonController {
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<Box> result = null;
 		
 		Integer boxState = Integer.parseInt(state);
-		Integer usedState = Integer.parseInt(used);
-		if (boxState > -1) {
-			if (usedState > -1) {
-				result = boxRepository.findBySearchUsedAndState(code, usedState, boxState, classId, request);	
-			} else {
-				result = boxRepository.findBySearchAndState(code, boxState, classId, request);	
-			}
-				
+		Integer usedState = Integer.parseInt(used);		
+		
+		String selectQuery = "SELECT a.*, '' deliver_number, d.code inventory_code, d.name inventory_name, d.specs inventory_spec, b.name box_class_name, e.code vendor_code, e.name vendor_name ";
+		String countQuery = "select count(*) ";
+		String orderBy = " order by " + order + " " + dir;
+
+		String bodyQuery = "FROM box a left join box_class b on a.box_class_id=b.id left join delivery_main c on a.delivery_code=c.code "
+				+ "left join inventory d on a.inventory_code=d.code left join vendor e on c.vendor_code=e.code "
+				+ "where 1=1 ";
+
+		Map<String, Object> params = new HashMap<>();
+		
+		if (classId == 0) {
+			bodyQuery += " and a.box_class_id is null";
 		} else {
-			if (usedState > -1) {
-				result = boxRepository.findBySearchAndUsed(code, usedState, classId, request);	
-			} else {
-				result = boxRepository.findBySearchTerm(code, classId, request);	
-			}
+			bodyQuery += " and a.box_class_id=:box_class_id";
+			params.put("box_class_id", classId);
 		}
 		
-		return result;
+		if (!code.trim().isEmpty()) {
+			bodyQuery += " and a.code like CONCAT('%',:code, '%') ";
+			params.put("code", code.trim());
+		}
+		
+		if (boxState >= 0) {
+			bodyQuery += " and a.state=:state";
+			params.put("state", boxState);
+		}
+		
+		if (usedState >= 0) {
+			bodyQuery += " and a.state=:state";
+			params.put("used", usedState);
+		}
+		
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "BoxSearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		return new PageImpl<BoxSearchResult>(list, request, totalCount.longValue());
 	}
 	
 	@RequestMapping(value = "/max_serial/{classId}")
@@ -159,7 +194,8 @@ public class BoxController extends CommonController {
 				box.setUsed(0);
 				box.setBindDate(null);
 				box.setBindProperty(null);
-				box.setDelivery(null);
+				box.setDeliveryCode(null);
+				box.setInventoryCode(null);
 				box.setQuantity(null);
 			}
 

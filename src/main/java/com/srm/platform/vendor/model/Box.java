@@ -23,10 +23,23 @@ import com.srm.platform.vendor.searchitem.SellerSearchResult;
 
 @SqlResultSetMapping(name = "BoxSearchResult", classes = {
 		@ConstructorResult(targetClass = BoxSearchResult.class, columns = {
-				@ColumnResult(name = "id", type = String.class), @ColumnResult(name = "code", type = String.class),
-				@ColumnResult(name = "spec", type = String.class), @ColumnResult(name = "memo", type = String.class),
+				@ColumnResult(name = "id", type = String.class), 
+				@ColumnResult(name = "code", type = String.class),
+				@ColumnResult(name = "bind_date", type = Date.class), 
+				@ColumnResult(name = "box_class_name", type = String.class), 
+				@ColumnResult(name = "bind_property", type = String.class), 
+				@ColumnResult(name = "vendor_code", type = String.class), 
+				@ColumnResult(name = "vendor_name", type = String.class), 
+				@ColumnResult(name = "inventory_code", type = String.class), 
+				@ColumnResult(name = "inventory_name", type = String.class), 
+				@ColumnResult(name = "inventory_spec", type = String.class), 
+				@ColumnResult(name = "delivery_code", type = String.class), 
+				@ColumnResult(name = "deliver_number", type = String.class), 
+				@ColumnResult(name = "quantity", type = Double.class), 
 				@ColumnResult(name = "state", type = String.class),
-				@ColumnResult(name = "used", type = String.class) }) })
+				@ColumnResult(name = "used", type = String.class) 
+				}) 
+		})
 
 @Entity
 @Table(name = "box")
@@ -51,10 +64,8 @@ public class Box implements Serializable {
 	@JsonProperty("bind_property")
 	private String bindProperty;
 	
-	@NotFound(action = NotFoundAction.IGNORE)
-	@JoinColumn(name = "delivery_detail_id")
-	@ManyToOne()
-	private DeliveryDetail delivery;
+	private String deliveryCode;
+	private String inventoryCode;
 	
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "box_class_id")
@@ -97,12 +108,21 @@ public class Box implements Serializable {
 		this.bindProperty = bindProperty;
 	}
 
-	public DeliveryDetail getDelivery() {
-		return delivery;
+
+	public String getDeliveryCode() {
+		return deliveryCode;
 	}
 
-	public void setDelivery(DeliveryDetail delivery) {
-		this.delivery = delivery;
+	public void setDeliveryCode(String deliveryCode) {
+		this.deliveryCode = deliveryCode;
+	}
+
+	public String getInventoryCode() {
+		return inventoryCode;
+	}
+
+	public void setInventoryCode(String inventoryCode) {
+		this.inventoryCode = inventoryCode;
 	}
 
 	public void setBoxClass(BoxClass boxClass) {

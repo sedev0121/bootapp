@@ -29,13 +29,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.Box;
 import com.srm.platform.vendor.model.DeliveryDetail;
 import com.srm.platform.vendor.model.DeliveryMain;
+import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.DeliverySaveForm;
+import com.srm.platform.vendor.searchitem.BoxExportResult;
 import com.srm.platform.vendor.searchitem.DeliverySearchResult;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
@@ -128,6 +131,11 @@ public class DeliveryController extends CommonController {
 		return true;
 	}
 
+	@RequestMapping(value = "/{code}/floating_box", produces = "application/json")
+	public @ResponseBody List<BoxExportResult> floatingBoxList(@PathVariable("code") String code) {
+		return deliveryMainRepository.findExportBoxListByCode(code);
+	}
+	
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<DeliverySearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
@@ -298,62 +306,73 @@ public class DeliveryController extends CommonController {
 
 		this.sendmessage(title, toList, String.format("/delivery/%s/read", main.getCode()));
 		this.addOpertionHistory(main.getCode(), action, form.getContent());
-		if (form.getState() <= Constants.DELIVERY_STATE_SUBMIT) {
+		
+		deliveryDetailRepository.deleteInBatch(deliveryDetailRepository.findDetailsByCode(main.getCode()));
+
+		if (form.getTable() != null) {
+			int rowNo = 1;
+			Map<String, Double> floatingBoxMap = new HashMap<String, Double>();
+			Map<String, Integer> countPerBoxMap = new HashMap<String, Integer>();
 			
-			deliveryDetailRepository.deleteInBatch(deliveryDetailRepository.findDetailsByCode(main.getCode()));
+			for (Map<String, String> row : form.getTable()) {
+				DeliveryDetail detail = new DeliveryDetail();
+				PurchaseOrderDetail orderDetail = purchaseOrderDetailRepository.findOneById(Long.parseLong(row.get("po_detail_id")));
+				Inventory inventory = orderDetail.getInventory();
+				Double quantity = Double.parseDouble(row.get("delivered_quantity"));
+				
+				detail.setMain(main);
+				detail.setPurchaseOrderDetail(orderDetail);
+				detail.setDeliveredQuantity(quantity);
+				detail.setMemo(row.get("memo"));
+				detail.setRowNo(rowNo);
+				rowNo++;
+				detail.setDeliverNumber(Utils.generateDeliveryNumber(form.getVendor()));
 
-			if (form.getTable() != null) {
-				int rowNo = 1;
-				for (Map<String, String> row : form.getTable()) {
-					DeliveryDetail detail = new DeliveryDetail();
-					detail.setMain(main);
-					detail.setPurchaseOrderDetail(
-							purchaseOrderDetailRepository.findOneById(Long.parseLong(row.get("po_detail_id"))));
-					detail.setDeliveredQuantity(Double.parseDouble(row.get("delivered_quantity")));
-					detail.setMemo(row.get("memo"));
-					detail.setRowNo(rowNo);
-					rowNo++;
-					detail.setDeliverNumber(Utils.generateDeliveryNumber(form.getVendor()));
-
-					if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
-						detail.setState(Constants.DELIVERY_ROW_STATE_OK);
-					}
-					detail = deliveryDetailRepository.save(detail);
-				}
-			}
-		} else {
-			if (form.getTable() != null) {
-				boolean isAllOk = true;
-				for (Map<String, String> row : form.getTable()) {
-					DeliveryDetail detail = deliveryDetailRepository.findOneById(Long.parseLong(row.get("id")));
-					detail.setBuyerMemo(row.get("buyer_memo"));
-
-					Integer rowState = Integer.parseInt(row.get("state"));
-					if (rowState == Constants.DELIVERY_ROW_STATE_CANCEL) {
-						isAllOk = false;
-					} else {
-						PurchaseOrderDetail purchaseOrderDetail = detail.getPurchaseOrderDetail();
-						Double lastDeliveredQuantity = purchaseOrderDetail.getDeliveredQuantity();
-						Double currentDeliveredQuantity = detail.getDeliveredQuantity();
-						if (lastDeliveredQuantity == null) {
-							lastDeliveredQuantity = 0D;
+				if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
+					detail.setState(Constants.DELIVERY_ROW_STATE_OK);
+				
+					if (inventory.getBoxClass() == null) {
+						String inventoryKey = inventory.getCode();
+						Double inventoryQuantity = floatingBoxMap.get(inventoryKey);
+						if (inventoryQuantity == null) {
+							inventoryQuantity = 0D;
 						}
-						purchaseOrderDetail.setDeliveredQuantity(lastDeliveredQuantity + currentDeliveredQuantity);
-						purchaseOrderDetailRepository.save(purchaseOrderDetail);
+						inventoryQuantity += quantity;
+						floatingBoxMap.put(inventoryKey, inventoryQuantity);
+						countPerBoxMap.put(inventoryKey, inventory.getCountPerBox());
 					}
 
-					if (form.getState() == Constants.DELIVERY_STATE_OK) {
-						detail.setState(rowState);
-					} else {
-						detail.setState(Constants.DELIVERY_ROW_STATE_CANCEL);
-					}
-
-					detail = deliveryDetailRepository.save(detail);
 				}
-
-				if (!isAllOk) {
-					main.setState(Constants.DELIVERY_STATE_PARTIAL_OK);
-					main = deliveryMainRepository.save(main);
+				
+				detail = deliveryDetailRepository.save(detail);
+			}
+			
+			if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
+				int inventoryIndex = 1;
+				for (Map.Entry<String, Double> entry : floatingBoxMap.entrySet()) {
+					String key = entry.getKey();
+					Double count = entry.getValue();
+					Integer countPerBox = countPerBoxMap.get(key);
+					int index = 0;
+					while (count > index * countPerBox) {
+						String boxCode = generateBoxCode(main.getId(), inventoryIndex, index);
+						Double boxQuantity = Double.valueOf(countPerBox);
+						if (count < (index + 1) * countPerBox) {
+							boxQuantity = count - index * countPerBox;
+						}
+						Box floatingBox = new Box();
+						floatingBox.setCode(boxCode);
+						floatingBox.setBindDate(new Date());
+						floatingBox.setDeliveryCode(main.getCode());
+						floatingBox.setInventoryCode(key);
+						floatingBox.setQuantity(boxQuantity);
+						floatingBox.setState(1);
+						floatingBox.setUsed(Box.BOX_IS_USING);
+						
+						boxRepository.save(floatingBox);
+						
+						index++;
+					}
 				}
 			}
 		}
@@ -364,6 +383,10 @@ public class DeliveryController extends CommonController {
 		return jsonResponse;
 	}
 
+	private String generateBoxCode(long deliveryID, int inventoryIndex, int index) {
+		return String.format("A%010d%02d%02d", deliveryID, inventoryIndex, index + 1);
+	}
+	
 	@GetMapping("/{ccode}/download")
 	public ResponseEntity<Resource> download(@PathVariable("ccode") String ccode) {
 		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);

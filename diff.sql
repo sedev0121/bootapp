@@ -135,3 +135,7 @@ INSERT INTO `function_action` VALUES (17, 6, 8);
 INSERT INTO `function_action` VALUES (18, 7, 1);
 INSERT INTO `function_action` VALUES (19, 7, 6);
 
+alter table box modify COLUMN box_class_id int(11) NULL DEFAULT NULL;
+alter table box add column inventory_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table box add column delivery_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table box DROP column delivery_detail_id;
