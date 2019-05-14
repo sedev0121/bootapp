@@ -262,7 +262,11 @@ public class DeliveryController extends CommonController {
 		}
 		
 		main.setState(form.getState());
-		
+		if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
+			main.setState(Constants.DELIVERY_STATE_OK);
+			main.setConfirmDate(new Date());
+			main.setConfirmer(account);
+		}
 
 		main = deliveryMainRepository.save(main);
 
