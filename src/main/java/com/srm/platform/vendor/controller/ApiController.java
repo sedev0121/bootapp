@@ -35,6 +35,7 @@ import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.BoxRepository;
 import com.srm.platform.vendor.repository.DeliveryDetailRepository;
 import com.srm.platform.vendor.repository.DeliveryMainRepository;
+import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
@@ -83,6 +84,9 @@ public class ApiController {
 	
 	@Autowired
 	private DeliveryDetailRepository deliveryDetailRepository;
+	
+	@Autowired
+	private InventoryRepository inventoryRepository;
 	
 	@ResponseBody
 	@RequestMapping({ "/invoice" })
@@ -198,6 +202,8 @@ public class ApiController {
 			response = this.createBoxMsg(requestParams);
 		} else if (method.equals("getBoxMsg")) {
 			response = this.getBoxMsg(requestParams);
+		} else if (method.equals("getFHD")) {
+			response = this.getFHD(requestParams);
 		}
 		
 		return response;
@@ -230,7 +236,7 @@ public class ApiController {
 		box.setBindProperty(null);
 		box.setDeliveryCode(null);
 		box.setInventoryCode(null);
-		box.setQuantity(0D);
+		box.setQuantity(null);
 		box.setUsed(Box.BOX_IS_EMPTY);
 		boxRepository.save(box);
 		
@@ -319,10 +325,10 @@ public class ApiController {
 		
 		Map<String, String> data = content.get(0);
 		String quantityStr = data.get("quantity");
-		String deliveryRowNoStr = String.valueOf(data.get("line_code"));
 		String boxCode = data.get("BoxCode");
+		String inventoryCode = data.get("material_code");
 		
-		if (quantityStr == null || deliveryRowNoStr == null || boxCode == null) {
+		if (quantityStr == null || inventoryCode == null || boxCode == null) {
 			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
 			response.put("msg", "参数不正确");	
@@ -337,19 +343,19 @@ public class ApiController {
 			return response;
 		}
 		
-		Integer deliveryRowNo = Integer.parseInt(deliveryRowNoStr);
 		Double quantity = Double.parseDouble(quantityStr);
 		
-		DeliveryDetail deliveryDetail = deliveryDetailRepository.findOneByCodeAndRowNo(deliveryCode, deliveryRowNo);
-		if (deliveryDetail == null) {
+		DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(deliveryCode);
+		if (deliveryMain == null) {
 			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
 			response.put("msg", "找不到发货单");	
 			return response;
 		}
 		
-		//TODO
-//		box.setDelivery(deliveryDetail);
+
+		box.setDeliveryCode(deliveryCode);
+		box.setInventoryCode(inventoryCode);
 		box.setQuantity(quantity);
 		box.setBindDate(new Date());
 		box.setUsed(Box.BOX_IS_USING);
@@ -357,6 +363,7 @@ public class ApiController {
 		box = boxRepository.save(box);
 		
 		RestApiResponse u8Response = postForArrivalVouch(box);
+		
 		if (u8Response.isSuccess()) {
 			response.put("error_code", RESPONSE_SUCCESS);
 			response.put("msg", "提交成功");	
@@ -392,9 +399,10 @@ public class ApiController {
 			return response;
 		}
 		
-		//TODO:
-		DeliveryDetail deliveryDetail = null;		
-		if (deliveryDetail == null) {
+		Inventory inventory = inventoryRepository.findOneByCode(box.getInventoryCode());	
+		DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(box.getDeliveryCode());
+		
+		if (inventory == null || deliveryMain == null) {
 			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
 			response.put("msg", "没有绑定");	
@@ -403,28 +411,75 @@ public class ApiController {
 		
 		ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
 		Map<String, String> temp = new HashMap<String, String>();
-		Inventory inventory = deliveryDetail.getPurchaseOrderDetail().getInventory();
+		
 		temp.put("material_code", inventory.getCode());
 		temp.put("name", inventory.getName());
 		temp.put("specs", inventory.getSpecs());
 		temp.put("quantity", String.valueOf(box.getQuantity()));
-		temp.put("serial", deliveryDetail.getDeliverNumber());
-		temp.put("order_code", deliveryDetail.getPurchaseOrderDetail().getMain().getCode());
+		temp.put("serial", deliveryMain.getDeliverNumber());
+		temp.put("order_code", box.getDeliveryCode());
 		data.add(temp);
 		
 		
 		response.put("error_code", RESPONSE_SUCCESS);
 		response.put("msg", "成功获取装箱清单");
 
-		response.put("supplier_code", deliveryDetail.getMain().getVendor().getCode());
-		response.put("code", deliveryDetail.getMain().getCode());
-		response.put("invoice_code", deliveryDetail.getMain().getCode());
+		response.put("supplier_code", deliveryMain.getVendor().getCode());
+		response.put("code", deliveryMain.getCode());
+		response.put("invoice_code", deliveryMain.getCode());
 		response.put("data", data);
 		
 		
 		return response;
 	}
 	
+	private Map<String, Object> getFHD(Map<String, Object> requestParams) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		
+		Map<String, String> content = (Map<String, String>)requestParams.get("content");
+		String deliveryCode = content.get("code");
+		
+		if (deliveryCode == null) {
+			response = new HashMap<String, Object>();
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", "参数不正确");	
+			return response;
+		}
+		
+		DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(deliveryCode);
+		List<DeliveryDetail> deliveryDetailList = deliveryDetailRepository.findDetailsByCode(deliveryCode);
+		
+		if (deliveryDetailList == null) {
+			response = new HashMap<String, Object>();
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", "找不到箱码");	
+			return response;
+		}
+		
+		ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
+		Map<String, String> temp = new HashMap<String, String>();
+		
+		for(DeliveryDetail detail : deliveryDetailList) {
+			Inventory inventory = detail.getPurchaseOrderDetail().getInventory();
+			temp.put("material_code", inventory.getCode());
+			temp.put("name", inventory.getName());
+			temp.put("specs", inventory.getSpecs());
+			temp.put("quantity", String.valueOf(detail.getPurchaseOrderDetail().getQuantity()));
+			temp.put("Shipped", String.valueOf(detail.getDeliveredQuantity()));
+			temp.put("serial", deliveryMain.getDeliverNumber());
+			data.add(temp);
+		}
+		
+		response.put("error_code", RESPONSE_SUCCESS);
+		response.put("msg", "成功获取预发货单");
+
+		response.put("supplier_code", deliveryMain.getVendor().getCode());
+		response.put("code", deliveryMain.getCode());
+		response.put("data", data);
+		
+		
+		return response;
+	}
 	
 	private RestApiResponse postForArrivalVouch(Box box) {
 		
@@ -432,39 +487,36 @@ public class ApiController {
 			return null;
 		} else {
 			
-			//TODO:
-			DeliveryDetail deliveryDetail = null;
-			if (deliveryDetail == null) {
+			DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(box.getDeliveryCode());
+			Inventory inventory = inventoryRepository.findOneByCode(box.getInventoryCode());
+			if (deliveryMain == null || inventory == null) {
 				return null;
 			}
 			
-			DeliveryMain deliveryMain = deliveryDetail.getMain();
-			PurchaseOrderDetail orderDetail = deliveryDetail.getPurchaseOrderDetail();
-			PurchaseOrderMain orderMain = orderDetail.getMain();
 			
 			Map<String, Object> postData = new HashMap<>();
 			postData.put("ccode", deliveryMain.getCode());
 			postData.put("ddate", Utils.formatDateTime(deliveryMain.getEstimatedArrivalDate()));
 			postData.put("cvencode", deliveryMain.getVendor().getCode());
-			postData.put("itaxrate", orderDetail.getTaxRate());
-			postData.put("cmemo", deliveryDetail.getMemo());
-			postData.put("cpocode", orderMain.getCode());
-			postData.put("cbustype", orderMain.getPurchaseTypeName());
+			postData.put("itaxrate", "0.0");
+			postData.put("cmemo", "");
+			postData.put("cpocode", "00000");
+			postData.put("cbustype", "00");
 			
 			
 			List<Map<String, Object>> detailList = new ArrayList<Map<String, Object>>();
 			
 			Map<String, Object> detailData = new HashMap<>();
-			detailData.put("cinvcode", orderDetail.getInventory().getCode());
+			detailData.put("cinvcode", inventory.getCode());
 			detailData.put("qty", box.getQuantity());
-			detailData.put("itaxrate", orderDetail.getTaxRate());
-			detailData.put("iposid", orderDetail.getOriginalId());
-			detailData.put("cpocode", orderMain.getCode());
-			detailData.put("ivouchrowno", deliveryDetail.getRowNo());
-			detailData.put("fprice", orderDetail.getPrice());
-			detailData.put("famount", orderDetail.getMoney());
-			detailData.put("ftaxprice", orderDetail.getTaxPrice());
-			detailData.put("ftaxamount", orderDetail.getSum());
+			detailData.put("itaxrate", "0.0");
+			detailData.put("iposid", "000000");
+			detailData.put("cpocode", "000000");
+			detailData.put("ivouchrowno", "0");
+			detailData.put("fprice", "0.0");
+			detailData.put("famount", "0.0");
+			detailData.put("ftaxprice", "0.0");
+			detailData.put("ftaxamount", "0.0");
 			
 			detailList.add(detailData);
 			

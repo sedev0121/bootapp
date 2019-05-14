@@ -76,7 +76,7 @@ public class BoxController extends CommonController {
 		Integer boxState = Integer.parseInt(state);
 		Integer usedState = Integer.parseInt(used);		
 		
-		String selectQuery = "SELECT a.*, '' deliver_number, d.code inventory_code, d.name inventory_name, d.specs inventory_spec, b.name box_class_name, e.code vendor_code, e.name vendor_name ";
+		String selectQuery = "SELECT a.*, c.deliver_number, d.code inventory_code, d.name inventory_name, d.specs inventory_spec, b.name box_class_name, e.code vendor_code, e.name vendor_name ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
@@ -104,7 +104,7 @@ public class BoxController extends CommonController {
 		}
 		
 		if (usedState >= 0) {
-			bodyQuery += " and a.state=:state";
+			bodyQuery += " and a.used=:used";
 			params.put("used", usedState);
 		}
 		

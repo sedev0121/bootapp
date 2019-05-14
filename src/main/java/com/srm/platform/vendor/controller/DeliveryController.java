@@ -257,6 +257,7 @@ public class DeliveryController extends CommonController {
 
 		if (form.getState() <= Constants.DELIVERY_STATE_SUBMIT) {
 			main.setCode(form.getCode());
+			main.setDeliverNumber(Utils.generateDeliveryNumber(form.getVendor()));
 			main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
 			main.setCompany(companyRepository.findOneById(form.getCompany()));
 			main.setStore(storeRepository.findOneById(form.getStore()));
@@ -326,7 +327,7 @@ public class DeliveryController extends CommonController {
 				detail.setMemo(row.get("memo"));
 				detail.setRowNo(rowNo);
 				rowNo++;
-				detail.setDeliverNumber(Utils.generateDeliveryNumber(form.getVendor()));
+				
 
 				if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
 					detail.setState(Constants.DELIVERY_ROW_STATE_OK);

@@ -139,3 +139,6 @@ alter table box modify COLUMN box_class_id int(11) NULL DEFAULT NULL;
 alter table box add column inventory_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 alter table box add column delivery_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 alter table box DROP column delivery_detail_id;
+
+alter table delivery_detail DROP column deliver_number;
+alter table delivery_main add column deliver_number varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;

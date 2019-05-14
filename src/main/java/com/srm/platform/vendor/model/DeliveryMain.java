@@ -86,6 +86,10 @@ public class DeliveryMain implements Serializable {
 	@ManyToOne()
 	private Account confirmer;
 	
+
+	@JsonProperty("deliver_number")
+	private String deliverNumber;
+	
 	public DeliveryMain() {
 		this.code = Utils.generateId();
 	}
@@ -96,6 +100,14 @@ public class DeliveryMain implements Serializable {
 
 	public void setCreater(Account creater) {
 		this.creater = creater;
+	}
+
+	public String getDeliverNumber() {
+		return deliverNumber;
+	}
+
+	public void setDeliverNumber(String deliverNumber) {
+		this.deliverNumber = deliverNumber;
 	}
 
 	public Store getStore() {

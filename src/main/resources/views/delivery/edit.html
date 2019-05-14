@@ -21,7 +21,9 @@
 		<div class="panel panel-default">
 			<div class="panel-body">
 				<form id="form" th:action="@{/delivery/update}" method="post" enctype="multipart/form-data">
-					<input type="hidden" name="id" id="id" th:value="${main.id}" /> <input type="hidden" name="vendor" id="vendor" th:value="${main.vendor?.code}" />
+					<input type="hidden" name="id" id="id" th:value="${main.id}" /> 
+					<input type="hidden" name="vendor" id="vendor" th:value="${main.vendor?.code}" />
+					<input type="hidden" id="deliver_number" th:value="${main.deliverNumber}" />
 					<div class="row">
 						<div class="col-lg-3 col-md-3">
 							<label for="code">单号: </label> <input type="text" id="code" name="code" th:value="${main.code}" class="form-control" readonly />
@@ -419,8 +421,11 @@ is_readonly = 0;
 	      	return App.getBoxCount(record.purchaseOrderDetail.delivered_quantity, record.purchaseOrderDetail.inventory.count_per_box);
 	      },
 	    }, {
-	      data : 'deliver_number',
-	      title : '批次',		 
+	      data : null,
+	      title : '批次',
+	      render: function(data, display, record) {
+	      	return $("#deliver_number").val();
+	      }
 	    }, {
 	      data : 'buyer_memo',
 	      visible: state > 1,
