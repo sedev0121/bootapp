@@ -104,7 +104,7 @@ public class BoxController extends CommonController {
 		}
 		
 		if (usedState >= 0) {
-			bodyQuery += " and a.state=:state";
+			bodyQuery += " and a.used=:used";
 			params.put("used", usedState);
 		}
 		
