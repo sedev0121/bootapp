@@ -14,6 +14,8 @@
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
 				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="pass"><i class="fa fa-arrow-up"></i>确认</a> 
 				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3}" id="print"><i class="fa fa-print"></i> 打印</a>
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3}" id="print_float"><i class="fa fa-print"></i> 打印浮动箱码</a>
 				<a class="btn btn-default" th:href="@{/delivery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -1029,6 +1031,18 @@ is_readonly = 0;
 		  editor.submit();
 		  $('#state').val(4);
 		  $("#form").submit();
+	  });
+	  
+	  $("#print").click(function() {
+	  	var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=zl%2FshdSrm.cpt&orderid=" + $('#code').val();
+	  	var win = window.open(url, '_blank');
+	    win.focus();
+	  });
+	  
+	  $("#print_float").click(function() {
+	  	var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=zl%2FshdSrm.cpt&orderid=" + $('#code').val();
+	  	var win = window.open(url, '_blank');
+	    win.focus();
 	  });
 	  
 	  $('#show_modal_btn').click(function() {
