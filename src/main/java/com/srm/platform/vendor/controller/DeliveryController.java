@@ -354,6 +354,9 @@ public class DeliveryController extends CommonController {
 					String key = entry.getKey();
 					Double count = entry.getValue();
 					Integer countPerBox = countPerBoxMap.get(key);
+					if (countPerBox == 0) {
+						continue;
+					}
 					int index = 0;
 					while (count > index * countPerBox) {
 						String boxCode = generateBoxCode(main.getId(), inventoryIndex, index);

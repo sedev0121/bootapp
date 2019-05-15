@@ -74,7 +74,14 @@ public class InventoryController extends CommonController {
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<Inventory> result = inventoryRepository.findBySearchTerm(inventory, inventoryClass, boxClass, request);
+		
+		Page<Inventory> result;
+		if (boxClass.isEmpty()) {
+			result = inventoryRepository.findBySearchTerm(inventory, inventoryClass, request);
+		} else {
+			result = inventoryRepository.findBySearchTerm(inventory, inventoryClass, boxClass, request);	
+		}
+		
 
 		return result;
 	}
