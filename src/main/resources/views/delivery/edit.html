@@ -1027,7 +1027,7 @@ is_readonly = 0;
 	  });
 	  
 	  $("#print").click(function() {
-	  	var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=zl%2FshdSrm.cpt&orderid=" + $('#code').val();
+	  	var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
 	  	var win = window.open(url, '_blank');
 	    win.focus();
 	  });

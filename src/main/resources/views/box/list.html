@@ -254,6 +254,17 @@
 		  $(this).addClass("clicked");
 		  var clicked_row_data = box_class_table.row(this).data();
 		  current_class_id = clicked_row_data.id;
+		  if (!current_class_id) {
+		  	$('#btn_generate').attr("disabled", true);
+		  	$('#btn_enable').attr("disabled", true);
+		  	$('#btn_disable').attr("disabled", true);
+		  	$('#btn_empty').attr("disabled", true);
+		  } else {
+		  	$('#btn_generate').attr("disabled", false);
+		  	$('#btn_enable').attr("disabled", false);
+		  	$('#btn_disable').attr("disabled", false);
+		  	$('#btn_empty').attr("disabled", false);
+		  }
 		  reloadBoxTable(clicked_row_data.id);
 	  });
 

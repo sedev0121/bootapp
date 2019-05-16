@@ -11,7 +11,7 @@
         <div class="panel panel-default">
           <div class="panel-heading">
             <label>公告通知</label>
-            <div class="pull-right"><a th:href="@{/notice}">更多></a></div>
+            <!-- <div class="pull-right"><a th:href="@{/notice}">更多></a></div> -->
           </div>
           <div class="panel-body" >
             <p th:each="notice : ${noticeList}">                    
@@ -25,7 +25,7 @@
         <div class="panel panel-default">
           <div class="panel-heading">
               <label>预警信息</label>
-              <div class="pull-right"><a th:href="@{/alert}">更多></a></div>
+              <!-- <div class="pull-right"><a th:href="@{/alert}">更多></a></div> -->
           </div>
           <div class="panel-body">
             <p th:each="notice : ${alertList}">
@@ -38,7 +38,7 @@
         <div class="panel panel-default">
           <div class="panel-heading">
             <label>系统消息</label>
-            <div class="pull-right"><a th:href="@{/message}">更多></a></div>
+            <!-- <div class="pull-right"><a th:href="@{/message}">更多></a></div>-->
           </div>
           <div class="panel-body">
             <p th:each="notice : ${messageList}">

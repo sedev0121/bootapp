@@ -71,6 +71,7 @@
 	  }).on("select_node.jstree", function(e, data) {
 	  	$('#id').val(data.node.original.id);
 		  $('#code').val(data.node.original.code);
+		  $('#code').attr('readonly', true);
 		  $('#name').val(data.node.original.name);
 		  $('#del').show();
 	  });
@@ -78,6 +79,7 @@
 	  $('#add').click(function() {
 	  	$('#id').val('');
 		  $('#code').val('');
+		  $('#code').attr('readonly', false);
 		  $('#name').val('');
 		  $('#del').hide();		  
 	  });
