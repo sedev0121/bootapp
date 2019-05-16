@@ -15,7 +15,7 @@ import com.srm.platform.vendor.searchitem.VendorSearchItem;
 // CRUD refers Create, Read, Update, Delete
 
 public interface VendorRepository extends JpaRepository<Vendor, Long> {
-	@Query(value = "SELECT a.*, c.state FROM vendor a left join account c on a.code=c.username WHERE a.code LIKE %?1% or a.name LIKE %?1% ", countQuery = "SELECT count(*) FROM vendor a WHERE a.code LIKE %?1% or a.name LIKE %?1% ", nativeQuery = true)
+	@Query(value = "SELECT a.*, c.state FROM vendor a left join account c on a.code=c.username WHERE (a.code LIKE %?1% or a.name LIKE %?1%) and c.username is null", countQuery = "SELECT count(*) FROM vendor a WHERE a.code LIKE %?1% or a.name LIKE %?1% ", nativeQuery = true)
 	Page<VendorSearchItem> findBySearchTerm(String search, Pageable pageable);
 
 	@Query(value = "SELECT code, name FROM vendor WHERE "

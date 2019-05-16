@@ -15,16 +15,16 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
 	Store findOneById(Long id);
 	
-	@Query(value = "SELECT * FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or b.name LIKE %?1%)", nativeQuery = true)
+	@Query(value = "SELECT * FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or a.code LIKE %?1%)", nativeQuery = true)
 	Page<Store> findBySearchTerm(String search, Pageable pageable);
 	
-	@Query(value = "SELECT * FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or b.name LIKE %?1%) and is_use_in_srm=?2", nativeQuery = true)
+	@Query(value = "SELECT * FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or a.code LIKE %?1%) and is_use_in_srm=?2", nativeQuery = true)
 	Page<Store> findBySearchTerm(String search, Integer usedState, Pageable pageable);
 	
-	@Query(value = "SELECT * FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or b.name LIKE %?1%) and a.company_id=?2", nativeQuery = true)
+	@Query(value = "SELECT * FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or a.code LIKE %?1%) and a.company_id=?2", nativeQuery = true)
 	Page<Store> findBySearchTermAndCompany(String search, Long companyId, Pageable pageable);
 	
-	@Query(value = "SELECT * FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or b.name LIKE %?1%) and is_use_in_srm=?2 and a.company_id=?3", nativeQuery = true)
+	@Query(value = "SELECT * FROM store a left join company b on a.company_id=b.id where (a.name LIKE %?1% or a.code LIKE %?1%) and is_use_in_srm=?2 and a.company_id=?3", nativeQuery = true)
 	Page<Store> findByUsedAndCompany(String search, Integer usedState, Long companyId, Pageable pageable);
 	
 	@Query(value = "SELECT id code, name FROM store where name like %?1%", nativeQuery = true)
