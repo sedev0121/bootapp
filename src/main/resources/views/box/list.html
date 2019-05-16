@@ -113,37 +113,51 @@
 	  	generateBoxCode();
 	  });
 	  
-	  function update_state(key) {
+	  function update_state(key, title) {
+	  	
+	  	
 	  	var selected_data = box_table.rows('.selected').data().toArray();
 	  	if (selected_data.length == 0) {
 	  		App.showErrorDialog("操作失败", "请选择至少一行");
 	  		return;
 	  	}
-	  	var box_ids = selected_data.map(row => row.id);
-	  	$("#state_form").ajaxSubmit({
-	  		data : {
-	      	key: key,
-	      	ids: box_ids.join(),		      	
-	      },
-        beforeSend: function(){
-          App.blockUI();
-        },
-        complete: function(){
-          App.unblockUI();
-        },
-        success: function(res, status, xhr, form) {
-          if (res.success == 1) {
-            $('#box_dialog').modal('hide'); 
-            box_table.draw();
-            App.showSuccessDialog("操作成功");
-          }else{
-            App.showErrorDialog(res.errmsg);
-          }              
-        },
-        error: function (res, status, xhr, form) {
-          App.showErrorDialog("操作失败", "请稍候重试");
-        }
-      });	  
+	  	if (key == 'disable') {
+	  		for(var i=0; i<selected_data.length; i++) {
+	  			if (selected_data[i].delivery_code) {
+	  				App.showErrorDialog("操作失败", "有绑定信息的箱码，禁止停用");
+	  	  		return;
+	  			}
+		  	}	
+	  	}
+	  	
+			App.showConfirmDialog('确定要' + title + '吗?', function() {
+				var box_ids = selected_data.map(row => row.id);
+		  	$("#state_form").ajaxSubmit({
+		  		data : {
+		      	key: key,
+		      	ids: box_ids.join(),		      	
+		      },
+	        beforeSend: function(){
+	          App.blockUI();
+	        },
+	        complete: function(){
+	          App.unblockUI();
+	        },
+	        success: function(res, status, xhr, form) {
+	          if (res.success == 1) {
+	            $('#box_dialog').modal('hide'); 
+	            box_table.draw();
+	            App.showSuccessDialog("操作成功");
+	          }else{
+	            App.showErrorDialog(res.errmsg);
+	          }              
+	        },
+	        error: function (res, status, xhr, form) {
+	          App.showErrorDialog("操作失败", "请稍候重试");
+	        }
+	      });	 
+		  });
+	  	 
 	  }
 	  
 	  $('#btn_search').click(function() {
@@ -151,15 +165,15 @@
 	  });
 	  
 	  $('#btn_enable').click(function() {	  	 	
-	  	update_state("enable");
+	  	update_state("enable", "启用");
 	  });
 	  
 	  $('#btn_disable').click(function() {
-	  	update_state("disable");
+	  	update_state("disable", "启用");
 	  });
 
 	  $('#btn_empty').click(function() {
-	  	update_state("empty");
+	  	update_state("empty", "解绑");
 	  });
 
 	  $("#box_form").validate({
@@ -240,6 +254,17 @@
 		  $(this).addClass("clicked");
 		  var clicked_row_data = box_class_table.row(this).data();
 		  current_class_id = clicked_row_data.id;
+		  if (!current_class_id) {
+		  	$('#btn_generate').attr("disabled", true);
+		  	$('#btn_enable').attr("disabled", true);
+		  	$('#btn_disable').attr("disabled", true);
+		  	$('#btn_empty').attr("disabled", true);
+		  } else {
+		  	$('#btn_generate').attr("disabled", false);
+		  	$('#btn_enable').attr("disabled", false);
+		  	$('#btn_disable').attr("disabled", false);
+		  	$('#btn_empty').attr("disabled", false);
+		  }
 		  reloadBoxTable(clicked_row_data.id);
 	  });
 
