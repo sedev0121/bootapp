@@ -559,9 +559,14 @@
 			      content: submit_content,
 			    },
 			    success : function(res, status, xhr, form) {
-				    App.showSuccessDialog("操作成功", function() {
-					    window.location.reload(true);
-				    });
+			    	if (res.success == 1) {
+			    		App.showSuccessDialog("操作成功", function() {
+						    window.location.reload(true);
+					    });	
+			    	} else {
+			    		App.showErrorDialog("操作失败", res.errmsg);
+			    	}
+				    
 			    },
 			    error : function(res, status, xhr, form) {
 				    App.showErrorDialog("操作失败", "请输入正确的值");

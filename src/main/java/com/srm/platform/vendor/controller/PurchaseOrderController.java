@@ -43,6 +43,7 @@ import com.srm.platform.vendor.searchitem.PurchaseInDetailResult;
 import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
@@ -219,10 +220,18 @@ public class PurchaseOrderController extends CommonController {
 
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody PurchaseOrderMain update_ajax(PurchaseOrderSaveForm form) {
+	public @ResponseBody GenericJsonResponse<PurchaseOrderMain> update_ajax(PurchaseOrderSaveForm form) {
 
 		Account account = this.getLoginAccount();
 		PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(form.getCode());
+		
+
+		Account vendorAccount = accountRepository.findOneByUsername(main.getVendor().getCode());
+		if (vendorAccount == null) {
+			GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "还未开通此供应商用户", null);
+			return jsonResponse;			
+		}
+		
 		if (form.getState() != Constants.PURCHASE_ORDER_STATE_CLOSE_ROW) {
 			main.setSrmstate(form.getState());
 		}
@@ -293,7 +302,8 @@ public class PurchaseOrderController extends CommonController {
 			}
 		}
 
-		return main;
+		GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, main);
+		return jsonResponse;
 	}
 
 	@RequestMapping(value = "/details/search", produces = "application/json")
