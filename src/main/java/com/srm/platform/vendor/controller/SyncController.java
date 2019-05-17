@@ -502,12 +502,4 @@ public class SyncController {
 		return totalCount;
 	}
 
-	@Transactional
-	@ResponseBody
-	@RequestMapping(value = { "/test" })
-	public int test() {
-		PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByOriginalId("1000011305");
-		
-		return detail.getRowNo();
-	}
 }
