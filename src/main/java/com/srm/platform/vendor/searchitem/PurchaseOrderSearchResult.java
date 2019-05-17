@@ -18,6 +18,7 @@ public class PurchaseOrderSearchResult implements Serializable {
 	private String closer;
 	
 	private Date closedate;
+	private Date orderdate;
 	
 	private Date audittime;
 
@@ -56,7 +57,7 @@ public class PurchaseOrderSearchResult implements Serializable {
 	public PurchaseOrderSearchResult(String code, String vencode, Date audittime, String state, String vendorname, String companyname,
 			String deployername, String reviewername, Date deploydate, Date reviewdate, String maker, Date makedate,
 			Double sum, Double money, Integer srmstate, String purchase_type_name, Double prepay_money, String verifier, String closer, 
-			String department, String person, Double tax_rate, Double exchange_rate, String currency, Date closedate ) {
+			String department, String person, Double tax_rate, Double exchange_rate, String currency, Date closedate, Date orderdate ) {
 		this.code = code;
 		this.setVencode(vencode);
 		this.setAudittime(audittime);
@@ -83,6 +84,7 @@ public class PurchaseOrderSearchResult implements Serializable {
 		this.exchange_rate = exchange_rate;
 		this.currency = currency;
 		this.closedate = closedate;
+		this.orderdate = orderdate;
 
 	}
 
@@ -92,6 +94,14 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	public void setPrepay_money(Double prepay_money) {
 		this.prepay_money = prepay_money;
+	}
+
+	public Date getOrderdate() {
+		return orderdate;
+	}
+
+	public void setOrderdate(Date orderdate) {
+		this.orderdate = orderdate;
 	}
 
 	public String getDepartment() {

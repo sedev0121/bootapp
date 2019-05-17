@@ -45,6 +45,7 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 		@ColumnResult(name = "exchange_rate", type = Double.class),
 		@ColumnResult(name = "currency", type = String.class),
 		@ColumnResult(name = "closedate", type = Date.class),
+		@ColumnResult(name = "orderdate", type = Date.class),
 	}) 
 })
 
