@@ -941,14 +941,21 @@ is_readonly = 0;
 		    	})
 		    });
 		    
+		  	var exist_data = table.rows().data().toArray();
+		  	if (exist_data.length == 0) {
+		  		App.showErrorDialog("操作失败", "请添加一行以上货品");
+		  		return;
+		  	}
+		  	
+		  	var new_state = $('#state').val();  	
 		    var confirmMessage = "";
-			  if (state == 1) {
+			  if (new_state == 1) {
 			  	confirmMessage = "保存";
-			  } else if (state == 2) {
+			  } else if (new_state == 2) {
 			  	confirmMessage = "提交";
-			  } else if (state == 3) {
+			  } else if (new_state == 3) {
 			  	confirmMessage = "确认";
-			  } else if (state == 4) {
+			  } else if (new_state == 4) {
 			  	confirmMessage = "退回";
 			  }
 			  

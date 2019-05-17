@@ -381,7 +381,7 @@ public class SyncController {
 						state = "关闭";
 						break;
 					}
-					;
+					
 					main.setState(state);
 					main.setSrmstate(Constants.PURCHASE_ORDER_STATE_START);
 
