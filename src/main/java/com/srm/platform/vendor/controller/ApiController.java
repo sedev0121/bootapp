@@ -204,6 +204,8 @@ public class ApiController {
 			response = this.getBoxMsg(requestParams);
 		} else if (method.equals("getFHD")) {
 			response = this.getFHD(requestParams);
+		} else if (method.equals("createDHD")) {
+			response = this.createDHD(requestParams);
 		}
 		
 		return response;
@@ -317,33 +319,104 @@ public class ApiController {
 		List<Map<String, String>> content = (List<Map<String, String>>)requestParams.get("content");
 		
 		if (deliveryCode == null || content == null || content.size() == 0) {
-			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
 			response.put("msg", "参数不正确");	
 			return response;
 		}
 		
-		Map<String, String> data = content.get(0);
-		String quantityStr = data.get("quantity");
-		String boxCode = data.get("BoxCode");
-		String inventoryCode = data.get("material_code");
+		List<Box> bindingBoxList = new ArrayList<Box>();
+		Map<String, Double> boxSummary = new HashMap<String, Double>();
+		Map<String, Double> deliverySummary = new HashMap<String, Double>();
 		
-		if (quantityStr == null || inventoryCode == null || boxCode == null) {
+		for(Map<String, String> data : content) {
+			String quantityStr = data.get("quantity");
+			String boxCode = data.get("BoxCode");
+			String inventoryCode = data.get("material_code");
+			
+			if (quantityStr == null || inventoryCode == null || boxCode == null) {
+				response.put("error_code", RESPONSE_FAIL);
+				response.put("msg", "参数不正确");	
+				return response;
+			}
+			
+			Box box = boxRepository.findOneByCode(boxCode);
+			if (box == null) {
+				response.put("error_code", RESPONSE_FAIL);
+				response.put("msg", "找不到箱码");	
+				return response;
+			}
+			Double quantity = Double.parseDouble(quantityStr);
+			
+			DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(deliveryCode);
+			if (deliveryMain == null) {
+				response.put("error_code", RESPONSE_FAIL);
+				response.put("msg", "找不到发货单");	
+				return response;
+			}
+			
+			
+			Double inventoryQuantity = boxSummary.get(inventoryCode);
+			if (inventoryQuantity == null) {
+				inventoryQuantity = 0D;
+			}
+			inventoryQuantity += quantity;
+			boxSummary.put(inventoryCode, inventoryQuantity);
+			
+			box.setDeliveryCode(deliveryCode);
+			box.setInventoryCode(inventoryCode);
+			box.setQuantity(quantity);
+			box.setBindDate(new Date());
+			box.setUsed(Box.BOX_IS_USING);
+			
+			bindingBoxList.add(box);			
+		}
+		
+		List<DeliveryDetail> detailList = deliveryDetailRepository.findDetailsByCode(deliveryCode);
+		for(DeliveryDetail detail : detailList) {
+			String inventoryCode = detail.getPurchaseOrderDetail().getInventory().getCode();
+			Double quantity = detail.getDeliveredQuantity();
+			
+			Double inventoryQuantity = deliverySummary.get(inventoryCode);
+			if (inventoryQuantity == null) {
+				inventoryQuantity = 0D;
+			}
+			inventoryQuantity += quantity;
+			deliverySummary.put(inventoryCode, inventoryQuantity);
+		}
+		
+		for(Map.Entry<String, Double> entry: deliverySummary.entrySet()) {
+			String key = entry.getKey();
+			Double value = entry.getValue();
+			
+			if (!boxSummary.containsKey(key) || value.compareTo(boxSummary.get(key)) != 0) {
+				response.put("error_code", RESPONSE_FAIL);
+				response.put("msg", "装箱数据与发货单不符");	
+				return response;
+			}
+		}
+		
+		boxRepository.saveAll(bindingBoxList);
+		
+		response.put("error_code", RESPONSE_SUCCESS);
+		response.put("msg", "提交成功");	
+		
+		
+		return response;
+	}
+	
+	private Map<String, Object> createDHD(Map<String, Object> requestParams) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		
+		String deliveryCode = String.valueOf(requestParams.get("code"));
+
+		List<Map<String, String>> content = (List<Map<String, String>>)requestParams.get("content");
+		
+		if (deliveryCode == null) {
 			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
 			response.put("msg", "参数不正确");	
 			return response;
 		}
-		
-		Box box = boxRepository.findOneByCode(boxCode);
-		if (box == null) {
-			response = new HashMap<String, Object>();
-			response.put("error_code", RESPONSE_FAIL);
-			response.put("msg", "找不到箱码");	
-			return response;
-		}
-		
-		Double quantity = Double.parseDouble(quantityStr);
 		
 		DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(deliveryCode);
 		if (deliveryMain == null) {
@@ -353,16 +426,7 @@ public class ApiController {
 			return response;
 		}
 		
-
-		box.setDeliveryCode(deliveryCode);
-		box.setInventoryCode(inventoryCode);
-		box.setQuantity(quantity);
-		box.setBindDate(new Date());
-		box.setUsed(Box.BOX_IS_USING);
-		
-		box = boxRepository.save(box);
-		
-		RestApiResponse u8Response = postForArrivalVouch(box);
+		RestApiResponse u8Response = postForArrivalVouch(deliveryMain);
 		
 		if (u8Response.isSuccess()) {
 			response.put("error_code", RESPONSE_SUCCESS);
@@ -375,7 +439,6 @@ public class ApiController {
 		
 		return response;
 	}
-	
 	
 	private Map<String, Object> getBoxMsg(Map<String, Object> requestParams) {
 		Map<String, Object> response = new HashMap<String, Object>();
@@ -464,6 +527,7 @@ public class ApiController {
 			temp.put("material_code", inventory.getCode());
 			temp.put("name", inventory.getName());
 			temp.put("specs", inventory.getSpecs());
+			temp.put("packing_quantity", String.valueOf(inventory.getCountPerBox()));
 			temp.put("quantity", String.valueOf(detail.getPurchaseOrderDetail().getQuantity()));
 			temp.put("Shipped", String.valueOf(detail.getDeliveredQuantity()));
 			temp.put("serial", deliveryMain.getDeliverNumber());
@@ -481,44 +545,43 @@ public class ApiController {
 		return response;
 	}
 	
-	private RestApiResponse postForArrivalVouch(Box box) {
+	private RestApiResponse postForArrivalVouch(DeliveryMain deliveryMain) {
 		
-		if (box == null) {
+		if (deliveryMain == null) {
 			return null;
 		} else {
 			
-			DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(box.getDeliveryCode());
-			Inventory inventory = inventoryRepository.findOneByCode(box.getInventoryCode());
-			if (deliveryMain == null || inventory == null) {
-				return null;
-			}
-			
+			List<DeliveryDetail> details = deliveryDetailRepository.findDetailsByCode(deliveryMain.getCode());
 			
 			Map<String, Object> postData = new HashMap<>();
 			postData.put("ccode", deliveryMain.getCode());
-			postData.put("ddate", Utils.formatDateTime(deliveryMain.getEstimatedArrivalDate()));
+			postData.put("ddate", Utils.formatDateTime(new Date()));
 			postData.put("cvencode", deliveryMain.getVendor().getCode());
 			postData.put("itaxrate", "0.0");
 			postData.put("cmemo", "");
-			postData.put("cpocode", "00000");
+			postData.put("cpocode", "");
 			postData.put("cbustype", "00");
 			
 			
 			List<Map<String, Object>> detailList = new ArrayList<Map<String, Object>>();
 			
-			Map<String, Object> detailData = new HashMap<>();
-			detailData.put("cinvcode", inventory.getCode());
-			detailData.put("qty", box.getQuantity());
-			detailData.put("itaxrate", "0.0");
-			detailData.put("iposid", "000000");
-			detailData.put("cpocode", "000000");
-			detailData.put("ivouchrowno", "0");
-			detailData.put("fprice", "0.0");
-			detailData.put("famount", "0.0");
-			detailData.put("ftaxprice", "0.0");
-			detailData.put("ftaxamount", "0.0");
+			for(DeliveryDetail detail : details) {
+				Map<String, Object> detailData = new HashMap<>();
+				PurchaseOrderDetail orderDetail = detail.getPurchaseOrderDetail();
+				detailData.put("cinvcode", orderDetail.getInventory().getCode());
+				detailData.put("qty", detail.getDeliveredQuantity());
+				detailData.put("itaxrate", orderDetail.getTaxRate());
+				detailData.put("iposid", orderDetail.getOriginalId());
+				detailData.put("cpocode", orderDetail.getMain().getCode());
+				detailData.put("ivouchrowno", detail.getRowNo());
+				detailData.put("fprice", orderDetail.getPrice());
+				detailData.put("famount", orderDetail.getMoney());
+				detailData.put("ftaxprice", orderDetail.getTaxPrice());
+				detailData.put("ftaxamount", orderDetail.getSum());
+				
+				detailList.add(detailData);
+			}	
 			
-			detailList.add(detailData);
 			
 			postData.put("detail", detailList);
 			
