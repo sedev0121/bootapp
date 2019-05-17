@@ -401,7 +401,7 @@ public class SyncController {
 					
 					for (LinkedHashMap<String, Object> detailTemp : details) {
 						String originalID = getStringValue(detailTemp, "ID");
-						PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByOriginalId(originalID);
+						PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByOrigianId(main.getCode(), originalID);
 
 						if (detail == null) {
 							detail = new PurchaseOrderDetail();
