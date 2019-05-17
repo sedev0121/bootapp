@@ -512,7 +512,7 @@ public class ApiController {
 		DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(deliveryCode);
 		List<DeliveryDetail> deliveryDetailList = deliveryDetailRepository.findDetailsByCode(deliveryCode);
 		
-		if (deliveryDetailList == null) {
+		if (deliveryMain == null || deliveryDetailList == null) {
 			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
 			response.put("msg", "找不到箱码");	
