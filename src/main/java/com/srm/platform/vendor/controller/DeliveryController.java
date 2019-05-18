@@ -332,6 +332,14 @@ public class DeliveryController extends CommonController {
 				if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
 					detail.setState(Constants.DELIVERY_ROW_STATE_OK);
 				
+					Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
+					
+					if (lastDeliveredQuantity == null) {
+						lastDeliveredQuantity = 0D;
+					}
+					orderDetail.setDeliveredQuantity(lastDeliveredQuantity + quantity);
+					purchaseOrderDetailRepository.save(orderDetail);
+					
 					if (inventory.getBoxClass() == null) {
 						String inventoryKey = inventory.getCode();
 						Double inventoryQuantity = floatingBoxMap.get(inventoryKey);

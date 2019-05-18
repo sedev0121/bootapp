@@ -519,10 +519,10 @@ public class ApiController {
 			return response;
 		}
 		
-		ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
-		Map<String, String> temp = new HashMap<String, String>();
+		ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();		
 		
 		for(DeliveryDetail detail : deliveryDetailList) {
+			Map<String, String> temp = new HashMap<String, String>();
 			Inventory inventory = detail.getPurchaseOrderDetail().getInventory();
 			temp.put("material_code", inventory.getCode());
 			temp.put("name", inventory.getName());

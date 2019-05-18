@@ -387,7 +387,7 @@ public class SyncController {
 
 					purchaseOrderMainRepository.save(main);
 
-//					purchaseOrderDetailRepository.deleteAll(purchaseOrderDetailRepository.findDetailsByCode(main.getCode()));
+					List<PurchaseOrderDetail> oldList = purchaseOrderDetailRepository.findDetailsByCode(main.getCode());
 					
 					List<LinkedHashMap<String, Object>> details = getDetailMap(temp, "details");
 					if (details == null || details.size() == 0) {
@@ -465,8 +465,20 @@ public class SyncController {
 						
 
 						purchaseOrderDetailRepository.save(detail);
+						
+						for(PurchaseOrderDetail oldOrderDetail: oldList) {
+							if (oldOrderDetail.getId() == detail.getId()) {
+								oldList.remove(oldOrderDetail);
+								break;
+							}
+						}
+						
 					}
 
+					if (oldList.size() > 0) {
+						purchaseOrderDetailRepository.deleteAll(oldList);
+					}
+					
 					if (taxRate != null) {
 						main.setTaxRate(taxRate);
 					}

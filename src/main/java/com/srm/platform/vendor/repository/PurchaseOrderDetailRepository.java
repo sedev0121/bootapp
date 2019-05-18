@@ -28,7 +28,7 @@ public interface PurchaseOrderDetailRepository extends JpaRepository<PurchaseOrd
 	@Query(value = "select * from purchase_order_detail where code like %?1%", nativeQuery = true)
 	Page<PurchaseOrderDetail> searchAll(String search, Pageable pageable);
 	
-	@Query(value = "select * from purchase_order_detail a left join purchase_order_main b on a.close_date is null and a.code=b.code where b.srmstate=2 and a.quantity>ifnull(a.arrived_quantity, 0) and (a.inventory_code like %?1% or a.inventory_name like %?1%) and b.vencode=?2 and b.company_id=?3 and b.store_id=?4", nativeQuery = true)
+	@Query(value = "select * from purchase_order_detail a left join purchase_order_main b on a.close_date is null and a.code=b.code where b.srmstate=2 and a.quantity>ifnull(a.delivered_quantity, 0) and (a.inventory_code like %?1% or a.inventory_name like %?1%) and b.vencode=?2 and b.company_id=?3 and b.store_id=?4", nativeQuery = true)
 	Page<PurchaseOrderDetail> searchAllOfOneVendor(String search, String vendorCode, Long companyId, Long storeId, Pageable pageable);
 
 }
