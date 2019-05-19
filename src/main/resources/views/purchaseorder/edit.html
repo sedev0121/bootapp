@@ -91,6 +91,8 @@
 													<th></th>
 													<th></th>
 													<th></th>
+													<th></th>
+													<th></th>
 													<th colspan="3"></th>
 													<th></th>
 													<th></th>
@@ -311,6 +313,21 @@
 	      className : 'dt-right',
 	      title : '换算率'
 	    }, {
+	      data : 'inventory.boxClass',
+	      className : 'dt-right',
+	      title : '装箱规格',
+	      render: function (data, display, record) {
+	        if (record.inventory.boxClass) {
+	        	return record.inventory.boxClass.name;
+	        } else {
+	        	return "";
+	        }
+	      },
+	    }, {
+	      data : 'inventory.count_per_box',
+	      className : 'dt-right',
+	      title : '每箱数量',
+	    }, {
 	      data : null,
 	      defaultContent : '',
 	      className : 'dt-right',
@@ -425,7 +442,7 @@
         }
     	},
 	    footerCallback : function(row, data, start, end, display) {
-		    App.footerCallback(this.api(), [ [ 6, "cost" ], [ 8, "cost" ], [ 9, "cost" ], [ 13, "cost" ], [ 14, "cost" ], [ 15, "cost" ], [ 19, "cost" ], [ 20, "cost" ], [ 21, "cost" ], [ 22, "cost" ], [ 24, "cost" ], [ 26, "cost" ] ]);
+		    App.footerCallback(this.api(), [ [ 6, "cost" ], [ 10, "cost" ], [ 11, "cost" ], [ 15, "cost" ], [ 16, "cost" ], [ 17, "cost" ], [ 21, "cost" ], [ 22, "cost" ], [ 23, "cost" ], [ 24, "cost" ], [ 25, "cost" ], [ 28, "cost" ] ]);
 	    },
 	  });
 

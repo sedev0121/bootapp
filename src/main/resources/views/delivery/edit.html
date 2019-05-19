@@ -257,6 +257,9 @@ is_readonly = 0;
 		  	$.each(data.data, function(key, item){  
 		  		if (item.delivered_quantity) {
 		  			item.delivered_quantity = parseInt(item.delivered_quantity);
+		  			if (item.delivered_quantity < 0) {
+		  				item.delivered_quantity *= -1;
+		  			}
 			  	}
         });
 		  		
@@ -344,6 +347,21 @@ is_readonly = 0;
 	      data : 'purchaseOrderDetail.inventory.count_per_box',
 	      className : 'dt-right',
 	      title : '换算率',
+	    }, {
+	      data : 'purchaseOrderDetail.inventory.boxClass',
+	      className : 'dt-right',
+	      title : '装箱规格',
+	      render: function (data, display, record) {
+	        if (record.purchaseOrderDetail.inventory.boxClass) {
+	        	return record.purchaseOrderDetail.inventory.boxClass.name;
+	        } else {
+	        	return "";
+	        }
+	      },
+	    }, {
+	      data : 'purchaseOrderDetail.inventory.count_per_box',
+	      className : 'dt-right',
+	      title : '每箱数量',
 	    }, {
 	      data : 'purchaseOrderDetail.quantity',
 	      className : 'dt-right',
