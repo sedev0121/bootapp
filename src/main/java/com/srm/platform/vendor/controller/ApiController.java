@@ -373,7 +373,11 @@ public class ApiController {
 		
 		List<DeliveryDetail> detailList = deliveryDetailRepository.findDetailsByCode(deliveryCode);
 		for(DeliveryDetail detail : detailList) {
-			String inventoryCode = detail.getPurchaseOrderDetail().getInventory().getCode();
+			Inventory inventory = detail.getPurchaseOrderDetail().getInventory();
+			if (inventory.getBoxClass() == null) {
+				continue;
+			}
+			String inventoryCode = inventory.getCode();
 			Double quantity = detail.getDeliveredQuantity();
 			
 			Double inventoryQuantity = deliverySummary.get(inventoryCode);
@@ -515,7 +519,7 @@ public class ApiController {
 		if (deliveryMain == null || deliveryDetailList == null) {
 			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
-			response.put("msg", "找不到箱码");	
+			response.put("msg", "找不到发货单");	
 			return response;
 		}
 		
@@ -524,6 +528,9 @@ public class ApiController {
 		for(DeliveryDetail detail : deliveryDetailList) {
 			Map<String, String> temp = new HashMap<String, String>();
 			Inventory inventory = detail.getPurchaseOrderDetail().getInventory();
+			if (inventory.getBoxClass() == null) {
+				continue;
+			}
 			temp.put("material_code", inventory.getCode());
 			temp.put("name", inventory.getName());
 			temp.put("specs", inventory.getSpecs());
