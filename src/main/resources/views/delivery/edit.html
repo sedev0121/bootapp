@@ -32,7 +32,7 @@
 							<label for="vendor">供应商:</label> <input type="text" th:value="${main.vendor?.name}" class="form-control" readonly />
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label for="create_date">申请日期：</label> <input type="text" name="create_date" id="create_date" th:value="${#dates.format(main?.createDate, 'yyyy-MM-dd')}" class="form-control datepicker" readonly>
+							<label for="create_date">申请日期：</label> <input type="text" name="create_date" id="create_date" th:value="${#dates.format(main?.createDate, 'yyyy-MM-dd')}" class="form-control disabled" readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="estimated_arrival_date">预计到货日期：</label> <input type="text" name="estimated_arrival_date" id="estimated_arrival_date" th:value="${#dates.format(main?.estimatedArrivalDate, 'yyyy-MM-dd')}" class="form-control datepicker">
@@ -50,10 +50,10 @@
 							</select>
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label for="confirmer">确认人：</label> <input type="text" th:value="${main.confirmer?.realname}" class="form-control datepicker" readonly>
+							<label for="confirmer">确认人：</label> <input type="text" th:value="${main.confirmer?.realname}" class="form-control" disabled readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label for="confirm_date">确认日期：</label> <input type="text" th:value="${#dates.format(main.confirmDate, 'yyyy-MM-dd')}" class="form-control datepicker" readonly>
+							<label for="confirm_date">确认日期：</label> <input type="text" th:value="${#dates.format(main.confirmDate, 'yyyy-MM-dd')}" class="form-control disabled" readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="state">状态:</label> <select name="state" id="state" class="form-control" readonly>
@@ -221,6 +221,10 @@ is_readonly = 0;
 	      label : "备注:",
 	      name : "memo"
 	    }, {
+	      name : "purchaseOrderDetail.quantity"
+	    }, {
+	      name : "purchaseOrderDetail.delivered_quantity"
+	    }, {
 	    	type:  "select",
 	      name : "state",
 	      options: [
@@ -259,6 +263,9 @@ is_readonly = 0;
 		  			item.delivered_quantity = parseInt(item.delivered_quantity);
 		  			if (item.delivered_quantity < 0) {
 		  				item.delivered_quantity *= -1;
+		  			}
+		  			if (item.delivered_quantity > item.purchaseOrderDetail.quantity - item.purchaseOrderDetail.delivered_quantity) {
+		  				item.delivered_quantity = item.purchaseOrderDetail.quantity - item.purchaseOrderDetail.delivered_quantity;
 		  			}
 			  	}
         });
@@ -374,14 +381,14 @@ is_readonly = 0;
 	      className : 'dt-right',
 	      title : '订单未交数量',
 	      render: function (data, display, record) {
-	        return record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.arrived_quantity - record.purchaseOrderDetail.delivered_quantity;
+	        return record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.delivered_quantity;
 	      },
 	    }, {
 	    	data : null,
 	      className : 'dt-right',
 	      title : '订单未交件数',		
 	      render: function (data, display, record) {
-	        return App.getBoxCount(record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.arrived_quantity - record.purchaseOrderDetail.delivered_quantity, record.purchaseOrderDetail.inventory.count_per_box);
+	        return App.getBoxCount(record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.delivered_quantity, record.purchaseOrderDetail.inventory.count_per_box);
 	      },
 	    }, {
 	      data : 'delivered_quantity',
@@ -1067,7 +1074,9 @@ is_readonly = 0;
 	        csv_string += row_data.code + column_seperator;
 	        csv_string += row_data.inventory_name + column_seperator;
 	        csv_string += row_data.inventory_spec + column_seperator;
-	        csv_string += "\n";
+	        if (row_index < data.length -1) {
+	        	csv_string += "\n";	
+	        }	        
         }
 	  		
 	  		var blob = new Blob([ csv_string ], {
