@@ -396,7 +396,7 @@ public class DeliveryController extends CommonController {
 	}
 
 	private String generateBoxCode(long deliveryID, int inventoryIndex, int index) {
-		return String.format("A%010d%02d%02d", deliveryID, inventoryIndex, index + 1);
+		return String.format("B%010d%02d%02d", deliveryID, inventoryIndex, index + 1);
 	}
 	
 	@GetMapping("/{ccode}/download")
