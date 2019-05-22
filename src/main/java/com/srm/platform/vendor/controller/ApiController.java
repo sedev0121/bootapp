@@ -577,6 +577,7 @@ public class ApiController {
 				PurchaseOrderDetail orderDetail = detail.getPurchaseOrderDetail();
 				detailData.put("cinvcode", orderDetail.getInventory().getCode());
 				detailData.put("qty", detail.getDeliveredQuantity());
+				detailData.put("inum", 1);
 				detailData.put("itaxrate", orderDetail.getTaxRate());
 				detailData.put("iposid", orderDetail.getOriginalId());
 				detailData.put("cpocode", orderDetail.getMain().getCode());

@@ -259,11 +259,14 @@
 			      item.arrive_date = $.fn.date_renderer(item.arrive_date);
 			      item.confirmed_date = $.fn.date_renderer(item.confirmed_date);
 			      item.close_state = item.close_date ? 1 : 0;
-			      item.box_quantity = App.getBoxCount(item.quantity, item.inventory.count_per_box);
 			      item.tax = App.costNumber(item.sum - item.money);
-			      item.arrived_box_quantity = App.getBoxCount(item.arrived_quantity, item.inventory.count_per_box);
 			      item.not_arrived_quantity = item.quantity - item.arrived_quantity;
-			      item.not_arrived_box_quantity = App.getBoxCount(item.not_arrived_quantity, item.inventory.count_per_box);
+			      if (state == 0) {
+			      	item.count_per_box = item.inventory.count_per_box;	
+			      }			      
+			      item.not_arrived_box_quantity = App.getBoxCount(item.not_arrived_quantity, item.count_per_box);
+			      item.arrived_box_quantity = App.getBoxCount(item.arrived_quantity, item.count_per_box);
+			      item.box_quantity = App.getBoxCount(item.quantity, item.count_per_box);
 		      })
 		      return json;
 	      },
@@ -324,7 +327,7 @@
 	        }
 	      },
 	    }, {
-	      data : 'inventory.count_per_box',
+	      data : 'count_per_box',
 	      className : 'dt-right',
 	      title : '每箱数量',
 	    }, {
@@ -509,10 +512,27 @@
 		  });
 	  }
 
+	  $.validator.addMethod("checkTable", function(value, element) {
+		  var exist_data = basic_table.rows().data().toArray();
+		 
+		  for (i = 0; i < exist_data.length; i++) {
+			  var exist_row = exist_data[i];
+			  
+			  if (!exist_row.count_per_box) {
+			  	App.showErrorDialog("操作失败", exist_row.inventory.name + "(" + exist_row.inventory.code + ")" + "的单位包装量为空。请先维护此货品的单位包装量。");
+				  return false;
+			  }
+			  
+		  }
+
+		  return true;
+	  }, "");
+	  
 	  $("#form").validate({
 	    rules : {
 	    	store : {
 	        required : true,
+	        checkTable : true
 	      },
 	    },
 
@@ -555,6 +575,7 @@
 				  small_data.push({
 				    id : item.id,
 				    memo : item.memo,
+				    count_per_box: item.count_per_box,
 				    confirmed_date : item.confirmed_date,
 				    confirmed_memo : item.confirmed_memo,
 				    close_state : item.close_state

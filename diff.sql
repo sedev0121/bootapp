@@ -142,3 +142,6 @@ alter table box DROP column delivery_detail_id;
 
 alter table delivery_detail DROP column deliver_number;
 alter table delivery_main add column deliver_number varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+
+alter table purchase_order_detail add column count_per_box int(11) NULL DEFAULT NULL;
