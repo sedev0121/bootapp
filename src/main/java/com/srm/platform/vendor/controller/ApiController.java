@@ -170,12 +170,28 @@ public class ApiController {
 				jsonResponse.setErrmsg("该箱码不存在");
 			}else {
 				box.setUsed(0);
+				box.setDeliveryCode(null);
+				box.setBindDate(null);
+				box.setBindProperty(null);
+				box.setQuantity(null);
+				box.setInventoryCode(null);
 				box = boxRepository.save(box);	
 			}			
 		}
 		
 		return jsonResponse;
 
+	}
+
+	@ResponseBody
+	@RequestMapping({ "/test" })
+	public GenericJsonResponse<Box> test() {
+		GenericJsonResponse<Box> jsonResponse;
+		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
+
+		boxRepository.emptyBoxByDeliveryCode("20190521180458944427");
+		
+		return jsonResponse;
 	}
 
 
@@ -399,6 +415,7 @@ public class ApiController {
 			}
 		}
 		
+		boxRepository.emptyBoxByDeliveryCode(deliveryCode);
 		boxRepository.saveAll(bindingBoxList);
 		
 		response.put("error_code", RESPONSE_SUCCESS);
