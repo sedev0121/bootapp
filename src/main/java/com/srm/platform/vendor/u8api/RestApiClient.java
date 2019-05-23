@@ -204,6 +204,10 @@ public class RestApiClient {
 			response.setStatus(String.valueOf(map.get("status")));
 			response.setErrmsg(String.valueOf(map.get("errmsg")));
 
+			if (map.get("errmsg") == null && map.get("msg") != null) {
+				response.setErrmsg(String.valueOf(map.get("msg")));
+			}
+			
 			if (dataField != null) {
 				List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) map.get(dataField);
 				response.setData(dataList);

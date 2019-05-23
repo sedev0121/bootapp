@@ -2,9 +2,12 @@ package com.srm.platform.vendor.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.Box;
@@ -18,6 +21,11 @@ public interface BoxRepository extends JpaRepository<Box, Long> {
 	Box findOneByCode(String code);
 	
 	List<Box> findByBoxClassId(Long id);
+	
+    @Transactional
+    @Modifying
+	@Query(value = "update box set delivery_code=null, inventory_code=null, used=0, quantity=null, bind_date=null, bind_property=null where delivery_code=?1", nativeQuery = true)
+	void emptyBoxByDeliveryCode(String deliveryCode);
 	
 	@Query(value = "SELECT * FROM box WHERE box_class_id=?1 and code like %?2%", nativeQuery = true)
 	Page<Box> findBySearchTerm2(Long classId, String search, Pageable pageable);

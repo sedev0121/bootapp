@@ -294,14 +294,6 @@ public class DeliveryController extends CommonController {
 			action = "审批";
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			break;
-		case Constants.DELIVERY_STATE_CANCEL:
-			action = "拒绝";
-			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			break;
-		case Constants.DELIVERY_STATE_PARTIAL_OK:
-			action = "部分审批";
-			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			break;
 		}
 		String title = String.format("预发货单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
 

@@ -170,12 +170,28 @@ public class ApiController {
 				jsonResponse.setErrmsg("该箱码不存在");
 			}else {
 				box.setUsed(0);
+				box.setDeliveryCode(null);
+				box.setBindDate(null);
+				box.setBindProperty(null);
+				box.setQuantity(null);
+				box.setInventoryCode(null);
 				box = boxRepository.save(box);	
 			}			
 		}
 		
 		return jsonResponse;
 
+	}
+
+	@ResponseBody
+	@RequestMapping({ "/test" })
+	public GenericJsonResponse<Box> test() {
+		GenericJsonResponse<Box> jsonResponse;
+		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
+
+		boxRepository.emptyBoxByDeliveryCode("20190521180458944427");
+		
+		return jsonResponse;
 	}
 
 
@@ -324,10 +340,17 @@ public class ApiController {
 			return response;
 		}
 		
+		DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(deliveryCode);
+		if (deliveryMain == null) {
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", "找不到发货单");	
+			return response;
+		}
+		
 		List<Box> bindingBoxList = new ArrayList<Box>();
 		Map<String, Double> boxSummary = new HashMap<String, Double>();
 		Map<String, Double> deliverySummary = new HashMap<String, Double>();
-		
+
 		for(Map<String, String> data : content) {
 			String quantityStr = data.get("quantity");
 			String boxCode = data.get("BoxCode");
@@ -347,12 +370,6 @@ public class ApiController {
 			}
 			Double quantity = Double.parseDouble(quantityStr);
 			
-			DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(deliveryCode);
-			if (deliveryMain == null) {
-				response.put("error_code", RESPONSE_FAIL);
-				response.put("msg", "找不到发货单");	
-				return response;
-			}
 			
 			
 			Double inventoryQuantity = boxSummary.get(inventoryCode);
@@ -399,7 +416,13 @@ public class ApiController {
 			}
 		}
 		
+		boxRepository.emptyBoxByDeliveryCode(deliveryCode);
 		boxRepository.saveAll(bindingBoxList);
+		
+		if (deliveryMain.getState() == Constants.DELIVERY_STATE_OK) {
+			deliveryMain.setState(Constants.DELIVERY_STATE_DELIVERED);
+			deliveryMainRepository.save(deliveryMain);
+		}		
 		
 		response.put("error_code", RESPONSE_SUCCESS);
 		response.put("msg", "提交成功");	
@@ -433,6 +456,12 @@ public class ApiController {
 		RestApiResponse u8Response = postForArrivalVouch(deliveryMain);
 		
 		if (u8Response.isSuccess()) {
+			
+			if (deliveryMain.getState() == Constants.DELIVERY_STATE_DELIVERED) {
+				deliveryMain.setState(Constants.DELIVERY_STATE_ARRIVED);
+				deliveryMainRepository.save(deliveryMain);
+			}
+			
 			response.put("error_code", RESPONSE_SUCCESS);
 			response.put("msg", "提交成功");	
 		} else {
@@ -546,6 +575,11 @@ public class ApiController {
 
 		response.put("supplier_code", deliveryMain.getVendor().getCode());
 		response.put("code", deliveryMain.getCode());
+		if (deliveryMain.getState() <= Constants.DELIVERY_STATE_OK) {
+			response.put("state", "1");
+		} else if (deliveryMain.getState() >= Constants.DELIVERY_STATE_DELIVERED) {
+			response.put("state", "2");
+		} 
 		response.put("data", data);
 		
 		
@@ -577,6 +611,7 @@ public class ApiController {
 				PurchaseOrderDetail orderDetail = detail.getPurchaseOrderDetail();
 				detailData.put("cinvcode", orderDetail.getInventory().getCode());
 				detailData.put("qty", detail.getDeliveredQuantity());
+				detailData.put("inum", 1);
 				detailData.put("itaxrate", orderDetail.getTaxRate());
 				detailData.put("iposid", orderDetail.getOriginalId());
 				detailData.put("cpocode", orderDetail.getMain().getCode());

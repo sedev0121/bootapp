@@ -74,6 +74,8 @@ public class PurchaseOrderDetail {
 	@JsonProperty(value = "arrive_date")
 	private Date arriveDate;
 
+	@JsonProperty(value = "count_per_box")
+	private Integer countPerBox;
 
 	@JsonProperty(value = "tax_rate")
 	private Double taxRate;
@@ -128,6 +130,14 @@ public class PurchaseOrderDetail {
 
 	public void setDeliveredQuantity(Double deliveredQuantity) {
 		this.deliveredQuantity = deliveredQuantity;
+	}
+
+	public Integer getCountPerBox() {
+		return countPerBox;
+	}
+
+	public void setCountPerBox(Integer countPerBox) {
+		this.countPerBox = countPerBox;
 	}
 
 	public String getOriginalId() {

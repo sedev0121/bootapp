@@ -282,6 +282,7 @@ public class PurchaseOrderController extends CommonController {
 					detail.setMemo(item.get("memo"));
 					detail.setConfirmedDate(detail.getArriveDate());
 					detail.setConfirmedQuantity(detail.getQuantity());
+					detail.setCountPerBox(Integer.valueOf(item.get("count_per_box")));
 					if (Integer.parseInt(item.get("close_state")) == Constants.PURCHASE_ORDER_ROW_CLOSE_STATE_YES) {
 						if (detail.getCloseDate() == null) {
 							detail.setCloseDate(new Date());
@@ -320,6 +321,9 @@ public class PurchaseOrderController extends CommonController {
 		switch (order) {
 		case "main.code":
 			order = "code";
+			break;
+		case "inventory.code":
+			order = "inventory_code";
 			break;
 		}
 
