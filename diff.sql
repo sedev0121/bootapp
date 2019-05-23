@@ -145,3 +145,4 @@ alter table delivery_main add column deliver_number varchar(255) CHARACTER SET u
 
 
 alter table purchase_order_detail add column count_per_box int(11) NULL DEFAULT NULL;
+update purchase_order_detail a left join purchase_order_main b on a.code=b.code left join inventory c on a.inventory_code=c.code set a.count_per_box=c.count_per_box where b.srmstate>0;

@@ -340,10 +340,17 @@ public class ApiController {
 			return response;
 		}
 		
+		DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(deliveryCode);
+		if (deliveryMain == null) {
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", "找不到发货单");	
+			return response;
+		}
+		
 		List<Box> bindingBoxList = new ArrayList<Box>();
 		Map<String, Double> boxSummary = new HashMap<String, Double>();
 		Map<String, Double> deliverySummary = new HashMap<String, Double>();
-		
+
 		for(Map<String, String> data : content) {
 			String quantityStr = data.get("quantity");
 			String boxCode = data.get("BoxCode");
@@ -363,12 +370,6 @@ public class ApiController {
 			}
 			Double quantity = Double.parseDouble(quantityStr);
 			
-			DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(deliveryCode);
-			if (deliveryMain == null) {
-				response.put("error_code", RESPONSE_FAIL);
-				response.put("msg", "找不到发货单");	
-				return response;
-			}
 			
 			
 			Double inventoryQuantity = boxSummary.get(inventoryCode);
@@ -418,6 +419,11 @@ public class ApiController {
 		boxRepository.emptyBoxByDeliveryCode(deliveryCode);
 		boxRepository.saveAll(bindingBoxList);
 		
+		if (deliveryMain.getState() == Constants.DELIVERY_STATE_OK) {
+			deliveryMain.setState(Constants.DELIVERY_STATE_DELIVERED);
+			deliveryMainRepository.save(deliveryMain);
+		}		
+		
 		response.put("error_code", RESPONSE_SUCCESS);
 		response.put("msg", "提交成功");	
 		
@@ -450,6 +456,12 @@ public class ApiController {
 		RestApiResponse u8Response = postForArrivalVouch(deliveryMain);
 		
 		if (u8Response.isSuccess()) {
+			
+			if (deliveryMain.getState() == Constants.DELIVERY_STATE_DELIVERED) {
+				deliveryMain.setState(Constants.DELIVERY_STATE_ARRIVED);
+				deliveryMainRepository.save(deliveryMain);
+			}
+			
 			response.put("error_code", RESPONSE_SUCCESS);
 			response.put("msg", "提交成功");	
 		} else {
@@ -563,6 +575,11 @@ public class ApiController {
 
 		response.put("supplier_code", deliveryMain.getVendor().getCode());
 		response.put("code", deliveryMain.getCode());
+		if (deliveryMain.getState() <= Constants.DELIVERY_STATE_OK) {
+			response.put("state", "1");
+		} else if (deliveryMain.getState() >= Constants.DELIVERY_STATE_DELIVERED) {
+			response.put("state", "2");
+		} 
 		response.put("data", data);
 		
 		
