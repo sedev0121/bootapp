@@ -150,7 +150,7 @@ public class Utils {
 		List<String> codeList = new ArrayList<String>();
 		String temp;
 		for (int i= 0; i< count; i++) {			
-			temp = String.format("A%s%06d", classCode, serialNumber + i + 1);
+			temp = String.format("%s%06d", classCode, serialNumber + i + 1);
 			codeList.add(temp);
 		}
 		return codeList;

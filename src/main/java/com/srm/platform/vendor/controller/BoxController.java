@@ -68,6 +68,9 @@ public class BoxController extends CommonController {
 		String code = requestParams.getOrDefault("code", "");
 		String state = requestParams.getOrDefault("state", "-1");
 		String used = requestParams.getOrDefault("used", "-1");
+		
+		String deliveryCode = requestParams.getOrDefault("delivery_code", "");
+		String vendor = requestParams.getOrDefault("vendor", "");
 
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
@@ -96,6 +99,16 @@ public class BoxController extends CommonController {
 		if (!code.trim().isEmpty()) {
 			bodyQuery += " and a.code like CONCAT('%',:code, '%') ";
 			params.put("code", code.trim());
+		}
+		
+		if (!vendor.trim().isEmpty()) {
+			bodyQuery += " and (e.code like CONCAT('%',:vendor, '%') or e.name like CONCAT('%',:vendor, '%')) ";
+			params.put("vendor", vendor.trim());
+		}
+		
+		if (!deliveryCode.trim().isEmpty()) {
+			bodyQuery += " and a.delivery_code like CONCAT('%',:deliveryCode, '%') ";
+			params.put("deliveryCode", deliveryCode.trim());
 		}
 		
 		if (boxState >= 0) {

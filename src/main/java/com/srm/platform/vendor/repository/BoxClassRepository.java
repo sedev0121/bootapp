@@ -22,7 +22,7 @@ public interface BoxClassRepository extends JpaRepository<BoxClass, Long> {
 	@Query(value = "SELECT * FROM box_class WHERE name like %?1% order by code asc", nativeQuery = true)
 	List<BoxClass> findBySearchTerm(String search);
 	
-	@Query(value = "SELECT id code, name FROM box_class where code like %?1% or name like %?1% order by code asc", nativeQuery = true)
+	@Query(value = "SELECT id code, concat('[', code, '] ', name) name FROM box_class where code like %?1% or name like %?1% order by code asc", nativeQuery = true)
 	Page<SearchItem> findForSelect(String search, Pageable pageable);
 	
 	@Query(value = "SELECT * FROM box_class order by code asc", nativeQuery = true)

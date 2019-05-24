@@ -3839,3 +3839,7 @@ Styler Panel
     border-radius: 4px;
     padding: 30px 30px 20px;
 }
+
+.box-top-bar {
+		margin-bottom: 5px;
+}
