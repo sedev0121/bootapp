@@ -145,6 +145,19 @@ var App = function() {
 		  	return boxCountInt;
 		  }
 		},
+		getBoxCount2 : function (total, countPerBox) {
+		  if (!countPerBox || !total) {
+		  	return '';
+		  } else {
+		  	var boxCount = parseFloat(total)/parseFloat(countPerBox);
+		  	boxCount = App.formatNumber(boxCount, 3);		
+		  	var boxCountInt = parseInt(boxCount);
+		  	if (boxCountInt == parseFloat(boxCount)) {
+		  		boxCount = boxCountInt;
+		  	}
+		  	return boxCount;
+		  }
+		},
     formatNumber : function (i, length) {
       //var x = Math.pow(10, Number(length) + 1);      
       //return (Number(App.intVal(i)) + (1 / x)).toFixed(length);

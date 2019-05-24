@@ -641,6 +641,13 @@ is_readonly = 0;
 		        return App.getBoxCount(record.delivered_quantity, record.count_per_box);
 		      },
 		    }, {
+		      data : 'delivered_quantity',
+		      className : 'dt-right',
+		      title : '发货箱数2',		 
+		      render: function (data, display, record) {
+		        return App.getBoxCount2(record.delivered_quantity, record.count_per_box);
+		      },
+		    }, {
 		      data : 'arrived_quantity',
 		      className : 'dt-right',
 		      title : '实收数量',		 
