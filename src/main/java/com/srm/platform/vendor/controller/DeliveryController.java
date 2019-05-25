@@ -377,6 +377,8 @@ public class DeliveryController extends CommonController {
 						
 						index++;
 					}
+					
+					inventoryIndex++;
 				}
 			}
 		}
