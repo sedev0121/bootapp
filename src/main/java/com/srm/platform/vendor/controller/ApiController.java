@@ -347,7 +347,7 @@ public class ApiController {
 			return response;
 		}
 		
-		List<Box> bindingBoxList = new ArrayList<Box>();
+		
 		Map<String, Double> boxSummary = new HashMap<String, Double>();
 		Map<String, Double> deliverySummary = new HashMap<String, Double>();
 
@@ -367,25 +367,15 @@ public class ApiController {
 				response.put("error_code", RESPONSE_FAIL);
 				response.put("msg", "找不到箱码");	
 				return response;
-			}
+			}			
+			
 			Double quantity = Double.parseDouble(quantityStr);
-			
-			
-			
 			Double inventoryQuantity = boxSummary.get(inventoryCode);
 			if (inventoryQuantity == null) {
 				inventoryQuantity = 0D;
 			}
 			inventoryQuantity += quantity;
 			boxSummary.put(inventoryCode, inventoryQuantity);
-			
-			box.setDeliveryCode(deliveryCode);
-			box.setInventoryCode(inventoryCode);
-			box.setQuantity(quantity);
-			box.setBindDate(new Date());
-			box.setUsed(Box.BOX_IS_USING);
-			
-			bindingBoxList.add(box);			
 		}
 		
 		List<DeliveryDetail> detailList = deliveryDetailRepository.findDetailsByCode(deliveryCode);
@@ -416,17 +406,37 @@ public class ApiController {
 			}
 		}
 		
-		boxRepository.emptyBoxByDeliveryCode(deliveryCode);
-		boxRepository.saveAll(bindingBoxList);
-		
 		if (deliveryMain.getState() == Constants.DELIVERY_STATE_OK) {
 			deliveryMain.setState(Constants.DELIVERY_STATE_DELIVERED);
 			deliveryMainRepository.save(deliveryMain);
-		}		
-		
-		response.put("error_code", RESPONSE_SUCCESS);
-		response.put("msg", "提交成功");	
-		
+			
+			boxRepository.emptyBoxByDeliveryCode(deliveryCode);
+			List<Box> bindingBoxList = new ArrayList<Box>();
+			for(Map<String, String> data : content) {
+				String quantityStr = data.get("quantity");
+				String boxCode = data.get("BoxCode");
+				String inventoryCode = data.get("material_code");
+				Double quantity = Double.parseDouble(quantityStr);
+				
+				Box box = boxRepository.findOneByCode(boxCode);
+								
+				box.setDeliveryCode(deliveryCode);
+				box.setInventoryCode(inventoryCode);
+				box.setQuantity(quantity);
+				box.setBindDate(new Date());
+				box.setUsed(Box.BOX_IS_USING);
+				
+				bindingBoxList.add(box);			
+			}
+			
+			boxRepository.saveAll(bindingBoxList);
+			
+			response.put("error_code", RESPONSE_SUCCESS);
+			response.put("msg", "提交成功");	
+		} else {
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", "该发货单不能提交");	
+		}
 		
 		return response;
 	}
