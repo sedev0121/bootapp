@@ -556,17 +556,24 @@ public class ApiController {
 		
 		for(DeliveryDetail detail : deliveryDetailList) {
 			Map<String, String> temp = new HashMap<String, String>();
+			PurchaseOrderDetail orderDetail = detail.getPurchaseOrderDetail();
 			Inventory inventory = detail.getPurchaseOrderDetail().getInventory();
-			if (inventory.getBoxClass() == null) {
-				continue;
-			}
+			
 			temp.put("material_code", inventory.getCode());
 			temp.put("name", inventory.getName());
 			temp.put("specs", inventory.getSpecs());
-			temp.put("packing_quantity", String.valueOf(inventory.getCountPerBox()));
-			temp.put("quantity", String.valueOf(detail.getPurchaseOrderDetail().getQuantity()));
+			temp.put("packing_quantity", String.valueOf(orderDetail.getCountPerBox()));
+			temp.put("quantity", String.valueOf(orderDetail.getQuantity()));
 			temp.put("Shipped", String.valueOf(detail.getDeliveredQuantity()));
 			temp.put("serial", deliveryMain.getDeliverNumber());
+			
+			//box == 1 固定   box ==2 浮动
+			if (inventory.getBoxClass() == null) {
+				temp.put("box", "2"); 
+			} else {
+				temp.put("box", "1");
+			}
+			
 			data.add(temp);
 		}
 		
