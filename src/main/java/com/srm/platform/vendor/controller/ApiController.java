@@ -188,8 +188,20 @@ public class ApiController {
 	public GenericJsonResponse<Box> test() {
 		GenericJsonResponse<Box> jsonResponse;
 		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
-
-		boxRepository.emptyBoxByDeliveryCode("20190521180458944427");
+		
+		DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode("20190528182947786989");
+		if (deliveryMain == null) {
+			jsonResponse.setErrmsg("找不到发货单");
+			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
+			return jsonResponse;
+		}
+		
+		RestApiResponse u8Response = postForArrivalVouch(deliveryMain);
+		
+		if (!u8Response.isSuccess()) {
+			jsonResponse.setErrmsg("Fail");
+			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
+		}
 		
 		return jsonResponse;
 	}
@@ -544,7 +556,6 @@ public class ApiController {
 		temp.put("specs", inventory.getSpecs());
 		temp.put("quantity", String.valueOf(box.getQuantity()));
 		temp.put("serial", deliveryMain.getDeliverNumber());
-		temp.put("order_code", box.getDeliveryCode());
 		data.add(temp);
 		
 		
@@ -583,29 +594,60 @@ public class ApiController {
 			return response;
 		}
 		
+		Map<String, Double> deliverySummary = new HashMap<String, Double>();
+		Map<String, Double> orderSummary = new HashMap<String, Double>();
+
+		for(DeliveryDetail detail : deliveryDetailList) {
+			Inventory inventory = detail.getPurchaseOrderDetail().getInventory();
+			String inventoryCode = inventory.getCode();
+			Double quantity = detail.getDeliveredQuantity();
+			
+			Double inventoryQuantity = deliverySummary.get(inventoryCode);
+			if (inventoryQuantity == null) {
+				inventoryQuantity = 0D;
+			}
+			inventoryQuantity += quantity;
+			deliverySummary.put(inventoryCode, inventoryQuantity);
+			
+			Double orderQuantity = detail.getPurchaseOrderDetail().getQuantity();
+			
+			Double orderSummaryQuantity = orderSummary.get(inventoryCode);
+			if (orderSummaryQuantity == null) {
+				orderSummaryQuantity = 0D;
+			}
+			orderSummaryQuantity += orderQuantity;
+			orderSummary.put(inventoryCode, orderSummaryQuantity);
+		}
+		
 		ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();		
 		
 		for(DeliveryDetail detail : deliveryDetailList) {
+			
 			Map<String, String> temp = new HashMap<String, String>();
 			PurchaseOrderDetail orderDetail = detail.getPurchaseOrderDetail();
 			Inventory inventory = detail.getPurchaseOrderDetail().getInventory();
 			
-			temp.put("material_code", inventory.getCode());
-			temp.put("name", inventory.getName());
-			temp.put("specs", inventory.getSpecs());
-			temp.put("packing_quantity", String.valueOf(orderDetail.getCountPerBox()));
-			temp.put("quantity", String.valueOf(orderDetail.getQuantity()));
-			temp.put("Shipped", String.valueOf(detail.getDeliveredQuantity()));
-			temp.put("serial", deliveryMain.getDeliverNumber());
-			
-			//box == 1 固定   box ==2 浮动
-			if (inventory.getBoxClass() == null) {
-				temp.put("box", "2"); 
-			} else {
-				temp.put("box", "1");
+			String inventoryCode = inventory.getCode();
+			if (deliverySummary.containsKey(inventoryCode)) {
+				temp.put("material_code", inventory.getCode());
+				temp.put("name", inventory.getName());
+				temp.put("specs", inventory.getSpecs());
+				temp.put("packing_quantity", String.valueOf(orderDetail.getCountPerBox()));
+				temp.put("quantity", String.valueOf(orderSummary.get(inventoryCode)));
+				temp.put("Shipped", String.valueOf(deliverySummary.get(inventoryCode)));
+				temp.put("serial", deliveryMain.getDeliverNumber());
+				
+				//box == 1 固定   box ==2 浮动
+				if (inventory.getBoxClass() == null) {
+					temp.put("box", "2"); 
+				} else {
+					temp.put("box", "1");
+				}
+				
+				data.add(temp);
+				deliverySummary.remove(inventoryCode);
 			}
 			
-			data.add(temp);
 		}
 		
 		response.put("error_code", RESPONSE_SUCCESS);
