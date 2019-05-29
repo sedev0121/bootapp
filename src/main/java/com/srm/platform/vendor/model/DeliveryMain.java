@@ -87,6 +87,8 @@ public class DeliveryMain implements Serializable {
 	private Account confirmer;
 	
 
+	private String type;
+	
 	@JsonProperty("deliver_number")
 	private String deliverNumber;
 	
@@ -188,6 +190,14 @@ public class DeliveryMain implements Serializable {
 
 	public void setVendor(Vendor vendor) {
 		this.vendor = vendor;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

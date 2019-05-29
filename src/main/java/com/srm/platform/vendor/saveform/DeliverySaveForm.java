@@ -18,6 +18,7 @@ public class DeliverySaveForm {
 	private Long company;
 	private Long store;
 	private String estimated_arrival_date;
+	private String type;
 
 	private List<Map<String, String>> table;
 
@@ -91,6 +92,14 @@ public class DeliverySaveForm {
 
 	public void setTable(List<Map<String, String>> table) {
 		this.table = table;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

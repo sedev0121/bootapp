@@ -315,6 +315,7 @@ public class PurchaseOrderController extends CommonController {
 		String order = requestParams.getOrDefault("order", "name");
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String search = requestParams.getOrDefault("search", "");
+		String type = requestParams.getOrDefault("type", "");
 		String company = requestParams.getOrDefault("company", null);
 		String store = requestParams.getOrDefault("store", null);
 
@@ -339,7 +340,7 @@ public class PurchaseOrderController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 		Page<PurchaseOrderDetail> result = purchaseOrderDetailRepository.searchAllOfOneVendor(search, vendor.getCode(), companyId, storeId, 
-				request);
+				type, request);
 
 		return result;
 	}

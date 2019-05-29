@@ -257,6 +257,7 @@ public class DeliveryController extends CommonController {
 
 		if (form.getState() <= Constants.DELIVERY_STATE_SUBMIT) {
 			main.setCode(form.getCode());
+			main.setType(form.getType());
 			main.setDeliverNumber(Utils.generateDeliveryNumber(form.getVendor()));
 			main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
 			main.setCompany(companyRepository.findOneById(form.getCompany()));

@@ -693,6 +693,7 @@ public class ApiController {
 			for(DeliveryDetail detail : details) {
 				Map<String, Object> detailData = new HashMap<>();
 				PurchaseOrderDetail orderDetail = detail.getPurchaseOrderDetail();
+				detailData.put("cwhcode", detail.getMain().getStore().getCode());
 				detailData.put("cinvcode", orderDetail.getInventory().getCode());
 				detailData.put("qty", detail.getDeliveredQuantity());
 				detailData.put("inum", 1);
