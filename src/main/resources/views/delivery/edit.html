@@ -56,6 +56,7 @@
 							</select>
 						</div>
 						<div class="col-lg-3 col-md-3">
+							<input type="hidden" id="store_set" th:value="${main.store?.isAcceptSet}"/>
 							<label for="store">收货仓库：</label> <select name="store" id="store" class="form-control">
 								<option th:if="${main.store != null}" th:value="${main.store?.id}" th:text="${main.store?.name}" selected="selected">NEC（日电）有限公司</option>
 							</select>
@@ -205,6 +206,12 @@ is_readonly = 0;
 	  $("#type").select2({ data: App.getPurchaseOrderTypeData(),minimumResultsForSearch: -1});
 	  $("#company").select2(App.getSelect2Options(company_search_url));
 	  $("#store").select2();
+	  
+	  $('#store').on('select2:select', function (e) {
+	  	var store_data = $('#store').select2('data');
+	  	$("#store_set").val(store_data[0].is_set);
+	  });
+	  
 	  $('#company').change(function() {
 	  	var store_url = store_search_url + $('#company').val();
 	  	$("#store").select2(App.getSelect2Options(store_url));
@@ -942,6 +949,8 @@ is_readonly = 0;
 	  $.validator.addMethod("checkTable", function(value, element) {
 		  var exist_data = table.rows().data().toArray();
 		 
+		  var store_set = $('#store_set').val();
+
 		  for (i = 0; i < exist_data.length; i++) {
 			  var exist_row = exist_data[i];
 			  
@@ -954,7 +963,7 @@ is_readonly = 0;
 			  } else if (exist_row.delivered_quantity > exist_row.purchaseOrderDetail.quantity - exist_row.purchaseOrderDetail.delivered_quantity) {
 			  	App.showErrorDialog("操作失败", "发货数量不能大于订单未交数量！");
 				  return false;
-			  } else if (!exist_row.purchaseOrderDetail.count_per_box) {
+			  } else if (store_set == 1 && !exist_row.purchaseOrderDetail.count_per_box) {			  	
 			  	App.showErrorDialog("操作失败", exist_row.purchaseOrderDetail.inventory.name + "(" + exist_row.purchaseOrderDetail.inventory.code + ")" + "的单位包装量为空。请先维护此货品的单位包装量。");
 				  return false;
 			  }			  

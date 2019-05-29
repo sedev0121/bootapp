@@ -23,6 +23,7 @@ import com.srm.platform.vendor.repository.StoreRepository;
 import com.srm.platform.vendor.repository.VendorClassRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.searchitem.SearchItem;
+import com.srm.platform.vendor.searchitem.SearchStoreItem;
 import com.srm.platform.vendor.searchitem.StoreSearchItem;
 import com.srm.platform.vendor.searchitem.VendorSearchItem;
 import com.srm.platform.vendor.utility.AccountPermission;
@@ -107,7 +108,7 @@ public class StoreController extends CommonController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/search/{company_id}", produces = "application/json")
-	public Page<SearchItem> searchOfCompany(@PathVariable("company_id") Long companyId, @RequestParam(value = "q") String search) {
+	public Page<SearchStoreItem> searchOfCompany(@PathVariable("company_id") Long companyId, @RequestParam(value = "q") String search) {
 		PageRequest request = PageRequest.of(0, Integer.MAX_VALUE, Direction.ASC, "name");
 		return storeRepository.findForSelectOfCompany(companyId, search, request);
 	}

@@ -62,6 +62,7 @@
 					</div>
 					<form id="form" th:action="@{/purchaseorder/update}" method="post">
 					<input type="hidden" id="save_state"/>
+					<input type="hidden" id="store_set" th:value="${main.store?.isAcceptSet}"/>
 					<div class="col-md-2">
 						<label>收货仓库： </label> 
 						<select name="store" id="store" class="form-control">
@@ -177,7 +178,11 @@
 	  }).select2("val", state.toString());
 
 	  $("#store").select2(App.getSelect2Options(store_url));
-
+	  $('#store').on('select2:select', function (e) {
+	  	var store_data = $('#store').select2('data');
+	  	$("#store_set").val(store_data[0].is_set);
+	  });
+	  
 	  var basic_table, history_table;
 
 	  $('#save_history').click(function() {
@@ -515,15 +520,17 @@
 	  $.validator.addMethod("checkTable", function(value, element) {
 		  var exist_data = basic_table.rows().data().toArray();
 		 
-		  for (i = 0; i < exist_data.length; i++) {
-			  var exist_row = exist_data[i];
-			  
-			  if (!exist_row.count_per_box) {
-			  	App.showErrorDialog("操作失败", exist_row.inventory.name + "(" + exist_row.inventory.code + ")" + "的单位包装量为空。请先维护此货品的单位包装量。");
-				  return false;
-			  }
-			  
-		  }
+		  var store_set = $('#store_set').val();
+		  if (store_set == 1) {
+		  	for (i = 0; i < exist_data.length; i++) {
+				  var exist_row = exist_data[i];
+				  
+				  if (!exist_row.count_per_box) {
+				  	App.showErrorDialog("操作失败", exist_row.inventory.name + "(" + exist_row.inventory.code + ")" + "的单位包装量为空。请先维护此货品的单位包装量。");
+					  return false;
+				  }			  
+			  }	
+		  }		  
 
 		  return true;
 	  }, "");

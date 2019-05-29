@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.Store;
 import com.srm.platform.vendor.searchitem.SearchItem;
+import com.srm.platform.vendor.searchitem.SearchStoreItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
@@ -30,6 +31,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 	@Query(value = "SELECT id code, name FROM store where name like %?1% and is_use_in_srm=1", nativeQuery = true)
 	Page<SearchItem> findForSelect(String search, Pageable pageable);
 	
-	@Query(value = "SELECT id code, name FROM store where company_id=?1 and name like %?2% and is_use_in_srm=1", nativeQuery = true)
-	Page<SearchItem> findForSelectOfCompany(Long companyId, String search, Pageable pageable);
+	@Query(value = "SELECT id code, name, is_accept_set data FROM store where company_id=?1 and name like %?2% and is_use_in_srm=1", nativeQuery = true)
+	Page<SearchStoreItem> findForSelectOfCompany(Long companyId, String search, Pageable pageable);
 }
