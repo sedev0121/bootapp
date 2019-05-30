@@ -685,7 +685,7 @@ public class ApiController {
 			postData.put("itaxrate", "0.0");
 			postData.put("cmemo", "");
 			postData.put("cpocode", "");
-			postData.put("cbustype", "00");
+			postData.put("cbustype", deliveryMain.getType());
 			
 			
 			List<Map<String, Object>> detailList = new ArrayList<Map<String, Object>>();

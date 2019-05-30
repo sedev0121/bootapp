@@ -23,7 +23,7 @@
 						<label>订单编号： </label> <input type="text" id="code" class="form-control" th:value="${main.code}" readonly />
 					</div>
 					<div class="col-md-2">
-						<label>订单日期： </label> <input type="text" class="form-control" th:value="${#dates.format(main.audittime, 'yyyy-MM-dd')}" readonly />
+						<label>订单日期： </label> <input type="text" class="form-control" th:value="${#dates.format(main.orderdate, 'yyyy-MM-dd')}" readonly />
 					</div>
 					<div class="col-md-2">
 						<label>采购类型： </label> <input type="text" class="form-control" th:value="${main.purchaseTypeName}" readonly />
