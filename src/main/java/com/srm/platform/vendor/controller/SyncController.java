@@ -331,6 +331,7 @@ public class SyncController {
 					if (main == null) {
 						main = new PurchaseOrderMain();
 						main.setCode(getStringValue(temp, "cPOID"));
+						main.setSrmstate(Constants.PURCHASE_ORDER_STATE_START);
 					}
 					main.setPurchaseTypeName(getStringValue(temp, "cBusType"));
 					main.setPoid(getStringValue(temp, "POID"));
@@ -383,7 +384,7 @@ public class SyncController {
 					}
 					
 					main.setState(state);
-					main.setSrmstate(Constants.PURCHASE_ORDER_STATE_START);
+					
 
 					purchaseOrderMainRepository.save(main);
 
