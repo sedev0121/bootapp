@@ -572,7 +572,7 @@ public class ApiController {
 			RestApiResponse u8Response = apiClient.getBoxMsg(content);
 			Map<String, Object> responseMapData = u8Response.getOriginalMap();
 			String error_code = String.valueOf(responseMapData.get("error_code"));
-			if (error_code == RESPONSE_SUCCESS) {
+			if (RESPONSE_SUCCESS.equals(error_code)) {
 				response.put("error_code", RESPONSE_SUCCESS);
 				response.put("msg", "成功获取装箱清单");
 				
