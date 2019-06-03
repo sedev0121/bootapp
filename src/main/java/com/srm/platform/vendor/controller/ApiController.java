@@ -55,6 +55,8 @@ public class ApiController {
 	private static final String RESPONSE_SUCCESS = "1";
 	private static final String RESPONSE_FAIL = "2";
 	
+	private static final String IS_MES = "1";
+	
 	@Autowired
 	private RestApiClient apiClient;
 	
@@ -521,8 +523,9 @@ public class ApiController {
 		
 		Map<String, String> content = (Map<String, String>)requestParams.get("content");
 		String boxCode = content.get("BoxCode");
+		String isMes = String.valueOf(requestParams.get("isMes"));
 		
-		if (boxCode == null) {
+		if (boxCode == null || isMes == null) {
 			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
 			response.put("msg", "参数不正确");	
@@ -534,39 +537,54 @@ public class ApiController {
 		if (box == null) {
 			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
-			response.put("msg", "找不到箱码");	
-			return response;
-		}
-		
-		Inventory inventory = inventoryRepository.findOneByCode(box.getInventoryCode());	
-		DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(box.getDeliveryCode());
-		
-		if (inventory == null || deliveryMain == null) {
-			response = new HashMap<String, Object>();
-			response.put("error_code", RESPONSE_FAIL);
-			response.put("msg", "没有绑定");	
-			return response;
-		}
-		
-		ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
-		Map<String, String> temp = new HashMap<String, String>();
-		
-		temp.put("material_code", inventory.getCode());
-		temp.put("name", inventory.getName());
-		temp.put("specs", inventory.getSpecs());
-		temp.put("quantity", String.valueOf(box.getQuantity()));
-		temp.put("serial", deliveryMain.getDeliverNumber());
-		data.add(temp);
-		
-		
-		response.put("error_code", RESPONSE_SUCCESS);
-		response.put("msg", "成功获取装箱清单");
+			response.put("msg", "找不到箱码");				
+		} else {
+			Inventory inventory = inventoryRepository.findOneByCode(box.getInventoryCode());	
+			DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(box.getDeliveryCode());
+			
+			if (inventory == null || deliveryMain == null) {
+				response = new HashMap<String, Object>();
+				response.put("error_code", RESPONSE_FAIL);
+				response.put("msg", "没有绑定");
+			} else {
+				ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
+				Map<String, String> temp = new HashMap<String, String>();
+				
+				temp.put("material_code", inventory.getCode());
+				temp.put("name", inventory.getName());
+				temp.put("specs", inventory.getSpecs());
+				temp.put("quantity", String.valueOf(box.getQuantity()));
+				temp.put("serial", deliveryMain.getDeliverNumber());
+				data.add(temp);
+				
+				
+				response.put("error_code", RESPONSE_SUCCESS);
+				response.put("msg", "成功获取装箱清单");
 
-		response.put("supplier_code", deliveryMain.getVendor().getCode());
-		response.put("code", deliveryMain.getCode());
-		response.put("invoice_code", deliveryMain.getCode());
-		response.put("data", data);
+				response.put("supplier_code", deliveryMain.getVendor().getCode());
+				response.put("code", deliveryMain.getCode());
+				response.put("invoice_code", deliveryMain.getCode());
+				response.put("data", data);
+			}
+		}
 		
+		if (IS_MES.equals(isMes) && response.get("error_code") == RESPONSE_FAIL ) {
+			RestApiResponse u8Response = apiClient.getBoxMsg(content);
+			Map<String, Object> responseMapData = u8Response.getOriginalMap();
+			String error_code = String.valueOf(responseMapData.get("error_code"));
+			if (error_code == RESPONSE_SUCCESS) {
+				response.put("error_code", RESPONSE_SUCCESS);
+				response.put("msg", "成功获取装箱清单");
+				
+				response.put("supplier_code", responseMapData.get("supplier_code"));
+				response.put("code", responseMapData.get("code"));
+				response.put("invoice_code", responseMapData.get("invoice_code"));
+				response.put("data", responseMapData.get("data"));				
+			} else {
+				String msg = String.valueOf(responseMapData.get("msg"));
+				response.put("msg", msg);
+			}
+		}
 		
 		return response;
 	}

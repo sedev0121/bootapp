@@ -117,6 +117,19 @@ public class RestApiClient {
 		return post(url, postData, null, true);
 		
 	}
+	
+	public RestApiResponse getBoxMsg(Map<String, String> content) {
+		
+		String url = appProperties.getData_url();
+
+		Map<String, Object> postData = new HashMap<>();
+		postData.put("classname", "SRM_Box");
+		postData.put("method", "getBoxMsg");
+		postData.put("content", content);
+
+		return post(url, postData, null, true);
+		
+	}
 
 	private RestApiResponse postForData(String classname, String dataField) {
 		String url = appProperties.getData_url();
