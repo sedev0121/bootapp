@@ -14,8 +14,8 @@
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
 				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="pass"><i class="fa fa-arrow-up"></i>确认</a> 
 				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="cancel"><i class="fa fa-undo"></i> 退回</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3}" id="print"><i class="fa fa-print"></i> 打印</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3}" id="print_float"><i class="fa fa-print"></i> 打印浮动箱码</a> <a class="btn btn-default" th:href="@{/delivery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state>1}" id="print"><i class="fa fa-print"></i> 打印</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state>1}" id="print_float"><i class="fa fa-print"></i> 打印浮动箱码</a> <a class="btn btn-default" th:href="@{/delivery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
 		<div class="panel panel-default">
@@ -488,7 +488,7 @@ is_readonly = 0;
 	      data : 'state',
 	      title : '行审批　　',	
 	      width: 100,
-	      visible: state > 1,
+	      visible: false,
 	      className : 'buyer-edit' + (is_vendor?'':' editable'),
 	      render : App.getDeliveryRowStateOfId
 
@@ -851,29 +851,29 @@ is_readonly = 0;
 			        return App.getBoxCount(record.quantity, record.count_per_box);
 			      },
 			    }, {
-			      data : 'arrived_quantity',
+			      data : 'delivered_quantity',
 			      className : 'dt-right',
 			      title : '订单已交数量',
 			    }, {
-			      data : 'arrived_quantity',
+			      data : 'delivered_quantity',
 			      className : 'dt-right',
 			      title : '订单已交箱数',
 			      render: function (data, display, record) {
-			      	return App.getBoxCount(record.arrived_quantity, record.count_per_box);
+			      	return App.getBoxCount(record.delivered_quantity, record.count_per_box);
 			      },
 			    }, {
 			      data : 'quantity',
 			      className : 'dt-right',
 			      title : '订单未交数量',
 			      render: function (data, display, record) {
-			      	return record.quantity - record.arrived_quantity - record.delivered_quantity;
+			      	return record.quantity - record.delivered_quantity;
 			      },
 			    }, {
 			      data : 'quantity',
 			      className : 'dt-right',
 			      title : '订单未交箱数',
 			      render: function (data, display, record) {
-			      	return App.getBoxCount(record.quantity - record.arrived_quantity - record.delivered_quantity, record.count_per_box);
+			      	return App.getBoxCount(record.quantity - record.delivered_quantity, record.count_per_box);
 			      }, 
 			    }, {
 			      data : 'delivered_quantity',
