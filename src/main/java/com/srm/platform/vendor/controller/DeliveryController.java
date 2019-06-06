@@ -210,7 +210,7 @@ public class DeliveryController extends CommonController {
 		}
 
 		if (!vendorStr.trim().isEmpty()) {
-			bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.abbrname like CONCAT('%',:vendor, '%'))";
+			bodyQuery += " and (b.code like CONCAT('%',:vendor, '%') or b.name like CONCAT('%',:vendor, '%') or b.abbrname like CONCAT('%',:vendor, '%'))";
 			params.put("vendor", vendorStr.trim());
 		}
 
@@ -272,10 +272,17 @@ public class DeliveryController extends CommonController {
 		}
 		
 		main.setState(form.getState());
+				
 		if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
-			main.setState(Constants.DELIVERY_STATE_OK);
+			
 			main.setConfirmDate(new Date());
 			main.setConfirmer(account);
+			
+			if (main.getStore().getIsAcceptSet() == 0) {
+				main.setState(Constants.DELIVERY_STATE_DELIVERED);
+			} else {
+				main.setState(Constants.DELIVERY_STATE_OK);	
+			}
 		}
 
 		main = deliveryMainRepository.save(main);

@@ -306,7 +306,14 @@
 	      data : null,
 	      defaultContent : '',
 	      className : 'dt-right',
-	      title : '规格型号'
+	      title : '规格型号',
+	      render: function (data, display, record) {
+	        if (record.inventory) {
+	        	return record.inventory.specs;
+	        } else {
+	        	return "";
+	        }
+	      },
 	    }, {
 	      data : 'unit_name',
 	      className : 'dt-center',
