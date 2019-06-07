@@ -15,7 +15,8 @@
 				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="pass"><i class="fa fa-arrow-up"></i>确认</a> 
 				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="cancel"><i class="fa fa-undo"></i> 退回</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state>1}" id="print"><i class="fa fa-print"></i> 打印</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state>1}" id="print_float"><i class="fa fa-print"></i> 打印浮动箱码</a> <a class="btn btn-default" th:href="@{/delivery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state>1}" id="print_float"><i class="fa fa-print"></i> 打印浮动箱码</a> 
+				<a class="btn btn-default" th:href="@{/delivery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
 		<div class="panel panel-default">

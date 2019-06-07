@@ -41,6 +41,30 @@ var App = function() {
     return title;
   };
   
+  function trim_last_char(str) {
+    str = str.slice(0, -1);
+    return str;
+  }
+  
+
+  function escapeComma(str) {
+  	console.log(str);
+  	str = str + '';
+    if (str && str.indexOf(',') > -1) {
+      return '"' + str + '"';
+    } else {
+      return str;
+    }
+  }
+  
+  function isExportIgnoreCell(column_setting) {
+    if (column_setting.className == 'select-checkbox' || column_setting.className == 'ignore-export') {
+        return true;
+    } else {
+        return false;
+    }
+  }
+  
   var addKeyDownEditor = function(editor, start_column, end_column) {
     editor.on( 'open', function ( e, type ) {
       if ( type === 'inline' ) {
@@ -539,6 +563,75 @@ var App = function() {
         }
       })
     },
+    exportCSVFromDatatable: function(table, exportFileName = 'export.csv') {
+    	var csv_string = "";
+      var column_seperator = ",";
+
+      var data = table.rows().data().toArray();
+      var columns = table.settings().init().columns;
+
+      for(var col_index=0; col_index<columns.length; col_index++) {
+        var column_setting = columns[col_index];
+        var title = column_setting.title;
+        if (!title) {
+          title = '';
+        }
+        if (isExportIgnoreCell(column_setting)) {
+          continue;
+        }
+        csv_string += title + column_seperator;
+      }
+
+      csv_string = trim_last_char(csv_string);
+      csv_string += "\n";
+
+
+      for(var row_index=0; row_index< data.length; row_index++) {
+        var row_data = data[row_index];
+        for(var col_index=0; col_index<columns.length; col_index++) {
+          var column_setting = columns[col_index];
+          var cell_value = '';
+          if (isExportIgnoreCell(column_setting)) {
+            continue;
+          }
+          if (column_setting.data == "row_no") {
+          	cell_value = row_index + 1;
+          } else if (column_setting.render) {
+          	cell_value = escapeComma(column_setting.render(null, null, row_data));
+          } else {
+          	cell_value = escapeComma(row_data[[column_setting.data]]);
+          }
+          
+          console.log(cell_value);
+          if (!cell_value || cell_value == undefined || cell_value == null || cell_value == 'undefined' || cell_value == 'null') {
+          	cell_value = '';
+          }
+          csv_string += cell_value + column_seperator;
+        }
+        csv_string = trim_last_char(csv_string);
+        csv_string += "\n";
+
+      }
+
+      var csvData = trim_last_char(csv_string);
+      var blob = new Blob([ csvData ], {
+          type : "application/csv;charset=utf-8;"
+      });
+
+      if (window.navigator.msSaveBlob) {
+          navigator.msSaveBlob(blob, exportFileName);
+      } else {
+          // FOR OTHER BROWSERS
+          var link = document.createElement("a");
+          var csvUrl = URL.createObjectURL(blob);
+          link.href = csvUrl;
+          link.style = "visibility:hidden";
+          link.download = exportFileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+      }    
+    }
   }
 }();
 
