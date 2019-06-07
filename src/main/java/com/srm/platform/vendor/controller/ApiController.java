@@ -174,9 +174,15 @@ public class ApiController {
 				box.setUsed(0);
 				box.setDeliveryCode(null);
 				box.setBindDate(null);
+				box.setDeliveryNumber(null);
 				box.setBindProperty(null);
-				box.setQuantity(null);
+				box.setQuantity(null);				
+				box.setVendorCode(null);
+				box.setVendorName(null);
 				box.setInventoryCode(null);
+				box.setInventoryName(null);
+				box.setInventorySpecs(null);
+				box.setType(null);
 				box = boxRepository.save(box);	
 			}			
 		}
@@ -267,7 +273,13 @@ public class ApiController {
 		box.setBindDate(null);
 		box.setBindProperty(null);
 		box.setDeliveryCode(null);
+		box.setDeliveryNumber(null);
+		box.setVendorCode(null);
+		box.setVendorName(null);
 		box.setInventoryCode(null);
+		box.setInventoryName(null);
+		box.setInventorySpecs(null);
+		box.setType(null);
 		box.setQuantity(null);
 		box.setUsed(Box.BOX_IS_EMPTY);
 		boxRepository.save(box);
@@ -433,7 +445,13 @@ public class ApiController {
 				}
 				
 				box.setDeliveryCode(null);
+				box.setDeliveryNumber(null);
+				box.setVendorCode(null);
+				box.setVendorName(null);
 				box.setInventoryCode(null);
+				box.setInventoryName(null);
+				box.setInventorySpecs(null);
+				box.setType(null);
 				box.setQuantity(null);
 				box.setBindDate(null);
 				box.setBindProperty(null);
@@ -450,14 +468,23 @@ public class ApiController {
 				String quantityStr = data.get("quantity");
 				String boxCode = data.get("BoxCode");
 				String inventoryCode = data.get("material_code");
+				Inventory inventory = inventoryRepository.findOneByCode(inventoryCode);
 				Double quantity = Double.parseDouble(quantityStr);
 				
 				Box box = boxRepository.findOneByCode(boxCode);
 								
 				box.setDeliveryCode(deliveryCode);
-				box.setInventoryCode(inventoryCode);
+				box.setDeliveryNumber(deliveryMain.getDeliverNumber());
+				box.setVendorCode(deliveryMain.getVendor().getCode());
+				box.setVendorName(deliveryMain.getVendor().getName());
+				box.setInventoryCode(inventory.getCode());
+				box.setInventoryName(inventory.getName());
+				box.setInventorySpecs(inventory.getSpecs());
+				
 				box.setQuantity(quantity);
 				box.setBindDate(new Date());
+				box.setType(Constants.BOX_TYPE_DELIVERY);
+				
 				box.setUsed(Box.BOX_IS_USING);
 				
 				bindingBoxList.add(box);			

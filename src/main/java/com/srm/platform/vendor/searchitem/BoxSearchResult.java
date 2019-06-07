@@ -9,6 +9,7 @@ public class BoxSearchResult implements Serializable {
 
 	String id;
 	String code;
+	Integer type;
 	Date bind_date;
 	String box_class_name;
 	String bind_property;
@@ -16,19 +17,20 @@ public class BoxSearchResult implements Serializable {
 	String vendor_name;
 	String inventory_code;
 	String inventory_name;
-	String inventory_spec;
+	String inventory_specs;
 	String delivery_code;
-	String deliver_number;
+	String delivery_number;
 	Double quantity;
 	String state;
 	String used;
 
-	public BoxSearchResult(String id, String code, Date bind_date, String box_class_name, String bind_property,
-			String vendor_code, String vendor_name, String inventory_code, String inventory_name, String inventory_spec,
-			String delivery_code, String deliver_number, Double quantity, String state, String used) {
+	public BoxSearchResult(String id, String code, Integer type, Date bind_date, String box_class_name, String bind_property,
+			String vendor_code, String vendor_name, String inventory_code, String inventory_name, String inventory_specs,
+			String delivery_code, String delivery_number, Double quantity, String state, String used) {
 
 		this.id = id;
 		this.code = code;
+		this.type = type;
 		this.bind_date = bind_date;
 		this.box_class_name = box_class_name;
 		this.bind_property = bind_property;
@@ -36,9 +38,9 @@ public class BoxSearchResult implements Serializable {
 		this.vendor_name = vendor_name;
 		this.inventory_code = inventory_code;
 		this.inventory_name = inventory_name;
-		this.inventory_spec = inventory_spec;
+		this.inventory_specs = inventory_specs;
 		this.delivery_code = delivery_code;
-		this.deliver_number = deliver_number;
+		this.delivery_number = delivery_number;
 		this.quantity = quantity;
 		this.state = state;
 		this.used = used;
@@ -60,12 +62,12 @@ public class BoxSearchResult implements Serializable {
 		this.delivery_code = delivery_code;
 	}
 
-	public String getDeliver_number() {
-		return deliver_number;
+	public Integer getType() {
+		return type;
 	}
 
-	public void setDeliver_number(String deliver_number) {
-		this.deliver_number = deliver_number;
+	public void setType(Integer type) {
+		this.type = type;
 	}
 
 	public String getCode() {
@@ -132,12 +134,22 @@ public class BoxSearchResult implements Serializable {
 		this.inventory_name = inventory_name;
 	}
 
-	public String getInventory_spec() {
-		return inventory_spec;
+
+
+	public String getInventory_specs() {
+		return inventory_specs;
 	}
 
-	public void setInventory_spec(String inventory_spec) {
-		this.inventory_spec = inventory_spec;
+	public void setInventory_specs(String inventory_specs) {
+		this.inventory_specs = inventory_specs;
+	}
+
+	public String getDelivery_number() {
+		return delivery_number;
+	}
+
+	public void setDelivery_number(String delivery_number) {
+		this.delivery_number = delivery_number;
 	}
 
 	public Double getQuantity() {

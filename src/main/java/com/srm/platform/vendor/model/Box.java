@@ -25,6 +25,7 @@ import com.srm.platform.vendor.searchitem.SellerSearchResult;
 		@ConstructorResult(targetClass = BoxSearchResult.class, columns = {
 				@ColumnResult(name = "id", type = String.class), 
 				@ColumnResult(name = "code", type = String.class),
+				@ColumnResult(name = "type", type = Integer.class),
 				@ColumnResult(name = "bind_date", type = Date.class), 
 				@ColumnResult(name = "box_class_name", type = String.class), 
 				@ColumnResult(name = "bind_property", type = String.class), 
@@ -32,9 +33,9 @@ import com.srm.platform.vendor.searchitem.SellerSearchResult;
 				@ColumnResult(name = "vendor_name", type = String.class), 
 				@ColumnResult(name = "inventory_code", type = String.class), 
 				@ColumnResult(name = "inventory_name", type = String.class), 
-				@ColumnResult(name = "inventory_spec", type = String.class), 
+				@ColumnResult(name = "inventory_specs", type = String.class), 
 				@ColumnResult(name = "delivery_code", type = String.class), 
-				@ColumnResult(name = "deliver_number", type = String.class), 
+				@ColumnResult(name = "delivery_number", type = String.class), 
 				@ColumnResult(name = "quantity", type = Double.class), 
 				@ColumnResult(name = "state", type = String.class),
 				@ColumnResult(name = "used", type = String.class) 
@@ -55,6 +56,7 @@ public class Box implements Serializable {
 
 	private Integer state;
 	private Integer used;
+	private Integer type;
 	
 	@JsonProperty("bind_date")
 	private Date bindDate;
@@ -65,7 +67,15 @@ public class Box implements Serializable {
 	private String bindProperty;
 	
 	private String deliveryCode;
+	
+	private String vendorCode;
+	private String vendorName;
+	
 	private String inventoryCode;
+	private String inventoryName;
+	private String inventorySpecs;
+	
+	private String deliveryNumber;
 	
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "box_class_id")
@@ -108,6 +118,37 @@ public class Box implements Serializable {
 		this.bindProperty = bindProperty;
 	}
 
+	public String getVendorCode() {
+		return vendorCode;
+	}
+
+	public void setVendorCode(String vendorCode) {
+		this.vendorCode = vendorCode;
+	}
+
+	public String getVendorName() {
+		return vendorName;
+	}
+
+	public void setVendorName(String vendorName) {
+		this.vendorName = vendorName;
+	}
+
+	public String getInventoryName() {
+		return inventoryName;
+	}
+
+	public void setInventoryName(String inventoryName) {
+		this.inventoryName = inventoryName;
+	}
+
+	public String getInventorySpecs() {
+		return inventorySpecs;
+	}
+
+	public void setInventorySpecs(String inventorySpecs) {
+		this.inventorySpecs = inventorySpecs;
+	}
 
 	public String getDeliveryCode() {
 		return deliveryCode;
@@ -151,6 +192,22 @@ public class Box implements Serializable {
 
 	public void setUsed(Integer used) {
 		this.used = used;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public String getDeliveryNumber() {
+		return deliveryNumber;
+	}
+
+	public void setDeliveryNumber(String deliveryNumber) {
+		this.deliveryNumber = deliveryNumber;
 	}
 
 }

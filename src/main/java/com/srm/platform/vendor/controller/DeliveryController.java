@@ -314,6 +314,7 @@ public class DeliveryController extends CommonController {
 			int rowNo = 1;
 			Map<String, Double> floatingBoxMap = new HashMap<String, Double>();
 			Map<String, Integer> countPerBoxMap = new HashMap<String, Integer>();
+			Map<String, Inventory> inventoryMap = new HashMap<String, Inventory>();
 			
 			for (Map<String, String> row : form.getTable()) {
 				DeliveryDetail detail = new DeliveryDetail();
@@ -349,6 +350,7 @@ public class DeliveryController extends CommonController {
 						inventoryQuantity += quantity;
 						floatingBoxMap.put(inventoryKey, inventoryQuantity);
 						countPerBoxMap.put(inventoryKey, inventory.getCountPerBox());
+						inventoryMap.put(inventoryKey, orderDetail.getInventory());
 					}
 
 				}
@@ -362,6 +364,7 @@ public class DeliveryController extends CommonController {
 					String key = entry.getKey();
 					Double count = entry.getValue();
 					Integer countPerBox = countPerBoxMap.get(key);
+					Inventory inventory = inventoryMap.get(key);
 					if (countPerBox == 0) {
 						continue;
 					}
@@ -376,7 +379,16 @@ public class DeliveryController extends CommonController {
 						floatingBox.setCode(boxCode);
 						floatingBox.setBindDate(new Date());
 						floatingBox.setDeliveryCode(main.getCode());
+						floatingBox.setDeliveryNumber(main.getDeliverNumber());
+						floatingBox.setType(Constants.BOX_TYPE_DELIVERY);
+						
+						floatingBox.setVendorCode(main.getVendor().getCode());
+						floatingBox.setVendorName(main.getVendor().getName());						
+						
 						floatingBox.setInventoryCode(key);
+						floatingBox.setInventoryName(inventory.getName());
+						floatingBox.setInventorySpecs(inventory.getSpecs());
+						
 						floatingBox.setQuantity(boxQuantity);
 						floatingBox.setState(1);
 						floatingBox.setUsed(Box.BOX_IS_USING);

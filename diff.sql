@@ -149,3 +149,16 @@ update purchase_order_detail a left join purchase_order_main b on a.code=b.code 
 
 
 alter table delivery_main add column type varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+
+/* 2019-06-07 */
+alter table box add column inventory_name varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table box add column inventory_specs varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table box add column vendor_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table box add column vendor_name varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table box add column type int(1) NULL DEFAULT NULL;
+alter table box add column delivery_number varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+update box a left join inventory b on a.inventory_code=b.code set a.inventory_name=b.name, a.inventory_specs=b.specs;
+update box a left join delivery_main b on a.delivery_code=b.code left join vendor c on b.vendor_code=c.code set a.vendor_code=c.code, a.vendor_name=c.name, a.delivery_number=b.deliver_number;
+update box set type=1 where delivery_code is not null;

@@ -28,6 +28,7 @@ var App = function() {
   var order_close_state_data = [{id:0, text:"  "}, {id:1, text:"关闭"}];
   var yes_no_data = [{id:1, text:"是"}, {id:0, text:"否"}];
   var purchase_order_type_data = [{id:"普通采购", text:"普通采购"}, {id:"委外加工", text:"委外加工"}];
+  var box_type_data = [{id:"1", text:"发货单"}, {id:"2", text:"调拨单"}];
   
   var getLabelOfId = function(store, id) {
     var title = "";
@@ -422,6 +423,9 @@ var App = function() {
     },
     getAccountStateOfId: function(id) {
       return getLabelOfId(account_state_data, id);
+    },
+    getBoxTypeOfId: function(id) {
+      return getLabelOfId(box_type_data, id);
     },
     getUsedStateOfId: function(id) {
       return getLabelOfId(used_state_data, id);

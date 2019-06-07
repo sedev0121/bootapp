@@ -238,7 +238,6 @@
 	    serverSide : false,
 	    processing : false,
 	    lengthChange : false,
-	    scrollY : '350px',
 	    paging : false,
 	    info : false,
 	    ajax : {
@@ -335,38 +334,34 @@
 		    }, {
 		      data : 'bind_property',
 		      title : '绑定属性',
-		      visible: false,
 		    }, {
 		      data : 'vendor_code',
 		      title : '绑定单位编码',
-		      orderable: false,
 		    }, {
 		    	data : 'vendor_name',
 		      title : '绑定单位名称',
-		      orderable: false,
 		    }, {
 		      data : 'delivery_code',
-		      title : '发货单编号',
-		      orderable: false,
+		      title : '单据编号',
+		    }, {
+		      data : 'type',
+		      title : '单据类型',
+		      render: App.getBoxTypeOfId,
 		    }, {
 		      data : 'inventory_code',
 		      title : '货品编号',
-		      orderable: false,
 		    }, {
 		      data : 'inventory_name',
 		      title : '货品名称',
-		      orderable: false,
 		    }, {
-		      data : 'inventory_spec',
+		      data : 'inventory_specs',
 		      title : '规格型号',
-		      orderable: false,
 		    }, {
 		      data : 'quantity',
 		      title : '绑定数量',
 		    }, {
-		      data : 'deliver_number',
+		      data : 'delivery_number',
 		      title : '批次',
-		      orderable: false,
 		    }, {
 		    	orderable: false,
 		      data : 'box_class_name',
