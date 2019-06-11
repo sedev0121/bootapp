@@ -210,4 +210,19 @@ public class Box implements Serializable {
 		this.deliveryNumber = deliveryNumber;
 	}
 
+	public void setEmpty() {
+		this.setUsed(Box.BOX_IS_EMPTY);
+		this.setBindDate(null);
+		this.setBindProperty(null);
+		this.setDeliveryCode(null);
+		this.setVendorCode(null);
+		this.setVendorName(null);
+		this.setInventoryCode(null);
+		this.setInventoryName(null);
+		this.setInventorySpecs(null);
+		this.setDeliveryNumber(null);
+		this.setType(null);
+		this.setQuantity(null);
+	}
+	
 }

@@ -266,12 +266,12 @@
 			      item.confirmed_date = $.fn.date_renderer(item.confirmed_date);
 			      item.close_state = item.close_date ? 1 : 0;
 			      item.tax = App.costNumber(item.sum - item.money);
-			      item.not_arrived_quantity = item.quantity - item.arrived_quantity;
+			      item.not_arrived_quantity = item.quantity - item.delivered_quantity;
 			      if (state == 0) {
 			      	item.count_per_box = item.inventory.count_per_box;	
 			      }			      
 			      item.not_arrived_box_quantity = App.getBoxCount(item.not_arrived_quantity, item.count_per_box);
-			      item.arrived_box_quantity = App.getBoxCount(item.arrived_quantity, item.count_per_box);
+			      item.arrived_box_quantity = App.getBoxCount(item.delivered_quantity, item.count_per_box);
 			      item.box_quantity = App.getBoxCount(item.quantity, item.count_per_box);
 		      })
 		      return json;
@@ -391,7 +391,7 @@
 	      className : 'buyer-cell',
 	      title : '购方备注',
 	    }, {
-	      data : 'arrived_quantity',
+	      data : 'delivered_quantity',
 	      className : 'dt-right',
 	      title : '订单已交数量',
 	    }, {

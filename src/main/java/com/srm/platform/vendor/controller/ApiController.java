@@ -1,10 +1,8 @@
 package com.srm.platform.vendor.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,11 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Box;
@@ -28,7 +24,6 @@ import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
-import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.repository.AccountRepository;
@@ -171,18 +166,7 @@ public class ApiController {
 				jsonResponse.setSuccess(GenericJsonResponse.FAILED);
 				jsonResponse.setErrmsg("该箱码不存在");
 			}else {
-				box.setUsed(0);
-				box.setDeliveryCode(null);
-				box.setBindDate(null);
-				box.setDeliveryNumber(null);
-				box.setBindProperty(null);
-				box.setQuantity(null);				
-				box.setVendorCode(null);
-				box.setVendorName(null);
-				box.setInventoryCode(null);
-				box.setInventoryName(null);
-				box.setInventorySpecs(null);
-				box.setType(null);
+				box.setEmpty();
 				box = boxRepository.save(box);	
 			}			
 		}
@@ -242,6 +226,8 @@ public class ApiController {
 			response = this.getFHD(requestParams);
 		} else if (method.equals("createDHD")) {
 			response = this.createDHD(requestParams);
+		} else if (method.equals("createTransferBoxMsg")) {
+			response = this.createTransferBoxMsg(requestParams);
 		}
 		
 		return response;
@@ -270,18 +256,7 @@ public class ApiController {
 			return response;
 		}
 		
-		box.setBindDate(null);
-		box.setBindProperty(null);
-		box.setDeliveryCode(null);
-		box.setDeliveryNumber(null);
-		box.setVendorCode(null);
-		box.setVendorName(null);
-		box.setInventoryCode(null);
-		box.setInventoryName(null);
-		box.setInventorySpecs(null);
-		box.setType(null);
-		box.setQuantity(null);
-		box.setUsed(Box.BOX_IS_EMPTY);
+		box.setEmpty();
 		boxRepository.save(box);
 		
 		response.put("error_code", RESPONSE_SUCCESS);
@@ -436,7 +411,7 @@ public class ApiController {
 			deliveryMain.setState(Constants.DELIVERY_STATE_DELIVERED);
 			deliveryMainRepository.save(deliveryMain);
 			
-			List<Box> oldBoxList = boxRepository.findAllByDeliveryCode(deliveryCode);
+			List<Box> oldBoxList = boxRepository.findAllByDeliveryCodeAndType(deliveryCode, Constants.BOX_TYPE_DELIVERY);
 			
 			List<Box> emptyList = new ArrayList<Box>();
 			for(Box box : oldBoxList) {
@@ -444,18 +419,7 @@ public class ApiController {
 					continue;
 				}
 				
-				box.setDeliveryCode(null);
-				box.setDeliveryNumber(null);
-				box.setVendorCode(null);
-				box.setVendorName(null);
-				box.setInventoryCode(null);
-				box.setInventoryName(null);
-				box.setInventorySpecs(null);
-				box.setType(null);
-				box.setQuantity(null);
-				box.setBindDate(null);
-				box.setBindProperty(null);
-				box.setUsed(Box.BOX_IS_EMPTY);
+				box.setEmpty();
 				
 				emptyList.add(box);
 			}
@@ -498,6 +462,65 @@ public class ApiController {
 			response.put("error_code", RESPONSE_FAIL);
 			response.put("msg", "该发货单不能提交");	
 		}
+		
+		return response;
+	}
+	
+	private Map<String, Object> createTransferBoxMsg(Map<String, Object> requestParams) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		
+		String transferCode = String.valueOf(requestParams.get("code"));
+
+		List<Map<String, String>> content = (List<Map<String, String>>)requestParams.get("content");
+		
+		if (transferCode == null || content == null || content.size() == 0) {
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", "参数不正确");	
+			return response;
+		}
+		
+		List<Box> bindingBoxList = new ArrayList<Box>();
+		
+		for(Map<String, String> data : content) {
+			String quantityStr = data.get("quantity");
+			Double quantity = Double.parseDouble(quantityStr);
+			
+			String boxCode = data.get("BoxCode");
+			String inventoryCode = data.get("material_code");
+			String inventoryName = data.get("name");
+			String inventorySpecs = data.get("specs");
+			String storeName = data.get("warehouse_name");
+			String storeCode = data.get("warehouse_id");
+			
+			Box box = boxRepository.findOneByCode(boxCode);
+							
+			if (box == null) {
+				response.put("error_code", RESPONSE_FAIL);
+				response.put("msg", "找不到箱码" + boxCode);
+				return response;
+			}
+			
+			box.setDeliveryCode(transferCode);
+			box.setDeliveryNumber(null);
+			box.setVendorCode(storeCode);
+			box.setVendorName(storeName);
+			box.setInventoryCode(inventoryCode);
+			box.setInventoryName(inventoryName);
+			box.setInventorySpecs(inventorySpecs);
+			
+			box.setQuantity(quantity);
+			box.setBindDate(new Date());
+			box.setType(Constants.BOX_TYPE_DIAOBO);
+			
+			box.setUsed(Box.BOX_IS_USING);
+			
+			bindingBoxList.add(box);			
+		}
+		
+		boxRepository.saveAll(bindingBoxList);		
+		
+		response.put("error_code", RESPONSE_SUCCESS);
+		response.put("msg", "提交成功");	
 		
 		return response;
 	}

@@ -283,6 +283,8 @@ public class DeliveryController extends CommonController {
 			} else {
 				main.setState(Constants.DELIVERY_STATE_OK);	
 			}
+		} else if (form.getState() == Constants.DELIVERY_STATE_CANCEL) {
+			main.setState(Constants.DELIVERY_STATE_NEW);	
 		}
 
 		main = deliveryMainRepository.save(main);
@@ -300,6 +302,10 @@ public class DeliveryController extends CommonController {
 			break;
 		case Constants.DELIVERY_STATE_OK:
 			action = "审批";
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			break;
+		case Constants.DELIVERY_STATE_CANCEL:
+			action = "退回";
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			break;
 		}
@@ -353,6 +359,14 @@ public class DeliveryController extends CommonController {
 						inventoryMap.put(inventoryKey, orderDetail.getInventory());
 					}
 
+				} else if (form.getState() == Constants.DELIVERY_STATE_CANCEL) {
+					Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
+					
+					if (lastDeliveredQuantity != null) {
+						orderDetail.setDeliveredQuantity(lastDeliveredQuantity - quantity);
+						purchaseOrderDetailRepository.save(orderDetail);
+					}
+					
 				}
 				
 				detail = deliveryDetailRepository.save(detail);
@@ -375,7 +389,11 @@ public class DeliveryController extends CommonController {
 						if (count < (index + 1) * countPerBox) {
 							boxQuantity = count - index * countPerBox;
 						}
-						Box floatingBox = new Box();
+						
+						Box floatingBox = boxRepository.findOneByCode(boxCode);
+						if (floatingBox == null) {
+							floatingBox = new Box();	
+						}
 						floatingBox.setCode(boxCode);
 						floatingBox.setBindDate(new Date());
 						floatingBox.setDeliveryCode(main.getCode());
@@ -400,6 +418,12 @@ public class DeliveryController extends CommonController {
 					
 					inventoryIndex++;
 				}
+			} else if (form.getState() == Constants.DELIVERY_STATE_CANCEL) {
+				List<Box> boxList = boxRepository.findAllByDeliveryCodeAndType(main.getCode(), Constants.BOX_TYPE_DELIVERY);
+				for(Box box : boxList) {
+					box.setEmpty();					
+				}				
+				boxRepository.saveAll(boxList);
 			}
 		}
 
