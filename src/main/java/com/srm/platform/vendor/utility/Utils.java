@@ -4,8 +4,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+
+import com.srm.platform.vendor.model.DeliveryDetail;
+import com.srm.platform.vendor.model.DeliveryMain;
+import com.srm.platform.vendor.model.PurchaseOrderDetail;
+import com.srm.platform.vendor.u8api.RestApiClient;
+import com.srm.platform.vendor.u8api.RestApiResponse;
 
 public class Utils {
 
@@ -149,8 +157,13 @@ public class Utils {
 		Long serialNumber = Long.parseLong(serialNumberStr);
 		List<String> codeList = new ArrayList<String>();
 		String temp;
-		for (int i= 0; i< count; i++) {			
-			temp = String.format("%s%06d", classCode, serialNumber + i + 1);
+		for (int i= 0; i< count; i++) {		
+			if (classCode.startsWith("T")) {
+				temp = String.format("%s%05d", classCode, serialNumber + i + 1);
+			} else {
+				temp = String.format("%s%06d", classCode, serialNumber + i + 1);	
+			}
+			
 			codeList.add(temp);
 		}
 		return codeList;
@@ -194,5 +207,46 @@ public class Utils {
 	public static double costRound(double value) {
 		double result = Double.parseDouble(String.format("%.2f", value));
 		return result;
+	}
+	
+	public static RestApiResponse postForArrivalVouch(DeliveryMain deliveryMain,List<DeliveryDetail> details, RestApiClient apiClient) {
+		
+		Map<String, Object> postData = new HashMap<>();
+		postData.put("ccode", deliveryMain.getCode());
+		postData.put("ddate", Utils.formatDateTime(new Date()));
+		postData.put("cvencode", deliveryMain.getVendor().getCode());
+		postData.put("itaxrate", "0.0");
+		postData.put("cmemo", "");
+		postData.put("cpocode", "");
+		postData.put("cbustype", deliveryMain.getType());
+		
+		
+		List<Map<String, Object>> detailList = new ArrayList<Map<String, Object>>();
+		
+		for(DeliveryDetail detail : details) {
+			Map<String, Object> detailData = new HashMap<>();
+			PurchaseOrderDetail orderDetail = detail.getPurchaseOrderDetail();
+			detailData.put("cwhcode", detail.getMain().getStore().getCode());
+			detailData.put("cinvcode", orderDetail.getInventory().getCode());
+			detailData.put("qty", detail.getDeliveredQuantity());
+			detailData.put("inum", 1);
+			detailData.put("itaxrate", orderDetail.getTaxRate());
+			detailData.put("iposid", orderDetail.getOriginalId());
+			detailData.put("cpocode", orderDetail.getMain().getCode());
+			detailData.put("ivouchrowno", detail.getRowNo());
+			detailData.put("fprice", orderDetail.getPrice());
+			detailData.put("famount", orderDetail.getMoney());
+			detailData.put("ftaxprice", orderDetail.getTaxPrice());
+			detailData.put("ftaxamount", orderDetail.getSum());
+			
+			detailList.add(detailData);
+		}	
+		
+		
+		postData.put("detail", detailList);
+		
+		RestApiResponse response = apiClient.postForArrivalVouch(postData);
+		
+		return response;
 	}
 }

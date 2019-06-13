@@ -13,6 +13,7 @@
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
 				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="pass"><i class="fa fa-arrow-up"></i>确认</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==4}" id="accept"><i class="fa fa-check-circle"></i> 收货</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state>=2 && main.state>=2}" id="cancel"><i class="fa fa-undo"></i> 退回</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state>1}" id="print"><i class="fa fa-print"></i> 打印</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state>1}" id="print_float"><i class="fa fa-print"></i> 打印浮动箱码</a> 
@@ -529,22 +530,25 @@ is_readonly = 0;
 
 	  table = $('#detail_table').DataTable(table_options);
 
-	  table.on('select', function(e, dt, type, indexes) {
-	  	var selected_data = table.rows('.selected').data().toArray();
-		  if (selected_data.length > 0) {
-			  table.button(1).enable();
-		  } else {
-			  table.button(1).disable();
-		  }
+	  if ((state != 1) || !is_vendor) {
+	  	table.on('select', function(e, dt, type, indexes) {
+		  	var selected_data = table.rows('.selected').data().toArray();
+			  if (selected_data.length > 0) {
+				  table.button(1).enable();
+			  } else {
+				  table.button(1).disable();
+			  }
 
-	  }).on('deselect', function(e, dt, type, indexes) {
-	  	var selected_data = table.rows('.selected').data().toArray();
-		  if (selected_data.length > 0) {
-			  table.button(1).enable();
-		  } else {
-			  table.button(1).disable();
-		  }
-	  });
+		  }).on('deselect', function(e, dt, type, indexes) {
+		  	var selected_data = table.rows('.selected').data().toArray();
+			  if (selected_data.length > 0) {
+				  table.button(1).enable();
+			  } else {
+				  table.button(1).disable();
+			  }
+		  });
+	  }
+	  
 
 	  if (is_vendor && state == 1) {
 		  table.on('click', 'tbody td.vendor-edit', function(e) {
@@ -711,63 +715,7 @@ is_readonly = 0;
       
   	});
 	  
-	  function onChangeType() {
-		  if ((state == 1 || state == 4) && !is_readonly) {
-			  table.on('click', 'td.memo, td.startdate, td.enddate, td.taxrate', function(e) {
-				  editor.inline(this, {
-				    submit : 'allIfChanged',
-				    submitOnBlur : true
-				  });
-			  });
-
-			  if ($("#type").val() == 1) {
-				  table.button(1).disable();
-				  table.off('click', 'td.minquantity, td.maxquantity');
-				  table.on('click', 'td.unitprice, td.taxunitprice', function(e) {
-					  editor.inline(this, {
-					    submit : 'allIfChanged',
-					    submitOnBlur : true
-					  });
-				  });
-				  App.addKeyDownEditor(editor, 7, 13);
-			  } else if ($("#type").val() == 2) {
-				  table.off('click', 'td.unitprice, td.taxunitprice');
-				  table.on('click', 'td.minquantity, td.maxquantity', function(e) {
-					  editor.inline(this, {
-					    submit : 'allIfChanged',
-					    submitOnBlur : true
-					  });
-				  });
-				  if (is_vendor) {
-					  table.on('click', 'td.unitprice, td.taxunitprice', function(e) {
-						  editor.inline(this, {
-						    submit : 'allIfChanged',
-						    submitOnBlur : true
-						  });
-					  });
-				  }
-				  App.addKeyDownEditor(editor, 5, 13);
-			  } else {
-				  table.button(1).disable();
-				  table.off('click', 'td.minquantity, td.maxquantity');
-				  if (is_vendor) {
-					  table.on('click', 'td.unitprice, td.taxunitprice', function(e) {
-						  editor.inline(this, {
-						    submit : 'allIfChanged',
-						    submitOnBlur : true
-						  });
-					  });
-					  App.addKeyDownEditor(editor, 7, 13);
-				  } else {
-					  table.off('click', 'td.unitprice, td.taxunitprice');
-					  App.addKeyDownEditor(editor, 9, 13);
-				  }
-
-			  }
-		  }
-	  }
-
-	  onChangeType();
+	  
 		function showImportDialog() {
 			if (!$('#company').val()) {
 				App.showErrorDialog("操作失败", "请选择业务实体！");
@@ -948,7 +896,7 @@ is_readonly = 0;
 	  });
 
 	  $.validator.addMethod("checkTable", function(value, element) {
-	  	if ($('#state').val() == 6) {
+	  	if ($('#state').val() >= 5) {
 	  		return true;
 	  	};
 	  	
@@ -1038,7 +986,9 @@ is_readonly = 0;
 			  	confirmMessage = "提交";
 			  } else if (new_state == 3) {
 			  	confirmMessage = "确认";
-			  } else if (new_state == 4) {
+			  } else if (new_state == 5) {
+			  	confirmMessage = "收货";
+			  } else if (new_state == 6) {
 			  	confirmMessage = "退回";
 			  }
 			  
@@ -1107,6 +1057,12 @@ is_readonly = 0;
 	  $("#pass").click(function() {
 		  editor.submit();
 		  $('#state').val(3);
+		  $("#form").submit();
+	  });
+	  
+	  $("#accept").click(function() {
+		  editor.submit();
+		  $('#state').val(5);
 		  $("#form").submit();
 	  });
 	  

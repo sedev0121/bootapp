@@ -192,7 +192,7 @@
 	    rules : {
 	    	serial_number : {
 	        required : true,
-	        rangelength: [6, 6],
+	        rangelength: [5, 6],
 	        digits: true,
 	      },
 	      count : {
@@ -331,9 +331,6 @@
 		      data : 'bind_date',
 		      title : '绑定日期',
 		      render: $.fn.date_renderer
-		    }, {
-		      data : 'bind_property',
-		      title : '绑定属性',
 		    }, {
 		      data : 'vendor_code',
 		      title : '绑定单位编码',

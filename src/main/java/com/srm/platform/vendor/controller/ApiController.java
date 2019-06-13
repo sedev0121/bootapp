@@ -744,43 +744,9 @@ public class ApiController {
 			return null;
 		} else {
 			
-			List<DeliveryDetail> details = deliveryDetailRepository.findDetailsByCode(deliveryMain.getCode());
+			List<DeliveryDetail> details = deliveryDetailRepository.findDetailsByCode(deliveryMain.getCode());			
 			
-			Map<String, Object> postData = new HashMap<>();
-			postData.put("ccode", deliveryMain.getCode());
-			postData.put("ddate", Utils.formatDateTime(new Date()));
-			postData.put("cvencode", deliveryMain.getVendor().getCode());
-			postData.put("itaxrate", "0.0");
-			postData.put("cmemo", "");
-			postData.put("cpocode", "");
-			postData.put("cbustype", deliveryMain.getType());
-			
-			
-			List<Map<String, Object>> detailList = new ArrayList<Map<String, Object>>();
-			
-			for(DeliveryDetail detail : details) {
-				Map<String, Object> detailData = new HashMap<>();
-				PurchaseOrderDetail orderDetail = detail.getPurchaseOrderDetail();
-				detailData.put("cwhcode", detail.getMain().getStore().getCode());
-				detailData.put("cinvcode", orderDetail.getInventory().getCode());
-				detailData.put("qty", detail.getDeliveredQuantity());
-				detailData.put("inum", 1);
-				detailData.put("itaxrate", orderDetail.getTaxRate());
-				detailData.put("iposid", orderDetail.getOriginalId());
-				detailData.put("cpocode", orderDetail.getMain().getCode());
-				detailData.put("ivouchrowno", detail.getRowNo());
-				detailData.put("fprice", orderDetail.getPrice());
-				detailData.put("famount", orderDetail.getMoney());
-				detailData.put("ftaxprice", orderDetail.getTaxPrice());
-				detailData.put("ftaxamount", orderDetail.getSum());
-				
-				detailList.add(detailData);
-			}	
-			
-			
-			postData.put("detail", detailList);
-			
-			RestApiResponse response = apiClient.postForArrivalVouch(postData);
+			RestApiResponse response = Utils.postForArrivalVouch(deliveryMain, details, apiClient);
 			
 			return response;
 		}

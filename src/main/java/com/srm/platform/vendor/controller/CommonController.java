@@ -77,6 +77,7 @@ import com.srm.platform.vendor.searchitem.DimensionTargetItem;
 import com.srm.platform.vendor.service.SessionCounter;
 import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.u8api.AppProperties;
+import com.srm.platform.vendor.u8api.RestApiClient;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
@@ -99,7 +100,10 @@ public class CommonController {
 
 	@Autowired
 	public ApiClient apiClient;
-
+	
+	@Autowired
+	public RestApiClient restApiClient;
+	
 	@Autowired
 	public AppProperties appProperties;
 

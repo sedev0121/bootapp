@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -40,6 +41,8 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.DeliverySaveForm;
 import com.srm.platform.vendor.searchitem.BoxExportResult;
 import com.srm.platform.vendor.searchitem.DeliverySearchResult;
+import com.srm.platform.vendor.u8api.RestApiClient;
+import com.srm.platform.vendor.u8api.RestApiResponse;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
@@ -308,124 +311,146 @@ public class DeliveryController extends CommonController {
 			action = "退回";
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			break;
+		case Constants.DELIVERY_STATE_ARRIVED:
+			action = "收货";
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			break;
 		}
 		String title = String.format("预发货单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
 
 //		this.sendmessage(title, toList, String.format("/delivery/%s/read", main.getCode()));
 		this.addOpertionHistory(main.getCode(), action, form.getContent());
 		
-		deliveryDetailRepository.deleteInBatch(deliveryDetailRepository.findDetailsByCode(main.getCode()));
+		if (form.getState() != Constants.DELIVERY_STATE_ARRIVED) {
+			deliveryDetailRepository.deleteInBatch(deliveryDetailRepository.findDetailsByCode(main.getCode()));
 
-		if (form.getTable() != null) {
-			int rowNo = 1;
-			Map<String, Double> floatingBoxMap = new HashMap<String, Double>();
-			Map<String, Integer> countPerBoxMap = new HashMap<String, Integer>();
-			Map<String, Inventory> inventoryMap = new HashMap<String, Inventory>();
-			
-			for (Map<String, String> row : form.getTable()) {
-				DeliveryDetail detail = new DeliveryDetail();
-				PurchaseOrderDetail orderDetail = purchaseOrderDetailRepository.findOneById(Long.parseLong(row.get("po_detail_id")));
-				Inventory inventory = orderDetail.getInventory();
-				Double quantity = Double.parseDouble(row.get("delivered_quantity"));
+			if (form.getTable() != null) {
+				int rowNo = 1;
+				Map<String, Double> floatingBoxMap = new HashMap<String, Double>();
+				Map<String, Integer> countPerBoxMap = new HashMap<String, Integer>();
+				Map<String, Inventory> inventoryMap = new HashMap<String, Inventory>();
 				
-				detail.setMain(main);
-				detail.setPurchaseOrderDetail(orderDetail);
-				detail.setDeliveredQuantity(quantity);
-				detail.setMemo(row.get("memo"));
-				detail.setRowNo(rowNo);
-				rowNo++;
-				
+				for (Map<String, String> row : form.getTable()) {
+					DeliveryDetail detail = new DeliveryDetail();
+					PurchaseOrderDetail orderDetail = purchaseOrderDetailRepository.findOneById(Long.parseLong(row.get("po_detail_id")));
+					Inventory inventory = orderDetail.getInventory();
+					Double quantity = Double.parseDouble(row.get("delivered_quantity"));
+					
+					detail.setMain(main);
+					detail.setPurchaseOrderDetail(orderDetail);
+					detail.setDeliveredQuantity(quantity);
+					detail.setMemo(row.get("memo"));
+					detail.setRowNo(rowNo);
+					rowNo++;
+					
 
-				if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
-					detail.setState(Constants.DELIVERY_ROW_STATE_OK);
-				
-					Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
+					if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
+						detail.setState(Constants.DELIVERY_ROW_STATE_OK);
 					
-					if (lastDeliveredQuantity == null) {
-						lastDeliveredQuantity = 0D;
-					}
-					orderDetail.setDeliveredQuantity(lastDeliveredQuantity + quantity);
-					purchaseOrderDetailRepository.save(orderDetail);
-					
-					if (inventory.getBoxClass() == null) {
-						String inventoryKey = inventory.getCode();
-						Double inventoryQuantity = floatingBoxMap.get(inventoryKey);
-						if (inventoryQuantity == null) {
-							inventoryQuantity = 0D;
+						Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
+						
+						if (lastDeliveredQuantity == null) {
+							lastDeliveredQuantity = 0D;
 						}
-						inventoryQuantity += quantity;
-						floatingBoxMap.put(inventoryKey, inventoryQuantity);
-						countPerBoxMap.put(inventoryKey, inventory.getCountPerBox());
-						inventoryMap.put(inventoryKey, orderDetail.getInventory());
-					}
-
-				} else if (form.getState() == Constants.DELIVERY_STATE_CANCEL) {
-					Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
-					
-					if (lastDeliveredQuantity != null) {
-						orderDetail.setDeliveredQuantity(lastDeliveredQuantity - quantity);
+						orderDetail.setDeliveredQuantity(lastDeliveredQuantity + quantity);
 						purchaseOrderDetailRepository.save(orderDetail);
+						
+						if (inventory.getBoxClass() == null) {
+							String inventoryKey = inventory.getCode();
+							Double inventoryQuantity = floatingBoxMap.get(inventoryKey);
+							if (inventoryQuantity == null) {
+								inventoryQuantity = 0D;
+							}
+							inventoryQuantity += quantity;
+							floatingBoxMap.put(inventoryKey, inventoryQuantity);
+							countPerBoxMap.put(inventoryKey, inventory.getCountPerBox());
+							inventoryMap.put(inventoryKey, orderDetail.getInventory());
+						}
+
+					} else if (form.getState() == Constants.DELIVERY_STATE_CANCEL) {
+						Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
+						
+						if (lastDeliveredQuantity != null) {
+							orderDetail.setDeliveredQuantity(lastDeliveredQuantity - quantity);
+							purchaseOrderDetailRepository.save(orderDetail);
+						}
+						
 					}
 					
+					detail = deliveryDetailRepository.save(detail);
 				}
 				
-				detail = deliveryDetailRepository.save(detail);
+				if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
+					int inventoryIndex = 1;
+					for (Map.Entry<String, Double> entry : floatingBoxMap.entrySet()) {
+						String key = entry.getKey();
+						Double count = entry.getValue();
+						Integer countPerBox = countPerBoxMap.get(key);
+						Inventory inventory = inventoryMap.get(key);
+						if (countPerBox == 0) {
+							continue;
+						}
+						int index = 0;
+						while (count > index * countPerBox) {
+							String boxCode = generateBoxCode(main.getId(), inventoryIndex, index);
+							Double boxQuantity = Double.valueOf(countPerBox);
+							if (count < (index + 1) * countPerBox) {
+								boxQuantity = count - index * countPerBox;
+							}
+							
+							Box floatingBox = boxRepository.findOneByCode(boxCode);
+							if (floatingBox == null) {
+								floatingBox = new Box();	
+							}
+							floatingBox.setCode(boxCode);
+							floatingBox.setBindDate(new Date());
+							floatingBox.setDeliveryCode(main.getCode());
+							floatingBox.setDeliveryNumber(main.getDeliverNumber());
+							floatingBox.setType(Constants.BOX_TYPE_DELIVERY);
+							
+							floatingBox.setVendorCode(main.getVendor().getCode());
+							floatingBox.setVendorName(main.getVendor().getName());						
+							
+							floatingBox.setInventoryCode(key);
+							floatingBox.setInventoryName(inventory.getName());
+							floatingBox.setInventorySpecs(inventory.getSpecs());
+							
+							floatingBox.setQuantity(boxQuantity);
+							floatingBox.setState(1);
+							floatingBox.setUsed(Box.BOX_IS_USING);
+							
+							boxRepository.save(floatingBox);
+							
+							index++;
+						}
+						
+						inventoryIndex++;
+					}
+				} else if (form.getState() == Constants.DELIVERY_STATE_CANCEL) {
+					List<Box> boxList = boxRepository.findAllByDeliveryCodeAndType(main.getCode(), Constants.BOX_TYPE_DELIVERY);
+					for(Box box : boxList) {
+						box.setEmpty();					
+					}				
+					boxRepository.saveAll(boxList);
+				}
+			}
+		} else {
+			List<DeliveryDetail> details = deliveryDetailRepository.findDetailsByCode(main.getCode());			
+			
+			RestApiResponse u8Response = Utils.postForArrivalVouch(main, details, restApiClient);
+			
+			if (!u8Response.isSuccess()) {
+				main.setState(Constants.DELIVERY_STATE_DELIVERED);
+				deliveryMainRepository.save(main);
+				GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, u8Response.getErrmsg(),
+						main);
+
+				return jsonResponse;
+				
 			}
 			
-			if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
-				int inventoryIndex = 1;
-				for (Map.Entry<String, Double> entry : floatingBoxMap.entrySet()) {
-					String key = entry.getKey();
-					Double count = entry.getValue();
-					Integer countPerBox = countPerBoxMap.get(key);
-					Inventory inventory = inventoryMap.get(key);
-					if (countPerBox == 0) {
-						continue;
-					}
-					int index = 0;
-					while (count > index * countPerBox) {
-						String boxCode = generateBoxCode(main.getId(), inventoryIndex, index);
-						Double boxQuantity = Double.valueOf(countPerBox);
-						if (count < (index + 1) * countPerBox) {
-							boxQuantity = count - index * countPerBox;
-						}
-						
-						Box floatingBox = boxRepository.findOneByCode(boxCode);
-						if (floatingBox == null) {
-							floatingBox = new Box();	
-						}
-						floatingBox.setCode(boxCode);
-						floatingBox.setBindDate(new Date());
-						floatingBox.setDeliveryCode(main.getCode());
-						floatingBox.setDeliveryNumber(main.getDeliverNumber());
-						floatingBox.setType(Constants.BOX_TYPE_DELIVERY);
-						
-						floatingBox.setVendorCode(main.getVendor().getCode());
-						floatingBox.setVendorName(main.getVendor().getName());						
-						
-						floatingBox.setInventoryCode(key);
-						floatingBox.setInventoryName(inventory.getName());
-						floatingBox.setInventorySpecs(inventory.getSpecs());
-						
-						floatingBox.setQuantity(boxQuantity);
-						floatingBox.setState(1);
-						floatingBox.setUsed(Box.BOX_IS_USING);
-						
-						boxRepository.save(floatingBox);
-						
-						index++;
-					}
-					
-					inventoryIndex++;
-				}
-			} else if (form.getState() == Constants.DELIVERY_STATE_CANCEL) {
-				List<Box> boxList = boxRepository.findAllByDeliveryCodeAndType(main.getCode(), Constants.BOX_TYPE_DELIVERY);
-				for(Box box : boxList) {
-					box.setEmpty();					
-				}				
-				boxRepository.saveAll(boxList);
-			}
 		}
+		
 
 		GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
 				main);

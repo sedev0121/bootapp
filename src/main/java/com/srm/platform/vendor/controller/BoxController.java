@@ -148,7 +148,11 @@ public class BoxController extends CommonController {
 		if (maxSerialNumber == null) {
 			maxSerialNumber = "000000";
 		} else {
-			maxSerialNumber = maxSerialNumber.substring(Math.max(maxSerialNumber.length() - 6, 0));
+			int length = 6;
+			if (maxSerialNumber.startsWith("T")) {
+				length = 5;
+			}
+			maxSerialNumber = maxSerialNumber.substring(Math.max(maxSerialNumber.length() - length, 0));
 		}
 		return maxSerialNumber;
 	}
