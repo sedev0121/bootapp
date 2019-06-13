@@ -228,6 +228,8 @@ public class ApiController {
 			response = this.createDHD(requestParams);
 		} else if (method.equals("createTransferBoxMsg")) {
 			response = this.createTransferBoxMsg(requestParams);
+		} else if (method.equals("cancelDHD")) {
+			response = this.cancelDHD(requestParams);
 		}
 		
 		return response;
@@ -521,6 +523,41 @@ public class ApiController {
 		
 		response.put("error_code", RESPONSE_SUCCESS);
 		response.put("msg", "提交成功");	
+		
+		return response;
+	}
+	
+	private Map<String, Object> cancelDHD(Map<String, Object> requestParams) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		
+		String deliveryCode = String.valueOf(requestParams.get("code"));
+		
+		
+		if (deliveryCode == null) {
+			response = new HashMap<String, Object>();
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", "参数不正确");	
+			return response;
+		}
+		
+		DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode(deliveryCode);
+		if (deliveryMain == null) {
+			response = new HashMap<String, Object>();
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", "找不到发货单");	
+			return response;
+		}
+		
+		if (deliveryMain.getState() == Constants.DELIVERY_STATE_ARRIVED) {
+			deliveryMain.setState(Constants.DELIVERY_STATE_NEW);
+			deliveryMainRepository.save(deliveryMain);
+			
+			response.put("error_code", RESPONSE_SUCCESS);
+			response.put("msg", "提交成功");	
+		} else {
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", "该发货单还未收货，不能拒收");			
+		}
 		
 		return response;
 	}
