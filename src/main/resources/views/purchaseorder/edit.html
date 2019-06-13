@@ -11,7 +11,6 @@
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
 				<a class="btn btn-primary" id="deploy" th:if="${(main.srmstate==0 && canDeploy)}"><i class="fa fa-share"></i> 发布</a> 
 				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
-				<a class="btn btn-primary" id="close_row" th:if="${(main.srmstate>=1 && main.srmstate!=3 && canCloseRow)}"><i class="fa fa-undo"></i> 行关闭</a> 
 				<a class="btn btn-danger" id="close" th:if="${main.srmstate>=1 && main.srmstate!=3 && canClose}"><i class="fa fa-remove"></i> 订单关闭</a>
 				<a class="btn btn-primary" id="export"><i class="fa fa-print"></i> 导出明细</a>
 				<a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回列表</a>
