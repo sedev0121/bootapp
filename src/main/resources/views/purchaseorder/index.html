@@ -33,6 +33,7 @@
           </div>
           <div style="vertical-align: bottom" class="search-cell width-15">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+            <button class="btn btn-danger" sec:authorize="hasRole('ROLE_VENDOR')" id="btn_show_price"><i class="fa fa-eye"></i> 显示金额</button>
           </div>
       </div>
       <div class="row">
@@ -41,6 +42,31 @@
             </table>
         </div>
       </div>
+      <div class="modal fade" id="pwd_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="password_title">二级密码认证</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="pwdform" th:action="@{/profile/check_second_password}" method="post">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                          <label for="old_pwd">二级密码: </label>
+                          <input type="password" id="pwd" name="pwd" class="form-control" />
+                        </div>
+                    </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirm_password">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
   </div>  
 </body>
 </html>
@@ -273,6 +299,52 @@ var edit_url = [[@{/purchaseorder/}]];
         });
       });
       
+    });
+    
+    $("#pwdform").validate({
+      rules: {
+          pwd: {
+            required: true
+          },  
+      },
+      
+      //display error alert on form submit  
+      invalidHandler: function(event, validator) {
+        App.showErrorDialog("输入有误", "请输入正确的值");
+      },
+
+      submitHandler: function (form) {
+        jQuery(form).ajaxSubmit({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          },
+          success: function(res, status, xhr, form) {          	
+            if (res == 1) {
+            	$('#pwd_dialog').modal('hide');   
+              App.showSuccessDialog("操作成功！");
+              window.location.reload(true);
+            }else{
+              App.showErrorDialog("二级密码认证失败！");
+            }
+              
+          },
+          error: function (res, status, xhr, form) {
+            App.showErrorDialog("操作失败", "请输入正确的值");
+          }
+        });
+      }
+    }); 
+    
+    $("#btn_show_price").click(function() {    	
+    	$("#pwd").val("");    	
+      $('#pwd_dialog').modal('show');          
+    });
+    
+    $("#confirm_password").click(function() {
+      $("#pwdform").submit();            
     });
   });
 </script>

@@ -150,6 +150,7 @@
 	var keep_alive_url = /*[[@{/keepalive/}]]*/'';
   var logout_url = /*[[@{/logout}]]*/'';
   var session_timeout = /*[[${session.timeout}]]*/'';
+  var second_password = /*[[${#session.getAttribute('second_password')}]]*/'';
   session_timeout = App.intVal(session_timeout);
 
   jQuery(document).ready(function() {

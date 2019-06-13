@@ -116,6 +116,21 @@ public class ProfileController extends CommonController {
 		
 
 	}
+	
+	@PostMapping("/check_second_password")
+	public @ResponseBody String checkSecondPassword(@RequestParam Map<String, String> requestParams,
+			Principal principal) {
+		String secondPassword = requestParams.get("pwd");
+
+		Account account = accountRepository.findOneByUsername(principal.getName());
+
+		if (passwordEncoder.matches(secondPassword, account.getSecondPassword())) {	
+			httpSession.setAttribute("second_password", 1);
+			return "1";
+		} else {
+			return "0";
+		}
+	}
 
 	@GetMapping("/checkemail")
 	public @ResponseBody Boolean checkEmail_ajax(@RequestParam("id") Long id, @RequestParam("email") String email) {

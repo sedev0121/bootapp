@@ -114,6 +114,7 @@ public class AccountService implements UserDetailsService {
 	}
 
 	private User createUser(Account account) {
+		httpSession.setAttribute("second_password", 0);
 		httpSession.setAttribute("account", account);
 		httpSession.setAttribute("version", version);
 		httpSession.setAttribute("realname", account.getRealname());
