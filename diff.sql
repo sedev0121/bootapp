@@ -162,3 +162,7 @@ alter table box add column delivery_number varchar(255) CHARACTER SET utf8 COLLA
 update box a left join inventory b on a.inventory_code=b.code set a.inventory_name=b.name, a.inventory_specs=b.specs;
 update box a left join delivery_main b on a.delivery_code=b.code left join vendor c on b.vendor_code=c.code set a.vendor_code=c.code, a.vendor_name=c.name, a.delivery_number=b.deliver_number;
 update box set type=1 where delivery_code is not null;
+
+/* 2019-06-13 second password */
+alter table account add column second_password varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+update account set second_password='$2a$10$CBrThLk9FmVJxhlkFsHYu.jSvEVubybN62TaruleZyt5z8eOIEm66' where role='ROLE_VENDOR';

@@ -96,4 +96,7 @@ public class Constants {
 	public final static int BOX_TYPE_DELIVERY = 1;
 	public final static int BOX_TYPE_DIAOBO = 2;
 	
+	public final static int PASSWORD_TYPE_NORMAL = 1;
+	public final static int PASSWORD_TYPE_SECOND = 2;
+	
 }

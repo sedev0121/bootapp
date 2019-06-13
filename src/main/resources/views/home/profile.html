@@ -14,6 +14,7 @@
     <div class="btn-group-bar">
       <div class="text-right">
         <a class="btn btn-primary" id="change_pwd"><i class="fa fa-key"></i> 修改密码</a>
+        <a class="btn btn-danger" sec:authorize="hasRole('ROLE_VENDOR')" id="change_second_pwd"><i class="fa fa-key"></i> 修改二级密码</a>
         <a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a>
       </div>
     </div>
@@ -57,23 +58,21 @@
             </fieldset>
             <fieldset>
               <legend>联系信息</legend>
-              <div class="row">
-                <div class="col-lg-2 col-md-2 form-group">
-                  <label for="effective_date">手机:</label>
-                  <input type="text" id="mobile" name="mobile" class="form-control" th:value="${account.mobile}">
-                </div>
-                <div class="col-lg-2 col-md-2 form-group">
-                  <label for="tax_rate">电话:</label>
-                  <input type="text" name="tel" class="form-control" th:value="${account.tel}">
-                </div>
-                <div class="col-lg-2 col-md-2 form-group">
-                  <label for="tax_rate">邮箱:</label>
-                  <input type="text" id="email" name="email" class="form-control" th:value="${account.email}">
-                </div>
-                <div class="col-lg-6 col-md-6 form-group">
-                  <label for="address">通讯地址:</label>
-                  <input type="text" name="address" class="form-control" th:value="${account.address}">
-                </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="effective_date">手机:</label>
+                <input type="text" id="mobile" name="mobile" class="form-control" th:value="${account.mobile}">
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="tax_rate">电话:</label>
+                <input type="text" name="tel" class="form-control" th:value="${account.tel}">
+              </div>
+              <div class="col-lg-2 col-md-2 form-group">
+                <label for="tax_rate">邮箱:</label>
+                <input type="text" id="email" name="email" class="form-control" th:value="${account.email}">
+              </div>
+              <div class="col-lg-6 col-md-6 form-group">
+                <label for="address">通讯地址:</label>
+                <input type="text" name="address" class="form-control" th:value="${account.address}">
               </div>
             </fieldset>
           </div>
@@ -85,14 +84,13 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">
-                                                    修改密码
-                    </h5>
+                    <h5 class="modal-title" id="password_title">修改密码</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
                 <div class="modal-body">
                     <form id="pwdform" th:action="@{/profile/changepwd}" method="post">
+                    <input type="hidden" id="pwd_type" name="type"/>
                     <div class="row">
                         <div class="col-lg-4 col-md-4">
                           <label for="old_pwd">旧密码: </label>
@@ -290,6 +288,20 @@ jQuery(document).ready(function() {
     });
     
     $("#change_pwd").click(function() {
+    	$("#password_title").html("修改密码");
+    	$("#pwd_type").val(1);
+    	$("#old_pwd").val("");
+    	$("#new_pwd").val("");
+    	$("#confirm_pwd").val("");
+      $('#pwd_dialog').modal('show');          
+    });
+    
+    $("#change_second_pwd").click(function() {
+    	$("#password_title").html("修改二级密码");
+    	$("#pwd_type").val(2);
+    	$("#old_pwd").val("");
+    	$("#new_pwd").val("");
+    	$("#confirm_pwd").val("");
       $('#pwd_dialog').modal('show');          
     });
     
