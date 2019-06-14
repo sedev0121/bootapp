@@ -218,3 +218,6 @@ create trigger delete_trigger before delete on box
    insert into box_history(box_id, box_class_id, code, bind_date, bind_property, quantity, used, state, inventory_code, delivery_code, inventory_name, inventory_specs, vendor_code, vendor_name, type, delivery_number, operation_date, operation) values (old.id, old.box_class_id, old.code, old.bind_date, old.bind_property, old.quantity, old.used, old.state, old.inventory_code, old.delivery_code, old.inventory_name, old.inventory_specs, old.vendor_code, old.vendor_name, old.type, old.delivery_number, now(), 'delete');
    end#  
 delimiter ; 
+
+
+alter table inventory add column extra_rate float(11, 2) NULL DEFAULT 0.00;

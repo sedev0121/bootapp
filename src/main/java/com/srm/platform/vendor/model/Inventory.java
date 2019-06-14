@@ -44,6 +44,9 @@ public class Inventory {
 	private Date endDate;
 	private Date modifyDate;
 	
+	@JsonProperty("extra_rate")
+	private Double extraRate;
+	
 	@JsonProperty(value = "count_per_box")
 	private Integer countPerBox;
 
@@ -71,6 +74,14 @@ public class Inventory {
 		this.code = code;
 	}
 	
+	public Double getExtraRate() {
+		return extraRate;
+	}
+
+	public void setExtraRate(Double extraRate) {
+		this.extraRate = extraRate;
+	}
+
 	public BoxClass getBoxClass() {
 		return boxClass;
 	}
