@@ -179,19 +179,23 @@ var edit_url = [[@{/purchaseorder/}]];
       }, {
         data : 'sum',
         className: 'dt-right',
-        title : '原币金额'
+        title : '原币金额',
+        render: App.costNumber,
       }, {
         data : 'money',
         className: 'dt-right',
-        title : '原币价税合计'
+        title : '原币价税合计',
+        render: App.costNumber,
       }, {
         data : 'prepay_money',
         className: 'dt-right',
-        title : '订金'
+        title : '订金',
+        render: App.costNumber,
       }, {
         data : null,
         defaultContent: '',
         orderable: false,
+        visible: false,
         className: 'dt-right',
         title : '购方备注'
       }, {

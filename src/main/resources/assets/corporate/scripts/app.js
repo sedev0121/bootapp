@@ -209,7 +209,14 @@ var App = function() {
       return App.formatNumber(i, 6);
     },
     costNumber : function (i) {
-      return App.formatNumber(i, 2);
+    	var result = App.formatNumber(i, 2);
+    	if (result == 0 || result == "0" || result == "") {
+    		result = "";
+    	}
+    	if (is_vendor && !second_password) {
+    		result = "***";
+    	}
+      return result;
     },
     intVal : function ( i ) {
       var temp = typeof i === 'string' ?i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ?i : 0;
