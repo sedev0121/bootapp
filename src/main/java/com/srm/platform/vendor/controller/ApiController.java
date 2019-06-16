@@ -549,7 +549,7 @@ public class ApiController {
 		}
 		
 		if (deliveryMain.getState() == Constants.DELIVERY_STATE_ARRIVED) {
-			deliveryMain.setState(Constants.DELIVERY_STATE_NEW);
+			deliveryMain.setState(Constants.DELIVERY_STATE_DELIVERED);
 			deliveryMainRepository.save(deliveryMain);
 			
 			response.put("error_code", RESPONSE_SUCCESS);
