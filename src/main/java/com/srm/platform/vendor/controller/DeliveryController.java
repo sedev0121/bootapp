@@ -138,7 +138,7 @@ public class DeliveryController extends CommonController {
 	public @ResponseBody List<BoxExportResult> floatingBoxList(@PathVariable("code") String code) {
 		return deliveryMainRepository.findExportBoxListByCode(code);
 	}
-	
+
 	// 查询列表API
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<DeliverySearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
@@ -174,7 +174,7 @@ public class DeliveryController extends CommonController {
 		if (isVendor()) {
 			Vendor vendor = this.getLoginAccount().getVendor();
 			bodyQuery += " and b.code= :vendor";
-			params.put("vendor", vendor.getCode());			
+			params.put("vendor", vendor.getCode());
 
 		} else {
 			String subWhere = " 1=0 ";
@@ -196,7 +196,7 @@ public class DeliveryController extends CommonController {
 				subWhere += " or a.store_id in :storeList";
 				params.put("storeList", allowedStoreIdList);
 			}
-			
+
 			List<Long> allowedAccountIdList = accountPermission.getAccountList();
 			if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)) {
 				subWhere += " or a.confirmer_id in :accountList";
@@ -273,21 +273,21 @@ public class DeliveryController extends CommonController {
 			main.setConfirmDate(new Date());
 			main.setConfirmer(account);
 		}
-		
+
 		main.setState(form.getState());
-				
+
 		if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
-			
+
 			main.setConfirmDate(new Date());
 			main.setConfirmer(account);
-			
+
 			if (main.getStore().getIsAcceptSet() == 0) {
 				main.setState(Constants.DELIVERY_STATE_DELIVERED);
 			} else {
-				main.setState(Constants.DELIVERY_STATE_OK);	
+				main.setState(Constants.DELIVERY_STATE_OK);
 			}
 		} else if (form.getState() == Constants.DELIVERY_STATE_CANCEL) {
-			main.setState(Constants.DELIVERY_STATE_NEW);	
+			main.setState(Constants.DELIVERY_STATE_NEW);
 		}
 
 		main = deliveryMainRepository.save(main);
@@ -318,9 +318,12 @@ public class DeliveryController extends CommonController {
 		}
 		String title = String.format("预发货单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
 
-//		this.sendmessage(title, toList, String.format("/delivery/%s/read", main.getCode()));
+		// this.sendmessage(title, toList, String.format("/delivery/%s/read",
+		// main.getCode()));
 		this.addOpertionHistory(main.getCode(), action, form.getContent());
+
 		
+
 		if (form.getState() != Constants.DELIVERY_STATE_ARRIVED) {
 			deliveryDetailRepository.deleteInBatch(deliveryDetailRepository.findDetailsByCode(main.getCode()));
 
@@ -329,32 +332,37 @@ public class DeliveryController extends CommonController {
 				Map<String, Double> floatingBoxMap = new HashMap<String, Double>();
 				Map<String, Integer> countPerBoxMap = new HashMap<String, Integer>();
 				Map<String, Inventory> inventoryMap = new HashMap<String, Inventory>();
+
+				boolean isAllFloatingInventories = true;
 				
 				for (Map<String, String> row : form.getTable()) {
 					DeliveryDetail detail = new DeliveryDetail();
-					PurchaseOrderDetail orderDetail = purchaseOrderDetailRepository.findOneById(Long.parseLong(row.get("po_detail_id")));
+					PurchaseOrderDetail orderDetail = purchaseOrderDetailRepository
+							.findOneById(Long.parseLong(row.get("po_detail_id")));
 					Inventory inventory = orderDetail.getInventory();
 					Double quantity = Double.parseDouble(row.get("delivered_quantity"));
-					
+
+					if (inventory.getBoxClass() != null) {
+						isAllFloatingInventories = false;
+					}
 					detail.setMain(main);
 					detail.setPurchaseOrderDetail(orderDetail);
 					detail.setDeliveredQuantity(quantity);
 					detail.setMemo(row.get("memo"));
 					detail.setRowNo(rowNo);
 					rowNo++;
-					
 
 					if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
 						detail.setState(Constants.DELIVERY_ROW_STATE_OK);
-					
+
 						Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
-						
+
 						if (lastDeliveredQuantity == null) {
 							lastDeliveredQuantity = 0D;
 						}
 						orderDetail.setDeliveredQuantity(lastDeliveredQuantity + quantity);
 						purchaseOrderDetailRepository.save(orderDetail);
-						
+
 						if (inventory.getBoxClass() == null) {
 							String inventoryKey = inventory.getCode();
 							Double inventoryQuantity = floatingBoxMap.get(inventoryKey);
@@ -369,18 +377,24 @@ public class DeliveryController extends CommonController {
 
 					} else if (form.getState() == Constants.DELIVERY_STATE_CANCEL) {
 						Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
-						
+
 						if (lastDeliveredQuantity != null) {
 							orderDetail.setDeliveredQuantity(lastDeliveredQuantity - quantity);
 							purchaseOrderDetailRepository.save(orderDetail);
 						}
-						
+
 					}
-					
+
 					detail = deliveryDetailRepository.save(detail);
 				}
-				
+
 				if (form.getState() == Constants.DELIVERY_STATE_SUBMIT) {
+					
+					if (isAllFloatingInventories) {
+						main.setState(Constants.DELIVERY_STATE_DELIVERED);
+						main = deliveryMainRepository.save(main);
+					}
+					
 					int inventoryIndex = 1;
 					for (Map.Entry<String, Double> entry : floatingBoxMap.entrySet()) {
 						String key = entry.getKey();
@@ -397,60 +411,59 @@ public class DeliveryController extends CommonController {
 							if (count < (index + 1) * countPerBox) {
 								boxQuantity = count - index * countPerBox;
 							}
-							
+
 							Box floatingBox = boxRepository.findOneByCode(boxCode);
 							if (floatingBox == null) {
-								floatingBox = new Box();	
+								floatingBox = new Box();
 							}
 							floatingBox.setCode(boxCode);
 							floatingBox.setBindDate(new Date());
 							floatingBox.setDeliveryCode(main.getCode());
 							floatingBox.setDeliveryNumber(main.getDeliverNumber());
 							floatingBox.setType(Constants.BOX_TYPE_DELIVERY);
-							
+
 							floatingBox.setVendorCode(main.getVendor().getCode());
-							floatingBox.setVendorName(main.getVendor().getName());						
-							
+							floatingBox.setVendorName(main.getVendor().getName());
+
 							floatingBox.setInventoryCode(key);
 							floatingBox.setInventoryName(inventory.getName());
 							floatingBox.setInventorySpecs(inventory.getSpecs());
-							
+
 							floatingBox.setQuantity(boxQuantity);
 							floatingBox.setState(1);
 							floatingBox.setUsed(Box.BOX_IS_USING);
-							
+
 							boxRepository.save(floatingBox);
-							
+
 							index++;
 						}
-						
+
 						inventoryIndex++;
 					}
 				} else if (form.getState() == Constants.DELIVERY_STATE_CANCEL) {
-					List<Box> boxList = boxRepository.findAllByDeliveryCodeAndType(main.getCode(), Constants.BOX_TYPE_DELIVERY);
-					for(Box box : boxList) {
-						box.setEmpty();					
-					}				
+					List<Box> boxList = boxRepository.findAllByDeliveryCodeAndType(main.getCode(),
+							Constants.BOX_TYPE_DELIVERY);
+					for (Box box : boxList) {
+						box.setEmpty();
+					}
 					boxRepository.saveAll(boxList);
 				}
 			}
 		} else {
-			List<DeliveryDetail> details = deliveryDetailRepository.findDetailsByCode(main.getCode());			
-			
+			List<DeliveryDetail> details = deliveryDetailRepository.findDetailsByCode(main.getCode());
+
 			RestApiResponse u8Response = Utils.postForArrivalVouch(main, details, restApiClient);
-			
+
 			if (!u8Response.isSuccess()) {
 				main.setState(Constants.DELIVERY_STATE_DELIVERED);
 				deliveryMainRepository.save(main);
-				GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, u8Response.getErrmsg(),
-						main);
+				GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED,
+						u8Response.getErrmsg(), main);
 
 				return jsonResponse;
-				
+
 			}
-			
 		}
-		
 
 		GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
 				main);
@@ -461,7 +474,7 @@ public class DeliveryController extends CommonController {
 	private String generateBoxCode(long deliveryID, int inventoryIndex, int index) {
 		return String.format("B%010d%02d%02d", deliveryID, inventoryIndex, index + 1);
 	}
-	
+
 	@GetMapping("/{ccode}/download")
 	public ResponseEntity<Resource> download(@PathVariable("ccode") String ccode) {
 		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
@@ -483,30 +496,26 @@ public class DeliveryController extends CommonController {
 			}
 		}
 	}
-	
+
 	private boolean hasPermission(DeliveryMain main, Long functionActionId) {
 		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
 		List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
 		List<String> allowedVendorCodeList = accountPermission.getVendorList();
 		List<Long> allowedStoreIdList = accountPermission.getStoreList();
 		List<Long> allowedAccountIdList = accountPermission.getAccountList();
-		
+
 		boolean isValid = false;
 
-		if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)
-				&& main.getCompany() != null
+		if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0) && main.getCompany() != null
 				&& allowedCompanyIdList.contains(main.getCompany().getId())) {
 			isValid = true;
-		} else if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)
-				&& main.getVendor() != null
+		} else if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0) && main.getVendor() != null
 				&& allowedVendorCodeList.contains(main.getVendor().getCode())) {
 			isValid = true;
-		} else if (!(allowedStoreIdList == null || allowedStoreIdList.size() == 0)
-				&& main.getStore() != null
+		} else if (!(allowedStoreIdList == null || allowedStoreIdList.size() == 0) && main.getStore() != null
 				&& allowedStoreIdList.contains(main.getStore().getId())) {
 			isValid = true;
-		} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)
-				&& main.getConfirmer() != null
+		} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0) && main.getConfirmer() != null
 				&& main.getConfirmer() != null && allowedAccountIdList.contains(main.getConfirmer().getId())) {
 			isValid = true;
 		}

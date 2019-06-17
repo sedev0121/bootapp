@@ -35,6 +35,7 @@ import com.srm.platform.vendor.saveform.AccountSaveForm;
 import com.srm.platform.vendor.searchitem.PermissionScopeOfAccount;
 import com.srm.platform.vendor.searchitem.SellerSearchResult;
 import com.srm.platform.vendor.utility.AccountPermission;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 
 @Controller
@@ -161,6 +162,7 @@ public class SellerController extends AccountController {
 			account = accountRepository.findOneById(accountSaveForm.getId());			
 		} else {
 			account.setPassword(passwordEncoder.encode(accountSaveForm.getPassword()));	
+			account.setSecondPassword(passwordEncoder.encode(Constants.DEFAULT_SECOND_PASSWORD));
 		}
 
 		account.setUsername(accountSaveForm.getUsername());
@@ -168,7 +170,7 @@ public class SellerController extends AccountController {
 		boolean isDuplicatedVendor = false;
 		List<Account> accountsHavingVendorCode = accountRepository.findAccountsByVendor(accountSaveForm.getVendor());
 		for (Account vendorAccount : accountsHavingVendorCode) {
-			if (vendorAccount.getId() != accountSaveForm.getId()) {
+			if (vendorAccount.getId().longValue() != accountSaveForm.getId().longValue()) {
 				logger.info(String.format("%d = %d", vendorAccount.getId(), accountSaveForm.getId()));
 				isDuplicatedVendor = true;
 				break;

@@ -245,9 +245,9 @@ public class PurchaseOrderController extends CommonController {
 			main.setReviewer(account);
 		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CLOSE) {
 			
-			Integer detailCountAlreadyAccepted = deliveryDetailRepository.findDetailCountAlreadyAccepted(main.getCode());
-			if (detailCountAlreadyAccepted > 0) {
-				GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, detailCountAlreadyAccepted + "个货品已收货，不能关闭", null);
+			Integer detailCountIsDelivering = deliveryDetailRepository.findDetailCountIsDelivering(main.getCode());
+			if (detailCountIsDelivering > 0) {
+				GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, detailCountIsDelivering + "个货品正在发货，不能关闭", null);
 				return jsonResponse;
 			}
 			main.setClosedate(new Date());
