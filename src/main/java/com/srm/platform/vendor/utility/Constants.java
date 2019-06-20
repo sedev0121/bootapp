@@ -76,6 +76,12 @@ public class Constants {
 	public final static int DELIVERY_STATE_DELIVERED = 4;
 	public final static int DELIVERY_STATE_ARRIVED = 5;	
 	public final static int DELIVERY_STATE_CANCEL = 6;
+	public final static int DELIVERY_STATE_CONFIRM_CANCEL = 7;
+	
+	public final static int DELIVERY_CANCEL_CONFIRMED = 1;
+	
+	public final static String DELIVERY_CANCEL_TYPE_YES = "1";
+	public final static String DELIVERY_CANCEL_TYPE_NO = "2";
 	
 	public final static int DELIVERY_ROW_STATE_NEW = 1;
 	public final static int DELIVERY_ROW_STATE_SUBMIT = 2;

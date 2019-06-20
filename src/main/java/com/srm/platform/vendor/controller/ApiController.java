@@ -22,6 +22,7 @@ import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
+import com.srm.platform.vendor.model.OperationHistory;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.StatementDetail;
@@ -33,6 +34,7 @@ import com.srm.platform.vendor.repository.DeliveryMainRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.repository.OperationHistoryRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
@@ -54,6 +56,9 @@ public class ApiController {
 	
 	@Autowired
 	private RestApiClient apiClient;
+	
+	@Autowired
+	public OperationHistoryRepository operationHistoryRepository;
 	
 	@Autowired
 	private StatementMainRepository statementMainRepository;
@@ -109,6 +114,17 @@ public class ApiController {
 			}
 		}
 
+	}
+	
+	private void addOpertionHistory(String targetId, String action, String content, String type, Account account) {
+		OperationHistory operationHistory = new OperationHistory();
+		operationHistory.setTargetId(targetId);
+		operationHistory.setTargetType(type);
+		operationHistory.setAction(action);
+		operationHistory.setContent(content);
+		operationHistory.setAccount(account);
+
+		operationHistory = operationHistoryRepository.save(operationHistory);
 	}
 	
 	private void cancelPurchaseInState(StatementMain main) {
@@ -531,7 +547,7 @@ public class ApiController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		
 		String deliveryCode = String.valueOf(requestParams.get("code"));
-		
+		List<Map<String, String>> content = (List<Map<String, String>>)requestParams.get("content");
 		
 		if (deliveryCode == null) {
 			response = new HashMap<String, Object>();
@@ -545,18 +561,68 @@ public class ApiController {
 			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
 			response.put("msg", "找不到发货单");	
-			return response;
-		}
-		
-		if (deliveryMain.getState() == Constants.DELIVERY_STATE_ARRIVED) {
-			deliveryMain.setState(Constants.DELIVERY_STATE_DELIVERED);
-			deliveryMainRepository.save(deliveryMain);
-			
-			response.put("error_code", RESPONSE_SUCCESS);
-			response.put("msg", "提交成功");	
-		} else {
+		} else if (deliveryMain.getState() != Constants.DELIVERY_STATE_ARRIVED) {
 			response.put("error_code", RESPONSE_FAIL);
 			response.put("msg", "该发货单还未收货，不能拒收");			
+		} else {
+			List<DeliveryDetail> canceledDeliveryDetailList = new ArrayList<DeliveryDetail>();
+			
+			for(Map<String, String> data : content) {
+				String rowNoStr = data.get("rowNo");
+				String inventoryCode = data.get("material_code");
+				String quantityStr = data.get("quantity");
+				String reason = data.get("reason");
+				String type = data.get("type");
+				
+				if (rowNoStr == null || inventoryCode == null || quantityStr == null || inventoryCode == null || reason == null || type == null) {
+					response.put("error_code", RESPONSE_FAIL);
+					response.put("msg", "参数不正确");	
+					return response;
+				}
+				
+				Integer rowNo = Integer.valueOf(rowNoStr);
+				double quantity = Double.parseDouble(quantityStr);
+				
+				DeliveryDetail detail = deliveryDetailRepository.findOneByCodeAndRowNo(deliveryCode, rowNo);
+				if (detail == null) {
+					response.put("error_code", RESPONSE_FAIL);
+					response.put("msg", "找不到行号为" + rowNo + "的货品");	
+					return response;
+				} else {
+					String detailInventoryCode = detail.getPurchaseOrderDetail().getInventory().getCode();
+					Double detailDeliveredQuantity = detail.getDeliveredQuantity();
+					if (!detailInventoryCode.equals(inventoryCode)) {
+						response.put("error_code", RESPONSE_FAIL);
+						response.put("msg", "行号为" + rowNo + "的货品编码（"+ detailInventoryCode + "）不一致");	
+						return response;
+					} else if (detailDeliveredQuantity.doubleValue() != quantity) {
+						response.put("error_code", RESPONSE_FAIL);
+						response.put("msg", "行号为" + rowNo + "的货品数量（"+ detailDeliveredQuantity + "）不一致");	
+						return response;
+					} else {
+						
+						if (Constants.DELIVERY_CANCEL_TYPE_YES.equals(type)) {
+							detail.setCancelQuantity(quantity);
+							detail.setCancelReason(reason);
+							detail.setCancelDate(new Date());
+						} else {
+							detail.setCancelQuantity(null);
+							detail.setCancelReason(null);
+							detail.setCancelDate(null);
+						}
+						
+						canceledDeliveryDetailList.add(detail);
+						
+					}
+				}
+			}
+			
+			deliveryDetailRepository.saveAll(canceledDeliveryDetailList);
+			
+			addOpertionHistory(deliveryMain.getCode(), "拒收", "API", "delivery", deliveryMain.getCreater());
+			
+			response.put("error_code", RESPONSE_SUCCESS);
+			response.put("msg", "");	
 		}
 		
 		return response;
@@ -567,8 +633,6 @@ public class ApiController {
 		
 		String deliveryCode = String.valueOf(requestParams.get("code"));
 
-		List<Map<String, String>> content = (List<Map<String, String>>)requestParams.get("content");
-		
 		if (deliveryCode == null) {
 			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
@@ -590,6 +654,7 @@ public class ApiController {
 			if (u8Response.isSuccess()) {
 				deliveryMain.setState(Constants.DELIVERY_STATE_ARRIVED);
 				deliveryMainRepository.save(deliveryMain);
+				addOpertionHistory(deliveryMain.getCode(), "已收货", "API", "delivery", deliveryMain.getCreater());
 				
 				response.put("error_code", RESPONSE_SUCCESS);
 				response.put("msg", "提交成功");	

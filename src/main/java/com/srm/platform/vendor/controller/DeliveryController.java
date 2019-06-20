@@ -288,6 +288,8 @@ public class DeliveryController extends CommonController {
 			}
 		} else if (form.getState() == Constants.DELIVERY_STATE_CANCEL) {
 			main.setState(Constants.DELIVERY_STATE_NEW);
+		} else if (form.getState() == Constants.DELIVERY_STATE_CONFIRM_CANCEL) {
+			main.setState(Constants.DELIVERY_STATE_ARRIVED);
 		}
 
 		main = deliveryMainRepository.save(main);
@@ -315,16 +317,66 @@ public class DeliveryController extends CommonController {
 			action = "收货";
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			break;
+		case Constants.DELIVERY_STATE_CONFIRM_CANCEL:
+			action = "确认拒收";
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			break;
 		}
 		String title = String.format("预发货单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
 
 		// this.sendmessage(title, toList, String.format("/delivery/%s/read",
 		// main.getCode()));
-		this.addOpertionHistory(main.getCode(), action, form.getContent());
+		this.addOpertionHistory(main.getCode(), action, form.getContent());		
 
-		
+		if (form.getState() == Constants.DELIVERY_STATE_CONFIRM_CANCEL) {
+			if (form.getTable() != null) {
+				int rowNo = 1;
+				for (Map<String, String> row : form.getTable()) {
+					DeliveryDetail detail = deliveryDetailRepository.findOneByCodeAndRowNo(main.getCode(), rowNo);
+					if (detail != null) {
+						PurchaseOrderDetail orderDetail = purchaseOrderDetailRepository
+								.findOneById(Long.parseLong(row.get("po_detail_id")));
+						
+						Double cancelQuantity = Double.parseDouble(row.get("cancel_quantity"));
+						
+						int cancelConfirmed = Integer.parseInt(row.get("cancel_confirmed"));
+						
+						rowNo++;
 
-		if (form.getState() != Constants.DELIVERY_STATE_ARRIVED) {
+						if (detail.getCancelConfirmDate() == null && cancelConfirmed == Constants.DELIVERY_CANCEL_CONFIRMED) {
+							detail.setCancelConfirmDate(new Date());
+							Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
+
+							if (lastDeliveredQuantity != null) {
+								orderDetail.setDeliveredQuantity(lastDeliveredQuantity - cancelQuantity);
+								purchaseOrderDetailRepository.save(orderDetail);
+							}
+						}		
+
+						detail = deliveryDetailRepository.save(detail);
+					} else {
+						GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED,
+								"找不到行号为" + rowNo + "的货品", main);
+
+						return jsonResponse;
+					}
+				}				
+			}			
+		} else if (form.getState() == Constants.DELIVERY_STATE_ARRIVED) {
+			List<DeliveryDetail> details = deliveryDetailRepository.findDetailsByCode(main.getCode());
+
+			RestApiResponse u8Response = Utils.postForArrivalVouch(main, details, restApiClient);
+
+			if (!u8Response.isSuccess()) {
+				main.setState(Constants.DELIVERY_STATE_DELIVERED);
+				deliveryMainRepository.save(main);
+				GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED,
+						u8Response.getErrmsg(), main);
+
+				return jsonResponse;
+
+			}
+		} else  {
 			deliveryDetailRepository.deleteInBatch(deliveryDetailRepository.findDetailsByCode(main.getCode()));
 
 			if (form.getTable() != null) {
@@ -381,8 +433,7 @@ public class DeliveryController extends CommonController {
 						if (lastDeliveredQuantity != null) {
 							orderDetail.setDeliveredQuantity(lastDeliveredQuantity - quantity);
 							purchaseOrderDetailRepository.save(orderDetail);
-						}
-
+						}									
 					}
 
 					detail = deliveryDetailRepository.save(detail);
@@ -449,20 +500,7 @@ public class DeliveryController extends CommonController {
 					boxRepository.saveAll(boxList);
 				}
 			}
-		} else {
-			List<DeliveryDetail> details = deliveryDetailRepository.findDetailsByCode(main.getCode());
-
-			RestApiResponse u8Response = Utils.postForArrivalVouch(main, details, restApiClient);
-
-			if (!u8Response.isSuccess()) {
-				main.setState(Constants.DELIVERY_STATE_DELIVERED);
-				deliveryMainRepository.save(main);
-				GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED,
-						u8Response.getErrmsg(), main);
-
-				return jsonResponse;
-
-			}
+		
 		}
 
 		GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
