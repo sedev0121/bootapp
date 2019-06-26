@@ -190,14 +190,14 @@ public class Utils {
 
 	}
 
-	public static float round(float value, int places) {
+	public static double round(double value, int places) {
 		if (places < 0)
 			throw new IllegalArgumentException();
 
 		long factor = (long) Math.pow(10, places);
 		value = value * factor;
 		long tmp = Math.round(value);
-		return (float) tmp / factor;
+		return (double) tmp / factor;
 	}
 
 	public static double priceRound(double value) {
@@ -235,9 +235,9 @@ public class Utils {
 			detailData.put("cpocode", orderDetail.getMain().getCode());
 			detailData.put("ivouchrowno", detail.getRowNo());
 			detailData.put("fprice", orderDetail.getPrice());
-			detailData.put("famount", orderDetail.getMoney());
+			detailData.put("famount", round(orderDetail.getPrice() * detail.getDeliveredQuantity(), 2));
 			detailData.put("ftaxprice", orderDetail.getTaxPrice());
-			detailData.put("ftaxamount", orderDetail.getSum());
+			detailData.put("ftaxamount", round(orderDetail.getTaxPrice() * detail.getDeliveredQuantity(), 2));
 			
 			detailList.add(detailData);
 		}	
