@@ -101,7 +101,7 @@ public class BoxController extends CommonController {
 		}
 		
 		if (!vendor.trim().isEmpty()) {
-			bodyQuery += " and (a.code like CONCAT('%',:vendor, '%') or a.name like CONCAT('%',:vendor, '%')) ";
+			bodyQuery += " and (a.vendor_code like CONCAT('%',:vendor, '%') or a.vendor_name like CONCAT('%',:vendor, '%')) ";
 			params.put("vendor", vendor.trim());
 		}
 		

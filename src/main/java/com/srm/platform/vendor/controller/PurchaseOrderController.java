@@ -338,6 +338,9 @@ public class PurchaseOrderController extends CommonController {
 		case "inventory.code":
 			order = "inventory_code";
 			break;
+		case "main.purchase_type_name":
+			order = "b.purchase_type_name";
+			break;
 		}
 
 		Vendor vendor = getLoginAccount().getVendor();

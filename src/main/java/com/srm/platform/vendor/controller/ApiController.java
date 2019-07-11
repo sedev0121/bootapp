@@ -497,6 +497,14 @@ public class ApiController {
 			return response;
 		}
 		
+		List<Box> oldBoxList = boxRepository.findAllByDeliveryCodeAndType(transferCode, Constants.BOX_TYPE_DIAOBO);
+		
+		if (oldBoxList.size() > 0) {
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", "调拨单已绑定");
+			return response;
+		}
+		
 		List<Box> bindingBoxList = new ArrayList<Box>();
 		
 		for(Map<String, String> data : content) {
@@ -720,23 +728,23 @@ public class ApiController {
 			}
 		}
 		
-		if (IS_MES.equals(isMes) && response.get("error_code") == RESPONSE_FAIL ) {
-			RestApiResponse u8Response = apiClient.getBoxMsg(content);
-			Map<String, Object> responseMapData = u8Response.getOriginalMap();
-			String error_code = String.valueOf(responseMapData.get("error_code"));
-			if (RESPONSE_SUCCESS.equals(error_code)) {
-				response.put("error_code", RESPONSE_SUCCESS);
-				response.put("msg", "成功获取装箱清单");
-				
-				response.put("supplier_code", responseMapData.get("supplier_code"));
-				response.put("code", responseMapData.get("code"));
-				response.put("invoice_code", responseMapData.get("invoice_code"));
-				response.put("data", responseMapData.get("data"));				
-			} else {
-				String msg = String.valueOf(responseMapData.get("msg"));
-				response.put("msg", msg);
-			}
-		}
+//		if (IS_MES.equals(isMes) && response.get("error_code") == RESPONSE_FAIL ) {
+//			RestApiResponse u8Response = apiClient.getBoxMsg(content);
+//			Map<String, Object> responseMapData = u8Response.getOriginalMap();
+//			String error_code = String.valueOf(responseMapData.get("error_code"));
+//			if (RESPONSE_SUCCESS.equals(error_code)) {
+//				response.put("error_code", RESPONSE_SUCCESS);
+//				response.put("msg", "成功获取装箱清单");
+//				
+//				response.put("supplier_code", responseMapData.get("supplier_code"));
+//				response.put("code", responseMapData.get("code"));
+//				response.put("invoice_code", responseMapData.get("invoice_code"));
+//				response.put("data", responseMapData.get("data"));				
+//			} else {
+//				String msg = String.valueOf(responseMapData.get("msg"));
+//				response.put("msg", msg);
+//			}
+//		}
 		
 		return response;
 	}

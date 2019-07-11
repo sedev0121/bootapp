@@ -337,29 +337,31 @@ public class DeliveryController extends CommonController {
 						PurchaseOrderDetail orderDetail = purchaseOrderDetailRepository
 								.findOneById(Long.parseLong(row.get("po_detail_id")));
 						
-						Double cancelQuantity = Double.parseDouble(row.get("cancel_quantity"));
+						if (row.get("cancel_quantity") != null && !row.get("cancel_quantity").isEmpty()) {
+							Double cancelQuantity = Double.parseDouble(row.get("cancel_quantity"));							
+							int cancelConfirmed = Integer.parseInt(row.get("cancel_confirmed"));
+
+							if (detail.getCancelConfirmDate() == null && cancelConfirmed == Constants.DELIVERY_CANCEL_CONFIRMED) {
+								detail.setCancelConfirmDate(new Date());
+								Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
+
+								if (lastDeliveredQuantity != null) {
+									orderDetail.setDeliveredQuantity(lastDeliveredQuantity - cancelQuantity);
+									purchaseOrderDetailRepository.save(orderDetail);
+								}
+							}		
+
+							detail = deliveryDetailRepository.save(detail);
+						}
 						
-						int cancelConfirmed = Integer.parseInt(row.get("cancel_confirmed"));
-						
-						rowNo++;
-
-						if (detail.getCancelConfirmDate() == null && cancelConfirmed == Constants.DELIVERY_CANCEL_CONFIRMED) {
-							detail.setCancelConfirmDate(new Date());
-							Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
-
-							if (lastDeliveredQuantity != null) {
-								orderDetail.setDeliveredQuantity(lastDeliveredQuantity - cancelQuantity);
-								purchaseOrderDetailRepository.save(orderDetail);
-							}
-						}		
-
-						detail = deliveryDetailRepository.save(detail);
 					} else {
 						GenericJsonResponse<DeliveryMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED,
 								"找不到行号为" + rowNo + "的货品", main);
 
 						return jsonResponse;
 					}
+					rowNo++;
+
 				}				
 			}			
 		} else if (form.getState() == Constants.DELIVERY_STATE_ARRIVED) {
