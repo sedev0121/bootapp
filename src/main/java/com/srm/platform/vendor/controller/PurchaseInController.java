@@ -35,19 +35,19 @@ import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.searchitem.InquerySearchResult;
 import com.srm.platform.vendor.searchitem.PurchaseInDetailItem;
 import com.srm.platform.vendor.searchitem.PurchaseInDetailResult;
+import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/purchasein")
-@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('出入库单据-查看列表')")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('订单管理-查看列表')")
 public class PurchaseInController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	private static Long LIST_FUNCTION_ACTION_ID = 14L;
+	
 	@PersistenceContext
 	private EntityManager em;
-
-
-
 
 	// 查询列表
 	@GetMapping({ "/", "" })
@@ -119,18 +119,29 @@ public class PurchaseInController extends CommonController {
 
 		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventory_code=c.code "
 				+ "left join measurement_unit m on c.main_measure=m.code left join vendor v on b.vendor_code=v.code  "
-				+ "where v.code in :vendorList ";
+				+ "where 1=1 ";
 
 		Map<String, Object> params = new HashMap<>();
 
-//		List<String> vendorList = this.getVendorListOfUser();
-//		
-//		if (vendorList.size() == 0) {
-//			return new PageImpl<PurchaseInDetailResult>(new ArrayList(), request, 0);
-//		}
-//		
-//		params.put("vendorList", vendorList);
+		if (isVendor()) {
+			Vendor vendorObj = this.getLoginAccount().getVendor();
+			String vendorStr = vendor == null ? "0" : vendorObj.getCode();
+			bodyQuery += " and v.code= :vendor";
+			params.put("vendor", vendorStr);
 
+		} else {
+			String subWhere = " 1=0 ";
+			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			List<String> allowedVendorCodeList = accountPermission.getVendorList();
+			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
+				subWhere += " or v.code in :vendorList";
+				params.put("vendorList", allowedVendorCodeList);
+			}						
+			
+			bodyQuery += " and (" + subWhere + ") ";
+
+		}
+		
 		if (!inventory.trim().isEmpty()) {
 			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
 			params.put("inventory", inventory.trim());
