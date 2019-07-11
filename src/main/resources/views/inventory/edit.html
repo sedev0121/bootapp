@@ -41,7 +41,7 @@
 					<div class="col-md-3">
 						<label>主计量单位: </label> <input type="text" class="form-control" readonly th:value="${data.mainMeasure}" />
 					</div>
-					<div class="col-md-3">
+					<div class="col-md-3 hidden">
 						<label>默认仓库: </label> <input type="text" class="form-control" readonly th:value="${data.defwarehouse}" />
 					</div>
 					<div class="col-md-3">
@@ -58,7 +58,12 @@
 						</select>						
 					</div>
 					<div class="col-md-3">
-						<label>单位包装量: </label> <input type="number" class="form-control" name="count_per_box" id="count_per_box" th:value="${data.countPerBox}" />
+						<label>单位包装量: </label> 
+						<input type="number" class="form-control" name="count_per_box" id="count_per_box" th:value="${data.countPerBox}" />
+					</div>
+					<div class="col-md-3">
+						<label>超订单发货比率: </label> 
+						<input type="number" class="form-control" name="extra_rate" id="extra_rate" th:value="${data.extraRate}" />
 					</div>
 				</div>
 				</form>
@@ -85,7 +90,10 @@
 	      count_per_box : {
 		      required : true,
 		      digits: true
-	      },	      
+	      },	 
+	      extra_rate : {
+		      required : true,
+	      },	 
 	    },
 	    messages : {
 	    	box : {
@@ -94,6 +102,9 @@
 	      count_per_box : {
 	      	required : "不能为空！",
 	      	digits: "请输入整数！"
+	      },
+	      extra_rate : {
+	      	required : "不能为空！",
 	      },
 	    },
 

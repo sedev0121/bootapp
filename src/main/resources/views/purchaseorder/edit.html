@@ -11,8 +11,8 @@
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
 				<a class="btn btn-primary" id="deploy" th:if="${(main.srmstate==0 && canDeploy)}"><i class="fa fa-share"></i> 发布</a> 
 				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
-				<a class="btn btn-primary" id="close_row" th:if="${(main.srmstate>=1 && main.srmstate!=3 && canCloseRow)}"><i class="fa fa-undo"></i> 行关闭</a> 
 				<a class="btn btn-danger" id="close" th:if="${main.srmstate>=1 && main.srmstate!=3 && canClose}"><i class="fa fa-remove"></i> 订单关闭</a>
+				<a class="btn btn-primary" id="close_row" th:if="${(main.srmstate>=1 && main.srmstate<3 && canCloseRow)}"><i class="fa fa-undo"></i> 行关闭</a> 
 				<a class="btn btn-primary" id="export"><i class="fa fa-print"></i> 导出明细</a>
 				<a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
@@ -266,12 +266,12 @@
 			      item.confirmed_date = $.fn.date_renderer(item.confirmed_date);
 			      item.close_state = item.close_date ? 1 : 0;
 			      item.tax = App.costNumber(item.sum - item.money);
-			      item.not_arrived_quantity = item.quantity - item.arrived_quantity;
+			      item.not_arrived_quantity = item.quantity - item.delivered_quantity;
 			      if (state == 0) {
 			      	item.count_per_box = item.inventory.count_per_box;	
 			      }			      
 			      item.not_arrived_box_quantity = App.getBoxCount(item.not_arrived_quantity, item.count_per_box);
-			      item.arrived_box_quantity = App.getBoxCount(item.arrived_quantity, item.count_per_box);
+			      item.arrived_box_quantity = App.getBoxCount(item.delivered_quantity, item.count_per_box);
 			      item.box_quantity = App.getBoxCount(item.quantity, item.count_per_box);
 		      })
 		      return json;
@@ -360,22 +360,27 @@
 	      data : 'price',
 	      className : 'dt-right',
 	      title : '未税单价',
+	      render: App.costNumber,
 	    }, {
 	      data : 'tax_price',
 	      className : 'dt-right',
 	      title : '含税单价',
+	      render: App.costNumber,
 	    }, {
 	      data : 'money',
 	      className : 'dt-right',
 	      title : '未税金额',
+	      render: App.costNumber,
 	    }, {
 	      data : 'tax',
 	      className : 'dt-right',
 	      title : '税额',
+	      render: App.costNumber,
 	    }, {
 	      data : 'sum',
 	      className : 'dt-right',
 	      title : '含税金额',
+	      render: App.costNumber,
 	    }, {
 	      data : 'arrive_date',
 	      title : '需求日期',
@@ -391,41 +396,41 @@
 	      className : 'buyer-cell',
 	      title : '购方备注',
 	    }, {
-	      data : 'arrived_quantity',
+	      data : 'delivered_quantity',
 	      className : 'dt-right',
-	      title : '订单已交数量',
+	      title : '订单已发数量',
 	    }, {
 	      data : null,
 	      defaultContent : '',
 	      className : 'dt-right',
-	      title : '订单已交件数'
+	      title : '订单已发件数'
 	    }, {
 	      data : 'arrived_box_quantity',
 	      className : 'dt-right',
-	      title : '订单已交箱数',
+	      title : '订单已发箱数',
 	    }, {
 	      data : 'not_arrived_quantity',
 	      className : 'dt-right',
-	      title : '订单未交数量',
+	      title : '订单未发数量',
 	    }, {
 	      data : null,
 	      defaultContent : '',
 	      className : 'dt-right',
-	      title : '订单未交件数'
+	      title : '订单未发件数'
 	    }, {
 	      data : 'not_arrived_box_quantity',
 	      className : 'dt-right',
-	      title : '订单未交箱数',
+	      title : '订单未发箱数',
 	    }, {
 	      data : null,
 	      defaultContent : '',
 	      className : 'dt-right',
 	      title : '是否加急',
-
 	    }, {
 	      data : 'prepay_money',
 	      className : 'dt-right',
 	      title : '订金',
+	      render: App.costNumber,
 	    }, {
 	      data : 'confirmed_quantity',
 	      className : 'dt-right',
@@ -458,7 +463,7 @@
         }
     	},
 	    footerCallback : function(row, data, start, end, display) {
-		    App.footerCallback(this.api(), [ [ 6, "cost" ], [ 10, "cost" ], [ 11, "cost" ], [ 15, "cost" ], [ 16, "cost" ], [ 17, "cost" ], [ 21, "cost" ], [ 22, "cost" ], [ 23, "cost" ], [ 24, "cost" ], [ 25, "cost" ], [ 28, "cost" ] ]);
+		    App.footerCallback(this.api(), [ [ 6, "quantity" ], [ 10, "quantity" ], [ 11, "quantity" ], [ 15, "cost" ], [ 16, "cost" ], [ 17, "cost" ], [ 21, "quantity" ], [ 22, "quantity" ], [ 23, "quantity" ], [ 24, "quantity" ], [ 25, "quantity" ], [ 28, "cost" ] ]);
 	    },
 	  });
 

@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -47,6 +48,18 @@ public class DeliveryDetail implements Serializable {
 	
 	private String memo;
 	
+	@JsonProperty("cancel_reason")
+	private String cancelReason;
+	
+	@JsonProperty("cancel_date")
+	private Date cancelDate;
+	
+	@JsonProperty("cancel_quantity")
+	private Double cancelQuantity;
+	
+	@JsonProperty("cancel_confirm_date")
+	private Date cancelConfirmDate;
+	
 	@JsonProperty("buyer_memo")
 	private String buyerMemo;
 	
@@ -60,6 +73,38 @@ public class DeliveryDetail implements Serializable {
 		this.id = id;
 	}
 	
+	public String getCancelReason() {
+		return cancelReason;
+	}
+
+	public void setCancelReason(String cancelReason) {
+		this.cancelReason = cancelReason;
+	}
+
+	public Date getCancelDate() {
+		return cancelDate;
+	}
+
+	public void setCancelDate(Date cancelDate) {
+		this.cancelDate = cancelDate;
+	}
+
+	public Double getCancelQuantity() {
+		return cancelQuantity;
+	}
+
+	public void setCancelQuantity(Double cancelQuantity) {
+		this.cancelQuantity = cancelQuantity;
+	}
+
+	public Date getCancelConfirmDate() {
+		return cancelConfirmDate;
+	}
+
+	public void setCancelConfirmDate(Date cancelConfirmDate) {
+		this.cancelConfirmDate = cancelConfirmDate;
+	}
+
 	public DeliveryMain getMain() {
 		return main;
 	}

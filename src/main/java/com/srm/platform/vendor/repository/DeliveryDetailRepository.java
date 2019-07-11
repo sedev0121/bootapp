@@ -28,4 +28,7 @@ public interface DeliveryDetailRepository extends JpaRepository<DeliveryDetail, 
 	@Modifying
 	@Query(value = "delete FROM delivery_detail WHERE code= :code", nativeQuery = true)
 	void DeleteByCode(String code);
+	
+	@Query(value = "select count(a.order_detail_id) count from delivery_detail a left join purchase_order_detail b on a.order_detail_id=b.id left join delivery_main c on a.code=c.code where b.code=:code and c.state<5", nativeQuery = true)
+	Integer findDetailCountIsDelivering(String code);
 }

@@ -84,6 +84,10 @@ public class Account implements Serializable {
 
 	@JsonIgnore
 	private String password;
+	
+	@JsonIgnore
+	private String secondPassword;
+	
 	private String role = "ROLE_BUYER";
 	private String realname;
 	private String duty;
@@ -216,12 +220,21 @@ public class Account implements Serializable {
 	public Account(String username, String password, String role) {
 		this.username = username;
 		this.password = password;
+		this.secondPassword = password;
 		this.role = role;
 		this.modifyTime = Instant.now();
 	}
 
 	public Long getId() {
 		return id;
+	}
+
+	public String getSecondPassword() {
+		return secondPassword;
+	}
+
+	public void setSecondPassword(String secondPassword) {
+		this.secondPassword = secondPassword;
 	}
 
 	public String getPassword() {

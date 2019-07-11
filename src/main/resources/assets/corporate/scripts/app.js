@@ -21,13 +21,14 @@ var App = function() {
   var role_data = [{id:"ROLE_BUYER", text:"采购员"}, {id:"ROLE_VENDOR", text:"供应商"}, {id:"ROLE_ADMIN", text:"管理员"}];
   var account_state_data = [{id:1, text:"启用"}, {id:0, text:"停用"}];
   var used_state_data = [{id:1, text:"使用中"}, {id:0, text:"空置"}];
-  var delivery_state_data = [{id:1, text:"新建"}, {id:2, text:"已发布"}, {id:3, text:"审批"}, {id:4, text:"已发货"}, {id:5, text:"已收货"}];
+  var delivery_state_data = [{id:1, text:"新建"}, {id:2, text:"已发布"}, {id:3, text:"审批"}, {id:4, text:"已发货"}, {id:5, text:"已收货"}, {id:6, text:"已退回"}, {id:7, text:"确认拒收"}];
   var delivery_row_state_data = [{id:1, text:"新建"}, {id:2, text:"已发布"}, {id:3, text:"审批"}, {id:4, text:"拒绝"}];
   var statement_type_data = [{id:1, text:"采购对账"}, {id:2, text:"委外对账"}];
   var invoice_type_data = [{id:1, text:"专用发票"}, {id:2, text:"普通发票"}];
   var order_close_state_data = [{id:0, text:"  "}, {id:1, text:"关闭"}];
   var yes_no_data = [{id:1, text:"是"}, {id:0, text:"否"}];
   var purchase_order_type_data = [{id:"普通采购", text:"普通采购"}, {id:"委外加工", text:"委外加工"}];
+  var box_type_data = [{id:"1", text:"发货单"}, {id:"2", text:"调拨单"}];
   
   var getLabelOfId = function(store, id) {
     var title = "";
@@ -208,7 +209,14 @@ var App = function() {
       return App.formatNumber(i, 6);
     },
     costNumber : function (i) {
-      return App.formatNumber(i, 2);
+    	var result = App.formatNumber(i, 2);
+    	if (result == 0 || result == "0" || result == "") {
+    		result = "";
+    	}
+    	if (is_vendor && !second_password) {
+    		result = "***";
+    	}
+      return result;
     },
     intVal : function ( i ) {
       var temp = typeof i === 'string' ?i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ?i : 0;
@@ -423,6 +431,9 @@ var App = function() {
     getAccountStateOfId: function(id) {
       return getLabelOfId(account_state_data, id);
     },
+    getBoxTypeOfId: function(id) {
+      return getLabelOfId(box_type_data, id);
+    },
     getUsedStateOfId: function(id) {
       return getLabelOfId(used_state_data, id);
     },
@@ -614,6 +625,8 @@ var App = function() {
       }
 
       var csvData = trim_last_char(csv_string);
+      var universalBOM = "\uFEFF";
+      csvData = universalBOM + csvData;
       var blob = new Blob([ csvData ], {
           type : "application/csv;charset=utf-8;"
       });

@@ -79,12 +79,11 @@ public class BoxController extends CommonController {
 		Integer boxState = Integer.parseInt(state);
 		Integer usedState = Integer.parseInt(used);		
 		
-		String selectQuery = "SELECT a.*, c.deliver_number, d.code inventory_code, d.name inventory_name, d.specs inventory_spec, b.name box_class_name, e.code vendor_code, e.name vendor_name ";
+		String selectQuery = "SELECT a.*, b.name box_class_name ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM box a left join box_class b on a.box_class_id=b.id left join delivery_main c on a.delivery_code=c.code "
-				+ "left join inventory d on a.inventory_code=d.code left join vendor e on c.vendor_code=e.code "
+		String bodyQuery = "FROM box a left join box_class b on a.box_class_id=b.id "
 				+ "where 1=1 ";
 
 		Map<String, Object> params = new HashMap<>();
@@ -102,7 +101,7 @@ public class BoxController extends CommonController {
 		}
 		
 		if (!vendor.trim().isEmpty()) {
-			bodyQuery += " and (e.code like CONCAT('%',:vendor, '%') or e.name like CONCAT('%',:vendor, '%')) ";
+			bodyQuery += " and (a.vendor_code like CONCAT('%',:vendor, '%') or a.vendor_name like CONCAT('%',:vendor, '%')) ";
 			params.put("vendor", vendor.trim());
 		}
 		
@@ -149,7 +148,11 @@ public class BoxController extends CommonController {
 		if (maxSerialNumber == null) {
 			maxSerialNumber = "000000";
 		} else {
-			maxSerialNumber = maxSerialNumber.substring(Math.max(maxSerialNumber.length() - 6, 0));
+			int length = 6;
+			if (maxSerialNumber.startsWith("T")) {
+				length = 5;
+			}
+			maxSerialNumber = maxSerialNumber.substring(Math.max(maxSerialNumber.length() - length, 0));
 		}
 		return maxSerialNumber;
 	}
@@ -208,7 +211,13 @@ public class BoxController extends CommonController {
 				box.setBindDate(null);
 				box.setBindProperty(null);
 				box.setDeliveryCode(null);
+				box.setVendorCode(null);
+				box.setVendorName(null);
 				box.setInventoryCode(null);
+				box.setInventoryName(null);
+				box.setInventorySpecs(null);
+				box.setDeliveryNumber(null);
+				box.setType(null);
 				box.setQuantity(null);
 			}
 

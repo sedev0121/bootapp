@@ -149,3 +149,82 @@ update purchase_order_detail a left join purchase_order_main b on a.code=b.code 
 
 
 alter table delivery_main add column type varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+
+/* 2019-06-07 */
+alter table box add column inventory_name varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table box add column inventory_specs varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table box add column vendor_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table box add column vendor_name varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table box add column type int(1) NULL DEFAULT NULL;
+alter table box add column delivery_number varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+update box a left join inventory b on a.inventory_code=b.code set a.inventory_name=b.name, a.inventory_specs=b.specs;
+update box a left join delivery_main b on a.delivery_code=b.code left join vendor c on b.vendor_code=c.code set a.vendor_code=c.code, a.vendor_name=c.name, a.delivery_number=b.deliver_number;
+update box set type=1 where delivery_code is not null;
+
+/* 2019-06-13 second password */
+alter table account add column second_password varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+update account set second_password='$2a$10$CBrThLk9FmVJxhlkFsHYu.jSvEVubybN62TaruleZyt5z8eOIEm66' where role='ROLE_VENDOR';
+
+
+/* 2019-06-14 triger */
+DROP TABLE IF EXISTS `box_history`;
+CREATE TABLE `box_history`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `box_id` int(11) NULL DEFAULT NULL,
+  `box_class_id` int(11) NULL DEFAULT NULL,
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `bind_date` datetime(0) NULL DEFAULT NULL,
+  `bind_property` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `quantity` double(255, 2) NULL DEFAULT NULL,
+  `used` int(1) NULL DEFAULT NULL,
+  `state` int(1) NULL DEFAULT NULL,
+  `inventory_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `delivery_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `inventory_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `inventory_specs` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `vendor_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `vendor_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `type` int(1) NULL DEFAULT NULL,
+  `delivery_number` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `operation_date` datetime(0) NULL DEFAULT NULL,
+  `operation` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+DROP TRIGGER IF EXISTS update_trigger;
+DROP TRIGGER IF EXISTS insert_trigger;
+DROP TRIGGER IF EXISTS delete_trigger;  
+
+delimiter # 
+create trigger update_trigger after update on box
+   for each row
+   begin
+   insert into box_history(box_id, box_class_id, code, bind_date, bind_property, quantity, used, state, inventory_code, delivery_code, inventory_name, inventory_specs, vendor_code, vendor_name, type, delivery_number, operation_date, operation) values (new.id, new.box_class_id, new.code, new.bind_date, new.bind_property, new.quantity, new.used, new.state, new.inventory_code, new.delivery_code, new.inventory_name, new.inventory_specs, new.vendor_code, new.vendor_name, new.type, new.delivery_number, now(), 'update');
+   end#   
+	 
+delimiter # 	 
+create trigger insert_trigger after insert on box
+   for each row
+   begin
+   insert into box_history(box_id, box_class_id, code, bind_date, bind_property, quantity, used, state, inventory_code, delivery_code, inventory_name, inventory_specs, vendor_code, vendor_name, type, delivery_number, operation_date, operation) values (new.id, new.box_class_id, new.code, new.bind_date, new.bind_property, new.quantity, new.used, new.state, new.inventory_code, new.delivery_code, new.inventory_name, new.inventory_specs, new.vendor_code, new.vendor_name, new.type, new.delivery_number, now(), 'insert');
+   end#    
+
+delimiter # 
+create trigger delete_trigger before delete on box
+   for each row
+   begin
+   insert into box_history(box_id, box_class_id, code, bind_date, bind_property, quantity, used, state, inventory_code, delivery_code, inventory_name, inventory_specs, vendor_code, vendor_name, type, delivery_number, operation_date, operation) values (old.id, old.box_class_id, old.code, old.bind_date, old.bind_property, old.quantity, old.used, old.state, old.inventory_code, old.delivery_code, old.inventory_name, old.inventory_specs, old.vendor_code, old.vendor_name, old.type, old.delivery_number, now(), 'delete');
+   end#  
+delimiter ; 
+
+
+alter table inventory add column extra_rate float(11, 2) NULL DEFAULT 0.00;
+
+
+/* 2019-06-18 */
+alter table delivery_detail add column cancel_date datetime(0) NULL DEFAULT NULL;
+alter table delivery_detail add column cancel_reason varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table delivery_detail add column cancel_quantity double(20, 2) NULL DEFAULT NULL;
+alter table delivery_detail add column cancel_confirm_date datetime(0) NULL DEFAULT NULL;

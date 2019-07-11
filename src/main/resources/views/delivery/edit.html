@@ -13,7 +13,9 @@
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
 				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="pass"><i class="fa fa-arrow-up"></i>确认</a> 
-				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="cancel"><i class="fa fa-undo"></i> 退回</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==4}" id="accept"><i class="fa fa-check-circle"></i> 收货</a> 
+				<a class="btn btn-danger" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==5}" id="confirm_cancel"><i class="fa fa-check"></i> 确认拒收</a>
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state<5 && main.state>=2}" id="cancel"><i class="fa fa-undo"></i> 退回</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state>1}" id="print"><i class="fa fa-print"></i> 打印</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state>1}" id="print_float"><i class="fa fa-print"></i> 打印浮动箱码</a> 
 				<a class="btn btn-default" th:href="@{/delivery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
@@ -244,13 +246,15 @@ is_readonly = 0;
 	    }, {
 	      name : "purchaseOrderDetail.quantity"
 	    }, {
+	      name : "purchaseOrderDetail.inventory.extra_rate"
+	    }, {
 	      name : "purchaseOrderDetail.delivered_quantity"
 	    }, {
 	    	type:  "select",
-	      name : "state",
+	      name : "cancel_confirmed",
 	      options: [
-          { label: "审批", value: "3" },
-          { label: "拒绝", value: "4" },
+          { label: "未确认", value: "0" },
+          { label: "已确认", value: "1" },
       	]
 	    }, {
 	      name : "buyer_memo"
@@ -285,23 +289,23 @@ is_readonly = 0;
 		  			if (item.delivered_quantity < 0) {
 		  				item.delivered_quantity *= -1;
 		  			}
-		  			if (item.delivered_quantity > item.purchaseOrderDetail.quantity - item.purchaseOrderDetail.delivered_quantity) {
-		  				item.delivered_quantity = item.purchaseOrderDetail.quantity - item.purchaseOrderDetail.delivered_quantity;
+		  			var max_limit = item.purchaseOrderDetail.quantity * 1 * (item.purchaseOrderDetail.inventory.extra_rate * 1 + 100)/100 - item.purchaseOrderDetail.delivered_quantity
+		  			if (item.delivered_quantity > max_limit) {
+		  				item.delivered_quantity = max_limit;
 		  			}
 			  	}
         });
 		  		
 		  }
-	  }).on('preEdit', function(e, data, action) {
-	  	
+	  }).on('preOpen', function(e, data, action) {	  	
 		  var currentFieldName = e.currentTarget.s.includeFields[0];
-		  if (currentFieldName == "state") {
+		  if (currentFieldName == "cancel_confirmed") {
 		  	var modifier = editor.modifier();
 		  	$(modifier).addClass("selecting");	
 		  }
 	  }).on('close', function(e) {
 	  	var currentFieldName = e.currentTarget.s.includeFields[0];
-		  if (currentFieldName == "state") {
+		  if (currentFieldName == "cancel_confirmed") {
 		  	var modifier = editor.modifier();
 		  	$(modifier).removeClass("selecting");	
 		  }
@@ -329,6 +333,7 @@ is_readonly = 0;
 		      $.each(json, function(key, item) {
 			      item.dstartdate = $.fn.date_renderer(item.dstartdate);
 			      item.denddate = $.fn.date_renderer(item.denddate);
+			      item.cancel_confirmed = item.cancel_confirm_date?1:0;
 		      });
 		      return json;
 	      },
@@ -404,21 +409,21 @@ is_readonly = 0;
 	    }, {
 	      data : null,
 	      className : 'dt-right',
-	      title : '订单未交数量',
+	      title : '订单未发数量',
 	      render: function (data, display, record) {
 	        return record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.delivered_quantity;
 	      },
 	    }, {
 	    	data : null,
 	      className : 'dt-right',
-	      title : '订单未交件数',		
+	      title : '订单未发件数',		
 	      render: function (data, display, record) {
 	        return App.getBoxCount(record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.delivered_quantity, record.purchaseOrderDetail.count_per_box);
 	      },
 	    }, {
 	      data : 'delivered_quantity',
 	      className : 'dt-right',
-	      className : 'vendor-edit' + (!is_vendor?'':' editable'),
+	      className : (is_vendor && state == 1?'vendor-edit editable':''),
 	      title : '发货数量',		
 	    }, {
 	      data : 'delivered_quantity',
@@ -437,18 +442,18 @@ is_readonly = 0;
 	    }, {
 	      data : 'purchaseOrderDetail.arrived_quantity',
 	      className : 'dt-right',
-	      title : '实收数量',		 
+	      title : '入库数量',		 
 	    }, {
 	    	data : null,
 	      className : 'dt-right',
-	      title : '实收件数',		
+	      title : '入库件数',		
 	      render: function (data, display, record) {
 	        return App.getBoxCount(record.purchaseOrderDetail.arrived_quantity, record.purchaseOrderDetail.count_per_box);
 	      },
 	    }, {
 	      data : null,
 	      className : 'dt-right',
-	      title : '实收箱数',		 
+	      title : '入库箱数',		 
 	      render: function (data, display, record) {
 	        return App.getBoxCount(record.purchaseOrderDetail.arrived_quantity, record.purchaseOrderDetail.count_per_box);
 	      },
@@ -477,22 +482,31 @@ is_readonly = 0;
 	      	return $("#deliver_number").val();
 	      }
 	    }, {
-	      data : 'buyer_memo',
-	      visible: state > 1,
-	      className : 'buyer-edit' + (is_vendor?'':' editable'),
-	      title : '购方备注',		  
-	    }, {
 	      data : 'memo',
-	      className : 'vendor-edit' + (!is_vendor?'':' editable'),
+	      className : (is_vendor && state == 1?'vendor-edit editable':''),
 	      title : '供方备注',		 
 	    }, {
-	      data : 'state',
-	      title : '行审批　　',	
-	      width: 100,
-	      visible: false,
-	      className : 'buyer-edit' + (is_vendor?'':' editable'),
-	      render : App.getDeliveryRowStateOfId
-
+	      data : 'cancel_quantity',
+	      className : 'dt-right',
+	      title : '拒收数量',		
+	    }, {
+	      data : 'cancel_reason',
+	      title : '拒收原因',		 
+	    }, {
+	      data : 'cancel_confirmed',
+	      title : '确认拒收      ',	
+	      className : (is_vendor && state==5?'vendor-edit editable':''),
+	      render: function(data, display, record) {
+	      	if (record.cancel_date) {
+	      		if (record.cancel_confirmed == 1) {
+		      		return "已确认";
+		      	} else {
+		      		return "未确认";
+		      	}	
+	      	} else {
+	      		return "";
+	      	}	      	
+	      }
 	    } ],
 	    rowCallback : function(row, data) {
 		    // Set the checked state of the checkbox in the table
@@ -529,24 +543,8 @@ is_readonly = 0;
 
 	  table = $('#detail_table').DataTable(table_options);
 
-	  table.on('select', function(e, dt, type, indexes) {
-	  	var selected_data = table.rows('.selected').data().toArray();
-		  if (selected_data.length > 0) {
-			  table.button(1).enable();
-		  } else {
-			  table.button(1).disable();
-		  }
-
-	  }).on('deselect', function(e, dt, type, indexes) {
-	  	var selected_data = table.rows('.selected').data().toArray();
-		  if (selected_data.length > 0) {
-			  table.button(1).enable();
-		  } else {
-			  table.button(1).disable();
-		  }
-	  });
-
-	  if (is_vendor && state == 1) {
+	 
+	  if (is_vendor && (state == 1 || state == 5)) {
 		  table.on('click', 'tbody td.vendor-edit', function(e) {
 			  editor.inline(this, {
 			    submit : 'allIfChanged',
@@ -675,18 +673,18 @@ is_readonly = 0;
 		    }, {
 		      data : 'arrived_quantity',
 		      className : 'dt-right',
-		      title : '实收数量',		 
+		      title : '入库数量',		 
 		    }, {
 		      data : 'arrived_quantity',
 		      className : 'dt-right',
-		      title : '实收件数',
+		      title : '入库件数',
 		      render: function (data, display, record) {
 		        return App.getBoxCount(record.arrived_quantity, record.count_per_box);
 		      },
 		    }, {
 		      data : 'accepted_quantity',
 		      className : 'dt-right',
-		      title : '实收箱数',		
+		      title : '入库箱数',		
 		      render: function (data, display, record) {
 		      	return App.getBoxCount(record.arrived_quantity, record.count_per_box);
 		      },
@@ -711,63 +709,7 @@ is_readonly = 0;
       
   	});
 	  
-	  function onChangeType() {
-		  if ((state == 1 || state == 4) && !is_readonly) {
-			  table.on('click', 'td.memo, td.startdate, td.enddate, td.taxrate', function(e) {
-				  editor.inline(this, {
-				    submit : 'allIfChanged',
-				    submitOnBlur : true
-				  });
-			  });
-
-			  if ($("#type").val() == 1) {
-				  table.button(1).disable();
-				  table.off('click', 'td.minquantity, td.maxquantity');
-				  table.on('click', 'td.unitprice, td.taxunitprice', function(e) {
-					  editor.inline(this, {
-					    submit : 'allIfChanged',
-					    submitOnBlur : true
-					  });
-				  });
-				  App.addKeyDownEditor(editor, 7, 13);
-			  } else if ($("#type").val() == 2) {
-				  table.off('click', 'td.unitprice, td.taxunitprice');
-				  table.on('click', 'td.minquantity, td.maxquantity', function(e) {
-					  editor.inline(this, {
-					    submit : 'allIfChanged',
-					    submitOnBlur : true
-					  });
-				  });
-				  if (is_vendor) {
-					  table.on('click', 'td.unitprice, td.taxunitprice', function(e) {
-						  editor.inline(this, {
-						    submit : 'allIfChanged',
-						    submitOnBlur : true
-						  });
-					  });
-				  }
-				  App.addKeyDownEditor(editor, 5, 13);
-			  } else {
-				  table.button(1).disable();
-				  table.off('click', 'td.minquantity, td.maxquantity');
-				  if (is_vendor) {
-					  table.on('click', 'td.unitprice, td.taxunitprice', function(e) {
-						  editor.inline(this, {
-						    submit : 'allIfChanged',
-						    submitOnBlur : true
-						  });
-					  });
-					  App.addKeyDownEditor(editor, 7, 13);
-				  } else {
-					  table.off('click', 'td.unitprice, td.taxunitprice');
-					  App.addKeyDownEditor(editor, 9, 13);
-				  }
-
-			  }
-		  }
-	  }
-
-	  onChangeType();
+	  
 		function showImportDialog() {
 			if (!$('#company').val()) {
 				App.showErrorDialog("操作失败", "请选择业务实体！");
@@ -834,6 +776,10 @@ is_readonly = 0;
 			      data : 'inventory.code',
 			      title : '货品代码',
 			    }, {
+			      data : 'inventory.specs',
+			      title : '货品规格型号',
+			      orderable: false,
+			    }, {
 			      data : 'main.purchase_type_name',
 			      title : '采购类型',
 			    }, {
@@ -854,25 +800,25 @@ is_readonly = 0;
 			    }, {
 			      data : 'delivered_quantity',
 			      className : 'dt-right',
-			      title : '订单已交数量',
+			      title : '订单已发数量',
 			    }, {
 			      data : 'delivered_quantity',
 			      className : 'dt-right',
-			      title : '订单已交箱数',
+			      title : '订单已发箱数',
 			      render: function (data, display, record) {
 			      	return App.getBoxCount(record.delivered_quantity, record.count_per_box);
 			      },
 			    }, {
 			      data : 'quantity',
 			      className : 'dt-right',
-			      title : '订单未交数量',
+			      title : '订单未发数量',
 			      render: function (data, display, record) {
 			      	return record.quantity - record.delivered_quantity;
 			      },
 			    }, {
 			      data : 'quantity',
 			      className : 'dt-right',
-			      title : '订单未交箱数',
+			      title : '订单未发箱数',
 			      render: function (data, display, record) {
 			      	return App.getBoxCount(record.quantity - record.delivered_quantity, record.count_per_box);
 			      }, 
@@ -890,11 +836,11 @@ is_readonly = 0;
 			    }, {
 			      data : 'arrived_quantity',
 			      className : 'dt-right',
-			      title : '实收数量',		 
+			      title : '入库数量',		 
 			    }, {
 			      data : 'arrived_quantity',
 			      className : 'dt-right',
-			      title : '实收箱数',	
+			      title : '入库箱数',	
 			      render: function (data, display, record) {
 			      	return App.getBoxCount(record.arrived_quantity, record.count_per_box);
 			      },
@@ -936,6 +882,10 @@ is_readonly = 0;
 				  temp.accepted_quantity = 0;				  
 				  temp.arrived_quantity = 0;
 				  temp.deliver_number = '';
+				  temp.cancel_quantity = null;
+				  temp.cancel_reason = null;
+				  temp.cancel_confirm_date = null;
+				  temp.cancel_date = null;
 				  temp.memo = '';
 				  temp.buyer_memo = '';
 				  temp.state = 3;
@@ -948,6 +898,10 @@ is_readonly = 0;
 	  });
 
 	  $.validator.addMethod("checkTable", function(value, element) {
+	  	if ($('#state').val() >= 5) {
+	  		return true;
+	  	};
+	  	
 		  var exist_data = table.rows().data().toArray();
 		 
 		  var store_set = $('#store_set').val();
@@ -955,14 +909,16 @@ is_readonly = 0;
 		  for (i = 0; i < exist_data.length; i++) {
 			  var exist_row = exist_data[i];
 			  
+			  var delivery_max_limit = exist_row.purchaseOrderDetail.quantity * (exist_row.purchaseOrderDetail.inventory.extra_rate + 100)/100 - exist_row.purchaseOrderDetail.delivered_quantity;
+			  
 			  if (exist_row.purchaseOrderDetail.main.purchase_type_name != $('#type').val()) {
 			  	App.showErrorDialog("操作失败", "有些货品的采购类型与发货单不符！");
 				  return false;
 			  } else if (!exist_row.delivered_quantity || exist_row.delivered_quantity == 0) {
 				  App.showErrorDialog("操作失败", "发货数量不能为空！");
 				  return false;
-			  } else if (exist_row.delivered_quantity > exist_row.purchaseOrderDetail.quantity - exist_row.purchaseOrderDetail.delivered_quantity) {
-			  	App.showErrorDialog("操作失败", "发货数量不能大于订单未交数量！");
+			  } else if (exist_row.delivered_quantity > delivery_max_limit) {
+			  	App.showErrorDialog("操作失败", "发货数量不能大于订单未发数量！");
 				  return false;
 			  } else if (store_set == 1 && !exist_row.purchaseOrderDetail.count_per_box) {			  	
 			  	App.showErrorDialog("操作失败", exist_row.purchaseOrderDetail.inventory.name + "(" + exist_row.purchaseOrderDetail.inventory.code + ")" + "的单位包装量为空。请先维护此货品的单位包装量。");
@@ -1016,7 +972,9 @@ is_readonly = 0;
 		    		delivered_quantity: item.delivered_quantity || 0,
 		    		memo: item.memo,
 		    		buyer_memo: item.buyer_memo,
-		    		state: item.state,		    		
+		    		state: item.state,
+		    		cancel_quantity: item.cancel_quantity,
+		    		cancel_confirmed: item.cancel_confirmed
 		    	})
 		    });
 		    
@@ -1034,8 +992,12 @@ is_readonly = 0;
 			  	confirmMessage = "提交";
 			  } else if (new_state == 3) {
 			  	confirmMessage = "确认";
-			  } else if (new_state == 4) {
+			  } else if (new_state == 5) {
+			  	confirmMessage = "收货";
+			  } else if (new_state == 6) {
 			  	confirmMessage = "退回";
+			  } else if (new_state == 7) {
+			  	confirmMessage = "确认拒收";
 			  }
 			  
 			  App.showInputConfirmDialog('确定要' + confirmMessage + '发货单吗?', function(submit_content) {
@@ -1106,14 +1068,29 @@ is_readonly = 0;
 		  $("#form").submit();
 	  });
 	  
+	  $("#accept").click(function() {
+		  editor.submit();
+		  $('#state').val(5);
+		  $("#form").submit();
+	  });
+	  
 	  $("#cancel").click(function() {
 		  editor.submit();
-		  $('#state').val(4);
+		  $('#state').val(6);
+		  $("#form").submit();
+	  });
+	  
+	  $("#confirm_cancel").click(function() {
+		  editor.submit();
+		  $('#state').val(7);
 		  $("#form").submit();
 	  });
 	  
 	  $("#print").click(function() {
 	  	var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
+	  	if (window.location.host.indexOf("www.meidasy.cn") == -1) {
+	  		url = "http://192.168.30.204:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
+	  	}	  	
 	  	var win = window.open(url, '_blank');
 	    win.focus();
 	  });

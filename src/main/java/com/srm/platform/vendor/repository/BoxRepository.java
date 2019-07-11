@@ -20,8 +20,8 @@ public interface BoxRepository extends JpaRepository<Box, Long> {
 	Box findOneById(Long id);
 	Box findOneByCode(String code);
 	
-	List<Box> findByBoxClassId(Long id);
-	List<Box> findAllByDeliveryCode(String deliveryCode);
+	List<Box> findByBoxClassId(Long id);	
+	List<Box> findAllByDeliveryCodeAndType(String deliveryCode, Integer type);
 	
     @Transactional
     @Modifying

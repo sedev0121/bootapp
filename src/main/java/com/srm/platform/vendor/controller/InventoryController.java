@@ -93,7 +93,8 @@ public class InventoryController extends CommonController {
 		String code = requestParams.get("code");
 		String boxIdStr = requestParams.get("box");
 		String countPerBoxStr = requestParams.get("count_per_box");
-
+		String extraRateStr = requestParams.get("extra_rate");
+		
 		Inventory main = inventoryRepository.findOneByCode(code);
 
 		GenericJsonResponse<Inventory> jsonResponse;
@@ -104,7 +105,7 @@ public class InventoryController extends CommonController {
 		} else {
 			main.setBoxClass(boxClassRepository.findOneById(Long.parseLong(boxIdStr)));
 			main.setCountPerBox(Integer.parseInt(countPerBoxStr));
-
+			main.setExtraRate(Double.valueOf(extraRateStr));
 			main = inventoryRepository.save(main);
 			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, main);
 		}		

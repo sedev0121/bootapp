@@ -74,7 +74,14 @@ public class Constants {
 	public final static int DELIVERY_STATE_SUBMIT = 2;
 	public final static int DELIVERY_STATE_OK = 3;
 	public final static int DELIVERY_STATE_DELIVERED = 4;
-	public final static int DELIVERY_STATE_ARRIVED = 5;
+	public final static int DELIVERY_STATE_ARRIVED = 5;	
+	public final static int DELIVERY_STATE_CANCEL = 6;
+	public final static int DELIVERY_STATE_CONFIRM_CANCEL = 7;
+	
+	public final static int DELIVERY_CANCEL_CONFIRMED = 1;
+	
+	public final static String DELIVERY_CANCEL_TYPE_YES = "1";
+	public final static String DELIVERY_CANCEL_TYPE_NO = "2";
 	
 	public final static int DELIVERY_ROW_STATE_NEW = 1;
 	public final static int DELIVERY_ROW_STATE_SUBMIT = 2;
@@ -91,4 +98,13 @@ public class Constants {
 	public final static int NEGOTIATION_STATE_CONFIRM = 3;
 	public final static int NEGOTIATION_STATE_CANCEL = 4;
 	public final static int NEGOTIATION_STATE_DONE = 5;
+	
+	public final static int BOX_TYPE_DELIVERY = 1;
+	public final static int BOX_TYPE_DIAOBO = 2;
+	
+	public final static int PASSWORD_TYPE_NORMAL = 1;
+	public final static int PASSWORD_TYPE_SECOND = 2;
+	
+	public final static String DEFAULT_SECOND_PASSWORD = "123";
+	
 }

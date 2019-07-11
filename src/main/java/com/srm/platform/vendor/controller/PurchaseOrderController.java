@@ -136,7 +136,7 @@ public class PurchaseOrderController extends CommonController {
 
 		String bodyQuery = "FROM purchase_order_main a left join vendor b on a.vencode=b.code left join account c on a.deployer=c.id left join account d on a.reviewer=d.id "
 				+ "left join (select code, sum(prepay_money) prepay_money, sum(money) money, sum(sum) sum from purchase_order_detail group by code) e on a.code=e.code "
-				+ "left join company f on a.company_id=f.id WHERE a.state='审核' and a.company_id is not null ";
+				+ "left join company f on a.company_id=f.id WHERE a.state='审核' and a.company_id is not null and a.vencode in (select vendor_code from account where vendor_code is not null) ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -244,8 +244,20 @@ public class PurchaseOrderController extends CommonController {
 			main.setReviewdate(new Date());
 			main.setReviewer(account);
 		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CLOSE) {
+			
+			Integer detailCountIsDelivering = deliveryDetailRepository.findDetailCountIsDelivering(main.getCode());
+			if (detailCountIsDelivering > 0) {
+				GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, detailCountIsDelivering + "个货品正在发货，不能关闭", null);
+				return jsonResponse;
+			}
 			main.setClosedate(new Date());
 			main.setCloser(account.getRealname());
+		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CLOSE_ROW) {			
+			Integer detailCountIsDelivering = deliveryDetailRepository.findDetailCountIsDelivering(main.getCode());
+			if (detailCountIsDelivering > 0) {
+				GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, detailCountIsDelivering + "个货品正在发货，不能关闭", null);
+				return jsonResponse;
+			}
 		}
 
 		main = purchaseOrderMainRepository.save(main);
@@ -325,6 +337,9 @@ public class PurchaseOrderController extends CommonController {
 			break;
 		case "inventory.code":
 			order = "inventory_code";
+			break;
+		case "main.purchase_type_name":
+			order = "b.purchase_type_name";
 			break;
 		}
 

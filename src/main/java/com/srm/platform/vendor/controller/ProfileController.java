@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.utility.Constants;
 
 @Controller
 @RequestMapping(path = "/profile")
@@ -91,17 +92,44 @@ public class ProfileController extends CommonController {
 			Principal principal) {
 		String oldPassword = requestParams.get("old_pwd");
 		String newPassword = requestParams.get("new_pwd");
+		String type = requestParams.get("type");
 
 		Account account = accountRepository.findOneByUsername(principal.getName());
 
-		if (passwordEncoder.matches(oldPassword, account.getPassword())) {
-			account.setPassword(passwordEncoder.encode(newPassword));
-			account = accountRepository.save(account);
+		if (Integer.parseInt(type) == Constants.PASSWORD_TYPE_NORMAL) {
+			if (passwordEncoder.matches(oldPassword, account.getPassword())) {
+				account.setPassword(passwordEncoder.encode(newPassword));
+				account = accountRepository.save(account);
+				return "1";
+			} else {
+				return "旧密码有误！";
+			}	
+		} else {
+			if (passwordEncoder.matches(oldPassword, account.getSecondPassword())) {
+				account.setSecondPassword(passwordEncoder.encode(newPassword));
+				account = accountRepository.save(account);
+				return "1";
+			} else {
+				return "旧二级密码有误！";
+			}
+		}
+		
+
+	}
+	
+	@PostMapping("/check_second_password")
+	public @ResponseBody String checkSecondPassword(@RequestParam Map<String, String> requestParams,
+			Principal principal) {
+		String secondPassword = requestParams.get("pwd");
+
+		Account account = accountRepository.findOneByUsername(principal.getName());
+
+		if (passwordEncoder.matches(secondPassword, account.getSecondPassword())) {	
+			httpSession.setAttribute("second_password", 1);
 			return "1";
 		} else {
-			return "旧密码有误！";
+			return "0";
 		}
-
 	}
 
 	@GetMapping("/checkemail")
