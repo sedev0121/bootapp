@@ -12,14 +12,14 @@
     </ul>       
     <div class="btn-group-bar">
         <div class="text-right">
-          <a class="btn btn-success" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.state==1  or main.state==4}" id="sync"><i class="fa fa-download"></i> 同步U8入库单</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.state==1  or main.state==4}" id="save"><i class="fa fa-save"></i> 保存</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.state==1  or main.state==4}" id="submit"><i class="fa fa-share"></i> 提交</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-审核/退回')" th:if="${main.state==2}" id="review"><i class="fa fa-arrow-up"></i> 审核/发布</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-审核/退回')" th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.state==5}" id="u8invoice"><i class="fa fa-check-square"></i> 生成U8采购发票</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.state==5 or main.state==7}" id="buyer_cancel"><i class="fa fa-recycle"></i> 撤销</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-删除')" th:if="${!#strings.contains(#request.requestURI,'add') and (main.state==1  or main.state==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
+          <a class="btn btn-success" th:if="${main.state==1  or main.state==4}" id="sync"><i class="fa fa-download"></i> 同步U8入库单</a>
+          <a class="btn btn-primary" th:if="${main.state==1  or main.state==4}" id="save"><i class="fa fa-save"></i> 保存</a>
+          <a class="btn btn-primary" th:if="${main.state==1  or main.state==4}" id="submit"><i class="fa fa-share"></i> 提交</a>
+          <a class="btn btn-primary"  th:if="${main.state==2}" id="review"><i class="fa fa-arrow-up"></i> 审核/发布</a>
+          <a class="btn btn-primary"  th:if="${main.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+          <a class="btn btn-primary" th:if="${main.state==5}" id="u8invoice"><i class="fa fa-check-square"></i> 生成U8采购发票</a>
+          <a class="btn btn-primary" th:if="${main.state==5 or main.state==7}" id="buyer_cancel"><i class="fa fa-recycle"></i> 撤销</a>
+          <a class="btn btn-primary" th:if="${!#strings.contains(#request.requestURI,'add') and (main.state==1  or main.state==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
 
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3 or main.state==7}" id="verify"><i class="fa fa-check-square"></i> 确认</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3 or main.state==7}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
@@ -113,7 +113,7 @@
                   <label for="cancel_date">发票退回时间</label>
                   <input type="text" id=""cancel_date"" th:value="${#dates.format(main.invoiceCancelDate, 'yyyy-MM-dd')}" disabled class="form-control" />
                 </div>        
-                <div class="col-lg-6 col-md-6 form-group" sec:authorize="hasAuthority('对账单管理-新建/发布')" id="file_select" th:if="${(main.state==1 or main.state == 4) and main.attachFileName == null}">
+                <div class="col-lg-6 col-md-6 form-group" id="file_select" th:if="${(main.state==1 or main.state == 4) and main.attachFileName == null}">
                   <label for="remark">　</label>
                   <div class="input-group input-file" name="attach">
                       <span class="input-group-btn">
@@ -130,7 +130,7 @@
                   <div th:if="${main.attachFileName!=null}" >
                     <span><b>附件：</b></span>
                     <a th:href="@{|/statement/${main.code}/download|}" th:text="${main.attachOriginalName}"></a><a class="btn" style="visibility: hidden;">　</a> 
-                    <a class="btn btn-danger" id="del_attach" sec:authorize="hasAuthority('对账单管理-新建/发布')" th:if="${main.attachOriginalName!=null and (main.state==1  || main.state==4)}">删除附件</a>
+                    <a class="btn btn-danger" id="del_attach" th:if="${main.attachOriginalName!=null and (main.state==1  || main.state==4)}">删除附件</a>
                   </div>
                   <div th:if="${main.attachFileName==null}" >
                     <span><b>附件：</b></span>
@@ -200,7 +200,7 @@
 is_vendor = 1;
 </script>
 
-<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('对账单管理-新建/发布')">
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_BUYER')">
 is_readonly = 0;
 </script>
 
