@@ -103,7 +103,7 @@ public class PurchaseInController extends CommonController {
 			order = "c.specs";
 			break;
 		case "unitname":
-			order = "m.name";
+			order = "c.main_measure";
 			break;
 		case "mainmemo":
 			order = "b.memo";
@@ -113,13 +113,12 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, m.name unitname, b.date, b.verify_date, c.name inventoryname,c.specs, v.name vendorname, v.code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
+		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventoryname,c.specs, v.name vendorname, v.code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
 		String countQuery = "select count(a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventory_code=c.code "
-				+ "left join measurement_unit m on c.main_measure=m.code left join vendor v on b.vendor_code=v.code  "
-				+ "where 1=1 ";
+				+ "left join vendor v on b.vendor_code=v.code where 1=1 ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -231,19 +230,18 @@ public class PurchaseInController extends CommonController {
 			order = "c.specs";
 			break;
 		case "unitname":
-			order = "m.name";
+			order = "c.main_measure";
 			break;
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, m.name unitname, b.date, b.verify_date, c.name inventoryname,c.specs, null vendorname, vendor_code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
+		String selectQuery = "select a.*, c.main_measure unitname, b.date, b.verify_date, c.name inventoryname,c.specs, null vendorname, vendor_code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventory_code=c.code "
-				+ "left join measurement_unit m on c.main_measure=m.code "
 				+ "where a.state=0 and type=:type and b.vendor_code=:vendor ";
 
 		Map<String, Object> params = new HashMap<>();
