@@ -77,10 +77,14 @@
 					<li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/box')} ? active : ''">
 						<a th:href="@{/box}">箱码管理</a>
 					</li>
-					<li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/purchasein')} ? active : ''" >
-            <a th:href="@{/purchasein}">出入库单据</a>
-          </li>
-					<li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/store')} or ${#strings.startsWith(#request.requestURI,'/classofbox')} or ${#strings.startsWith(#request.requestURI,'/company')} or ${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')} or ${#strings.startsWith(#request.requestURI,'/baseprice')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
+					<li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/purchasein')} or ${#strings.startsWith(#request.requestURI,'/statement')}"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">对账单管理 </a>
+						<ul class="dropdown-menu">
+							<li><a th:href="@{/purchasein}">账单任务</a></li>
+							<li><a th:href="@{/purchasein}">入库单管理</a></li>
+							<li><a th:href="@{/statement}">对账单管理</a></li>
+						</ul>
+					</li>
+					<li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/store')} or ${#strings.startsWith(#request.requestURI,'/classofbox')} or ${#strings.startsWith(#request.requestURI,'/company')} or ${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')}"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
 						<ul class="dropdown-menu">
 							<li><a th:href="@{/vendorclass}">供应商分类</a></li>
 							<li><a th:href="@{/vendor}">供应商档案</a></li>
@@ -89,7 +93,6 @@
 							<li><a th:href="@{/company}">业务实体</a></li>
 							<li><a th:href="@{/store}">仓库管理</a></li>
 							<li><a th:href="@{/classofbox}">箱码分类</a></li>
-							<li><a th:href="@{/purchasein}">入库单管理</a></li>
 						</ul>
 					</li>
 					<li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/buyer')} or ${#strings.startsWith(#request.requestURI,'/seller')} or ${#strings.startsWith(#request.requestURI,'/config')} or ${#strings.startsWith(#request.requestURI,'/permission_group')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">系统管理 </a>
@@ -97,7 +100,8 @@
 							<li><a th:href="@{/buyer}">采购员用户管理</a></li>
 							<li><a th:href="@{/seller}">供应商用户管理</a></li>
 							<li><a th:href="@{/permission_group}">权限管理</a></li>
-						</ul></li>
+						</ul>
+					</li>
 				</ul>
 			</div>
 			<!-- BEGIN NAVIGATION -->

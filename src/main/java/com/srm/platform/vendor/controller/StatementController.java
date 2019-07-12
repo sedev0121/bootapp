@@ -54,7 +54,7 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/statement")
-@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('对账单管理-查看列表')")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('订单管理-查看列表')")
 public class StatementController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -68,7 +68,7 @@ public class StatementController extends CommonController {
 	}
 
 	@GetMapping({ "/add" })
-	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
+//	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
 	public String add(Model model) {
 		StatementMain main = new StatementMain(accountRepository);
 		model.addAttribute("main", main);
@@ -92,7 +92,7 @@ public class StatementController extends CommonController {
 	}
 
 	@GetMapping("/{code}/delete")
-	@PreAuthorize("hasAuthority('对账单管理-删除')")
+//	@PreAuthorize("hasAuthority('对账单管理-删除')")
 	public @ResponseBody Boolean delete(@PathVariable("code") String code) {
 		StatementMain main = statementMainRepository.findOneByCode(code);
 		if (main != null) {
@@ -117,7 +117,7 @@ public class StatementController extends CommonController {
 	}
 
 	@GetMapping("/{code}/deleteattach")
-	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
+//	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
 	public @ResponseBody Boolean deleteAttach(@PathVariable("code") String code) {
 		StatementMain main = statementMainRepository.findOneByCode(code);
 
