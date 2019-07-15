@@ -1088,7 +1088,7 @@ is_readonly = 0;
 	  
 	  $("#print").click(function() {
 	  	var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
-	  	if (window.location.host.indexOf("www.meidasy.cn") == -1) {
+	  	if (window.location.host.startsWith("192.")) {
 	  		url = "http://192.168.30.204:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
 	  	}	  	
 	  	var win = window.open(url, '_blank');
