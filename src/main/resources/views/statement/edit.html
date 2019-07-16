@@ -265,7 +265,7 @@
 	is_readonly = 0;
 </script>
 <script th:inline="javascript">
-	var editor, invoice_editor, table_options, table, import_table, history_table, summary_table, summary_data, invoice_table, attach_table;
+	var editor, invoice_editor, attach_editor, table_options, table, import_table, history_table, summary_table, summary_data, invoice_table, attach_table;
   var qty_sum, money_sum;
   /*[+
    var sync_url = [[@{/sync/purchasein/vendor/}]];
@@ -279,11 +279,10 @@
    var invoice_type = [[${main.invoiceType}]];
    var hasAttach = [[${main.attachFileName != null}]];
    var history_url = [[@{|/operation_history/list/statement/${main.code}}|]];
+   var attach_url = [[@{/vendor/search}]];
    +]*/
 
   $(document).ready(function() {
-
-	  App.bs_input_file();
 
 	  $('.modal').on('shown.bs.modal', function() {
 		  load_import_table();
@@ -380,14 +379,45 @@
 		  });
 	  }
 	  
+	  attach_editor = new $.fn.dataTable.Editor({
+	    table : "#attach_table",
+	    idSrc : "row_no",
+	    i18n : {
+		    remove : {
+		      button : "删除行",
+		      title : "删除行",
+		      submit : "是",
+		      confirm : {
+		        _ : "确定要删除%d行数据吗?",
+		        1 : "确定要删除吗?"
+		      }
+		    },
+	    }
+	  }).on('postRemove', function(e, json, ids) {
+	  	var table_data = attach_table.rows().data().toArray();
+		  var id = 1;
+		  $.each(table_data, function(key, item) {
+			  item.row_no = id++;
+		  })
+		  attach_table.rows().invalidate();
+	  });
+	  
 	  attach_table = $('#attach_table').DataTable({
 	    serverSide : false,
 	    processing : false,
 	    ajax : false,
+	    select : {
+		    style : 'multi',
+		    selector: 'td:first-child',
+	    },
 	    data : [ {
+	    	id: 1,
+	    	row_no: 1,	    	
 	      date : '2019-06-24',
 	      filename : "11111.jpg"
 	    }, {
+	    	id: 2,
+	    	row_no: 2,
 	      date : '2019-06-24',
 	      filename : "11111.jpg"
 	    }, ],
@@ -399,16 +429,41 @@
 	      title : '选择',
 	      className : 'select-checkbox',
 	    }, {
-	      data : null,
-	      render : $.fn.rowno_renderer,
+	      data : 'row_no',
 	      title : '行号',
+	      width : '30px' 
 	    }, {
 	      data : 'date',
 	      title : '日期',
+	      width : '100px'
 	    }, {
 	      data : 'filename',
 	      title : '附件',
+	      render: function (data, display, record) {
+	      	var html = data;
+	      	if (data) {
+	      		html = '<a href="' + attach_url + '">' + data + '</a>';	
+	      	} else {
+	      		html = '<input type="file"/>';
+		      }
+
+		      return html;
+	      }
 	    } ],
+	    buttons : [ {
+	      text : "添加行",
+	      action : function(e, dt, node, config) {
+		      var new_row = {
+		        row_no : attach_table.rows().data().toArray().length + 1,
+		        date : new Date().toISOString().slice(0, 10)
+		      };
+		      attach_table.row.add(new_row);
+		      attach_table.draw();
+	      }
+	    }, {
+	      extend : "remove",
+	      editor : attach_editor
+	    }, ],
 	  });
 
 	  $('#show_modal_btn').click(function() {
@@ -419,7 +474,7 @@
 		  if (summary_table) {
 			  summary_table.destroy();
 			  $('#summary_table').empty();
-			  
+
 			  var footer = $("<tfoot></tfoot>").appendTo("#summary_table");
 			  var footertr = $("<tr></tr>").appendTo(footer);
 
@@ -427,7 +482,7 @@
 			  for (var i = 0; i < 13; i++) {
 				  if (i == 0) {
 					  $("<th colspan='5' class='dt-center'>合计</th>").appendTo(footertr);
-				  } else if (i>=5){
+				  } else if (i >= 5) {
 					  $("<th></th>").appendTo(footertr);
 				  }
 			  }
@@ -609,17 +664,17 @@
 	    data : App.getStatementStateData(),
 	    minimumResultsForSearch : -1
 	  }).select2("val", state.toString());
-	  
+
 	  $("#type").select2({
 	    data : App.getStatementTypeData(),
 	    minimumResultsForSearch : -1
 	  }).select2("val", type.toString());
-	  
+
 	  $("#invoice_type").select2({
 	    data : App.getInvoiceTypeData(),
 	    minimumResultsForSearch : -1
 	  }).select2("val", invoice_type.toString());
-	  
+
 	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
 
 	  if ((state != 1 && state != 4) || is_readonly) {
@@ -724,7 +779,7 @@
 		  }
 
 		  if (summary_table) {
-		  	summary_table.columns.adjust().fixedColumns().relayout();
+			  summary_table.columns.adjust().fixedColumns().relayout();
 		  }
 
 		  if (invoice_table) {
@@ -1282,7 +1337,7 @@
 					      unitname : item.unitname,
 					      quantity : item.quantity,
 					      tax_rate : item.tax_rate,
-					      specs: item.specs,
+					      specs : item.specs,
 					      tax_price : item.tax_price,
 					      tax_cost : item.tax_cost,
 					      adjust_cost : 0,
