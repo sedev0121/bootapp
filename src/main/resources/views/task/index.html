@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+	<div class="container" layout:fragment="content">
+		<ul class="breadcrumb">
+			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+			<li class="active">账单任务</li>
+		</ul>
+		<div class="search-content">
+			<div class="search-cell width-10">
+				<input type="text" id="start_date" value="" class="form-control datepicker" placeholder="日期："/>
+			</div>
+			<div class="search-cell width-10">
+				<input type="text" id="end_date" value="" class="form-control datepicker" placeholder=""/>
+			</div>
+			<div style="vertical-align: bottom" class="search-cell width-15">
+				<button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+				<a class="btn btn-primary" id="add_btn"><i class="fa fa-plus-circle"></i> 生成账单</a>
+				<a class="btn btn-primary" id="auto_task_btn"><i class="fa fa-plus-circle"></i> 自动任务设置</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12">
+				<table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+				</table>
+			</div>
+		</div>
+		<div class="modal fade" id="new_dialog" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">生成对账单</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="history_form" th:action="@{/operation_history/update}" method="post">
+							<input type="hidden" name="action" value=" 添加说明" />
+							<div class="row">
+								<div class="col-lg-12 col-md-12">
+									<label for="code">对账时间： </label> 
+									<input type="text" id="date" name="date" class="form-control datepicker"  />
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">退出</button>
+						<button type="button" class="btn btn-primary" id="save_history">生成</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">日志查询</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<table id="history_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
+	is_vendor = 1;
+</script>
+<script th:inline="javascript">
+	/*[+
+   var list_url = [[@{/task/list}]];
+   var history_url = [[@{|/task/history/}|]];
+   +]*/
+
+  $(document).ready(function() {
+		var history_table, selected_task_id;
+		
+  	$(".datepicker").datepicker({
+		  onSelect : function(dateText) {
+			  table.draw();
+		  }
+	  });
+  	
+	  var table = $('#example').DataTable({
+	    ordering : true,
+	    scrollY : '355px',
+	    ajax : {
+	      url : list_url,
+	      data : function(data) {
+		      var filter = {
+		        order : data.columns[data.order[0].column].data,
+		        dir : data.order[0].dir,
+		        rows_per_page : data.length,
+		        page_index : data.start / data.length + 1,
+		        vendor : $('#vendor').val(),
+		        state : $('#state').val(),
+		        code : $('#code').val(),
+		        is_vendor : is_vendor,
+		      }
+		      return filter;
+	      },
+	      dataSrc : function(json) {
+		      json.recordsTotal = json.totalElements;
+		      json.recordsFiltered = json.totalElements;
+		      return json.content;
+	      },
+	    },
+	    createdRow : function(row, data, dataIndex) {
+		    $(row).addClass('');
+	    },
+	    columns : [ {
+	      data : 'code',
+	      title : '任务编号',
+	    }, {
+	      data : 'create_date',
+	      title : '日期',
+	      className : 'dt-center',
+	      render : $.fn.date_renderer
+	    }, {
+	      data : 'estimated_arrival_date',
+	      title : '账期',
+	      className : 'dt-center',
+	      render : $.fn.date_renderer
+	    }, {
+	      data : 'estimated_arrival_date',
+	      title : '操作人',
+	      className : 'dt-center',
+	      render : $.fn.date_renderer
+	    }, {
+	      data : 'estimated_arrival_date',
+	      title : '操作日期',
+	      className : 'dt-center',
+	      render : $.fn.date_renderer
+	    }, {
+	      data : 'state',
+	      title : '任务日志',
+	      className : 'dt-center',
+	      render : function(data, display, record) {
+		      return '<a class="history" href="#">' + data + '</a>';
+	      },
+	    } ],
+	    order : [ [ 1, "desc" ] ],
+	    drawCallback : function(settings) {
+	    	$(".history").click(function() {
+	  			$('#history_dialog').modal('show');
+	  			selected_task_id = $(this).attr("task_id");
+	  	  });
+	    }
+	  });
+
+	  $('#history_dialog').on('shown.bs.modal', function (e) {
+	  	if (history_table) {
+	  		history_table.clear().destroy();
+			  $('#history_table').empty();
+		  }  	
+	  	
+	  	var url = history_url + selected_task_id;
+	  	history_table = $('#history_table').DataTable({
+		    serverSide : false,
+		    processing : false,
+		    ajax : {
+		      url : url,
+		      dataSrc : function(json) {
+			      return json;
+		      },
+		    },
+		    order : [ [ 0, 'desc' ] ],
+		    columns : [ {
+		      data : 'create_date',
+		      title : '日期',
+		      width : '150px',
+		      className : 'dt-center',
+		      render : $.fn.time_renderer,
+		    }, {
+		      data : 'action',
+		      title : '动作',
+		      width : '100px',
+		      className : 'dt-center',
+		    }, {
+		      data : 'account.realname',
+		      title : '操作人',
+		      width : '150px',
+		      className : 'dt-center',
+		    }, {
+		      data : 'content',
+		      title : '说明',
+		    } ],
+		  });
+	  })
+	  
+	  $("#btn_search").click(function() {
+		  table.draw();
+	  });
+
+	  $('#start_date, #start_date').keyup(function(e) {
+		  if (e.keyCode == 13)
+			  table.draw();
+	  });
+	  
+	  $("#add_btn").click(function() {
+	  	$('#new_dialog').modal('show');
+	  });
+		
+		$("#auto_task_btn").click(function() {
+			$('#history_dialog').modal('show');
+	  });
+  });
+</script>

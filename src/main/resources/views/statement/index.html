@@ -9,12 +9,8 @@
 		<div class="row">
 			<div class="col-lg-12 box-top-bar">
 				<a class="btn btn-primary" th:href="@{/statement/add}"><i class="fa fa-plus-circle"></i> 新建</a>
-				<button class="btn btn-info" id="bulk_review">
-					<i class="fa fa-check-square"></i> 批量审核
-				</button>
-				<button class="btn btn-info" id="bulk_deploy">
-					<i class="fa fa-share"></i> 批量发布
-				</button>
+				<button class="btn btn-info" id="bulk_review"><i class="fa fa-check-square"></i> 批量审核</button>
+				<button class="btn btn-info" id="bulk_deploy"><i class="fa fa-share"></i> 批量发布</button>
 			</div>
 		</div>
 		<div class="search-content">
@@ -226,7 +222,7 @@
 	      render : $.fn.date_renderer
 */	      
 	    } ],
-	    order : [ [ 7, "desc" ] ]
+	    order : [ [ 0, "desc" ] ]
 
 	  });
 
