@@ -386,31 +386,23 @@ $(document).ready(function() {
           },
         },
         columns : [ {
+          data : 'code',
+          title : '入库单号'
+        }, {
           data : 'date',
           render : $.fn.date_renderer,
           className:'dt-center',
           title : '入库日期'
         }, {
-            data : 'verify_date',
-            render : $.fn.date_renderer,
-            className:'dt-center',
-            title : '审核日期'
-        }, {
-          data : 'code',
-          title : '出入库单号'
-        }, {
-          data : 'po_code',
-          title : '订单号'
-        }, {
-          data : 'rowno',
-          className:'dt-center',
-          title : '行号',
-        }, {
-          data : 'inventoryname',
-          title : '物料名称'
+          data : null,
+          defaultContent: '',
+          title : '库房'
         }, {
           data : 'inventorycode',
-          title : '物料编码'
+          title : '货品代码'
+        }, {
+          data : 'inventoryname',
+          title : '货品名称'
         }, {
           data : 'specs',
           title : '规格型号',
@@ -423,29 +415,17 @@ $(document).ready(function() {
           className:'dt-right',
           title : '入库数量',
         }, {
-          data : 'nat_price',
-          className:'dt-right',
-          title : '订单未税单价',
-        }, {
-          data : 'nat_tax_price',
-          className:'dt-right',
-          title : '订单含税单价',
-        }, {
           data : 'price',
           className:'dt-right',
           title : '单价',
         }, {
-          data : 'cost',
-          className:'dt-right',
-          title : '金额',
-        }, {
-          data : 'nat_tax_rate',
-          className:'dt-right',
-          title : '税率',
-        }, {
           data : 'nat_tax_price',
           className:'dt-right',
           title : '含税单价',
+        }, {
+          data : 'cost',
+          className:'dt-right',
+          title : '金额',
         }, {
           data : 'tax_cost',
           className:'dt-right',
@@ -453,7 +433,7 @@ $(document).ready(function() {
         }, {
           data : 'state',
           className:'dt-center',
-          title : '状态',
+          title : '摘要',
           render : App.getPurchaseInStateOfId,
         } ],
         order: [  [ 1, "asc" ] ],
