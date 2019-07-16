@@ -30,6 +30,8 @@ public class StatementSaveForm {
 
 	private List<Map<String, String>> table;
 
+	private String content;
+	
 	public String getCode() {
 		return code;
 	}
@@ -148,6 +150,14 @@ public class StatementSaveForm {
 
 	public void setTable(List<Map<String, String>> table) {
 		this.table = table;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 }

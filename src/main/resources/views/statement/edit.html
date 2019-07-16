@@ -143,6 +143,30 @@
 							</div>              
             </div>
         </form>
+        <div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">添加说明</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<form id="history_form" th:action="@{/operation_history/update}" method="post">
+									<input type="hidden" name="action" value=" 添加说明" />
+									<div class="row">
+										<div class="col-md-12">
+											<textarea name="content" placeholder="请输入说明" id="history_content" class="history-content" rows="5"></textarea>
+										</div>
+									</div>
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+								<button type="button" class="btn btn-primary" id="save_history">保存</button>
+							</div>
+						</div>
+					</div>
+				</div>
         <div class="modal fade" id="import_dialog" role="dialog" aria-hidden="true">
             <div class="modal-dialog" role="document" style="width:1000px;">
                 <div class="modal-content">
@@ -215,7 +239,7 @@ var state = [[${main.state}]];
 var type = [[${main.type}]];
 var invoice_type = [[${main.invoiceType}]];
 var hasAttach = [[${main.attachFileName != null}]];
-var history_url = [[@{|/operation_history/list/delivery/${main.code}}|]];
+var history_url = [[@{|/operation_history/list/statement/${main.code}}|]];
 +]*/ 
   
 $(document).ready(function() {
@@ -264,6 +288,10 @@ $(document).ready(function() {
       data : 'filename',
       title : '附件',
     } ],
+  });
+	
+	$('#show_modal_btn').click(function() {
+  	$('#history_dialog').modal('show'); 
   });
 	
   function reloadSummaryTable() {
@@ -483,6 +511,38 @@ $(document).ready(function() {
   
   $('#type').change(function() {
     onChangeType();
+  });
+  
+  $('#save_history').click(function() {
+  	if (!$('#history_content').val()) {
+  		App.showErrorDialog("日志内容不能为空！");
+  		return;
+  	}
+  	
+	  $("#history_form").ajaxSubmit({
+	    data : {
+	    	target_type : "statement",
+	      target_id : $('#code').val(),
+	    },
+	    beforeSend : function() {
+		    App.blockUI();
+	    },
+	    complete : function() {
+		    App.unblockUI();
+	    },
+	    success : function(res, status, xhr, form) {
+		    if (res.success == 1) {
+			    $('#history_content').val('');
+			    history_table.ajax.reload();
+			    $('#history_dialog').modal('hide'); 
+		    } else {
+			    App.showErrorDialog(res.errmsg);
+		    }
+	    },
+	    error : function(res, status, xhr, form) {
+		    App.showErrorDialog("操作失败", "请稍后重试");
+	    }
+	  });
   });
   
   history_table = $('#history_table').DataTable({
@@ -1646,27 +1706,47 @@ $(document).ready(function() {
         post_data.table = data;
       }        
 
-      jQuery(form).ajaxSubmit({
-        beforeSend: function(){
-          App.blockUI();
-        },
-        complete: function(){
-          App.unblockUI();
-        }, 
-        data: post_data,
-        success: function(res, status, xhr, form) {
-          if (res.success == 1){
-            App.showSuccessDialog("操作成功", function(){
-              window.location.href = edit_url + res.data.code + "/edit";
-            });
-          }else{
-            App.showErrorDialog("操作失败", res.errmsg);
+      var new_state = $('#state').val();  	
+	    var confirmMessage = "";
+		  if (new_state == 1) {
+		  	confirmMessage = "保存";
+		  } else if (new_state == 2) {
+		  	confirmMessage = "提交";
+		  } else if (new_state == 3) {
+		  	confirmMessage = "确认";
+		  } else if (new_state == 5) {
+		  	confirmMessage = "收货";
+		  } else if (new_state == 6) {
+		  	confirmMessage = "退回";
+		  } else if (new_state == 7) {
+		  	confirmMessage = "确认拒收";
+		  }
+		  
+      App.showInputConfirmDialog('确定要' + confirmMessage + '对账单吗?', function(submit_content) {
+      	post_data.content = submit_content;
+      	jQuery(form).ajaxSubmit({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          }, 
+          data: post_data,
+          success: function(res, status, xhr, form) {
+            if (res.success == 1){
+              App.showSuccessDialog("操作成功", function(){
+                window.location.href = edit_url + res.data.code + "/edit";
+              });
+            }else{
+              App.showErrorDialog("操作失败", res.errmsg);
+            }
+          },
+          error: function (res, status, xhr, form) {
+            App.showErrorDialog("操作失败", "请输入正确的值");
           }
-        },
-        error: function (res, status, xhr, form) {
-          App.showErrorDialog("操作失败", "请输入正确的值");
-        }
+        });
       });
+      
     }
   }); 
   
@@ -1911,34 +1991,6 @@ $(document).ready(function() {
     $("#form").submit();            
   });   
   
-  $("#sync").click(function() {
-    if (!$("#vendor").val()) {
-      $('#vendor').focus();
-      App.showErrorDialog("请选择供应商！");
-      return false;
-    }
-    
-    App.showConfirmDialog('确定要同步吗?', function() {
-      var url = sync_url + $("#vendor").val();
-      $.ajax({
-        beforeSend: function(){
-          App.blockUI();
-        },
-        complete: function(){
-          App.unblockUI();
-        }, 
-        url : url,
-        success : function(data, res) {
-          if (data == true) {
-            App.showSuccessDialog("同步成功");
-          }else{
-            App.showSuccessDialog("同步失败");
-          }
-        }
-      });
-    });
-    
-  });
   
 });
 </script>

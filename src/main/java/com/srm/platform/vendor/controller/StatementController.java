@@ -61,6 +61,11 @@ public class StatementController extends CommonController {
 	@PersistenceContext
 	private EntityManager em;
 
+	@Override
+	protected String getOperationHistoryType() {
+		return "statement";
+	};
+	
 	// 查询列表
 	@GetMapping({ "", "/" })
 	public String index() {
@@ -110,7 +115,7 @@ public class StatementController extends CommonController {
 				}
 			}
 			statementMainRepository.delete(main);
-			postUnLock(main);
+//			postUnLock(main);
 		}
 
 		return true;
@@ -328,6 +333,10 @@ public class StatementController extends CommonController {
 		String action = null;
 		List<Account> toList = new ArrayList<>();
 		switch (form.getState()) {
+		case Constants.STATEMENT_STATE_NEW:
+			toList.addAll(accountRepository.findAllBuyersByVendorCode(main.getVendor().getCode()));
+			action = "保存";
+			break;
 		case Constants.STATEMENT_STATE_SUBMIT:
 			toList.addAll(accountRepository.findAllBuyersByVendorCode(main.getVendor().getCode()));
 			action = "提交";
@@ -350,13 +359,13 @@ public class StatementController extends CommonController {
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			action = "生成U8发票";
 			break;
-		case Constants.STATEMENT_STATE_NEW:
-			if (main.getState() == Constants.STATEMENT_STATE_INVOICE_CANCEL
-					|| main.getState() == Constants.STATEMENT_STATE_CONFIRM) {
-				toList.add(main.getMaker());
-				toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-				action = "撤销";
-			}
+//		case Constants.STATEMENT_STATE_NEW:
+//			if (main.getState() == Constants.STATEMENT_STATE_INVOICE_CANCEL
+//					|| main.getState() == Constants.STATEMENT_STATE_CONFIRM) {
+//				toList.add(main.getMaker());
+//				toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+//				action = "撤销";
+//			}
 		}
 
 		if (action != null) {
@@ -365,7 +374,9 @@ public class StatementController extends CommonController {
 
 			this.sendmessage(title, toList, String.format("/statement/%s/read", main.getCode()));
 		}
-
+		
+		this.addOpertionHistory(main.getCode(), action, form.getContent());
+		
 		if (this.isVendor() && form.getInvoice_code() != null && !form.getInvoice_code().isEmpty()) {
 			main.setInvoiceCode(form.getInvoice_code());
 		}
@@ -378,7 +389,7 @@ public class StatementController extends CommonController {
 
 		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
 
-			postUnLock(main);
+//			postUnLock(main);
 			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
 			for (StatementDetail detail : detailList) {
 				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
@@ -474,9 +485,9 @@ public class StatementController extends CommonController {
 			}
 		}
 
-		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
-			postLock(main);
-		}
+//		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
+//			postLock(main);
+//		}
 
 		return jsonResponse;
 	}
