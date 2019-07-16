@@ -721,6 +721,10 @@ $(document).ready(function() {
 		},
 	});
 	
+	$.fn.rowno_renderer = function (data, type, row, meta) {
+    return meta.row + meta.settings._iDisplayStart + 1;
+	}
+	
 	$.fn.date_renderer = function (date_str) {
 		if (date_str == undefined) {
 			return '';
