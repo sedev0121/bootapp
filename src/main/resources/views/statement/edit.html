@@ -265,7 +265,7 @@
 	is_readonly = 0;
 </script>
 <script th:inline="javascript">
-	var editor, table_options, table, import_table, history_table, summary_table, summary_data, invoice_table, attach_table;
+	var editor, invoice_editor, table_options, table, import_table, history_table, summary_table, summary_data, invoice_table, attach_table;
   var qty_sum, money_sum;
   /*[+
    var sync_url = [[@{/sync/purchasein/vendor/}]];
@@ -289,27 +289,97 @@
 		  load_import_table();
 	  });
 
+	  invoice_editor = new $.fn.dataTable.Editor({
+	    table : "#invoice_table",
+	    idSrc : "row_no",
+	    fields : [ {
+	      attr : {
+		      type : "text",
+	      },
+	      id : "invoice_code",
+	      name : "invoice_code"	    
+	    } ],
+	    i18n : {
+		    remove : {
+		      button : "删除行",
+		      title : "删除行",
+		      submit : "是",
+		      confirm : {
+		        _ : "确定要删除%d行数据吗?",
+		        1 : "确定要删除吗?"
+		      }
+		    },
+	    }
+	  }).on('postRemove', function(e, json, ids) {
+	  	var table_data = invoice_table.rows().data().toArray();
+		  var id = 1;
+		  $.each(table_data, function(key, item) {
+			  item.row_no = id++;
+		  })
+		  invoice_table.rows().invalidate();
+	  }).on('submitSuccess', function(e, data, action) {
+		  updateInvoiceData();
+	  });
+	  
 	  invoice_table = $('#invoice_table').DataTable({
 	    serverSide : false,
 	    processing : false,
 	    ajax : false,
+	    select : {
+		    style : 'multi',
+		    selector: 'td:first-child',
+	    },
 	    data : [ {
+	    	row_no: 1,
 		    invoice_code : 245367
 	    }, {
+	    	row_no: 2,
 		    invoice_code : 245368
 	    }, {
+	    	row_no: 3,
 		    invoice_code : 245369
 	    } ],
 	    columns : [ {
 	      data : null,
-	      render : $.fn.rowno_renderer,
+	      defaultContent : '',
+	      orderable : false,
+	      visible : !is_vendor,
+	      title : '选择',
+	      className : 'select-checkbox',
+	    }, {
+	      data : 'row_no',
 	      title : '行号',
 	    }, {
 	      data : 'invoice_code',
+	      className : 'edit-cell',
 	      title : '发票号',
 	    } ],
+	    buttons : [ {
+	    	text : "添加行",
+	      action : function(e, dt, node, config) {
+		      var new_row = {		        
+	      		row_no : invoice_table.rows().data().toArray().length + 1,
+		        invoice_code : ''
+		      };
+
+		      invoice_table.row.add(new_row);		      
+		      invoice_table.draw();
+	      }
+	    }, {
+	      extend : "remove",
+	      editor : invoice_editor
+	    }, ],
 	  });
 
+	  if (!is_readonly) {
+		  invoice_table.on('click', 'tbody td.edit-cell', function(e) {
+			  invoice_editor.inline(this, {
+			    submit : 'allIfChanged',
+			    submitOnBlur : true
+			  });
+		  });
+	  }
+	  
 	  attach_table = $('#attach_table').DataTable({
 	    serverSide : false,
 	    processing : false,
@@ -322,6 +392,13 @@
 	      filename : "11111.jpg"
 	    }, ],
 	    columns : [ {
+	      data : null,
+	      defaultContent : '',
+	      orderable : false,
+	      visible : !is_vendor,
+	      title : '选择',
+	      className : 'select-checkbox',
+	    }, {
 	      data : null,
 	      render : $.fn.rowno_renderer,
 	      title : '行号',
