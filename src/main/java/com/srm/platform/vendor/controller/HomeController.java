@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import com.srm.platform.vendor.utility.Constants;
+
 @Controller
 @RequestMapping(path = "/")
 
@@ -41,7 +43,8 @@ public class HomeController {
 	}
 
 	@GetMapping(value = "/login")
-	public String login() {
+	public String login(Model model) {
+		model.addAttribute("version", Constants.VERSION);
 		return "login";
 	}
 	
