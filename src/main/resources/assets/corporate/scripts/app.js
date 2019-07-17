@@ -17,7 +17,6 @@ var App = function() {
   var invoice_state_data = [{id:1, text:"已开发票"}, {id:2, text:"发票已退回"}, {id:3, text:"发票已审核"}, {id:4, text:"已传递ERP"}];
   var statement_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"审核/发布"}, {id:4, text:"退回"}, {id:5, text:"确认"}, {id:6, text:"已生成U8发票"}, {id:7, text:"发票退回"}];
   var notice_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"发布"}, {id:4, text:"退回"}];
-  var negotiation_state_data = [{id:1, text:"新建"}, {id:2, text:"议价中"}, {id:3, text:"已报价"}, {id:4, text:"退回"}, {id:5, text:"已完成"}];
   
   var role_data = [{id:"ROLE_BUYER", text:"采购员"}, {id:"ROLE_VENDOR", text:"供应商"}, {id:"ROLE_ADMIN", text:"管理员"}];
   var account_state_data = [{id:1, text:"启用"}, {id:0, text:"停用"}];
@@ -287,9 +286,6 @@ var App = function() {
     getInqueryStateData: function() {
       return inquery_state_data;
     },
-    getNegotiationStateData: function() {
-      return negotiation_state_data;
-    },
     getDeliveryStateData: function() {
       return delivery_state_data;
     },
@@ -380,9 +376,6 @@ var App = function() {
     getInqueryStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...inquery_state_data];
     },
-    getNegotiationStateDataWithAll: function() {
-      return [{id:0, text:"　"}, ...negotiation_state_data];
-    },
     getDeliveryStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...delivery_state_data];
     },
@@ -407,9 +400,6 @@ var App = function() {
     },
     getInqueryStateOfId: function(id) {
       return getLabelOfId(inquery_state_data, id);
-    },
-    getNegotiationStateOfId: function(id) {
-      return getLabelOfId(negotiation_state_data, id);
     },
     getDeliveryStateOfId: function(id) {
       return getLabelOfId(delivery_state_data, id);

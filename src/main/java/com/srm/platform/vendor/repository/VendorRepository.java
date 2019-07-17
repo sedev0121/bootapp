@@ -39,7 +39,7 @@ public interface VendorRepository extends JpaRepository<Vendor, Long> {
 	@Query(value = "SELECT a.* FROM vendor a left join vendor_provide b on a.code=b.vendor_code where b.provide_id in (select provide_id from unit_provide where unit_id in ?1)", nativeQuery = true)
 	List<Vendor> findVendorsByUnitIdList(List<String> unitIdList);
 
-	@Query(value = "SELECT a.*, b.name unitname, c.stop_date FROM vendor a left join unit b on a.unit_id=b.id left join account c on a.code=c.vendor_code where a.code in ?1", nativeQuery = true)
+	@Query(value = "SELECT a.*, '' unitname, c.stop_date FROM vendor a left join account c on a.code=c.vendor_code where a.code in ?1", nativeQuery = true)
 	List<VendorSearchItem> findVendorsByCodeList(String[] codeList);
 
 	@Query(value = "SELECT max(timestamp) max_timestamp FROM vendor", nativeQuery = true)

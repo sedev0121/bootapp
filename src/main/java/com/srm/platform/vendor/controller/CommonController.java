@@ -51,8 +51,6 @@ import com.srm.platform.vendor.repository.FunctionActionRepository;
 import com.srm.platform.vendor.repository.FunctionRepository;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
-import com.srm.platform.vendor.repository.NegotiationDetailRepository;
-import com.srm.platform.vendor.repository.NegotiationMainRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.OperationHistoryRepository;
@@ -61,7 +59,6 @@ import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.repository.PermissionUserScopeRepository;
 import com.srm.platform.vendor.repository.PriceRepository;
-import com.srm.platform.vendor.repository.ProvideClassRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
@@ -135,12 +132,6 @@ public class CommonController {
 	public SessionCounter sessionCounter;
 
 	@Autowired
-	public NegotiationMainRepository negotiationMainRepository;
-	
-	@Autowired
-	public NegotiationDetailRepository negotiationDetailRepository;
-	
-	@Autowired
 	public DeliveryMainRepository deliveryMainRepository;
 	
 	@Autowired
@@ -154,9 +145,6 @@ public class CommonController {
 
 	@Autowired
 	public PriceRepository priceRepository;
-
-	@Autowired
-	public ProvideClassRepository provideClassRepository;
 
 	@Autowired
 	public PermissionGroupRepository permissionGroupRepository;

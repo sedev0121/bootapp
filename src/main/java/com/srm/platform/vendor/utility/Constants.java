@@ -93,12 +93,6 @@ public class Constants {
 	
 	public final static double DEFAULT_TAX_RATE = 13;
 	
-	public final static int NEGOTIATION_STATE_NEW = 1;
-	public final static int NEGOTIATION_STATE_SUBMIT = 2;
-	public final static int NEGOTIATION_STATE_CONFIRM = 3;
-	public final static int NEGOTIATION_STATE_CANCEL = 4;
-	public final static int NEGOTIATION_STATE_DONE = 5;
-	
 	public final static int BOX_TYPE_DELIVERY = 1;
 	public final static int BOX_TYPE_DIAOBO = 2;
 	

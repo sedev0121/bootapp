@@ -91,13 +91,6 @@ public class Utils {
 		return cal.getTime();
 	}
 	
-	public static Date getNegotiationEndDate() {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.add(Calendar.MONTH, 3);
-		return cal.getTime();
-	}
-
 	public static Date getStartSyncDate(Date date) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);

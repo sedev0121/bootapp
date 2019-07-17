@@ -60,11 +60,11 @@ public class SystemController extends CommonController {
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 		Page<Account> result = accountRepository.findBySearchTerm(search, request);
 
-		String selectQuery = "SELECT t.*, u.name unitname, v.name vendorname ";
+		String selectQuery = "SELECT t.*, '' unitname, v.name vendorname ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM account t left join unit u on t.unit_id=u.id left join vendor v on t.vendor_code=v.code where t.id in :list ";
+		String bodyQuery = "FROM account t left join vendor v on t.vendor_code=v.code where t.id in :list ";
 
 		Map<String, Object> params = new HashMap<>();
 

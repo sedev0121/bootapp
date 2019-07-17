@@ -91,11 +91,11 @@ public class NoticeController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT distinct a.*, b.realname create_name, c.name create_unitname, d.realname verify_name, e.read_date read_date ";
+		String selectQuery = "SELECT distinct a.*, b.realname create_name, '' create_unitname, d.realname verify_name, e.read_date read_date ";
 		String countQuery = "select count(distinct a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id left join unit c on a.create_unit=c.id "
+		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id "
 				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id and e.to_account_id=:to_account where type=1 ";
 
 		
@@ -335,12 +335,12 @@ public class NoticeController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "select b.realname, c.name vendorname, d.name unitname, a.read_date  ";
+		String selectQuery = "select b.realname, c.name vendorname, '' unitname, a.read_date  ";
 		String countQuery = "select count(b.realname) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from notice_read a left join account b on a.to_account_id=b.id left join vendor c on b.vendor_code=c.code "
-				+ "left join unit d on b.unit_id=d.id where b.realname is not null and a.notice_id=:noticeId ";
+				+ " where b.realname is not null and a.notice_id=:noticeId ";
 
 		Map<String, Object> params = new HashMap<>();
 		params.put("noticeId", id);
@@ -399,7 +399,7 @@ public class NoticeController extends CommonController {
 		if (idList.isEmpty())
 			return new ArrayList<>();
 
-		String selectQuery = "SELECT t.*, u.name unitname, v.name vendorname FROM account t left join unit u on t.unit_id=u.id "
+		String selectQuery = "SELECT t.*, '' unitname, v.name vendorname FROM account t "
 				+ "left join vendor v on t.vendor_code=v.code where t.id in :idList ";
 
 		Map<String, Object> params = new HashMap<>();
@@ -459,16 +459,16 @@ public class NoticeController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT t.*, u.name unitname, v.name vendorname ";
+		String selectQuery = "SELECT t.*, '' unitname, v.name vendorname ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM account t left join unit u on t.unit_id=u.id left join vendor v on t.vendor_code=v.code where role<>'ROLE_VENDOR' ";
+		String bodyQuery = "FROM account t left join vendor v on t.vendor_code=v.code where role<>'ROLE_VENDOR' ";
 
 		Map<String, Object> params = new HashMap<>();
 
 		if (!search.trim().isEmpty()) {
-			bodyQuery += " and (u.name LIKE CONCAT('%',:search, '%') or t.username LIKE CONCAT('%',:search, '%') or t.realname LIKE CONCAT('%',:search, '%') or t.duty LIKE CONCAT('%',:search, '%') or t.email LIKE CONCAT('%',:search, '%')) ";
+			bodyQuery += " and (t.username LIKE CONCAT('%',:search, '%') or t.realname LIKE CONCAT('%',:search, '%') or t.duty LIKE CONCAT('%',:search, '%') or t.email LIKE CONCAT('%',:search, '%')) ";
 			params.put("search", search.trim());
 		}
 
