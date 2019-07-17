@@ -33,12 +33,15 @@
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
-						<form id="history_form" th:action="@{/operation_history/update}" method="post">
-							<input type="hidden" name="action" value=" 添加说明" />
+						<form id="history_form" class="form-horizontal form-without-legend" th:action="@{/operation_history/update}" method="post">
 							<div class="row">
 								<div class="col-lg-12 col-md-12">
-									<label for="code">对账时间： </label> 
-									<input type="text" id="date" name="date" class="form-control datepicker"  />
+									<div class="form-group">
+										<label for="code" class="control-label col-lg-2 col-md-2">对账时间： </label> 
+										<div class="col-lg-10 col-md-10">
+											<input type="text" id="date" name="date" class="form-control datepicker"/>
+										</div>										
+									</div>									
 								</div>
 							</div>
 						</form>
@@ -50,8 +53,35 @@
 				</div>
 			</div>
 		</div>
-		<div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal fade" id="auto_setting_dialog" tabindex="-1" role="dialog" aria-hidden="true">
 			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">自动任务设置</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="auto_setting_form" class="form-horizontal form-without-legend" th:action="@{/operation_history/update}" method="post">
+							<input type="hidden" name="action" value=" 添加说明" />
+							<div class="row">
+								<div class="col-lg-12 col-md-12 content">
+									对账时间：每月	<input type="number" class="auto-setting" id="statement_date"/>日（例如：每月25日，表示对账取单截至到本月25日，即小于等于该日期的所有未对账单据都包括，要考虑2月份的情况）	
+								</div>
+								<div class="col-lg-12 col-md-12 content">
+									自动运行时间：每月<input type="number" class="auto-setting" id="auto_date"/>日<input type="number" id="auto_date"/>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+						<button type="button" class="btn btn-primary" id="save_setting">保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" role="document" style="width: 800px;">
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title">日志查询</h5>
@@ -143,7 +173,7 @@
 	      title : '任务日志',
 	      className : 'dt-center',
 	      render : function(data, display, record) {
-		      return '<a class="history" href="#">' + data + '</a>';
+		      return '<a class="history" task_id="' + record.id + '" href="#">' + data + '</a>';
 	      },
 	    } ],
 	    order : [ [ 1, "desc" ] ],
@@ -174,23 +204,23 @@
 		    order : [ [ 0, 'desc' ] ],
 		    columns : [ {
 		      data : 'create_date',
-		      title : '日期',
+		      title : '供应商代码',
 		      width : '150px',
 		      className : 'dt-center',
 		      render : $.fn.time_renderer,
 		    }, {
 		      data : 'action',
-		      title : '动作',
+		      title : '供应商名称',
 		      width : '100px',
 		      className : 'dt-center',
 		    }, {
 		      data : 'account.realname',
-		      title : '操作人',
+		      title : '成功/失败',
 		      width : '150px',
 		      className : 'dt-center',
 		    }, {
 		      data : 'content',
-		      title : '说明',
+		      title : '失败原因',
 		    } ],
 		  });
 	  })
@@ -208,8 +238,12 @@
 	  	$('#new_dialog').modal('show');
 	  });
 		
+	  $('#show_current_task_history').click(function() {
+	  	
+	  });
+	  
 		$("#auto_task_btn").click(function() {
-			$('#history_dialog').modal('show');
+			$('#auto_setting_dialog').modal('show');
 	  });
   });
 </script>

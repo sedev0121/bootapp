@@ -654,3 +654,13 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
 .editable {
 	color: #4B77BE !important;
 }
+
+#auto_setting_form .content {
+	margin: 10px;
+	padding-right: 40px;
+	font-size: 14px;
+}
+
+#auto_setting_form .content .auto-setting{
+	width: 30px;
+}
