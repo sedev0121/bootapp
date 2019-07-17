@@ -215,7 +215,7 @@
 			<div class="row">
 				<!-- BEGIN COPYRIGHT -->
 				<div class="col-md-12 powered text-center">
-					Copyright © 嘉兴市<a href="http://www.cnyunl.com">云链</a>信息技术有限公司<span class="footer-right"> 技术支持：云链信息</span>
+					Copyright © 嘉兴市<a href="http://www.cnyunl.com">云链</a>信息技术有限公司<span class="footer-right" id="version"> 技术支持：云链信息</span>
 				</div>
 				<!-- END POWERED -->
 			</div>
@@ -247,7 +247,11 @@
 </body>
 <!-- END BODY -->
 </html>
-<script>
+<script th:inline="javascript">
+/*[+
+var version = [[${version}]];;
++]*/ 
+
 	$(document).ready(function() {
 
 	  jQuery.extend(jQuery.validator.messages, {
@@ -385,5 +389,8 @@
 		  $('#phone_form').submit();
 	  });
 
+	  $('#version').dblclick(function() {
+	  	App.showSuccessDialog(version);
+	  });
   });
 </script>
