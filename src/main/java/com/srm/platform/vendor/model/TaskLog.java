@@ -1,21 +1,38 @@
 package com.srm.platform.vendor.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.srm.platform.vendor.searchitem.TaskLogSearchResult;
 
 @Entity
+
+@SqlResultSetMapping(name = "TaskLogSearchResult", classes = {
+	@ConstructorResult(targetClass = TaskLogSearchResult.class, columns = {
+		@ColumnResult(name = "id", type = Long.class), 
+		@ColumnResult(name = "vendor_code", type = String.class), 
+		@ColumnResult(name = "vendor_name", type = String.class), 
+		@ColumnResult(name = "state", type = Integer.class),
+		@ColumnResult(name = "failed_reason", type = String.class),
+		@ColumnResult(name = "create_date", type = Date.class),
+	}) 
+})
+
 @Table(name = "task_log")
 public class TaskLog implements Serializable {
 	private static final long serialVersionUID = 5855332316773551036L;
@@ -39,6 +56,8 @@ public class TaskLog implements Serializable {
 	@JoinColumn(name = "vendor_code", referencedColumnName = "code", nullable=true)
 	private Vendor vendor;
 	
+	@JsonProperty("create_date")
+	private Date createDate;
 
 	public Long getId() {
 		return id;
@@ -78,6 +97,14 @@ public class TaskLog implements Serializable {
 
 	public void setVendor(Vendor vendor) {
 		this.vendor = vendor;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}	
 	
 }

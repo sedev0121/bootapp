@@ -44,6 +44,7 @@ import com.srm.platform.vendor.searchitem.BoxExportResult;
 import com.srm.platform.vendor.searchitem.BoxSearchResult;
 import com.srm.platform.vendor.searchitem.DeliverySearchResult;
 import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
+import com.srm.platform.vendor.searchitem.TaskLogSearchResult;
 import com.srm.platform.vendor.searchitem.TaskSearchResult;
 import com.srm.platform.vendor.u8api.RestApiClient;
 import com.srm.platform.vendor.u8api.RestApiResponse;
@@ -94,9 +95,6 @@ public class TaskController extends CommonController {
 		Date endDate = Utils.getNextDate(end_date);
 		
 		page_index--;
-		PageRequest pageable = PageRequest.of(page_index, rows_per_page,
-				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
@@ -107,8 +105,6 @@ public class TaskController extends CommonController {
 		String bodyQuery = "FROM task a left join account b on a.make_id=b.id where 1=1 ";
 
 		Map<String, Object> params = new HashMap<>();
-
-		
 
 		if (!code.trim().isEmpty()) {
 			bodyQuery += " and a.code like CONCAT('%',:code, '%') ";
@@ -143,6 +139,55 @@ public class TaskController extends CommonController {
 
 		return new PageImpl<TaskSearchResult>(list, request, totalCount.longValue());
 	}
+	
+	// 查询列表API
+	@RequestMapping(value = "/{id}/log", produces = "application/json")
+	public @ResponseBody Page<TaskLogSearchResult> list_ajax(@PathVariable("id") Long id, @RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "ccode");
+		String dir = requestParams.getOrDefault("dir", "asc");
+
+		String search = requestParams.getOrDefault("search", "");
+		
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		String selectQuery = "SELECT a.*, c.name vendor_name ";
+		String countQuery = "select count(*) ";
+		String orderBy = " order by " + order + " " + dir;
+
+		String bodyQuery = "FROM task_log a left join task b on a.task_id=b.id left join vendor c on a.vendor_code=c.code where a.task_id=:id ";
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("id", id);
+		
+		if (!search.trim().isEmpty()) {
+			bodyQuery += " and (a.vendor_code like CONCAT('%',:search, '%') or c.name like CONCAT('%',:search, '%') )";
+			params.put("search", search.trim());
+		}
+
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "TaskLogSearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		return new PageImpl<TaskLogSearchResult>(list, request, totalCount.longValue());
+	}
+
 
 	// 更新API
 	@Transactional
