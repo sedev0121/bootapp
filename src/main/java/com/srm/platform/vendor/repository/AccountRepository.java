@@ -45,7 +45,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	@Query(value = "SELECT * FROM account where role='ROLE_VENDOR' and unit_id in ?1", nativeQuery = true)
 	List<Account> findAllVendorsByUnitIdList(List<String> unitIdList);
 
-	@Query(value = "SELECT * FROM account where role='ROLE_BUYER' and unit_id in (select unit_id from unit_provide where provide_id in (select provide_id from vendor_provide where vendor_code=?1))", nativeQuery = true)
+	//TODO: check again
+	@Query(value = "SELECT * FROM account where role='ROLE_BUYER'", nativeQuery = true)
 	List<Account> findAllBuyersByVendorCode(String vendorCode);
 	
 	@Query(value = "SELECT * FROM account where vendor_code in ?1", nativeQuery = true)
