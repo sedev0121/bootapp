@@ -19,7 +19,6 @@ import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.srm.platform.vendor.searchitem.BoxSearchResult;
-import com.srm.platform.vendor.searchitem.SellerSearchResult;
 
 @SqlResultSetMapping(name = "BoxSearchResult", classes = {
 		@ConstructorResult(targetClass = BoxSearchResult.class, columns = {

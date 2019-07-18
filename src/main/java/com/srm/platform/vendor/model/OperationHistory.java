@@ -1,6 +1,5 @@
 package com.srm.platform.vendor.model;
 
-import java.time.Instant;
 import java.util.Date;
 
 import javax.persistence.Entity;

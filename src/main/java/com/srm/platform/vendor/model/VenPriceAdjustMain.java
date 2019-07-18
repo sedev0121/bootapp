@@ -14,9 +14,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.searchitem.InquerySearchResult;
 import com.srm.platform.vendor.utility.Utils;
 

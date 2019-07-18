@@ -66,6 +66,8 @@ import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.StoreRepository;
+import com.srm.platform.vendor.repository.TaskLogRepository;
+import com.srm.platform.vendor.repository.TaskRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorClassRepository;
@@ -115,6 +117,12 @@ public class CommonController {
 
 	@Autowired
 	public NoticeRepository noticeRepository;
+	
+	@Autowired
+	public TaskRepository taskRepository;
+	
+	@Autowired
+	public TaskLogRepository taskLogRepository;
 
 	@Autowired
 	public OperationHistoryRepository operationHistoryRepository;

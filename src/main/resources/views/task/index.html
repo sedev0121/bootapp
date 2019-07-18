@@ -121,6 +121,7 @@
 	  var table = $('#example').DataTable({
 	    ordering : true,
 	    scrollY : '355px',
+	    order : [ [ 0, "desc" ] ],
 	    ajax : {
 	      url : list_url,
 	      data : function(data) {
@@ -129,10 +130,9 @@
 		        dir : data.order[0].dir,
 		        rows_per_page : data.length,
 		        page_index : data.start / data.length + 1,
-		        vendor : $('#vendor').val(),
-		        state : $('#state').val(),
-		        code : $('#code').val(),
-		        is_vendor : is_vendor,
+		        start_date : $('#start_date').val(),
+		        end_date : $('#end_date').val(),
+		        code: '',
 		      }
 		      return filter;
 	      },
@@ -142,41 +142,38 @@
 		      return json.content;
 	      },
 	    },
-	    createdRow : function(row, data, dataIndex) {
-		    $(row).addClass('');
-	    },
 	    columns : [ {
 	      data : 'code',
 	      title : '任务编号',
 	    }, {
-	      data : 'create_date',
+	      data : 'make_date',
 	      title : '日期',
 	      className : 'dt-center',
 	      render : $.fn.date_renderer
 	    }, {
-	      data : 'estimated_arrival_date',
+	      data : 'statement_date',
 	      title : '账期',
 	      className : 'dt-center',
 	      render : $.fn.date_renderer
 	    }, {
-	      data : 'estimated_arrival_date',
+	      data : 'maker',
 	      title : '操作人',
 	      className : 'dt-center',
 	      render : $.fn.date_renderer
 	    }, {
-	      data : 'estimated_arrival_date',
+	      data : 'make_date',
 	      title : '操作日期',
 	      className : 'dt-center',
 	      render : $.fn.date_renderer
 	    }, {
-	      data : 'state',
+	      data : null,
+	      oderable: false,
 	      title : '任务日志',
 	      className : 'dt-center',
 	      render : function(data, display, record) {
-		      return '<a class="history" task_id="' + record.id + '" href="#">' + data + '</a>';
+		      return '<a class="history" task_id="' + record.id + '" href="#">日志查询</a>';
 	      },
 	    } ],
-	    order : [ [ 1, "desc" ] ],
 	    drawCallback : function(settings) {
 	    	$(".history").click(function() {
 	  			$('#history_dialog').modal('show');

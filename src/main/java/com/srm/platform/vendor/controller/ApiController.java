@@ -52,8 +52,6 @@ public class ApiController {
 	private static final String RESPONSE_SUCCESS = "1";
 	private static final String RESPONSE_FAIL = "2";
 	
-	private static final String IS_MES = "1";
-	
 	@Autowired
 	private RestApiClient apiClient;
 	
