@@ -57,10 +57,9 @@ public class Constants {
 	public final static String PATH_UPLOADS_STATEMENT = "statement";
 	public final static String PATH_UPLOADS_INQUERY = "inquery";
 	
-	public final static String KEY_SYNC_INVENTORY = "last_sync_inventory_date";
-	public final static String KEY_SYNC_PURCHASE_IN = "last_sync_purchase_in_date";
-	public final static String KEY_SYNC_VENDOR = "last_sync_vendor_date";
-	public final static String KEY_SYNC_PURCHASE_ORDER = "last_sync_purchase_order_date";
+	public final static String KEY_AUTO_TASK_STATEMENT_DATE = "auto_task_statement_date";
+	public final static String KEY_AUTO_TASK_START_DATE = "auto_task_start_date";
+	public final static String KEY_AUTO_TASK_STATT_TIME = "auto_task_start_time";
 	
 	public final static int PERMISSION_DIMENSION_COMPANY = 1;
 	public final static int PERMISSION_DIMENSION_ACCOUNT = 2;

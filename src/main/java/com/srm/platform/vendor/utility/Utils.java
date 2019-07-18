@@ -171,6 +171,12 @@ public class Utils {
 		id += vendorCode;
 		return id;
 	}
+	
+	public static String generateTaskCode() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		String code = dateFormat.format(new Date());
+		return code;
+	}
 
 	public static String generateResetPassword() {
 		int max = 1000000;

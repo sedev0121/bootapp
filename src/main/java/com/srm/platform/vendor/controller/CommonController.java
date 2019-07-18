@@ -51,6 +51,7 @@ import com.srm.platform.vendor.repository.FunctionActionRepository;
 import com.srm.platform.vendor.repository.FunctionRepository;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
+import com.srm.platform.vendor.repository.MasterRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.OperationHistoryRepository;
@@ -109,6 +110,9 @@ public class CommonController {
 	@PersistenceContext
 	public EntityManager em;
 
+	@Autowired
+	public MasterRepository masterRepository;
+	
 	@Autowired
 	public VendorRepository vendorRepository;
 

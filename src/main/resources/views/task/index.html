@@ -33,13 +33,13 @@
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
-						<form id="history_form" class="form-horizontal form-without-legend" th:action="@{/operation_history/update}" method="post">
+						<form id="add_form" class="form-horizontal form-without-legend" th:action="@{/task/update}" method="post">
 							<div class="row">
 								<div class="col-lg-12 col-md-12">
 									<div class="form-group">
 										<label for="code" class="control-label col-lg-2 col-md-2">对账时间： </label> 
 										<div class="col-lg-10 col-md-10">
-											<input type="text" id="date" name="date" class="form-control datepicker"/>
+											<input type="text" name="statement_date" class="form-control datepicker"/>
 										</div>										
 									</div>									
 								</div>
@@ -48,7 +48,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">退出</button>
-						<button type="button" class="btn btn-primary" id="save_history">生成</button>
+						<button type="button" class="btn btn-primary" id="save_task_btn">生成</button>
 					</div>
 				</div>
 			</div>
@@ -61,21 +61,21 @@
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
-						<form id="auto_setting_form" class="form-horizontal form-without-legend" th:action="@{/operation_history/update}" method="post">
+						<form id="auto_setting_form" class="form-horizontal form-without-legend" th:action="@{/task/update_auto_setting}" method="post">
 							<input type="hidden" name="action" value=" 添加说明" />
 							<div class="row">
 								<div class="col-lg-12 col-md-12 content">
-									对账时间：每月	<input type="number" class="auto-setting" id="statement_date"/>日（例如：每月25日，表示对账取单截至到本月25日，即小于等于该日期的所有未对账单据都包括，要考虑2月份的情况）	
+									对账时间：每月	<input type="number" max="31" min="1" class="auto-setting" name="statement_date"/>日（例如：每月25日，表示对账取单截至到本月25日，即小于等于该日期的所有未对账单据都包括，要考虑2月份的情况）	
 								</div>
 								<div class="col-lg-12 col-md-12 content">
-									自动运行时间：每月<input type="number" class="auto-setting" id="auto_date"/>日<input type="number" id="auto_date"/>
+									自动运行时间：每月<input type="number" max="31" min="1" class="auto-setting" name="start_date"/>日<input type="text" name="start_time"/>
 								</div>
 							</div>
 						</form>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-						<button type="button" class="btn btn-primary" id="save_setting">保存</button>
+						<button type="button" class="btn btn-primary" id="save_setting_btn">保存</button>
 					</div>
 				</div>
 			</div>
@@ -167,7 +167,7 @@
 	      render : $.fn.date_renderer
 	    }, {
 	      data : null,
-	      oderable: false,
+	      orderable: false,
 	      title : '任务日志',
 	      className : 'dt-center',
 	      render : function(data, display, record) {
@@ -250,6 +250,93 @@
 	  
 	  $("#add_btn").click(function() {
 	  	$('#new_dialog').modal('show');
+	  });
+	  
+	  $("#add_form").validate({
+	    rules : {
+	      statement_date : {
+	        required : true,
+	      },	      
+	    },
+
+	    //display error alert on form submit  
+	    invalidHandler : function(event, validator) {
+		    App.showErrorDialog("操作失败", "请输入正确的值");
+	    },
+	    submitHandler : function(form) {
+			  App.showConfirmDialog('确定要生成对账单吗?', function() {
+			  	jQuery(form).ajaxSubmit({
+			      beforeSend : function() {
+				      App.blockUI();
+			      },
+			      complete : function() {
+				      App.unblockUI();
+			      },
+			      success : function(res, status, xhr, form) {
+				      if (res.success == 1) {
+				      	$('#new_dialog').modal('hide');
+				      	table.draw();
+					      App.showSuccessDialog("操作成功");
+				      } else {
+					      App.showErrorDialog("操作失败", res.errmsg);
+				      }
+			      },
+			      error : function(res, status, xhr, form) {
+				      App.showErrorDialog("操作失败", "请输入正确的值");
+			      }
+			    });
+			  });		    
+	    }
+	  });
+	  
+	  $("#auto_setting_form").validate({
+	    rules : {
+	      statement_date : {
+	        required : true,
+	      },
+	      start_date : {
+	        required : true,
+	      },
+	      start_time : {
+	        required : true,
+	      },
+	    },
+
+	    //display error alert on form submit  
+	    invalidHandler : function(event, validator) {
+		    App.showErrorDialog("操作失败", "请输入正确的值");
+	    },
+	    submitHandler : function(form) {
+			  App.showConfirmDialog('确定要保存自动任务设置吗?', function() {
+			  	jQuery(form).ajaxSubmit({
+			      beforeSend : function() {
+				      App.blockUI();
+			      },
+			      complete : function() {
+				      App.unblockUI();
+			      },
+			      success : function(res, status, xhr, form) {
+				      if (res.success == 1) {
+				      	$('#auto_setting_dialog').modal('hide');
+					      App.showSuccessDialog("操作成功");
+				      } else {
+					      App.showErrorDialog("操作失败", res.errmsg);
+				      }
+			      },
+			      error : function(res, status, xhr, form) {
+				      App.showErrorDialog("操作失败", "请输入正确的值");
+			      }
+			    });
+			  });		    
+	    }
+	  });
+	  
+	  $("#save_task_btn").click(function() {
+	  	$('#add_form').submit();
+	  });
+	  
+	  $("#save_setting_btn").click(function() {
+	  	$('#auto_setting_form').submit();
 	  });
 		
 	  $('#show_current_task_history').click(function() {
