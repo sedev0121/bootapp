@@ -189,6 +189,23 @@ public class TaskController extends CommonController {
 
 		return new PageImpl<TaskLogSearchResult>(list, request, totalCount.longValue());
 	}
+	
+	// 更新API
+	@GetMapping("/auto_setting")
+	public @ResponseBody GenericJsonResponse<Map<String, String>> getAutoSetting() {
+
+		Master statementDateMaster = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
+		Master startDateMaster = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_START_DATE);
+		Master startTimeMaster = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_START_TIME);
+
+		Map<String, String> data = new HashMap<String, String>();
+		data.put("statement_date", statementDateMaster == null? "" : statementDateMaster.getItemValue());
+		data.put("start_date", startDateMaster == null? "" : startDateMaster.getItemValue());
+		data.put("start_time", startTimeMaster == null? "" : startTimeMaster.getItemValue());
+		GenericJsonResponse<Map<String, String>> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, data);
+
+		return jsonResponse;
+	}
 
 	// 更新API
 	@Transactional
@@ -226,8 +243,8 @@ public class TaskController extends CommonController {
 		Master master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
 		if (master == null) {
 			master = new Master();	
+			master.setItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
 		}		
-		master.setItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
 		master.setItemValue(statementDate);
 		masterRepository.save(master);
 		
@@ -235,17 +252,17 @@ public class TaskController extends CommonController {
 		master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_START_DATE);
 		if (master == null) {
 			master = new Master();	
+			master.setItemKey(Constants.KEY_AUTO_TASK_START_DATE);
 		}		
-		master.setItemKey(Constants.KEY_AUTO_TASK_START_DATE);
 		master.setItemValue(startDate);
 		masterRepository.save(master);
 		
 		//自动运行时间
-		master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_STATT_TIME);
+		master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_START_TIME);
 		if (master == null) {
 			master = new Master();	
+			master.setItemKey(Constants.KEY_AUTO_TASK_START_TIME);
 		}		
-		master.setItemKey(Constants.KEY_AUTO_TASK_STATT_TIME);
 		master.setItemValue(startTime);
 		masterRepository.save(master);
 

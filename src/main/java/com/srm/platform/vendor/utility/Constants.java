@@ -59,7 +59,7 @@ public class Constants {
 	
 	public final static String KEY_AUTO_TASK_STATEMENT_DATE = "auto_task_statement_date";
 	public final static String KEY_AUTO_TASK_START_DATE = "auto_task_start_date";
-	public final static String KEY_AUTO_TASK_STATT_TIME = "auto_task_start_time";
+	public final static String KEY_AUTO_TASK_START_TIME = "auto_task_start_time";
 	
 	public final static int PERMISSION_DIMENSION_COMPANY = 1;
 	public final static int PERMISSION_DIMENSION_ACCOUNT = 2;
