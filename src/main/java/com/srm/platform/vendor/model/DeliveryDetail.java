@@ -39,6 +39,9 @@ public class DeliveryDetail implements Serializable {
 	@JsonProperty("delivered_quantity")
 	private Double deliveredQuantity;
 	
+	@JsonProperty("delivered_package_quantity")
+	private Double deliveredPackageQuantity;
+	
 	@JsonProperty("row_no")
 	private Integer rowNo;
 	
@@ -167,6 +170,14 @@ public class DeliveryDetail implements Serializable {
 
 	public void setDeliveredQuantity(Double deliveredQuantity) {
 		this.deliveredQuantity = deliveredQuantity;
+	}
+
+	public Double getDeliveredPackageQuantity() {
+		return deliveredPackageQuantity;
+	}
+
+	public void setDeliveredPackageQuantity(Double deliveredPackageQuantity) {
+		this.deliveredPackageQuantity = deliveredPackageQuantity;
 	}
 
 }

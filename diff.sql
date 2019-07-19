@@ -228,3 +228,10 @@ alter table delivery_detail add column cancel_date datetime(0) NULL DEFAULT NULL
 alter table delivery_detail add column cancel_reason varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 alter table delivery_detail add column cancel_quantity double(20, 2) NULL DEFAULT NULL;
 alter table delivery_detail add column cancel_confirm_date datetime(0) NULL DEFAULT NULL;
+
+
+/* 2019-07-19 */
+alter table purchase_order_detail add column package_quantity double(16,6) NULL DEFAULT NULL;
+alter table purchase_order_detail add column delivered_package_quantity double(16,6) NULL DEFAULT NULL;
+alter table delivery_detail add column delivered_package_quantity double(16,6) NULL DEFAULT NULL;
+

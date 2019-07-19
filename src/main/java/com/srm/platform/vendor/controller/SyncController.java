@@ -439,7 +439,7 @@ public class SyncController {
 
 						detail.setTaxPrice(getDoubleValue(detailTemp, "iTaxNatPrice")); //含税单价
 						detail.setSum(getDoubleValue(detailTemp, "iNatSum")); //含税金额
-						
+						detail.setPackageQuantity(getDoubleValue(detailTemp, "iNUM")); //件数
 						Double tempTaxRate = getDoubleValue(detailTemp, "iPerTaxRate");
 						detail.setTaxRate(tempTaxRate); //税率 
 						

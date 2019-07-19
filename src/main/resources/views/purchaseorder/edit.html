@@ -324,10 +324,12 @@
 	      className : 'dt-right',
 	      title : '订单数量',
 	    }, {
-	      data : null,
-	      defaultContent : '',
+	      data : 'package_quantity',
 	      className : 'dt-right',
-	      title : '换算率'
+	      title : '换算率',
+	      render: function (data, display, record) {
+	      	return App.getPackageRate(record.quantity, record.package_quantity);
+	      },
 	    }, {
 	      data : 'inventory.boxClass',
 	      className : 'dt-right',
@@ -344,8 +346,7 @@
 	      className : 'dt-right',
 	      title : '每箱数量',
 	    }, {
-	      data : null,
-	      defaultContent : '',
+	      data : 'package_quantity',
 	      className : 'dt-right',
 	      title : '订单件数'
 	    }, {

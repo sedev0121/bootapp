@@ -229,7 +229,7 @@ public class Utils {
 			detailData.put("cwhcode", detail.getMain().getStore().getCode());
 			detailData.put("cinvcode", orderDetail.getInventory().getCode());
 			detailData.put("qty", detail.getDeliveredQuantity());
-			detailData.put("inum", 1);
+			detailData.put("inum", detail.getDeliveredPackageQuantity());
 			detailData.put("itaxrate", orderDetail.getTaxRate());
 			detailData.put("iposid", orderDetail.getOriginalId());
 			detailData.put("cpocode", orderDetail.getMain().getCode());

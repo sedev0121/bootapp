@@ -248,7 +248,13 @@ is_readonly = 0;
 	    }, {
 	      name : "purchaseOrderDetail.inventory.extra_rate"
 	    }, {
+	      name : "delivered_package_quantity"
+	    }, {
+	      name : "package_rate"
+	    }, {
 	      name : "purchaseOrderDetail.delivered_quantity"
+	    }, {
+	      name : "purchaseOrderDetail.delivered_package_quantity"
 	    }, {
 	    	type:  "select",
 	      name : "cancel_confirmed",
@@ -285,13 +291,20 @@ is_readonly = 0;
 		  if (currentFieldName == "delivered_quantity") {
 		  	$.each(data.data, function(key, item){  
 		  		if (item.delivered_quantity) {
+		  			
 		  			item.delivered_quantity = parseInt(item.delivered_quantity);
 		  			if (item.delivered_quantity < 0) {
 		  				item.delivered_quantity *= -1;
 		  			}
-		  			var max_limit = item.purchaseOrderDetail.quantity * 1 * (item.purchaseOrderDetail.inventory.extra_rate * 1 + 100)/100 - item.purchaseOrderDetail.delivered_quantity
+		  			var max_limit = item.purchaseOrderDetail.quantity * 1 * (item.purchaseOrderDetail.inventory.extra_rate * 1 + 100)/100 - item.purchaseOrderDetail.delivered_quantity;
 		  			if (item.delivered_quantity > max_limit) {
 		  				item.delivered_quantity = max_limit;
+		  			}
+		  			
+		  			item.delivered_package_quantity = App.getPackageQuantity(item.delivered_quantity, item.package_rate);
+		  			var package_limit = item.purchaseOrderDetail.package_quantity - item.purchaseOrderDetail.delivered_package_quantity;
+		  			if (item.delivered_package_quantity > package_limit) {
+		  				item.delivered_package_quantity = package_limit;
 		  			}
 			  	}
         });
@@ -334,6 +347,7 @@ is_readonly = 0;
 			      item.dstartdate = $.fn.date_renderer(item.dstartdate);
 			      item.denddate = $.fn.date_renderer(item.denddate);
 			      item.cancel_confirmed = item.cancel_confirm_date?1:0;
+			      item.package_rate = App.getPackageRate(item.purchaseOrderDetail.quantity, item.purchaseOrderDetail.package_quantity);
 		      });
 		      return json;
 	      },
@@ -381,7 +395,7 @@ is_readonly = 0;
 	      className : 'dt-right',
 	      title : '订单数量',
 	    }, {
-	      data : 'purchaseOrderDetail.count_per_box',
+	      data : 'package_rate',
 	      className : 'dt-right',
 	      title : '换算率',
 	    }, {
@@ -400,12 +414,9 @@ is_readonly = 0;
 	      className : 'dt-right',
 	      title : '每箱数量',
 	    }, {
-	      data : 'purchaseOrderDetail.quantity',
+	      data : 'purchaseOrderDetail.package_quantity',
 	      className : 'dt-right',
 	      title : '订单件数',
-	      render: function (data, display, record) {
-	        return App.getBoxCount(record.purchaseOrderDetail.quantity, record.purchaseOrderDetail.count_per_box);
-	      },
 	    }, {
 	      data : null,
 	      className : 'dt-right',
@@ -418,7 +429,7 @@ is_readonly = 0;
 	      className : 'dt-right',
 	      title : '订单未发件数',		
 	      render: function (data, display, record) {
-	        return App.getBoxCount(record.purchaseOrderDetail.quantity - record.purchaseOrderDetail.delivered_quantity, record.purchaseOrderDetail.count_per_box);
+	        return record.purchaseOrderDetail.package_quantity - record.purchaseOrderDetail.delivered_package_quantity;
 	      },
 	    }, {
 	      data : 'delivered_quantity',
@@ -426,12 +437,9 @@ is_readonly = 0;
 	      className : (is_vendor && state == 1?'vendor-edit editable':''),
 	      title : '发货数量',		
 	    }, {
-	      data : 'delivered_quantity',
+	      data : 'delivered_package_quantity',
 	      className : 'dt-right',
 	      title : '发货件数',		 
-	      render: function (data, display, record) {
-	        return App.getBoxCount(record.delivered_quantity, record.purchaseOrderDetail.count_per_box);
-	      },
 	    }, {
 	      data : 'delivered_quantity',
 	      className : 'dt-right',
@@ -448,7 +456,7 @@ is_readonly = 0;
 	      className : 'dt-right',
 	      title : '入库件数',		
 	      render: function (data, display, record) {
-	        return App.getBoxCount(record.purchaseOrderDetail.arrived_quantity, record.purchaseOrderDetail.count_per_box);
+	        return App.getPackageQuantity(record.purchaseOrderDetail.arrived_quantity, record.package_rate);
 	      },
 	    }, {
 	      data : null,
@@ -462,12 +470,9 @@ is_readonly = 0;
 	      className : 'dt-right',
 	      title : '已发货数量',		 
 	    }, {
-	    	data : null,
+	    	data : 'purchaseOrderDetail.delivered_package_quantity',
 	      className : 'dt-right',
 	      title : '已发货件数',	
-	      render: function (data, display, record) {
-	      	return App.getBoxCount(record.purchaseOrderDetail.delivered_quantity, record.purchaseOrderDetail.count_per_box);
-	      },
 	    }, {
 	    	data : null,
 	      className : 'dt-right',
@@ -521,12 +526,15 @@ is_readonly = 0;
 			  				inventory_code: item.purchaseOrderDetail.inventory.code,
 			  				inventory_name: item.purchaseOrderDetail.inventory_name,
 			  				unit_name: item.purchaseOrderDetail.unit_name,
+			  				package_rate: item.package_rate,
 			  				delivered_quantity: App.floatVal(item.delivered_quantity),
+			  				delivered_package_quantity: App.floatVal(item.delivered_package_quantity),
 			  				arrived_quantity: App.floatVal(item.purchaseOrderDetail.arrived_quantity),
 			  				count_per_box: item.purchaseOrderDetail.count_per_box,
 			  		}	
 		  		} else {
 		  			summary_data[key].delivered_quantity += App.floatVal(item.delivered_quantity);
+		  			summary_data[key].delivered_package_quantity += App.floatVal(item.delivered_package_quantity);
 		  			summary_data[key].accepted_quantity = App.floatVal(item.accepted_quantity);		  			
 		  		}
 		  	});
@@ -650,12 +658,9 @@ is_readonly = 0;
 		      className : 'dt-right',
 		      title : '发货数量',		 
 		    }, {
-		      data : 'delivered_quantity',
+		      data : 'delivered_package_quantity',
 		      className : 'dt-right',
 		      title : '发货件数',
-		      render: function (data, display, record) {
-		        return App.getBoxCount(record.delivered_quantity, record.count_per_box);
-		      },
 		    }, {
 		      data : 'delivered_quantity',
 		      className : 'dt-right',
@@ -679,7 +684,7 @@ is_readonly = 0;
 		      className : 'dt-right',
 		      title : '入库件数',
 		      render: function (data, display, record) {
-		        return App.getBoxCount(record.arrived_quantity, record.count_per_box);
+		        return App.getPackageQuantity(record.arrived_quantity, record.package_rate);
 		      },
 		    }, {
 		      data : 'accepted_quantity',
@@ -879,6 +884,11 @@ is_readonly = 0;
 				  temp.purchaseOrderDetail = item;
 				  temp.delivered_quantity = item.quantity - item.delivered_quantity;
 				  temp.purchaseOrderDetail.code = item.main.code;
+				  temp.purchaseOrderDetail.quantity = item.quantity;
+				  temp.purchaseOrderDetail.delivered_package_quantity = item.delivered_package_quantity;
+				  temp.purchaseOrderDetail.package_quantity = item.package_quantity;
+				  temp.package_rate = App.getPackageRate(item.quantity, item.package_quantity);
+				  temp.delivered_package_quantity = App.getPackageQuantity(temp.delivered_quantity, temp.package_rate);
 				  temp.accepted_quantity = 0;				  
 				  temp.arrived_quantity = 0;
 				  temp.deliver_number = '';
@@ -970,6 +980,7 @@ is_readonly = 0;
 		    		id: item.id,
 		    		po_detail_id: item.purchaseOrderDetail.id,
 		    		delivered_quantity: item.delivered_quantity || 0,
+		    		delivered_package_quantity: item.delivered_package_quantity || 0,
 		    		memo: item.memo,
 		    		buyer_memo: item.buyer_memo,
 		    		state: item.state,
