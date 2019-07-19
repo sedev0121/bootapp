@@ -51,4 +51,8 @@ public class RestApiResponse {
 		return "ok".equals(status);
 	}
 
+	public List<LinkedHashMap<String, Object>> getData(String key) {
+		List<LinkedHashMap<String, Object>> data = (List<LinkedHashMap<String, Object>>)originalMap.get(key);
+		return data;
+	}
 }

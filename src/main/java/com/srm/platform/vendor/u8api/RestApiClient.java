@@ -97,12 +97,20 @@ public class RestApiClient {
 		return postForData("SRM_pomo", "pomo");
 	}
 	
+	public RestApiResponse postForPurchaseIn() {
+		return postForData("SRM_rdrecord01", "batch_get");
+	}
+	
 	public RestApiResponse postConfirmForOrder(List<String> pocodes, List<String> mocodes) {
 		Map<String, List<String>> content = new HashMap<>();
 		content.put("pocodes", pocodes);
 		content.put("mocodes", mocodes);
 		
 		return postForConfirm("SRM_pomo", content);
+	}
+	
+	public RestApiResponse postConfirmForPurchaseIn(List<String> codes) {
+		return postForConfirm("SRM_rdrecord01", codes);
 	}
 	
 	public RestApiResponse postForArrivalVouch(Map<String, Object> content) {
@@ -137,7 +145,11 @@ public class RestApiClient {
 		Map<String, Object> postData = new HashMap<>();
 		postData.put("classname", classname);
 		postData.put("method", "batch_get");
-		postData.put("content", null);
+		
+		Map<String, Object> content = new HashMap<>();
+		content.put("cVenCode", "01001");
+		
+		postData.put("content", content);
 
 		return post(url, postData, dataField, true);
 	}

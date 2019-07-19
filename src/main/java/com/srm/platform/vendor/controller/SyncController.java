@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.InventoryClass;
+import com.srm.platform.vendor.model.PurchaseInDetail;
+import com.srm.platform.vendor.model.PurchaseInMain;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.Vendor;
@@ -23,6 +25,8 @@ import com.srm.platform.vendor.repository.BoxClassRepository;
 import com.srm.platform.vendor.repository.CompanyRepository;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
+import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
+import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.repository.VendorClassRepository;
@@ -64,6 +68,12 @@ public class SyncController {
 	@Autowired
 	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
 
+	@Autowired
+	public PurchaseInMainRepository purchaseInMainRepository;
+
+	@Autowired
+	public PurchaseInDetailRepository purchaseInDetailRepository;
+	
 	@ResponseBody
 	@GetMapping({ "", "/" })
 	public boolean index() {
@@ -89,6 +99,14 @@ public class SyncController {
 		String temp = String.valueOf(object.get(key));
 		if (!Utils.isEmpty(temp)) {
 			return Integer.valueOf(temp);
+		}
+		return null;
+	}
+	
+	private Long getLongValue(LinkedHashMap<String, Object> object, String key) {
+		String temp = String.valueOf(object.get(key));
+		if (!Utils.isEmpty(temp)) {
+			return Long.valueOf(temp);
 		}
 		return null;
 	}
@@ -502,6 +520,139 @@ public class SyncController {
 
 				if (pocodes.size() > 0 || mocodes.size() > 0) {
 					response = apiClient.postConfirmForOrder(pocodes, mocodes);
+				} else {
+					hasMore = false;
+					break;
+				}
+			} else {
+				hasMore = false;
+				break;
+			}
+		}
+
+		return totalCount;
+	}
+	
+	@Transactional
+	@ResponseBody
+	@RequestMapping(value = { "/purchasein", "/purchasein/" })
+	public int purchaseIn() {
+		int totalCount = 0;
+		boolean hasMore = true;
+		while (hasMore) {
+			
+			List<String> codes = new ArrayList<String>();
+
+			RestApiResponse response = apiClient.postForPurchaseIn();
+
+			List<LinkedHashMap<String, Object>> data = response.getData("rdrecord01");
+			if (response.isSuccess()) {
+				if (data != null && data.size() == 0) {
+					hasMore = false;
+					break;
+				}
+				for (LinkedHashMap<String, Object> temp : data) {
+
+					String code = getStringValue(temp, "cCode");
+					String type = getStringValue(temp, "cBusType");
+					String vendor_code = getStringValue(temp, "cVenCode");
+					Integer bredvouch = getIntegerValue(temp, "bredvouch");
+					String date = getStringValue(temp, "dDate");
+					String verifyDate = getStringValue(temp, "dVeriDate");
+					
+					PurchaseInMain main = purchaseInMainRepository.findOneByCode(code);
+					if (main == null) {
+						main = new PurchaseInMain();
+						main.setCode(code);
+					}
+					main.setType(type);
+					
+					Vendor vendor = vendorRepository.findOneByCode(vendor_code);
+					main.setVendor(vendor);
+
+					main.setDate(Utils.parseDateTime(date));
+					main.setVerifyDate(Utils.parseDateTime(verifyDate));
+					main.setBredvouch(bredvouch);
+					
+					purchaseInMainRepository.save(main);
+
+					
+					Double quantity = getDoubleValue(temp, "iQuantity");
+					String rowno = getStringValue(temp, "irowno");
+					String inventory_code = getStringValue(temp, "cInvCode");					
+					Double tax_rate = getDoubleValue(temp, "iTaxRate");
+					Double tax_cost = getDoubleValue(temp, "iSum");
+					Double tax = getDoubleValue(temp, "iTaxPrice");
+					Double cost = getDoubleValue(temp, "iPrice");
+					Double price = getDoubleValue(temp, "iUnitCost");
+					Long purchaseInDetailId = getLongValue(temp, "AutoID");
+					
+					
+					
+//					String warehouse_code = getStringValue(temp, "cWhCode");
+//					String warehouse_name = getStringValue(temp, "cWhName");
+//					String memo = getStringValue(temp, "dMemo");					
+//					String poCode = getStringValue(temp, "cPOID");
+//					Long purchaseOrderDetailId = getLongValue(temp, "pOAutoID");
+//					Double tax_price = getDoubleValue(temp, "iTaxUnitCost");
+//					String detailMemo = getStringValue(temp, "cbMemo");
+//					Double nat_price = getDoubleValue(temp, "iNatUnitPrice");
+//					Double nat_cost = getDoubleValue(temp, "iNatMoney");
+//					Double nat_tax_rate = getDoubleValue(temp, "iPerTaxRate");
+//					Double nat_tax = getDoubleValue(temp, "iNatTax");
+//					Double nat_tax_price = getDoubleValue(temp, "iNatTaxUnitCost");
+//					Double nat_tax_cost = getDoubleValue(temp, "iNatSum");
+//					String material_code = getStringValue(temp, "cInvCodeMat");
+//					String material_name = getStringValue(temp, "cInvNameMat");
+//					String mate_unitname = getStringValue(temp, "ccomunitnameMat");
+//					Double material_quantity = getDoubleValue(temp, "iQuantityMat");
+//					Double material_price = getDoubleValue(temp, "iNatUnitPriceMat");
+//					Double material_tax_price = getDoubleValue(temp, "iNatTaxUnitPriceMat");
+					
+					
+					PurchaseInDetail detail = purchaseInDetailRepository.findOneByCodeAndRowno(code,
+							Integer.parseInt(rowno));
+					if (detail != null) {
+						logger.info("code=" + code + " rowno=" + rowno);
+					} else {
+						detail = new PurchaseInDetail();
+					}
+
+					detail.setMain(main);
+					detail.setInventory(inventoryRepository.findOneByCode(inventory_code));
+					detail.setQuantity(quantity);
+					detail.setPrice(price);
+					detail.setPiDetailId(purchaseInDetailId);
+					detail.setRowno(Integer.parseInt(rowno));
+					detail.setCost(cost);
+					detail.setTax(tax);
+					detail.setTaxRate(tax_rate);
+					detail.setTaxCost(tax_cost);
+
+//					detail.setPoDetailId(purchaseOrderDetailId);
+//					detail.setPoCode(poCode);
+//					detail.setMemo(detailMemo);
+//					detail.setTaxPrice(tax_price);
+//					detail.setNatPrice(nat_price);
+//					detail.setNatCost(nat_cost);
+//					detail.setNatTaxRate(nat_tax_rate);
+//					detail.setNatTax(nat_tax);
+//					detail.setNatTaxPrice(nat_tax_price);
+//					detail.setNatTaxCost(nat_tax_cost);
+//					detail.setMaterialCode(material_code);
+//					detail.setMaterialName(material_name);
+//					detail.setMaterialUnitname(material_unitname);
+//					detail.setMaterialQuantity(material_quantity);
+//					detail.setMaterialPrice(material_price);
+//					detail.setMaterialTaxPrice(material_tax_price);
+
+					purchaseInDetailRepository.save(detail);	
+					
+					codes.add(String.valueOf(purchaseInDetailId));
+				}
+
+				if (codes.size() > 0) {
+					response = apiClient.postConfirmForPurchaseIn(codes);
 				} else {
 					hasMore = false;
 					break;
