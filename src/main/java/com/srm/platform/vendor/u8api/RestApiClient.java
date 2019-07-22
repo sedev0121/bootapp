@@ -145,11 +145,7 @@ public class RestApiClient {
 		Map<String, Object> postData = new HashMap<>();
 		postData.put("classname", classname);
 		postData.put("method", "batch_get");
-		
-		Map<String, Object> content = new HashMap<>();
-		content.put("cVenCode", "01001");
-		
-		postData.put("content", content);
+		postData.put("content", null);
 
 		return post(url, postData, dataField, true);
 	}
@@ -164,7 +160,7 @@ public class RestApiClient {
 		Map<String, Object> postData = new HashMap<>();
 
 		Map<String, Object> content = new HashMap<>();
-		content.put("codes", codes);
+		content.put("AutoIDs", codes);
 
 		postData.put("classname", classname);
 		postData.put("method", "feedback");

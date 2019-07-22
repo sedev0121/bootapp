@@ -589,25 +589,13 @@ public class SyncController {
 					
 					
 					
-//					String warehouse_code = getStringValue(temp, "cWhCode");
-//					String warehouse_name = getStringValue(temp, "cWhName");
+					String warehouse_code = getStringValue(temp, "cWhCode");
+					
 //					String memo = getStringValue(temp, "dMemo");					
 //					String poCode = getStringValue(temp, "cPOID");
 //					Long purchaseOrderDetailId = getLongValue(temp, "pOAutoID");
 //					Double tax_price = getDoubleValue(temp, "iTaxUnitCost");
-//					String detailMemo = getStringValue(temp, "cbMemo");
-//					Double nat_price = getDoubleValue(temp, "iNatUnitPrice");
-//					Double nat_cost = getDoubleValue(temp, "iNatMoney");
-//					Double nat_tax_rate = getDoubleValue(temp, "iPerTaxRate");
-//					Double nat_tax = getDoubleValue(temp, "iNatTax");
-//					Double nat_tax_price = getDoubleValue(temp, "iNatTaxUnitCost");
-//					Double nat_tax_cost = getDoubleValue(temp, "iNatSum");
-//					String material_code = getStringValue(temp, "cInvCodeMat");
-//					String material_name = getStringValue(temp, "cInvNameMat");
-//					String mate_unitname = getStringValue(temp, "ccomunitnameMat");
-//					Double material_quantity = getDoubleValue(temp, "iQuantityMat");
-//					Double material_price = getDoubleValue(temp, "iNatUnitPriceMat");
-//					Double material_tax_price = getDoubleValue(temp, "iNatTaxUnitPriceMat");
+
 					
 					
 					PurchaseInDetail detail = purchaseInDetailRepository.findOneByCodeAndRowno(code,
