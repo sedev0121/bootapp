@@ -115,7 +115,7 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventoryname,c.specs, v.name vendorname, v.code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
+		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventoryname,c.specs, v.name vendorname, v.code vendorcode, b.type, b.bredvouch, ' ' memo, ' ' mainmemo ";
 		String countQuery = "select count(a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
@@ -174,18 +174,18 @@ public class PurchaseInController extends CommonController {
 			params.put("state", state);
 		}
 		
-		//TODO: company filter
-//		Long companyId = Long.valueOf(companyIdStr);
-//		if (companyId >= 0) {
-//			bodyQuery += " and a.company=:company";
-//			params.put("company", companyId);
-//		}
-		//TODO: store filter
-//		Long storeId = Long.valueOf(storeIdStr);
-//		if (storeId >= 0) {
-//			bodyQuery += " and a.store=:store";
-//			params.put("store", storeId);
-//		}
+
+		Long companyId = Long.valueOf(companyIdStr);
+		if (companyId >= 0) {
+			bodyQuery += " and a.company_code=:company";
+			params.put("company", companyId);
+		}
+
+		Long storeId = Long.valueOf(storeIdStr);
+		if (storeId >= 0) {
+			bodyQuery += " and a.store_code=:store";
+			params.put("store", storeId);
+		}
 		countQuery += bodyQuery;
 		Query q = em.createNativeQuery(countQuery);
 

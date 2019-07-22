@@ -2,6 +2,8 @@ package com.srm.platform.vendor.searchitem;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PurchaseInDetailResult implements Serializable {
 
 	private static final long serialVersionUID = 2283867296635029703L;
@@ -13,6 +15,7 @@ public class PurchaseInDetailResult implements Serializable {
 	String date;
 	String verify_date;
 
+	@JsonProperty("row_no")
 	Integer rowno;
 
 	String inventoryname;
@@ -39,11 +42,6 @@ public class PurchaseInDetailResult implements Serializable {
 
 	String memo;
 
-	String nat_tax_price;
-
-	String material_quantity;
-
-	String material_tax_price;
 
 	String vendorcode;
 	String vendorname;
@@ -52,14 +50,11 @@ public class PurchaseInDetailResult implements Serializable {
 	String mainmemo;
 
 	String poCode;
-	String natPrice;
-	String natTaxRate;
 
 	public PurchaseInDetailResult(String id, String code, String date, String verify_date,Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
-			String tax_price, String tax_rate, String tax_cost, String memo, String nat_tax_price,
-			String material_quantity, String material_tax_price, String vendorname, String vendorcode, String type,
-			String bredvouch, String mainmemo, String state, String poCode, String natPrice, String natTaxRate) {
+			String tax_price, String tax_rate, String tax_cost, String memo, String vendorname, String vendorcode, String type,
+			String bredvouch, String mainmemo, String state, String poCode) {
 
 		this.id = id;
 		this.code = code;
@@ -79,10 +74,6 @@ public class PurchaseInDetailResult implements Serializable {
 		this.tax_cost = tax_cost;
 		this.tax_rate = tax_rate;
 
-		this.nat_tax_price = nat_tax_price;
-		this.material_quantity = material_quantity;
-		this.material_tax_price = material_tax_price;
-
 		this.vendorcode = vendorcode;
 		this.vendorname = vendorname;
 		this.type = type;
@@ -91,8 +82,6 @@ public class PurchaseInDetailResult implements Serializable {
 		this.state = state;
 
 		this.poCode = poCode;
-		this.natPrice = natPrice;
-		this.natTaxRate = natTaxRate;
 	}
 
 	
@@ -121,22 +110,6 @@ public class PurchaseInDetailResult implements Serializable {
 
 	public void setPoCode(String poCode) {
 		this.poCode = poCode;
-	}
-
-	public String getNat_price() {
-		return natPrice;
-	}
-
-	public void setNatPrice(String natPrice) {
-		this.natPrice = natPrice;
-	}
-
-	public String getNat_tax_rate() {
-		return natTaxRate;
-	}
-
-	public void setNatTaxRate(String natTaxRate) {
-		this.natTaxRate = natTaxRate;
 	}
 
 	public String getPoCode() {
@@ -213,31 +186,7 @@ public class PurchaseInDetailResult implements Serializable {
 
 	public void setInventory_code(String inventory_code) {
 		this.inventory_code = inventory_code;
-	}
-
-	public String getNat_tax_price() {
-		return nat_tax_price;
-	}
-
-	public void setNat_tax_price(String nat_tax_price) {
-		this.nat_tax_price = nat_tax_price;
-	}
-
-	public String getMaterial_quantity() {
-		return material_quantity;
-	}
-
-	public void setMaterial_quantity(String material_quantity) {
-		this.material_quantity = material_quantity;
-	}
-
-	public String getMaterial_tax_price() {
-		return material_tax_price;
-	}
-
-	public void setMaterial_tax_price(String material_tax_price) {
-		this.material_tax_price = material_tax_price;
-	}
+	}	
 
 	public Integer getRowno() {
 		return rowno;

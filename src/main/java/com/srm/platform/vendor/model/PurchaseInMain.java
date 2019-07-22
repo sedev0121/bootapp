@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 @Entity
 
@@ -24,10 +26,13 @@ public class PurchaseInMain {
 	Vendor vendor;
 
 	private Integer bredvouch;
-	private String warehouse_code;
-	private String warehouse_name;
-	private String memo;
-
+	
+	@JsonProperty("store_code")
+	private String storeCode;
+	
+	@JsonProperty("company_code")
+	private String companyCode;
+	
 	private Date date;
 	private Date verifyDate;
 
@@ -70,29 +75,21 @@ public class PurchaseInMain {
 	public void setBredvouch(Integer bredvouch) {
 		this.bredvouch = bredvouch;
 	}
-
-	public String getWarehouse_code() {
-		return warehouse_code;
+	
+	public String getStoreCode() {
+		return storeCode;
 	}
 
-	public void setWarehouse_code(String warehouse_code) {
-		this.warehouse_code = warehouse_code;
+	public void setStoreCode(String storeCode) {
+		this.storeCode = storeCode;
 	}
 
-	public String getWarehouse_name() {
-		return warehouse_name;
+	public String getCompanyCode() {
+		return companyCode;
 	}
 
-	public void setWarehouse_name(String warehouse_name) {
-		this.warehouse_name = warehouse_name;
-	}
-
-	public String getMemo() {
-		return memo;
-	}
-
-	public void setMemo(String memo) {
-		this.memo = memo;
+	public void setCompanyCode(String companyCode) {
+		this.companyCode = companyCode;
 	}
 
 	public Date getDate() {

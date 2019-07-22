@@ -620,9 +620,9 @@ public class StatementController extends CommonController {
 			entry.setiTaxRate(detail.getTaxRate());
 
 			// 采购入库子表ID
-			entry.setRdsid(purchaseInDetail.getPiDetailId());
+			entry.setRdsid(purchaseInDetail.getAutoId());
 			// 采购订单子表ID
-			entry.setIposid(purchaseInDetail.getPoDetailId());
+			entry.setIposid(purchaseInDetail.getAutoId());
 			// SRM里表体的行号
 			entry.setIvouchrowno(i);
 
@@ -701,7 +701,7 @@ public class StatementController extends CommonController {
 			if (purchaseInDetail == null)
 				continue;
 
-			map.put("autoid", String.valueOf(purchaseInDetail.getPiDetailId()));
+			map.put("autoid", String.valueOf(purchaseInDetail.getAutoId()));
 			map.put("iquantity", String.valueOf(purchaseInDetail.getQuantity()));
 			postData.add(map);
 		}

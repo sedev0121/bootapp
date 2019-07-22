@@ -556,6 +556,8 @@ public class SyncController {
 					String code = getStringValue(temp, "cCode");
 					String type = getStringValue(temp, "cBusType");
 					String vendor_code = getStringValue(temp, "cVenCode");
+					String companyCode = getStringValue(temp, "cFactoryCode");
+					String storeCode = getStringValue(temp, "cWhCode");
 					Integer bredvouch = getIntegerValue(temp, "bredvouch");
 					String date = getStringValue(temp, "dDate");
 					String verifyDate = getStringValue(temp, "dVeriDate");
@@ -563,77 +565,69 @@ public class SyncController {
 					PurchaseInMain main = purchaseInMainRepository.findOneByCode(code);
 					if (main == null) {
 						main = new PurchaseInMain();
-						main.setCode(code);
+						main.setCode(code);						
 					}
-					main.setType(type);
-					
+
 					Vendor vendor = vendorRepository.findOneByCode(vendor_code);
 					main.setVendor(vendor);
 
+					main.setCompanyCode(companyCode);
+					main.setStoreCode(storeCode);
+					main.setType(type);
+					main.setBredvouch(bredvouch);
 					main.setDate(Utils.parseDateTime(date));
 					main.setVerifyDate(Utils.parseDateTime(verifyDate));
-					main.setBredvouch(bredvouch);
 					
 					purchaseInMainRepository.save(main);
-
 					
 					Double quantity = getDoubleValue(temp, "iQuantity");
-					String rowno = getStringValue(temp, "irowno");
-					String inventory_code = getStringValue(temp, "cInvCode");					
-					Double tax_rate = getDoubleValue(temp, "iTaxRate");
-					Double tax_cost = getDoubleValue(temp, "iSum");
+					Integer rowNo = getIntegerValue(temp, "irowno");
+					String inventoryCode = getStringValue(temp, "cInvCode");					
+					Double taxRate = getDoubleValue(temp, "iTaxRate");
 					Double tax = getDoubleValue(temp, "iTaxPrice");
-					Double cost = getDoubleValue(temp, "iPrice");
+					
 					Double price = getDoubleValue(temp, "iUnitCost");
-					Long purchaseInDetailId = getLongValue(temp, "AutoID");
-					
-					
-					
-					String warehouse_code = getStringValue(temp, "cWhCode");
-					
-//					String memo = getStringValue(temp, "dMemo");					
-//					String poCode = getStringValue(temp, "cPOID");
-//					Long purchaseOrderDetailId = getLongValue(temp, "pOAutoID");
-//					Double tax_price = getDoubleValue(temp, "iTaxUnitCost");
+					Double cost = getDoubleValue(temp, "iPrice");
 
+					Double taxCost = getDoubleValue(temp, "iSum");
+					Double taxPrice = getDoubleValue(temp, "iOriTaxCost");					
 					
+					Long autoId = getLongValue(temp, "AutoID");
 					
-					PurchaseInDetail detail = purchaseInDetailRepository.findOneByCodeAndRowno(code,
-							Integer.parseInt(rowno));
+					String poCode = getStringValue(temp, "cpoid");
+					Integer poRowNo = getIntegerValue(temp, "porowno");
+					String deliveryCode = getStringValue(temp, "cbarvcode");
+					Integer deliveryRowNo = getIntegerValue(temp, "purowno");
+					
+										
+					PurchaseInDetail detail = purchaseInDetailRepository.findOneByCodeAndRowno(code,rowNo);
 					if (detail != null) {
-						logger.info("code=" + code + " rowno=" + rowno);
+						logger.info("code=" + code + " rowno=" + rowNo);
 					} else {
 						detail = new PurchaseInDetail();
+						detail.setMain(main);
+						detail.setRowNo(rowNo);
 					}
 
-					detail.setMain(main);
-					detail.setInventory(inventoryRepository.findOneByCode(inventory_code));
+					detail.setInventory(inventoryRepository.findOneByCode(inventoryCode));
 					detail.setQuantity(quantity);
-					detail.setPrice(price);
-					detail.setPiDetailId(purchaseInDetailId);
-					detail.setRowno(Integer.parseInt(rowno));
-					detail.setCost(cost);
+					
+					detail.setTaxRate(taxRate);
 					detail.setTax(tax);
-					detail.setTaxRate(tax_rate);
-					detail.setTaxCost(tax_cost);
-
-//					detail.setPoDetailId(purchaseOrderDetailId);
-//					detail.setPoCode(poCode);
-//					detail.setMemo(detailMemo);
-//					detail.setTaxPrice(tax_price);
-//					detail.setNatPrice(nat_price);
-//					detail.setNatCost(nat_cost);
-//					detail.setNatTaxRate(nat_tax_rate);
-//					detail.setNatTax(nat_tax);
-//					detail.setNatTaxPrice(nat_tax_price);
-//					detail.setNatTaxCost(nat_tax_cost);
-//					detail.setMaterialCode(material_code);
-//					detail.setMaterialName(material_name);
-//					detail.setMaterialUnitname(material_unitname);
-//					detail.setMaterialQuantity(material_quantity);
-//					detail.setMaterialPrice(material_price);
-//					detail.setMaterialTaxPrice(material_tax_price);
-
+					
+					detail.setPrice(price);
+					detail.setCost(cost);
+					
+					detail.setTaxPrice(taxPrice);
+					detail.setTaxCost(taxCost);
+					
+					detail.setPoCode(poCode);
+					detail.setPoRowNo(poRowNo);
+					
+					detail.setDeliveryCode(deliveryCode);
+					detail.setDeliveryRowNo(deliveryRowNo);
+					detail.setAutoId(autoId);
+					
 					purchaseInDetailRepository.save(detail);	
 					
 					//TODO: reverse comment out. it's for test.
