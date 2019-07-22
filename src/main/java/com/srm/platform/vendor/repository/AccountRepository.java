@@ -20,8 +20,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	Account findOneByMobile(String mobile);
 
-	Account findOneByWeixin(String weixin);
-
 	Account findOneById(Long id);
 
 	@Query(value = "SELECT t.*, '' unitname FROM account t left join vendor v on t.vendor_code=v.code WHERE "
@@ -38,12 +36,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	@Query(value = "SELECT * FROM account where vendor_code=?1", nativeQuery = true)
 	List<Account> findAccountsByVendor(String vendorCode);
-
-	@Query(value = "SELECT * FROM account where unit_id in ?1", nativeQuery = true)
-	List<Account> findAccountsByUnitIdList(List<String> unitIdList);
-
-	@Query(value = "SELECT * FROM account where role='ROLE_VENDOR' and unit_id in ?1", nativeQuery = true)
-	List<Account> findAllVendorsByUnitIdList(List<String> unitIdList);
 
 	//TODO: check again
 	@Query(value = "SELECT * FROM account where role='ROLE_BUYER'", nativeQuery = true)

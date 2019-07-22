@@ -240,3 +240,12 @@ DROP TABLE IF EXISTS negotiation_main;
 DROP TABLE IF EXISTS negotiation_detail;
 DROP TABLE IF EXISTS warning;
 DROP TABLE IF EXISTS measurement_unit;
+
+/* 2019-07-22 */
+alter table account DROP column wangwang;
+alter table account DROP column yahoo;
+alter table account DROP column weixin;
+alter table account DROP column qq;
+alter table account DROP column gtalk;
+alter table account DROP column entry_time;
+alter table account DROP column unit_id;
