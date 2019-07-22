@@ -75,6 +75,8 @@ public class PurchaseInController extends CommonController {
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String vendor = requestParams.getOrDefault("vendor", "");
 		String code = requestParams.getOrDefault("code", "");
+		String companyIdStr = requestParams.getOrDefault("company", "-1");
+		String storeIdStr = requestParams.getOrDefault("store", "-1");
 		String inventory = requestParams.getOrDefault("inventory", "");
 		String start_date = requestParams.getOrDefault("start_date", null);
 		String end_date = requestParams.getOrDefault("end_date", null);
@@ -171,7 +173,19 @@ public class PurchaseInController extends CommonController {
 			bodyQuery += " and a.state=:state";
 			params.put("state", state);
 		}
-
+		
+		//TODO: company filter
+//		Long companyId = Long.valueOf(companyIdStr);
+//		if (companyId >= 0) {
+//			bodyQuery += " and a.company=:company";
+//			params.put("company", companyId);
+//		}
+		//TODO: store filter
+//		Long storeId = Long.valueOf(storeIdStr);
+//		if (storeId >= 0) {
+//			bodyQuery += " and a.store=:store";
+//			params.put("store", storeId);
+//		}
 		countQuery += bodyQuery;
 		Query q = em.createNativeQuery(countQuery);
 

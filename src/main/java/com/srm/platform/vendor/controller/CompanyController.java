@@ -49,4 +49,12 @@ public class CompanyController extends CommonController {
 		return companyRepository.findBySearchTerm(search, request);
 
 	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/company/search", produces = "application/json")
+	public Page<SearchItem> company_list(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
+		return companyRepository.findForSelect(request);
+
+	}
 }

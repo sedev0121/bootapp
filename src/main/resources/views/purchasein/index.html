@@ -15,11 +15,15 @@
           </div>
           <div class="search-cell width-10">
             <label for="company">业务实体：</label>
-            <input type="text" id="company" class="form-control" placeholder="业务实体">
+            <select name="company" id="company" class="form-control">
+            	<option value="-1" text=" " selected="selected"></option>
+            </select>
           </div>
           <div class="search-cell width-10">
             <label for="store">库房：</label>
-            <input type="text" id="store" class="form-control" placeholder="库房">
+            <select name="store" id="store" class="form-control">
+            	<option value="-1" text=" " selected="selected"></option>
+            </select>
           </div>
           <div class="search-cell width-10">
             <label for="vendor">供应商编码/名称：</label>
@@ -27,11 +31,11 @@
           </div>
           <div class="search-cell width-10">
             <label for="start_date">接收时间: </label>
-            <input type="text" id="start_date" value="" class="form-control datepicker" placeholder="接收时间开始"/>
+            <input type="text" id="start_date" value="" class="form-control datepicker" placeholder="接收时间"/>
           </div>
           <div class="search-cell width-10">
             <label for="end_date">　</label>
-            <input type="text" id="end_date" value="" class="form-control datepicker" placeholder="接收时间结束"/>
+            <input type="text" id="end_date" value="" class="form-control datepicker" placeholder=""/>
           </div>
           <div class="search-cell width-10">
             <label for="state">状态:</label>
@@ -56,6 +60,8 @@
 <script th:inline="javascript">
 /*[+
 var edit_url = [[@{/purchasein/}]];
+var company_search_url = [[@{/company/search}]];
+var store_search_url = [[@{/store/search/}]];
 +]*/ 
 
   $(document).ready(function() {
@@ -70,7 +76,10 @@ var edit_url = [[@{/purchasein/}]];
       data : App.getPurchaseInStateDataWithAll(),
       minimumResultsForSearch : -1
     });
-
+    
+    $("#company").select2(App.getSelect2OptionsWithAll(company_search_url));
+    $("#store").select2();
+    
     $('#start_date').datepicker();
     $('#end_date').datepicker();
 
@@ -231,9 +240,15 @@ var edit_url = [[@{/purchasein/}]];
       table.draw();
     });
     
-    $('#state').change(function() {
+    $('#state, #company, #store').change(function() {
       table.draw();
     });
+    
+    $('#company').change(function() {
+	  	var store_url = store_search_url + $('#company').val();
+	  	$("#store").select2(App.getSelect2OptionsWithAll(store_url));
+	  	$("#store").val("-1").trigger('change');
+	  });	 
     
     $('#vendor, #code, #start_date, #end_date').keyup(function(e) {
       if (e.keyCode == 13)

@@ -249,7 +249,7 @@ var App = function() {
       })
     },
     getSelect2Options: function(search_url) {
-      return $.extend(true, {ajax:{url:search_url}}, select2_default_options);
+      return $.extend(true, select2_default_options, {ajax:{url:search_url}});
     },
     getSelect2OptionsWithFirstOption: function(search_url, firstOption) {
     	return $.extend(true, select2_default_options, {      	
@@ -365,7 +365,7 @@ var App = function() {
       return [{id:0, text:"　"}, ...statement_state_data];
     },
     getPurchaseInStateDataWithAll: function() {
-      return [{id:-1, text:"全部"}, ...purchase_in_state_data];
+      return [{id:-1, text:"　"}, ...purchase_in_state_data];
     },
     getPurchaseInStateData: function() {
       return purchase_in_state_data;
