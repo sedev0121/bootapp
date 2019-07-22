@@ -248,4 +248,8 @@ alter table account DROP column weixin;
 alter table account DROP column qq;
 alter table account DROP column gtalk;
 alter table account DROP column entry_time;
-alter table account DROP column unit_id;
+/* 2019-07-19 */
+alter table purchase_order_detail add column package_quantity double(16,6) NULL DEFAULT NULL;
+alter table purchase_order_detail add column delivered_package_quantity double(16,6) NULL DEFAULT NULL;
+alter table delivery_detail add column delivered_package_quantity double(16,6) NULL DEFAULT NULL;
+

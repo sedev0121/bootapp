@@ -159,6 +159,24 @@ var App = function() {
 
       return $.datepicker.formatDate('yymmdd', new Date()) + hours + minutes + seconds + millisecs;
     },
+    getPackageRate : function (quantity, packageQuantity) {
+		  if (!packageQuantity || !quantity) {
+		  	return '';
+		  } else {
+		  	var rate = parseFloat(quantity)/parseFloat(packageQuantity);
+		  	rate = App.formatNumber(rate, 3);
+		  	return rate;
+		  }
+		},
+		getPackageQuantity : function (quantity, packageRate) {
+		  if (!packageRate || !quantity) {
+		  	return '';
+		  } else {
+		  	var packageQuantity = parseFloat(quantity)/parseFloat(packageRate);
+		  	packageQuantity = App.formatNumber(packageQuantity, 6);
+		  	return packageQuantity;
+		  }
+		},
     getBoxCount : function (total, countPerBox) {
 		  if (!countPerBox || !total) {
 		  	return '';
@@ -170,7 +188,7 @@ var App = function() {
 		  	}
 		  	return boxCountInt;
 		  }
-		},
+		},		
 		getBoxCount2 : function (total, countPerBox) {
 		  if (!countPerBox || !total) {
 		  	return '';

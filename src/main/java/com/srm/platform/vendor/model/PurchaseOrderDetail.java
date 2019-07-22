@@ -92,6 +92,12 @@ public class PurchaseOrderDetail {
 	@JsonProperty(value = "delivered_quantity")
 	private Double deliveredQuantity;
 	
+	@JsonProperty(value = "delivered_package_quantity")
+	private Double deliveredPackageQuantity;
+	
+	@JsonProperty(value = "package_quantity")
+	private Double packageQuantity;
+	
 	@JsonProperty(value = "invoiced_money")
 	private Double invoicedMoney;
 	
@@ -360,6 +366,14 @@ public class PurchaseOrderDetail {
 		return prepayMoney;
 	}
 
+	public Double getDeliveredPackageQuantity() {
+		return deliveredPackageQuantity;
+	}
+
+	public void setDeliveredPackageQuantity(Double deliveredPackageQuantity) {
+		this.deliveredPackageQuantity = deliveredPackageQuantity;
+	}
+
 	public void setPrepayMoney(Double prepayMoney) {
 		this.prepayMoney = prepayMoney;
 	}
@@ -378,6 +392,14 @@ public class PurchaseOrderDetail {
 
 	public void setInventoryClassCode(String inventoryClassCode) {
 		this.inventoryClassCode = inventoryClassCode;
+	}
+
+	public Double getPackageQuantity() {
+		return packageQuantity;
+	}
+
+	public void setPackageQuantity(Double packageQuantity) {
+		this.packageQuantity = packageQuantity;
 	}
 
 }

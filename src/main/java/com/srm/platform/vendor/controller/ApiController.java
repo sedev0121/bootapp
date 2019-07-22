@@ -578,9 +578,9 @@ public class ApiController {
 				String inventoryCode = data.get("material_code");
 				String quantityStr = data.get("quantity");
 				String reason = data.get("reason");
-				String type = data.get("type");
 				
-				if (rowNoStr == null || inventoryCode == null || quantityStr == null || inventoryCode == null || reason == null || type == null) {
+				
+				if (rowNoStr == null || inventoryCode == null || quantityStr == null || inventoryCode == null || reason == null) {
 					response.put("error_code", RESPONSE_FAIL);
 					response.put("msg", "参数不正确");	
 					return response;
@@ -607,15 +607,9 @@ public class ApiController {
 						return response;
 					} else {
 						
-						if (Constants.DELIVERY_CANCEL_TYPE_YES.equals(type)) {
-							detail.setCancelQuantity(quantity);
-							detail.setCancelReason(reason);
-							detail.setCancelDate(new Date());
-						} else {
-							detail.setCancelQuantity(null);
-							detail.setCancelReason(null);
-							detail.setCancelDate(null);
-						}
+						detail.setCancelQuantity(quantity);
+						detail.setCancelReason(reason);
+						detail.setCancelDate(new Date());
 						
 						canceledDeliveryDetailList.add(detail);
 						

@@ -273,6 +273,7 @@
 			      item.not_arrived_box_quantity = App.getBoxCount(item.not_arrived_quantity, item.count_per_box);
 			      item.arrived_box_quantity = App.getBoxCount(item.delivered_quantity, item.count_per_box);
 			      item.box_quantity = App.getBoxCount(item.quantity, item.count_per_box);
+			      item.package_rate = App.getPackageRate(item.quantity, item.package_quantity);
 		      })
 		      return json;
 	      },
@@ -324,10 +325,9 @@
 	      className : 'dt-right',
 	      title : '订单数量',
 	    }, {
-	      data : null,
-	      defaultContent : '',
+	      data : 'package_rate',
 	      className : 'dt-right',
-	      title : '换算率'
+	      title : '换算率',
 	    }, {
 	      data : 'inventory.boxClass',
 	      className : 'dt-right',
@@ -344,8 +344,7 @@
 	      className : 'dt-right',
 	      title : '每箱数量',
 	    }, {
-	      data : null,
-	      defaultContent : '',
+	      data : 'package_quantity',
 	      className : 'dt-right',
 	      title : '订单件数'
 	    }, {
@@ -400,7 +399,7 @@
 	      className : 'dt-right',
 	      title : '订单已发数量',
 	    }, {
-	      data : null,
+	      data : 'delivered_package_quantity',
 	      defaultContent : '',
 	      className : 'dt-right',
 	      title : '订单已发件数'
@@ -414,9 +413,11 @@
 	      title : '订单未发数量',
 	    }, {
 	      data : null,
-	      defaultContent : '',
 	      className : 'dt-right',
-	      title : '订单未发件数'
+	      title : '订单未发件数',
+	      render: function (data, display, record) {
+	      	return record.package_quantity - record.delivered_package_quantity;
+	      },
 	    }, {
 	      data : 'not_arrived_box_quantity',
 	      className : 'dt-right',

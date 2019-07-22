@@ -344,11 +344,18 @@ public class DeliveryController extends CommonController {
 							if (detail.getCancelConfirmDate() == null && cancelConfirmed == Constants.DELIVERY_CANCEL_CONFIRMED) {
 								detail.setCancelConfirmDate(new Date());
 								Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
-
+								
 								if (lastDeliveredQuantity != null) {
 									orderDetail.setDeliveredQuantity(lastDeliveredQuantity - cancelQuantity);
 									purchaseOrderDetailRepository.save(orderDetail);
 								}
+								
+								//TODO:
+//								Double lastDeliveredPackageQuantity = orderDetail.getDeliveredPackageQuantity();
+//								if (lastDeliveredPackageQuantity != null) {
+//									orderDetail.setDeliveredPackageQuantity(lastDeliveredPackageQuantity - cancelQuantity);
+//									purchaseOrderDetailRepository.save(orderDetail);
+//								}
 							}		
 
 							detail = deliveryDetailRepository.save(detail);
@@ -395,6 +402,7 @@ public class DeliveryController extends CommonController {
 							.findOneById(Long.parseLong(row.get("po_detail_id")));
 					Inventory inventory = orderDetail.getInventory();
 					Double quantity = Double.parseDouble(row.get("delivered_quantity"));
+					Double packageQuantity = Double.parseDouble(row.get("delivered_package_quantity"));
 
 					if (inventory.getBoxClass() != null) {
 						isAllFloatingInventories = false;
@@ -402,6 +410,7 @@ public class DeliveryController extends CommonController {
 					detail.setMain(main);
 					detail.setPurchaseOrderDetail(orderDetail);
 					detail.setDeliveredQuantity(quantity);
+					detail.setDeliveredPackageQuantity(packageQuantity);
 					detail.setMemo(row.get("memo"));
 					detail.setRowNo(rowNo);
 					rowNo++;
@@ -410,11 +419,18 @@ public class DeliveryController extends CommonController {
 						detail.setState(Constants.DELIVERY_ROW_STATE_OK);
 
 						Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
-
+						Double lastDeliveredPackageQuantity = orderDetail.getDeliveredPackageQuantity();
+						
 						if (lastDeliveredQuantity == null) {
 							lastDeliveredQuantity = 0D;
 						}
+						
+						if (lastDeliveredPackageQuantity == null) {
+							lastDeliveredPackageQuantity = 0D;
+						}
+						
 						orderDetail.setDeliveredQuantity(lastDeliveredQuantity + quantity);
+						orderDetail.setDeliveredPackageQuantity(lastDeliveredPackageQuantity + packageQuantity);
 						purchaseOrderDetailRepository.save(orderDetail);
 
 						if (inventory.getBoxClass() == null) {
@@ -431,9 +447,11 @@ public class DeliveryController extends CommonController {
 
 					} else if (form.getState() == Constants.DELIVERY_STATE_CANCEL) {
 						Double lastDeliveredQuantity = orderDetail.getDeliveredQuantity();
-
+						Double lastDeliveredPackageQuantity = orderDetail.getDeliveredPackageQuantity();
+						
 						if (lastDeliveredQuantity != null) {
 							orderDetail.setDeliveredQuantity(lastDeliveredQuantity - quantity);
+							orderDetail.setDeliveredPackageQuantity(lastDeliveredPackageQuantity - packageQuantity);
 							purchaseOrderDetailRepository.save(orderDetail);
 						}									
 					}
