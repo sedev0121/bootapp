@@ -16,13 +16,13 @@
           <div class="search-cell width-10">
             <label for="company">业务实体：</label>
             <select name="company" id="company" class="form-control">
-            	<option value="-1" text=" " selected="selected"></option>
+            	<option value="-1" text="　" selected="selected"></option>
             </select>
           </div>
           <div class="search-cell width-10">
             <label for="store">库房：</label>
             <select name="store" id="store" class="form-control">
-            	<option value="-1" text=" " selected="selected"></option>
+            	<option value="-1" text="　" selected="selected"></option>
             </select>
           </div>
           <div class="search-cell width-10">
@@ -94,6 +94,8 @@ var store_search_url = [[@{/store/search/}]];
             rows_per_page : data.length,
             page_index : data.start / data.length + 1,
             vendor : $('#vendor').val(),
+            company : $('#company').val(),
+            store : $('#store').val(),
             state: $('#state').val(),
             code : $('#code').val(),
             start_date : $('#start_date').val(),
@@ -123,11 +125,11 @@ var store_search_url = [[@{/store/search/}]];
         className:'dt-center',
         title : '接收日期'
       }, {
-        data : 'vendorcode',
+        data : 'company_name',
         className:'dt-center',
         title : '业务实体'
       }, {
-        data : 'vendorcode',
+        data : 'store_name',
         className:'dt-center',
         title : '库房'
       }, {
@@ -174,27 +176,25 @@ var store_search_url = [[@{/store/search/}]];
         data : 'vendorname',
         title : '供应商名称'
       }, {
-        data : 'type',
-        className:'dt-center',
+        data : 'po_code',
         title : '订单编号',
       }, {
-        data : 'type',
+        data : 'po_row_no',
         className:'dt-center',
         title : '订单行号',
       }, {
-        data : 'type',
+        data : 'confirmed_memo',
         className:'dt-center',
         title : '订单行购方备注',
       }, {
-        data : 'type',
-        className:'dt-center',
+        data : 'delivery_code',
         title : '发货单号',
       }, {
-        data : 'type',
+        data : 'delivery_row_no',
         className:'dt-center',
         title : '发货单行号',
       }, {
-        data : 'type',
+        data : 'delivered_quantity',
         className:'dt-center',
         title : '发货数量',
       }, {
@@ -202,28 +202,6 @@ var store_search_url = [[@{/store/search/}]];
         className:'dt-center',
         render : $.fn.date_renderer,
         title : 'SRM创建日期',
-/*        
-        }, {
-        data : 'verify_date',
-        render : $.fn.date_renderer,
-        className:'dt-center',
-        title : '审核日期'
-      }, {
-        data : 'type',
-        className:'dt-center',
-        title : '入库类型',
-      }, {
-        data : 'bredvouch',
-        className: 'dt-center',
-        render : App.getPurchaseInBredvouchOfId,
-        title : '红蓝字'  
-      }, {
-        data : 'mainmemo',
-        title : '备注',        
-      }, {
-        data : 'memo',
-        title : '行备注',
-*/        
       }, {
         data : 'state',
         className:'dt-right',
@@ -232,8 +210,6 @@ var store_search_url = [[@{/store/search/}]];
 
       } ],
       order: [  [ 0, "desc" ] ]
-
-      
     });
 
     $("#btn_search").click(function() {

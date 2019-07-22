@@ -115,11 +115,17 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventoryname,c.specs, v.name vendorname, v.code vendorcode, b.type, b.bredvouch, ' ' memo, ' ' mainmemo ";
+		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventoryname,c.specs, com.name company_name, st.name store_name, "
+				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, po.confirmed_memo confirmed_memo, dd.delivered_quantity ";
 		String countQuery = "select count(a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventory_code=c.code "
+		String bodyQuery = "from purchase_in_detail a "
+				+ "left join purchase_in_main b on a.code=b.code "
+				+ "left join inventory c on a.inventory_code=c.code "
+				+ "left join purchase_order_detail po on a.po_code=po.code and a.po_row_no=po.row_no "
+				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
+				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
 				+ "left join vendor v on b.vendor_code=v.code where 1=1 ";
 
 		Map<String, Object> params = new HashMap<>();
@@ -170,20 +176,20 @@ public class PurchaseInController extends CommonController {
 
 		Long state = Long.valueOf(stateStr);
 		if (state >= 0) {
-			bodyQuery += " and a.state=:state";
+			bodyQuery += " and b.state=:state";
 			params.put("state", state);
 		}
 		
 
 		Long companyId = Long.valueOf(companyIdStr);
 		if (companyId >= 0) {
-			bodyQuery += " and a.company_code=:company";
+			bodyQuery += " and b.company_code=:company";
 			params.put("company", companyId);
 		}
 
 		Long storeId = Long.valueOf(storeIdStr);
 		if (storeId >= 0) {
-			bodyQuery += " and a.store_code=:store";
+			bodyQuery += " and b.store_code=:store";
 			params.put("store", storeId);
 		}
 		countQuery += bodyQuery;

@@ -40,7 +40,8 @@ public class PurchaseInDetailResult implements Serializable {
 
 	String tax_cost;
 
-	String memo;
+	@JsonProperty("confirmed_memo")
+	String confirmedMemo;
 
 
 	String vendorcode;
@@ -49,12 +50,32 @@ public class PurchaseInDetailResult implements Serializable {
 	String bredvouch;
 	String mainmemo;
 
+	@JsonProperty("po_code")
 	String poCode;
+	
+	@JsonProperty("po_row_no")
+	Integer poRowNo;
+	
+	@JsonProperty("delivery_code")
+	String deliveryCode;
+	
+	@JsonProperty("delivery_row_no")
+	Integer deliveryRowNo;
+	
+	@JsonProperty("delivered_quantity")
+	String deliveredQuantity;
 
+	@JsonProperty("company_name")
+	String companyName;
+	
+	@JsonProperty("store_name")
+	String storeName;
+	
 	public PurchaseInDetailResult(String id, String code, String date, String verify_date,Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
-			String tax_price, String tax_rate, String tax_cost, String memo, String vendorname, String vendorcode, String type,
-			String bredvouch, String mainmemo, String state, String poCode) {
+			String tax_price, String tax_rate, String tax_cost, String confirmedMemo, String vendorname, String vendorcode, String type,
+			String bredvouch, String state, String poCode, Integer poRowNo, String deliveryCode, Integer deliveryRowNo, 
+			String deliveredQuantity, String companyName, String storeName) {
 
 		this.id = id;
 		this.code = code;
@@ -68,7 +89,7 @@ public class PurchaseInDetailResult implements Serializable {
 		this.quantity = quantity;
 		this.price = price;
 		this.cost = cost;
-		this.memo = memo;
+		this.confirmedMemo = confirmedMemo;
 
 		this.tax_price = tax_price;
 		this.tax_cost = tax_cost;
@@ -78,23 +99,79 @@ public class PurchaseInDetailResult implements Serializable {
 		this.vendorname = vendorname;
 		this.type = type;
 		this.bredvouch = bredvouch;
-		this.mainmemo = mainmemo;
+		
 		this.state = state;
 
 		this.poCode = poCode;
+		this.poRowNo = poRowNo;
+		this.deliveryCode = deliveryCode;
+		this.deliveryRowNo = deliveryRowNo;
+		this.deliveredQuantity = deliveredQuantity;
+		
+		this.companyName = companyName;
+		this.storeName = storeName;
+		
 	}
 
-	
-	
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
+	public String getStoreName() {
+		return storeName;
+	}
+
+	public void setStoreName(String storeName) {
+		this.storeName = storeName;
+	}
+
+	public String getDeliveredQuantity() {
+		return deliveredQuantity;
+	}
+
+	public void setConfirmedMemo(String confirmedMemo) {
+		this.confirmedMemo = confirmedMemo;
+	}
+
+	public Integer getPoRowNo() {
+		return poRowNo;
+	}
+
+	public void setPoRowNo(Integer poRowNo) {
+		this.poRowNo = poRowNo;
+	}
+
+	public String getDeliveryCode() {
+		return deliveryCode;
+	}
+
+	public void setDeliveryCode(String deliveryCode) {
+		this.deliveryCode = deliveryCode;
+	}
+
+	public Integer getDeliveryRowNo() {
+		return deliveryRowNo;
+	}
+
+	public void setDeliveryRowNo(Integer deliveryRowNo) {
+		this.deliveryRowNo = deliveryRowNo;
+	}
+
+	public void setDeliveredQuantity(String deliveredQuantity) {
+		this.deliveredQuantity = deliveredQuantity;
+	}
+
 	public String getVerify_date() {
 		return verify_date;
 	}
-
-
+	
 	public void setVerify_date(String verify_date) {
 		this.verify_date = verify_date;
 	}
-
 
 	public String getId() {
 		return id;
@@ -102,10 +179,6 @@ public class PurchaseInDetailResult implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getPo_code() {
-		return poCode;
 	}
 
 	public void setPoCode(String poCode) {
@@ -276,12 +349,12 @@ public class PurchaseInDetailResult implements Serializable {
 		this.tax_cost = tax_cost;
 	}
 
-	public String getMemo() {
-		return memo;
+	public String getConfirmedMemo() {
+		return confirmedMemo;
 	}
 
-	public void setMemo(String memo) {
-		this.memo = memo;
+	public void setMemo(String confirmedMemo) {
+		this.confirmedMemo = confirmedMemo;
 	}
 
 }

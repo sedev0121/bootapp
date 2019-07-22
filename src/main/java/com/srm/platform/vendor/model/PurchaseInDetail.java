@@ -37,14 +37,19 @@ import com.srm.platform.vendor.utility.Constants;
 				@ColumnResult(name = "tax_price", type = String.class),
 				@ColumnResult(name = "tax_rate", type = String.class),
 				@ColumnResult(name = "tax_cost", type = String.class),
-				@ColumnResult(name = "memo", type = String.class),
+				@ColumnResult(name = "confirmed_memo", type = String.class),
 				@ColumnResult(name = "vendorname", type = String.class),
 				@ColumnResult(name = "vendorcode", type = String.class),
 				@ColumnResult(name = "type", type = String.class),
 				@ColumnResult(name = "bredvouch", type = String.class),
-				@ColumnResult(name = "mainmemo", type = String.class),
 				@ColumnResult(name = "state", type = String.class),
-				@ColumnResult(name = "po_code", type = String.class)
+				@ColumnResult(name = "po_code", type = String.class),
+				@ColumnResult(name = "po_row_no", type = Integer.class),
+				@ColumnResult(name = "delivery_code", type = String.class),
+				@ColumnResult(name = "delivery_row_no", type = Integer.class),
+				@ColumnResult(name = "delivered_quantity", type = String.class),
+				@ColumnResult(name = "company_name", type = String.class),
+				@ColumnResult(name = "store_name", type = String.class),
 			}) 
 	})
 
