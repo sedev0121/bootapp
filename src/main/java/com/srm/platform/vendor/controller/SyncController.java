@@ -636,7 +636,8 @@ public class SyncController {
 
 					purchaseInDetailRepository.save(detail);	
 					
-					codes.add(String.valueOf(purchaseInDetailId));
+					//TODO: reverse comment out. it's for test.
+//					codes.add(String.valueOf(purchaseInDetailId));
 				}
 
 				if (codes.size() > 0) {

@@ -231,6 +231,14 @@ alter table delivery_detail add column cancel_confirm_date datetime(0) NULL DEFA
 
 
 
+
+/******************************* SRM_V30 *******************************/
+/* 2019-07-19 */
+alter table purchase_order_detail add column package_quantity double(16,6) NULL DEFAULT NULL;
+alter table purchase_order_detail add column delivered_package_quantity double(16,6) NULL DEFAULT NULL;
+alter table delivery_detail add column delivered_package_quantity double(16,6) NULL DEFAULT NULL;
+
+/****************************** SRM_V32 ********************************/
 /* 2019-07-17 */
 DROP TABLE IF EXISTS vendor_provide;
 DROP TABLE IF EXISTS unit;
@@ -241,6 +249,7 @@ DROP TABLE IF EXISTS negotiation_detail;
 DROP TABLE IF EXISTS warning;
 DROP TABLE IF EXISTS measurement_unit;
 
+
 /* 2019-07-22 */
 alter table account DROP column wangwang;
 alter table account DROP column yahoo;
@@ -248,8 +257,4 @@ alter table account DROP column weixin;
 alter table account DROP column qq;
 alter table account DROP column gtalk;
 alter table account DROP column entry_time;
-/* 2019-07-19 */
-alter table purchase_order_detail add column package_quantity double(16,6) NULL DEFAULT NULL;
-alter table purchase_order_detail add column delivered_package_quantity double(16,6) NULL DEFAULT NULL;
-alter table delivery_detail add column delivered_package_quantity double(16,6) NULL DEFAULT NULL;
 
