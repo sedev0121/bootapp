@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.searchitem;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -71,11 +72,14 @@ public class PurchaseInDetailResult implements Serializable {
 	@JsonProperty("store_name")
 	String storeName;
 	
+	@JsonProperty("sync_date")
+	Date syncDate;
+	
 	public PurchaseInDetailResult(String id, String code, String date, String verify_date,Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
 			String tax_price, String tax_rate, String tax_cost, String confirmedMemo, String vendorname, String vendorcode, String type,
 			String bredvouch, String state, String poCode, Integer poRowNo, String deliveryCode, Integer deliveryRowNo, 
-			String deliveredQuantity, String companyName, String storeName) {
+			String deliveredQuantity, String companyName, String storeName, Date syncDate) {
 
 		this.id = id;
 		this.code = code;
@@ -110,7 +114,16 @@ public class PurchaseInDetailResult implements Serializable {
 		
 		this.companyName = companyName;
 		this.storeName = storeName;
+		this.syncDate = syncDate;
 		
+	}
+
+	public Date getSyncDate() {
+		return syncDate;
+	}
+
+	public void setSyncDate(Date syncDate) {
+		this.syncDate = syncDate;
 	}
 
 	public String getCompanyName() {

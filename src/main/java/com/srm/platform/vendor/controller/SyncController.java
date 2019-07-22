@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -627,7 +628,7 @@ public class SyncController {
 					detail.setDeliveryCode(deliveryCode);
 					detail.setDeliveryRowNo(deliveryRowNo);
 					detail.setAutoId(autoId);
-					
+					detail.setSyncDate(new Date());
 					purchaseInDetailRepository.save(detail);	
 					
 					//TODO: reverse comment out. it's for test.

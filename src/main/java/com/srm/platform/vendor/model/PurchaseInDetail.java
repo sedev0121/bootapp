@@ -1,5 +1,7 @@
 package com.srm.platform.vendor.model;
 
+import java.util.Date;
+
 import javax.persistence.CascadeType;
 import javax.persistence.ColumnResult;
 import javax.persistence.ConstructorResult;
@@ -50,6 +52,7 @@ import com.srm.platform.vendor.utility.Constants;
 				@ColumnResult(name = "delivered_quantity", type = String.class),
 				@ColumnResult(name = "company_name", type = String.class),
 				@ColumnResult(name = "store_name", type = String.class),
+				@ColumnResult(name = "sync_date", type = Date.class),
 			}) 
 	})
 
@@ -92,6 +95,9 @@ public class PurchaseInDetail {
 	
 
 	private Integer state = Constants.PURCHASE_IN_STATE_WAIT;
+	
+	@JsonProperty("sync_date")
+	private Date syncDate;
 
 	public Long getId() {
 		return id;
@@ -99,6 +105,14 @@ public class PurchaseInDetail {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Date getSyncDate() {
+		return syncDate;
+	}
+
+	public void setSyncDate(Date syncDate) {
+		this.syncDate = syncDate;
 	}
 
 	public String getPoCode() {
