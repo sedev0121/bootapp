@@ -908,11 +908,24 @@ is_readonly = 0;
 	  });
 
 	  $.validator.addMethod("checkTable", function(value, element) {
-	  	if ($('#state').val() >= 5) {
+		  var exist_data = table.rows().data().toArray();
+
+		  if ($('#state').val() == 5 || $('#state').val() == 6) {
 	  		return true;
 	  	};
 	  	
-		  var exist_data = table.rows().data().toArray();
+	  	if ($('#state').val() == 7) {
+	  		for (i = 0; i < exist_data.length; i++) {
+				  var exist_row = exist_data[i];
+			  	var cancel_quantity = exist_row.cancel_quantity;
+	    		var cancel_confirmed = exist_row.cancel_confirmed;
+				  if (cancel_confirmed && exist_row.delivered_quantity != cancel_quantity) {
+				  	App.showErrorDialog("操作失败", "存在拒收数量与发货数量不一致的货品");
+					  return false;
+				  }			  			  			  
+			  }	
+	  	}	  	
+	  	
 		 
 		  var store_set = $('#store_set').val();
 
