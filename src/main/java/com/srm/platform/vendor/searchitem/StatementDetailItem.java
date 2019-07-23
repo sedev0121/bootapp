@@ -1,11 +1,10 @@
 package com.srm.platform.vendor.searchitem;
 
-import java.util.Date;
-
 public interface StatementDetailItem {
 
 	// statement_detail table info
 	Long getId();
+	Long getRow_no();
 	Long getPi_detail_id();
 	String getType();
 	String getAdjust_tax_cost();
@@ -13,7 +12,7 @@ public interface StatementDetailItem {
 	// purchase_in_detail table info
 	String getPi_code();
 	String getPi_date();
-	String getQuantity();
+	String getPi_quantity();
 	String getTax_rate();
 	String getPrice();
 	String getCost();

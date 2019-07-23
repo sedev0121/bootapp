@@ -287,21 +287,21 @@ public class StatementController extends CommonController {
 			main.setType(form.getType());
 			main.setTaxRate(form.getTax_rate());
 
-			String origianlFileName = null;
-			String savedFileName = null;
-			MultipartFile attach = form.getAttach();
-			if (attach != null) {
-				origianlFileName = attach.getOriginalFilename();
-				File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_STATEMENT);
-
-				if (file != null)
-					savedFileName = file.getName();
-			}
-
-			if (savedFileName != null) {
+//			String origianlFileName = null;
+//			String savedFileName = null;
+//			MultipartFile attach = form.getAttach();
+//			if (attach != null) {
+//				origianlFileName = attach.getOriginalFilename();
+//				File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_STATEMENT);
+//
+//				if (file != null)
+//					savedFileName = file.getName();
+//			}
+//
+//			if (savedFileName != null) {
 //				main.setAttachFileName(savedFileName);
 //				main.setAttachOriginalName(origianlFileName);
-			}
+//			}
 		} else if (form.getState() == Constants.STATEMENT_STATE_REVIEW) {
 			main.setReviewer(this.getLoginAccount());
 			main.setReviewDate(new Date());
@@ -425,10 +425,8 @@ public class StatementController extends CommonController {
 				for (Map<String, String> row : form.getTable()) {
 					StatementDetail detail = new StatementDetail();
 					detail.setCode(main.getCode());
-					detail.setPiDetailId(Long.parseLong(row.get("purchase_in_detail_id")));
-
+					detail.setPiDetailId(Long.parseLong(row.get("pi_detail_id")));
 					detail.setRowNo(i++);
-
 					detail = statementDetailRepository.save(detail);
 				}
 			}
