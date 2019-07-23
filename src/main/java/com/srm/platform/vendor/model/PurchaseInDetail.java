@@ -29,7 +29,7 @@ import com.srm.platform.vendor.utility.Constants;
 				@ColumnResult(name = "date", type = String.class),
 				@ColumnResult(name = "verify_date", type = String.class),
 				@ColumnResult(name = "row_no", type = Integer.class),
-				@ColumnResult(name = "inventoryname", type = String.class),
+				@ColumnResult(name = "inventory_name", type = String.class),
 				@ColumnResult(name = "inventory_code", type = String.class),
 				@ColumnResult(name = "specs", type = String.class),
 				@ColumnResult(name = "unitname", type = String.class),

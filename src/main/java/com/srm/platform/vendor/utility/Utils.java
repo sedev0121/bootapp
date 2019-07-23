@@ -137,11 +137,11 @@ public class Utils {
 	public static String generateId() {
 		String id = "";
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmssSSS");
 		id = dateFormat.format(new Date());
 
-		int rand = (int) (Math.random() * 1000);
-		id += String.format("%03d", rand);
+		int rand = (int) (Math.random() * 100);
+		id += String.format("%02d", rand);
 
 		return id;
 	}

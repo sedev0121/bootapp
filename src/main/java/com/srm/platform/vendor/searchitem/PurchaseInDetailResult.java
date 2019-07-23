@@ -19,7 +19,7 @@ public class PurchaseInDetailResult implements Serializable {
 	@JsonProperty("row_no")
 	Integer rowno;
 
-	String inventoryname;
+	String inventory_name;
 
 	String inventory_code;
 
@@ -86,7 +86,7 @@ public class PurchaseInDetailResult implements Serializable {
 		this.date = date;
 		this.verify_date = verify_date;
 		this.rowno = rowno;
-		this.inventoryname = inventoryname;
+		this.inventory_name = inventoryname;
 		this.inventory_code = inventorycode;
 		this.specs = specs;
 		this.unitname = unitname;
@@ -282,20 +282,12 @@ public class PurchaseInDetailResult implements Serializable {
 		this.rowno = rowno;
 	}
 
-	public String getInventoryname() {
-		return inventoryname;
+	public String getInventory_name() {
+		return inventory_name;
 	}
 
-	public void setInventoryname(String inventoryname) {
-		this.inventoryname = inventoryname;
-	}
-
-	public String getInventorycode() {
-		return inventory_code;
-	}
-
-	public void setInventorycode(String inventorycode) {
-		this.inventory_code = inventorycode;
+	public void setInventory_name(String inventoryname) {
+		this.inventory_name = inventoryname;
 	}
 
 	public String getSpecs() {

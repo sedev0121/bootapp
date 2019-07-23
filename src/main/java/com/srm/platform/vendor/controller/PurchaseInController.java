@@ -257,7 +257,7 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventoryname,c.specs, com.name company_name, st.name store_name, "
+		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
 				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, po.confirmed_memo confirmed_memo, dd.delivered_quantity ";
 		
 		String countQuery = "select count(*) ";
