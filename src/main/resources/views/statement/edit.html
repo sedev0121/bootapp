@@ -86,7 +86,7 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="cost">未税金额: </label> 
-							<input type="number" id="cost" name="cost" th:value="${main.taxRate}" class="form-control" />
+							<input type="number" id="cost" name="cost" th:value="${main.taxRate}" class="form-control" readonly/>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="tax_rate">税率: </label> 
@@ -94,11 +94,15 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="tax">税额: </label> 
-							<input type="number" id="tax" name="tax" th:value="${main.taxRate}" class="form-control" />
+							<input type="number" id="tax" name="tax" th:value="${main.taxRate}" class="form-control" readonly/>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="tax_cost">含税金额: </label> 
-							<input type="number" id="tax_cost" name="tax_cost" th:value="${main.taxRate}" class="form-control" />
+							<input type="number" id="tax_cost" name="tax_cost" th:value="${main.taxRate}" class="form-control" readonly/>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="tax_cost">调整金额（含税）: </label> 
+							<input type="number" id="adjust_tax_cost" name="tax_cost" th:value="${main.taxRate}" class="form-control" />
 						</div>
 					</div>
 					<div class="row margin-top-10">
@@ -859,52 +863,31 @@
 
 	  $('#type').trigger('change');
 
-	  function calc_invoice_data(json) {
+	  function calc_data(json) {
 		  var result = [];
 		  var type_name = $('#type').val() == 1 ? '普通采购' : '委外加工';
 
-		  var charge_back = 0, closed_tax_money_sum = 0;
+		  var cost = 0, tax = 0, tax_cost = 0, adjust_tax_cost = 0;
+		  var result = [];
 		  $.each(json, function(key, item) {
-			  if (item.type == type_name || item.type == undefined) {
-				  if (item.purchase_in_detail_id == 0) {
-					  charge_back = -item.closed_tax_money;
-				  } else {
-					  closed_tax_money_sum += item.closed_tax_money;
-				  }
-				  item.dstartdate = $.fn.date_renderer(item.dstartdate);
-				  item.denddate = $.fn.date_renderer(item.denddate);
-				  item.invoice_tax_money = item.closed_tax_money;
-				  item.invoice_tax_price = item.closed_tax_price;
-				  result.push(item);
-			  }
-		  });
+		  	cost += item.cost * 1;
+		  	tax_cost += item.tax_cost * 1;
+		  	adjust_tax_cost += item.adjust_tax_cost * 1;		  	
+		  				  
+			  item.invoice_quantity = item.pi_quantity;
+		  	item.invoice_cost = item.tax_cost * 1 + item.adjust_tax_cost * 1;
+			  item.invoice_price = App.priceNumber(item.invoice_cost/item.invoice_quantity);
 
-		  var row_length = result.length;
-		  var i = 1, invoice_tax_money_sum = 0;
+		  });		  
 
-		  var invoice_result = [];
-		  $.each(result, function(key, item) {
-			  if (item.type == type_name || item.type == undefined) {
-				  if (item.purchase_in_detail_id != 0) {
-					  if (i == row_length) {
-						  temp = item.closed_tax_money - (charge_back - invoice_tax_money_sum);
-					  } else {
-						  temp = item.closed_tax_money - charge_back * (item.closed_tax_money / closed_tax_money_sum);
-						  invoice_tax_money_sum += parseFloat(App.costNumber(charge_back * (item.closed_tax_money / closed_tax_money_sum)));
-					  }
-					  item.invoice_tax_money = App.costNumber(temp);
-					  item.invoice_tax_price = App.priceNumber(item.invoice_tax_money / item.quantity);
-				  } else {
-					  item.invoice_tax_money = '';
-					  item.invoice_tax_price = '';
-				  }
-			  }
-			  i++;
-			  invoice_result.push(item);
-
-		  });
-
-		  return invoice_result;
+		  tax = App.costNumber(tax_cost - cost);
+		  
+		  $('#cost').val(cost);
+		  $('#tax_cost').val(tax_cost);
+		  $('#tax').val(tax);
+		  $('#adjust_tax_cost').val(adjust_tax_cost);
+		  
+		  return json;
 	  }
 
 	  function loadNormalTable() {
@@ -1085,7 +1068,7 @@
 		    ajax : {
 		      url : detail_url,
 		      dataSrc : function(json) {
-			      return calc_invoice_data(json);
+			      return calc_data(json);
 		      },
 		    },
 		    columns : [ {
@@ -1154,21 +1137,18 @@
 		      className : 'dt-right',
 		      title : '含税调整金额',
 		    }, {
-		      data : null,
+		      data : 'invoice_quantity',
 		      sortable : false,
-		      defaultContent : '',
 		      className : 'dt-right',
 		      title : '开票数量',
 		    }, {
-		      data : null,
+		      data : 'invoice_price',
 		      sortable : false,
-		      defaultContent : '',
 		      className : 'dt-right',
 		      title : '开票单价',
 		    }, {
-		      data : null,
+		      data : 'invoice_cost',
 		      sortable : false,
-		      defaultContent : '',
 		      className : 'dt-right',
 		      title : '开票金额',
 		    }, {
@@ -1226,17 +1206,20 @@
 					      pi_quantity : item.pi_quantity,
 					      tax_rate : item.tax_rate,
 					      specs : item.specs,
-					      tax_price : item.tax_price,
+					      tax_price: item.tax_price,
 					      tax_cost : item.tax_cost,
-					      adjust_tax_cost : 0,
-					      invoice_price : 0,
-					      invoice_cost : 0,
-					      invoice_quantity : 0,
+					      adjust_tax_cost : item.adjust_tax_cost,
+					      invoice_cost : item.invoice_cost,
+					      invoice_quantity : item.invoice_quantity,
+					      invoice_price : item.invoice_price,
 					    }
 				    } else {
 					    summary_data[key].pi_quantity += App.floatVal(item.pi_quantity);
+					    summary_data[key].invoice_price += App.floatVal(item.invoice_price);
 					    summary_data[key].tax_cost += App.floatVal(item.tax_cost);
 					    summary_data[key].adjust_tax_cost += App.floatVal(item.adjust_tax_cost);
+					    summary_data[key].invoice_price = App.priceNumber((summary_data[key].tax_cost + summary_data[key].adjust_tax_cost) / summary_data[key].invoice_quantity);
+					    summary_data[key].tax_price = App.priceNumber(summary_data[key].tax_cost / summary_data[key].pi_quantity);
 				    }
 			    });
 
