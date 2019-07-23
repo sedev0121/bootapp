@@ -9,18 +9,20 @@
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right">
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1  or main.state==4}" id="save"><i class="fa fa-save"></i> 保存</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${!#strings.contains(#request.requestURI,'add') and (main.state==1  or main.state==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1  or main.state==4}" id="submit"><i class="fa fa-share"></i> 提交</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1}" id="save"><i class="fa fa-save"></i> 保存</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${!#strings.contains(#request.requestURI,'add') and main.state==1}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==2}" id="review"><i class="fa fa-arrow-up"></i> 审核</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==2}" id="review"><i class="fa fa-arrow-up"></i> 发布</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==5 or main.state==7}" id="buyer_cancel"><i class="fa fa-recycle"></i> 撤回</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==5 or main.state==7}" id="buyer_cancel"><i class="fa fa-recycle"></i> 审批通过</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==5 or main.state==7}" id="buyer_cancel"><i class="fa fa-recycle"></i> 审批退回</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==5 or main.state==7}" id="buyer_cancel"><i class="fa fa-recycle"></i> 传递ERP</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3 or main.state==7}" id="verify"><i class="fa fa-check-square"></i> 确认</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3 or main.state==7}" id="cancel"><i class="fa fa-undo"></i> 退回</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==5}" id="u8invoice"><i class="fa fa-check-square"></i> 确认开票</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==3}" id="deploy"><i class="fa fa-arrow-up"></i> 发布</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==3 or main.state==4}" id="cancel"><i class="fa fa-recycle"></i> 撤回</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==4}" id="confirm"><i class="fa fa-check-square"></i> 确认</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==4}" id="deny"><i class="fa fa-undo"></i> 退回</a> 
+				
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==6}" id="invoice_make"><i class="fa fa-check-square"></i> 确认开票</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6}" id="invoice_approve"><i class="fa fa-recycle"></i> 审批通过</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6}" id="invoice_deny"><i class="fa fa-recycle"></i> 审批退回</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6}" id="invoice_upload"><i class="fa fa-recycle"></i> 传递ERP</a>
+				 
 				<a class="btn btn-primary" id="export_summary"><i class="fa fa-arrow-up"></i> 导出汇总信息</a> 
 				<a class="btn btn-primary" id="export_detail"><i class="fa fa-arrow-up"></i> 导出明细信息</a> 
 				<a class="btn btn-primary" id="print"><i class="fa fa-print"></i>打印</a> 
@@ -1440,25 +1442,35 @@
 		  $("#form").submit();
 	  });
 
-	  $("#verify").click(function() {
-		  editor.submit();
-		  $('#state').val(5);
+	  $("#review").click(function() {
+		  $('#state').val(3);
+		  $("#form").submit();
+	  });
+	  
+	  $("#deploy").click(function() {
+		  $('#state').val(4);
 		  $("#form").submit();
 	  });
 
 	  $("#cancel").click(function() {
 		  editor.submit();
-
 		  $('#invoice_code').rules('remove');
-		  $('#state').val(4);
+		  $('#state').val(5);
+		  $("#form").submit();
+	  });
+	  
+	  $("#confirm").click(function() {
+		  editor.submit();
+		  $('#state').val(6);
 		  $("#form").submit();
 	  });
 
-	  $("#review").click(function() {
-		  $('#state').val(3);
+	  $("#deny").click(function() {
+		  editor.submit();
+		  $('#state').val(7);
 		  $("#form").submit();
 	  });
-
+	  
 	  $("#delete").click(function() {
 		  App.showConfirmDialog('确定要删除吗?', function() {
 			  $.get(del_url, function(data, status) {
