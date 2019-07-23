@@ -18,11 +18,14 @@ public interface StatementDetailRepository extends JpaRepository<StatementDetail
 	@Query(value = "SELECT * FROM statement_detail WHERE code= :code order by row_no", nativeQuery = true)
 	List<StatementDetail> findByCode(String code);
 
-	@Query(value = "select a.*, c.quantity-ifnull(a.closed_quantity, 0) remain_quantity, d.type, c.code purchase_in_code, c.po_code, c.nat_price, a.tax_rate nat_tax_rate, "
-			+ "c.rowno, c.quantity, c.price, c.cost, c.tax_price, c.tax_cost, c.nat_tax_price, c.material_quantity, c.material_tax_price, "
-			+ "e.main_measure unitname, d.date purchase_in_date, e.code inventorycode, e.name inventoryname, e.specs "
-			+ "from statement_detail a left join statement_main b on a.code=b.code left join purchase_in_detail c on a.purchase_in_detail_id=c.id "
-			+ "left join purchase_in_main d on c.code=d.code left join inventory e on c.inventory_code=e.code "
+	@Query(value = "select a.*, c.code pi_code, d.date pi_date, e.code inventory_code, e.name inventory_name, e.specs, e.main_measure unitname, "
+			+ "c.tax_rate, c.quantity, c.price, c.cost, c.tax_price, c.tax_cost, po.code po_code, po.row_no po_row_no, po.confirmed_memo confirmed_memo, "
+			+ "delivery.code delivery_code, delivery.row_no delivery_row_no, delivery.delivered_quantity "
+			+ "from statement_detail a left join statement_main b on a.code=b.code "
+			+ "left join purchase_in_detail c on a.pi_detail_id=c.id left join purchase_in_main d on c.code=d.code "
+			+ "left join purchase_order_detail po on c.po_code=po.code and c.po_row_no=po.row_no "
+			+ "left join delivery_detail delivery on c.delivery_code=delivery.code and c.delivery_row_no=delivery.row_no "
+			+ "left join inventory e on c.inventory_code=e.code "
 			+ "where a.code=?1 order by a.row_no", nativeQuery = true)
 	List<StatementDetailItem> findDetailsByCode(String code);
 

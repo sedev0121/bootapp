@@ -76,10 +76,6 @@ public class StatementController extends CommonController {
 //	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
 	public String add(Model model) {
 		StatementMain main = new StatementMain();
-		main.setCode(Utils.generateId());
-		main.setDate(new Date());
-		main.setMakeDate(new Date());
-		main.setState(Constants.STATEMENT_STATE_NEW);
 		main.setMaker(this.getLoginAccount());		
 		
 		model.addAttribute("main", main);
@@ -320,13 +316,13 @@ public class StatementController extends CommonController {
 			main.setCancelDate(new Date());
 		}
 		
-		if (main.getInvoice_state() == Constants.INVOICE_STATE_DONE) {
+		if (main.getInvoiceState() == Constants.INVOICE_STATE_DONE) {
 			main.setInvoiceMaker(this.getLoginAccount());
 			main.setInvoiceMakeDate(new Date());
-		} else if (main.getInvoice_state() == Constants.INVOICE_STATE_CONFIRMED) {
+		} else if (main.getInvoiceState() == Constants.INVOICE_STATE_CONFIRMED) {
 			main.setInvoiceConfirmer(this.getLoginAccount());
 			main.setInvoiceConfirmDate(new Date());
-		} else if (main.getInvoice_state() == Constants.INVOICE_STATE_CANCELED) {
+		} else if (main.getInvoiceState() == Constants.INVOICE_STATE_CANCELED) {
 			main.setInvoiceCanceler(this.getLoginAccount());
 			main.setInvoiceCancelDate(new Date());
 		} else if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {

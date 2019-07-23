@@ -110,7 +110,7 @@ public class StatementMain {
 	private String invoiceCode;
 	
 	@Column(name = "invoice_state")
-	private Integer invoice_state;
+	private Integer invoiceState;
 	
 	@JsonProperty("invoice_type")
 	private Integer invoiceType = Constants.INVOICE_STATE_NONE;
@@ -136,7 +136,11 @@ public class StatementMain {
 	Account invoiceCanceler;
 
 	public StatementMain() {
-
+		setCode(Utils.generateId());
+		setDate(new Date());
+		setMakeDate(new Date());
+		setState(Constants.STATEMENT_STATE_NEW);
+		setInvoiceState(Constants.INVOICE_STATE_NONE);
 	}
 
 
@@ -379,14 +383,13 @@ public class StatementMain {
 		this.invoiceCode = invoiceCode;
 	}
 
-
-	public Integer getInvoice_state() {
-		return invoice_state;
+	public Integer getInvoiceState() {
+		return invoiceState;
 	}
 
 
-	public void setInvoice_state(Integer invoice_state) {
-		this.invoice_state = invoice_state;
+	public void setInvoiceState(Integer invoiceState) {
+		this.invoiceState = invoiceState;
 	}
 
 

@@ -30,6 +30,7 @@
 		<div class="panel panel-default">
 			<div class="panel-body">
 				<form id="form" th:action="@{/statement/update}" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="invoice_state" id="invoice_state" th:value="${main.invoiceState}">
 					<div class="row">
 						<div class="col-lg-2 col-md-2">
 							<label for="code">对账单号: </label> 
@@ -111,7 +112,7 @@
 										<div class="row">
 											<div class="col-lg-12 col-md-12">
 												<label for="code">发票号: </label> 
-												<input type="text" id="code" name="code" th:value="${main.code}" class="form-control" readonly />
+												<input type="text" id="code" name="code" th:value="${main.invoiceCode}" class="form-control" readonly />
 											</div>
 										</div>	
 										<div class="row">
@@ -121,11 +122,11 @@
 											</div>
 											<div class="col-lg-2 col-md-2">
 												<label for="code">发票制单人: </label> 
-												<input type="text" id="invoice_maker" name="invoice_maker" th:value="${main.code}" class="form-control" readonly />
+												<input type="text" id="invoice_maker" name="invoice_maker" th:value="${main.erpInvoiceMakeName}" class="form-control" readonly />
 											</div>
 											<div class="col-lg-2 col-md-2">
 												<label for="code">发票入账日期: </label> 
-												<input type="text" id="invoice_make_date" name="invoice_make_date" th:value="${main.code}" class="form-control" readonly />
+												<input type="text" id="invoice_make_date" name="invoice_make_date" th:value="${#dates.format(main.erpInvoiceMakeDate, 'yyyy-MM-dd')}" class="form-control" readonly />
 											</div>
 											<div class="col-lg-2 col-md-2">
 												<label for="code">币种: </label> 
