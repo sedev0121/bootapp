@@ -328,16 +328,15 @@ public class StatementController extends CommonController {
 		List<Account> toList = new ArrayList<>();
 		switch (form.getState()) {
 		case Constants.STATEMENT_STATE_NEW:
-			toList.addAll(accountRepository.findAllBuyersByVendorCode(main.getVendor().getCode()));
+			toList.add(main.getMaker());
 			action = "保存";
 			break;
 		case Constants.STATEMENT_STATE_SUBMIT:
-			toList.addAll(accountRepository.findAllBuyersByVendorCode(main.getVendor().getCode()));
+			toList.add(main.getMaker());
 			action = "提交";
 			break;
 		case Constants.STATEMENT_STATE_REVIEW:
 			toList.add(main.getMaker());
-			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			action = "审核";
 			break;
 		case Constants.STATEMENT_STATE_DEPLOY:
@@ -347,6 +346,7 @@ public class StatementController extends CommonController {
 			break;
 		case Constants.STATEMENT_STATE_CANCEL:
 			toList.add(main.getMaker());
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			action = "撤回";
 			break;
 		case Constants.STATEMENT_STATE_CONFIRM:
@@ -357,18 +357,6 @@ public class StatementController extends CommonController {
 			toList.add(main.getMaker());
 			action = "退回";
 			break;
-//		case Constants.STATEMENT_STATE_INVOICE_PUBLISH:
-//			toList.add(main.getMaker());
-//			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-//			action = "生成U8发票";
-//			break;
-//		case Constants.STATEMENT_STATE_NEW:
-//			if (main.getState() == Constants.STATEMENT_STATE_INVOICE_CANCEL
-//					|| main.getState() == Constants.STATEMENT_STATE_CONFIRM) {
-//				toList.add(main.getMaker());
-//				toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-//				action = "撤销";
-//			}
 		}
 
 		if (action != null) {

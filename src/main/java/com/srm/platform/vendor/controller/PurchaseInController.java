@@ -95,27 +95,18 @@ public class PurchaseInController extends CommonController {
 		case "vendorcode":
 			order = "v.code";
 			break;
-		case "inventorycode":
-			order = "c.code";
-			break;
-		case "inventoryname":
-			order = "c.name";
-			break;
 		case "specs":
 			order = "c.specs";
 			break;
 		case "unitname":
 			order = "c.main_measure";
 			break;
-		case "mainmemo":
-			order = "b.memo";
-			break;
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventoryname,c.specs, com.name company_name, st.name store_name, "
+		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
 				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, po.confirmed_memo confirmed_memo, dd.delivered_quantity ";
 		String countQuery = "select count(a.id) ";
 		String orderBy = " order by " + order + " " + dir;
@@ -176,7 +167,7 @@ public class PurchaseInController extends CommonController {
 
 		Long state = Long.valueOf(stateStr);
 		if (state >= 0) {
-			bodyQuery += " and b.state=:state";
+			bodyQuery += " and a.state=:state";
 			params.put("state", state);
 		}
 		
