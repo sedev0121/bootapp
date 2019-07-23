@@ -257,12 +257,18 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, c.main_measure unitname, b.date, b.verify_date, c.name inventoryname,c.specs, null vendorname, vendor_code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
+		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventoryname,c.specs, com.name company_name, st.name store_name, "
+				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, po.confirmed_memo confirmed_memo, dd.delivered_quantity ";
+		
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventory_code=c.code "
-				+ "where a.state=0 and type=:type and b.vendor_code=:vendor ";
+		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code "
+				+ "left join inventory c on a.inventory_code=c.code "
+				+ "left join purchase_order_detail po on a.po_code=po.code and a.po_row_no=po.row_no "
+				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
+				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
+				+ "left join vendor v on b.vendor_code=v.code where a.state=0 and type=:type and b.vendor_code=:vendor ";
 
 		Map<String, Object> params = new HashMap<>();
 

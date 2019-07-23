@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "statement_detail")
 public class StatementDetail {
@@ -15,39 +17,15 @@ public class StatementDetail {
 	private Long id;
 
 	private String code;
-
-	@Column(name = "closed_quantity")
-	private Float closedQuantity;
-
-	@Column(name = "closed_price")
-	private Double closedPrice;
-
-	@Column(name = "closed_money")
-	private Double closedMoney;
-
-	@Column(name = "closed_tax_price")
-	private Double closedTaxPrice;
-
-	@Column(name = "tax_rate")
-	private Float taxRate;
-
-	@Column(name = "closed_tax_money")
-	private Double closedTaxMoney;
-
-	@Column(name = "purchase_in_detail_id")
-	Long purchaseInDetailId;
-
-	private String memo;
-
-	private Float unitWeight;
-
-	private Float yinci;
-
-	private Float yuanci;
-	private Float realQuantity;
-	private Integer purchaseinType;
-
+	
+	@JsonProperty("row_no")
 	private Integer rowNo;
+
+	@Column(name = "pi_detail_id")
+	Long piDetailId;
+
+	@JsonProperty("adjust_tax_cost")
+	private Double adjustTaxCost;
 
 	public Long getId() {
 		return id;
@@ -55,78 +33,6 @@ public class StatementDetail {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getMemo() {
-		return memo;
-	}
-
-	public void setMemo(String memo) {
-		this.memo = memo;
-	}
-
-	public Integer getRowNo() {
-		return rowNo;
-	}
-
-	public void setRowNo(Integer rowNo) {
-		this.rowNo = rowNo;
-	}
-
-	public void setUnitWeight(Float unitWeight) {
-		this.unitWeight = unitWeight;
-	}
-
-	public void setYinci(Float yinci) {
-		this.yinci = yinci;
-	}
-
-	public void setYuanci(Float yuanci) {
-		this.yuanci = yuanci;
-	}
-
-	public void setRealQuantity(Float realQuantity) {
-		this.realQuantity = realQuantity;
-	}
-
-	public float getUnitWeight() {
-		return unitWeight;
-	}
-
-	public void setUnitWeight(float unitWeight) {
-		this.unitWeight = unitWeight;
-	}
-
-	public float getYinci() {
-		return yinci;
-	}
-
-	public void setYinci(float yinci) {
-		this.yinci = yinci;
-	}
-
-	public float getYuanci() {
-		return yuanci;
-	}
-
-	public void setYuanci(float yuanci) {
-		this.yuanci = yuanci;
-	}
-
-	public float getRealQuantity() {
-		return realQuantity;
-	}
-
-	public void setRealQuantity(float realQuantity) {
-		this.realQuantity = realQuantity;
-	}
-
-	public Integer getPurchaseinType() {
-		return purchaseinType;
-	}
-
-	public void setPurchaseinType(Integer purchaseinType) {
-		this.purchaseinType = purchaseinType;
 	}
 
 	public String getCode() {
@@ -137,60 +43,28 @@ public class StatementDetail {
 		this.code = code;
 	}
 
-	public Float getTaxRate() {
-		return taxRate;
+	public Integer getRowNo() {
+		return rowNo;
 	}
 
-	public void setTaxRate(Float taxRate) {
-		this.taxRate = taxRate;
+	public void setRowNo(Integer rowNo) {
+		this.rowNo = rowNo;
 	}
 
-	public Float getClosedQuantity() {
-		return closedQuantity;
+	public Long getPiDetailId() {
+		return piDetailId;
 	}
 
-	public void setClosedQuantity(Float closedQuantity) {
-		this.closedQuantity = closedQuantity;
+	public void setPiDetailId(Long piDetailId) {
+		this.piDetailId = piDetailId;
 	}
 
-	public Double getClosedPrice() {
-		return closedPrice;
+	public Double getAdjustTaxCost() {
+		return adjustTaxCost;
 	}
 
-	public void setClosedPrice(Double closedPrice) {
-		this.closedPrice = closedPrice;
+	public void setAdjustTaxCost(Double adjustTaxCost) {
+		this.adjustTaxCost = adjustTaxCost;
 	}
-
-	public Double getClosedMoney() {
-		return closedMoney;
-	}
-
-	public void setClosedMoney(Double closedMoney) {
-		this.closedMoney = closedMoney;
-	}
-
-	public Double getClosedTaxPrice() {
-		return closedTaxPrice;
-	}
-
-	public void setClosedTaxPrice(Double closedTaxPrice) {
-		this.closedTaxPrice = closedTaxPrice;
-	}
-
-	public Double getClosedTaxMoney() {
-		return closedTaxMoney;
-	}
-
-	public void setClosedTaxMoney(Double closedTaxMoney) {
-		this.closedTaxMoney = closedTaxMoney;
-	}
-
-	public Long getPurchaseInDetailId() {
-		return purchaseInDetailId;
-	}
-
-	public void setPurchaseInDetailId(Long purchaseInDetailId) {
-		this.purchaseInDetailId = purchaseInDetailId;
-	}
-
+	
 }

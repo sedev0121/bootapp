@@ -88,32 +88,6 @@ public class ApiController {
 	@Autowired
 	private InventoryRepository inventoryRepository;
 	
-	@ResponseBody
-	@RequestMapping({ "/invoice" })
-	public Integer index(@RequestParam Map<String, String> requestParams) {
-		String reason = requestParams.getOrDefault("reason", null);
-		String invoice_num = requestParams.getOrDefault("invoice_num", null);
-
-		if (invoice_num == null) {
-			return 0;
-		}else {
-			StatementMain main = statementMainRepository.findOneByInvoiceCode(invoice_num);
-
-			if (main != null) {
-				main.setInvoiceCancelDate(new Date());
-				main.setInvoiceCancelReason(reason);
-				main.setState(Constants.STATEMENT_STATE_INVOICE_CANCEL);
-				statementMainRepository.save(main);
-				this.cancelPurchaseInState(main);
-				sendmessage(main);
-				return 1;
-			} else {
-				return 0;
-			}
-		}
-
-	}
-	
 	private void addOpertionHistory(String targetId, String action, String content, String type, Account account) {
 		OperationHistory operationHistory = new OperationHistory();
 		operationHistory.setTargetId(targetId);
@@ -125,18 +99,6 @@ public class ApiController {
 		operationHistory = operationHistoryRepository.save(operationHistory);
 	}
 	
-	private void cancelPurchaseInState(StatementMain main) {
-		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
-		for (StatementDetail detail : detailList) {
-			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
-					.findOneById(detail.getPurchaseInDetailId());
-
-			if (purchaseInDetail != null) {
-				purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);
-				purchaseInDetailRepository.save(purchaseInDetail);
-			}
-		}
-	}
 	private void sendmessage(StatementMain main) {
 		List<Account> toList = new ArrayList<>();
 		toList.add(main.getMaker());

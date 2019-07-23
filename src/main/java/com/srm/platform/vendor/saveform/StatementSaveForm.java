@@ -19,6 +19,7 @@ public class StatementSaveForm {
 	private Long maker;
 	private Date make_date;
 	private Integer type;
+	private Integer invoice_state;
 	private Integer invoice_type;
 
 	private Long verifier;
@@ -38,6 +39,14 @@ public class StatementSaveForm {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getInvoice_state() {
+		return invoice_state;
+	}
+
+	public void setInvoice_state(Integer invoice_state) {
+		this.invoice_state = invoice_state;
 	}
 
 	public Integer getInvoice_type() {

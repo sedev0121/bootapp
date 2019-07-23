@@ -75,7 +75,13 @@ public class StatementController extends CommonController {
 	@GetMapping({ "/add" })
 //	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
 	public String add(Model model) {
-		StatementMain main = new StatementMain(accountRepository);
+		StatementMain main = new StatementMain();
+		main.setCode(Utils.generateId());
+		main.setDate(new Date());
+		main.setMakeDate(new Date());
+		main.setState(Constants.STATEMENT_STATE_NEW);
+		main.setMaker(this.getLoginAccount());		
+		
 		model.addAttribute("main", main);
 		return "statement/edit";
 	}
@@ -105,7 +111,7 @@ public class StatementController extends CommonController {
 			if (detailList != null) {
 				for (StatementDetail detail : detailList) {
 					PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
-							.findOneById(detail.getPurchaseInDetailId());
+							.findOneById(detail.getPiDetailId());
 
 					if (purchaseInDetail == null)
 						continue;
@@ -126,12 +132,12 @@ public class StatementController extends CommonController {
 	public @ResponseBody Boolean deleteAttach(@PathVariable("code") String code) {
 		StatementMain main = statementMainRepository.findOneByCode(code);
 
-		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_STATEMENT) + File.separator
-				+ main.getAttachFileName());
-		if (attach.exists())
-			attach.delete();
-		main.setAttachFileName(null);
-		main.setAttachOriginalName(null);
+//		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_STATEMENT) + File.separator
+//				+ main.getAttachFileName());
+//		if (attach.exists())
+//			attach.delete();
+//		main.setAttachFileName(null);
+//		main.setAttachOriginalName(null);
 		statementMainRepository.save(main);
 		return true;
 	}
@@ -279,10 +285,9 @@ public class StatementController extends CommonController {
 
 		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
 
-			main.setMakedate(new Date());
+			main.setMakeDate(new Date());
 			main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
 			main.setMaker(accountRepository.findOneById(form.getMaker()));
-			main.setRemark(form.getRemark());
 			main.setType(form.getType());
 			main.setTaxRate(form.getTax_rate());
 
@@ -298,36 +303,44 @@ public class StatementController extends CommonController {
 			}
 
 			if (savedFileName != null) {
-				main.setAttachFileName(savedFileName);
-				main.setAttachOriginalName(origianlFileName);
+//				main.setAttachFileName(savedFileName);
+//				main.setAttachOriginalName(origianlFileName);
 			}
-		} else if (form.getState() == Constants.STATEMENT_STATE_REVIEW
-				|| (main.getState() == Constants.STATEMENT_STATE_SUBMIT
-						&& form.getState() == Constants.STATEMENT_STATE_CANCEL)) {
-			main.setVerifier(this.getLoginAccount());
-			main.setVerifydate(new Date());
-
+		} else if (form.getState() == Constants.STATEMENT_STATE_REVIEW) {
+			main.setReviewer(this.getLoginAccount());
+			main.setReviewDate(new Date());
+		} else if (form.getState() == Constants.STATEMENT_STATE_DEPLOY) {
+			main.setDeployer(this.getLoginAccount());
+			main.setDeployDate(new Date());
 		} else if (form.getState() == Constants.STATEMENT_STATE_CONFIRM) {
-			main.setInvoicenummaker(this.getLoginAccount());
-			main.setInvoicenumdate(new Date());
 			main.setConfirmer(this.getLoginAccount());
-			main.setConfirmdate(new Date());
-		} else if (main.getState() == Constants.STATEMENT_STATE_REVIEW
-				&& form.getState() == Constants.STATEMENT_STATE_CANCEL) {
-			main.setConfirmer(this.getLoginAccount());
-			main.setConfirmdate(new Date());
-		} else if (form.getState() == Constants.STATEMENT_STATE_INVOICE_PUBLISH) {
-			main.setInvoiceType(form.getInvoice_type());
-			GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
-			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
-				main.setU8invoicemaker(this.getLoginAccount());
-				main.setU8invoicedate(new Date());
-				main.setInvoiceCancelDate(null);
-				main.setInvoiceCancelReason(null);
-
-			} else {
-				return u8Response;
-			}
+			main.setConfirmDate(new Date());
+		} else if (main.getState() == Constants.STATEMENT_STATE_CANCEL || form.getState() == Constants.STATEMENT_STATE_DENY) {
+			main.setCanceler(this.getLoginAccount());
+			main.setCancelDate(new Date());
+		}
+		
+		if (main.getInvoice_state() == Constants.INVOICE_STATE_DONE) {
+			main.setInvoiceMaker(this.getLoginAccount());
+			main.setInvoiceMakeDate(new Date());
+		} else if (main.getInvoice_state() == Constants.INVOICE_STATE_CONFIRMED) {
+			main.setInvoiceConfirmer(this.getLoginAccount());
+			main.setInvoiceConfirmDate(new Date());
+		} else if (main.getInvoice_state() == Constants.INVOICE_STATE_CANCELED) {
+			main.setInvoiceCanceler(this.getLoginAccount());
+			main.setInvoiceCancelDate(new Date());
+		} else if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
+			main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
+			main.setErpInvoiceMakeDate(new Date());
+			
+//			main.setInvoiceType(form.getInvoice_type());
+//			GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
+//			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
+//				main.setInvoiceMaker(this.getLoginAccount());
+//				main.setInvoiceMakeDate(new Date());
+//			} else {
+//				return u8Response;
+//			}
 		}
 
 		String action = null;
@@ -344,21 +357,30 @@ public class StatementController extends CommonController {
 		case Constants.STATEMENT_STATE_REVIEW:
 			toList.add(main.getMaker());
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			action = "审核发布";
+			action = "审核";
+			break;
+		case Constants.STATEMENT_STATE_DEPLOY:
+			toList.add(main.getMaker());
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+			action = "发布";
 			break;
 		case Constants.STATEMENT_STATE_CANCEL:
 			toList.add(main.getMaker());
-			action = "退回";
+			action = "撤回";
 			break;
 		case Constants.STATEMENT_STATE_CONFIRM:
 			toList.add(main.getMaker());
 			action = "确认";
 			break;
-		case Constants.STATEMENT_STATE_INVOICE_PUBLISH:
+		case Constants.STATEMENT_STATE_DENY:
 			toList.add(main.getMaker());
-			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			action = "生成U8发票";
+			action = "退回";
 			break;
+//		case Constants.STATEMENT_STATE_INVOICE_PUBLISH:
+//			toList.add(main.getMaker());
+//			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+//			action = "生成U8发票";
+//			break;
 //		case Constants.STATEMENT_STATE_NEW:
 //			if (main.getState() == Constants.STATEMENT_STATE_INVOICE_CANCEL
 //					|| main.getState() == Constants.STATEMENT_STATE_CONFIRM) {
@@ -393,7 +415,7 @@ public class StatementController extends CommonController {
 			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
 			for (StatementDetail detail : detailList) {
 				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
-						.findOneById(detail.getPurchaseInDetailId());
+						.findOneById(detail.getPiDetailId());
 
 				if (purchaseInDetail != null) {
 					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_WAIT);
@@ -407,53 +429,8 @@ public class StatementController extends CommonController {
 				for (Map<String, String> row : form.getTable()) {
 					StatementDetail detail = new StatementDetail();
 					detail.setCode(main.getCode());
-					detail.setPurchaseinType(Constants.STATEMENT_DETAIL_TYPE_BASIC);
-					detail.setPurchaseInDetailId(Long.parseLong(row.get("purchase_in_detail_id")));
+					detail.setPiDetailId(Long.parseLong(row.get("purchase_in_detail_id")));
 
-					String closedQuantity = row.get("closed_quantity");
-					String closedPrice = row.get("closed_price");
-					String closedMoney = row.get("closed_money");
-					String closedTaxPrice = row.get("closed_tax_price");
-					String closedTaxMoney = row.get("closed_tax_money");
-					String taxRate = row.get("nat_tax_rate");
-
-					String real_quantity = row.get("real_quantity");
-					String yuanci = row.get("yuanci");
-					String yinci = row.get("yinci");
-					String unit_weight = row.get("unit_weight");
-					String memo = row.get("memo");
-
-					if (closedQuantity != null && !closedQuantity.isEmpty())
-						detail.setClosedQuantity(Float.parseFloat(closedQuantity));
-
-					if (closedPrice != null && !closedPrice.isEmpty())
-						detail.setClosedPrice(Double.parseDouble(closedPrice));
-
-					if (closedMoney != null && !closedMoney.isEmpty())
-						detail.setClosedMoney(Double.parseDouble(closedMoney));
-
-					if (closedTaxPrice != null && !closedTaxPrice.isEmpty())
-						detail.setClosedTaxPrice(Double.parseDouble(closedTaxPrice));
-
-					if (closedTaxMoney != null && !closedTaxMoney.isEmpty())
-						detail.setClosedTaxMoney(Double.parseDouble(closedTaxMoney));
-
-					if (taxRate != null && !taxRate.isEmpty())
-						detail.setTaxRate(Float.parseFloat(taxRate));
-
-					if (real_quantity != null && !real_quantity.isEmpty())
-						detail.setRealQuantity(Float.parseFloat(real_quantity));
-
-					if (yuanci != null && !yuanci.isEmpty())
-						detail.setYuanci(Float.parseFloat(yuanci));
-
-					if (yinci != null && !yinci.isEmpty())
-						detail.setYinci(Float.parseFloat(yinci));
-
-					if (unit_weight != null && !unit_weight.isEmpty())
-						detail.setUnitWeight(Float.parseFloat(unit_weight));
-
-					detail.setMemo(memo);
 					detail.setRowNo(i++);
 
 					detail = statementDetailRepository.save(detail);
@@ -465,24 +442,24 @@ public class StatementController extends CommonController {
 			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
 			for (StatementDetail detail : detailList) {
 				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
-						.findOneById(detail.getPurchaseInDetailId());
+						.findOneById(detail.getPiDetailId());
 
 				if (purchaseInDetail != null) {
 					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);
 					purchaseInDetailRepository.save(purchaseInDetail);
 				}
 			}
-		} else if (main.getState() == Constants.STATEMENT_STATE_INVOICE_PUBLISH) {
-			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
-			for (StatementDetail detail : detailList) {
-				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
-						.findOneById(detail.getPurchaseInDetailId());
-
-				if (purchaseInDetail != null) {
-					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_FINISH);
-					purchaseInDetailRepository.save(purchaseInDetail);
-				}
-			}
+//		} else if (main.getState() == Constants.STATEMENT_STATE_INVOICE_PUBLISH) {
+//			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
+//			for (StatementDetail detail : detailList) {
+//				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
+//						.findOneById(detail.getPiDetailId());
+//
+//				if (purchaseInDetail != null) {
+//					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_FINISH);
+//					purchaseInDetailRepository.save(purchaseInDetail);
+//				}
+//			}
 		}
 
 //		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
@@ -537,7 +514,6 @@ public class StatementController extends CommonController {
 		post.setCvencode(main.getVendor().getCode());
 		post.setCpbvbilltype(main.getInvoiceType() == 1 ? "01" : "02");
 		post.setCbustype(main.getType() == 1 ? "普通采购" : "委外加工");
-		post.setCpbvmemo(main.getRemark());
 		post.setCptcode(main.getType() == 1 ? "01" : "05");
 		post.setCpbvmaker(this.getLoginAccount().getRealname());
 		post.setIpbvtaxrate(main.getTaxRate());
@@ -549,23 +525,12 @@ public class StatementController extends CommonController {
 
 		double chargeBack = 0D, closedMoneySum = 0D, closedTaxMoneySum = 0D, closedQuantitySum = 0D;
 
-		for (StatementDetail detail : detailList) {
-			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
-
-			if (purchaseInDetail == null) {
-				chargeBack = -detail.getClosedTaxMoney();
-			} else {
-				closedMoneySum += detail.getClosedMoney();
-				closedTaxMoneySum += detail.getClosedTaxMoney();
-				closedQuantitySum += detail.getClosedQuantity();
-			}
-		}
 
 		int i = 1, index = 0;
 		double invoiceMoneySum = 0D, invoiceTaxMoneySum = 0D;
 
 		for (StatementDetail detail : detailList) {
-			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPiDetailId());
 
 			index++;
 			if (purchaseInDetail == null)
@@ -573,72 +538,7 @@ public class StatementController extends CommonController {
 
 			U8InvoicePostEntry entry = new U8InvoicePostEntry();
 
-			entry.setCinvcode(purchaseInDetail.getInventory().getCode());
-			entry.setIpbvquantity(detail.getClosedQuantity());
-
-			double invoicePrice, invoiceMoney, invoiceTaxPrice, invoiceTaxMoney, itemChargeBack, itemTaxChargeBack;
-			if (chargeBack > 0) {
-				if (index == detailList.size()) {
-					invoiceMoney = detail.getClosedMoney() - (chargeBack - invoiceMoneySum);
-					invoiceTaxMoney = detail.getClosedTaxMoney() - (chargeBack - invoiceTaxMoneySum);
-				} else {
-					itemChargeBack = Utils.costRound(chargeBack * detail.getClosedMoney() / closedMoneySum);
-					invoiceMoney = detail.getClosedMoney() - itemChargeBack;
-					
-					itemTaxChargeBack = Utils.costRound(chargeBack * detail.getClosedTaxMoney() / closedTaxMoneySum);
-					invoiceTaxMoney = detail.getClosedTaxMoney() - itemTaxChargeBack;
-					
-					invoiceMoneySum += itemChargeBack;
-					invoiceTaxMoneySum += itemTaxChargeBack;
-				}
-				invoicePrice = invoiceMoney / detail.getClosedQuantity();
-				invoiceTaxPrice = invoiceTaxMoney / detail.getClosedQuantity();
-			} else {
-				invoicePrice = detail.getClosedPrice();
-				invoiceMoney = detail.getClosedMoney();
-				invoiceTaxPrice = detail.getClosedTaxPrice();
-				invoiceTaxMoney = detail.getClosedTaxMoney();
-			}
-
-			invoicePrice = Utils.priceRound(invoicePrice);
-			invoiceMoney = Utils.costRound(invoiceMoney);
-			invoiceTaxPrice = Utils.priceRound(invoiceTaxPrice);
-			invoiceTaxMoney = Utils.costRound(invoiceTaxMoney);
-
-			// 发票含税单价
-			entry.setiOriTaxCost(invoiceTaxPrice);
-			// 发票未税单价
-			entry.setiOriCost(invoicePrice);
-			// 发票未税金额
-			entry.setiOriMoney(invoiceMoney);
-			// 发票含税金额-发票未税金额
-			entry.setiOriTaxPrice(invoiceTaxMoney - invoiceMoney);
-			// 发票含税金额
-			entry.setiOriSum(invoiceTaxMoney);
-
-			// 税率（表体）
-			entry.setiTaxRate(detail.getTaxRate());
-
-			// 采购入库子表ID
-			entry.setRdsid(purchaseInDetail.getAutoId());
-			// 采购订单子表ID
-			entry.setIposid(purchaseInDetail.getAutoId());
-			// SRM里表体的行号
-			entry.setIvouchrowno(i);
-
-			// 入库日期
-			entry.setDindate(purchaseInDetail.getMain().getDate());
-
-			// 发票含税单价
-			entry.setInattaxprice(invoiceTaxPrice);
-			// 发票未税单价
-			entry.setiCost(invoicePrice);
-			// 发票未税金额
-			entry.setiMoney(invoiceMoney);
-			// 发票含税金额-发票未税金额
-			entry.setiTaxPrice(invoiceTaxMoney - invoiceMoney);
-			// 发票未税金额
-			entry.setiSum(invoiceMoney);
+			
 
 			entryList.add(entry);
 			i++;
@@ -678,15 +578,15 @@ public class StatementController extends CommonController {
 		return jsonString;
 	}
 
-	@GetMapping("/{code}/download")
-	public ResponseEntity<Resource> download(@PathVariable("code") String code) {
-		StatementMain main = this.statementMainRepository.findOneByCode(code);
-		if (main == null)
-			show404();
-
-		return download(Constants.PATH_UPLOADS_STATEMENT + File.separator + main.getAttachFileName(),
-				main.getAttachOriginalName());
-	}
+//	@GetMapping("/{code}/download")
+//	public ResponseEntity<Resource> download(@PathVariable("code") String code) {
+//		StatementMain main = this.statementMainRepository.findOneByCode(code);
+//		if (main == null)
+//			show404();
+//
+//		return download(Constants.PATH_UPLOADS_STATEMENT + File.separator + main.getAttachFileName(),
+//				main.getAttachOriginalName());
+//	}
 
 	private String createLockJsonString(StatementMain main) {
 		String jsonString = "";
@@ -696,7 +596,7 @@ public class StatementController extends CommonController {
 
 		for (StatementDetail detail : list) {
 			Map<String, String> map = new HashMap<>();
-			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPurchaseInDetailId());
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPiDetailId());
 
 			if (purchaseInDetail == null)
 				continue;

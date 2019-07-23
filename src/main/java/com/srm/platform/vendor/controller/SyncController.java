@@ -631,8 +631,7 @@ public class SyncController {
 					detail.setSyncDate(new Date());
 					purchaseInDetailRepository.save(detail);	
 					
-					//TODO: reverse comment out. it's for test.
-//					codes.add(String.valueOf(purchaseInDetailId));
+					codes.add(String.valueOf(autoId));
 				}
 
 				if (codes.size() > 0) {

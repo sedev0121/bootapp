@@ -37,16 +37,18 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="makedate">账单时间: </label> 
-							<input type="text" name="makedate" id="makedate" th:value="${#dates.format(main.makedate, 'yyyy-MM-dd')}" class="form-control" readonly>
+							<input type="text" name="date" id="date" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" class="form-control" readonly>
 						</div>
 						<div class="col-lg-4 col-md-4">
 							<label for="vendor">供应商:</label> <select id="vendor" name="vendor" class="form-control">
-								<option th:if="${main.vendor != null}" th:value="${main.vendor?.code}" th:text="${main.vendor?.name}" selected="selected">NEC（日电）有限公司</option>
+								<option th:if="${main.vendor != null}" th:value="${main.vendor?.code}" th:text="${main.vendor?.name}" selected="selected"></option>
 							</select>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="company">业务实体: </label> 
-							<input type="text" name="company" id="company" class="form-control" readonly>
+							<select name="company" id="company" class="form-control">
+								<option th:if="${main.company != null}" th:value="${main.company?.id}" th:text="${main.company?.name}" selected="selected"></option>
+							</select>							
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="type">对账类型: </label> 
@@ -64,15 +66,15 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label>制单日期: </label> 
-							<input type="text" th:value="${#dates.format(main.verifydate, 'yyyy-MM-dd')}" class="form-control" readonly>
+							<input type="text" th:value="${#dates.format(main.makeDate, 'yyyy-MM-dd')}" class="form-control" readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label>发布日期: </label> 
-							<input type="text" th:value="${#dates.format(main.verifydate, 'yyyy-MM-dd')}" class="form-control" readonly>
+							<input type="text" th:value="${#dates.format(main.deployDate, 'yyyy-MM-dd')}" class="form-control" readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label>确认日期: </label> 
-							<input type="text" th:value="${#dates.format(main.confirmdate, 'yyyy-MM-dd')}" class="form-control" readonly>
+							<input type="text" th:value="${#dates.format(main.confirmDate, 'yyyy-MM-dd')}" class="form-control" readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="state">状态:</label> 
@@ -277,7 +279,6 @@
    var state = [[${main.state}]];
    var type = [[${main.type}]];
    var invoice_type = [[${main.invoiceType}]];
-   var hasAttach = [[${main.attachFileName != null}]];
    var history_url = [[@{|/operation_history/list/statement/${main.code}}|]];
    var attach_url = [[@{/vendor/search}]];
    +]*/
@@ -563,9 +564,9 @@
 
 			  import_table = $('#import_table').DataTable({
 			    ordering : true,
-			    select : {
-				    style : 'os'
-			    },
+			    select : (state == 1) ? {
+				    style : 'multi'
+			    } : false,
 			    ajax : {
 			      url : import_url,
 			      data : function(data) {
@@ -589,6 +590,12 @@
 			      },
 			    },
 			    columns : [ {
+			      data : null,
+			      title : '选择',
+			      defaultContent : ' ',
+			      orderable : false,
+			      className : 'select-checkbox',
+			    }, {
 			      data : 'code',
 			      title : '入库单号'
 			    }, {
@@ -597,8 +604,10 @@
 			      className : 'dt-center',
 			      title : '入库日期'
 			    }, {
-			      data : null,
-			      defaultContent : '',
+			      data : 'company_name',
+			      title : '业务实体'
+			    }, {
+			      data : 'store_name',
 			      title : '库房'
 			    }, {
 			      data : 'inventorycode',
@@ -622,7 +631,7 @@
 			      className : 'dt-right',
 			      title : '单价',
 			    }, {
-			      data : 'nat_tax_price',
+			      data : 'tax_price',
 			      className : 'dt-right',
 			      title : '含税单价',
 			    }, {
@@ -689,19 +698,6 @@
 
 	  if (state == 5 && !is_vendor) {
 		  $('#invoice_type').attr("readonly", false);
-	  }
-
-	  if ((state == 1 || state == 4) && !is_readonly) {
-		  if (hasAttach) {
-			  $('#file_select').hide();
-			  $('#file_show').show();
-		  } else {
-			  $('#file_select').show();
-			  $('#file_show').hide();
-		  }
-	  } else {
-		  $('#file_select').hide();
-		  $('#file_show').show();
 	  }
 
 	  $('#type').change(function() {
@@ -913,36 +909,6 @@
 		    table : "#detail_table",
 		    idSrc : "purchase_in_detail_id",
 		    fields : [ {
-		      attr : {
-			      type : "number",
-		      },
-		      id : "nat_tax_rate",
-		      name : "nat_tax_rate"
-		    }, {
-		      attr : {
-			      type : "number",
-		      },
-		      id : "closed_quantity",
-		      name : "closed_quantity"
-		    }, {
-		      attr : {
-			      type : "number",
-		      },
-		      id : "closed_price",
-		      name : "closed_price"
-		    }, {
-		      attr : {
-			      type : "number"
-		      },
-		      id : "closed_money",
-		      name : "closed_money"
-		    }, {
-		      attr : {
-			      type : "number"
-		      },
-		      id : "closed_tax_price",
-		      name : "closed_tax_price"
-		    }, {
 		      attr : {
 			      type : "number"
 		      },
@@ -1177,15 +1143,23 @@
 		      },
 		    },
 		    columns : [ {
-		      data : 'rowno',
+		      data : null,
+		      title : '选择',
+		      defaultContent : ' ',
+		      visible: state == 1,
+		      orderable : false,
+		      className : 'select-checkbox',
+		    }, {
+		      data : 'row_no',
 		      sortable : false,
+		      className : 'dt-center',
 		      title : '行号'
 		    }, {
-		      data : 'purchase_in_code',
+		      data : 'code',
 		      sortable : false,
 		      title : '接收单号',
 		    }, {
-		      data : 'purchase_in_date',
+		      data : 'date',
 		      render : $.fn.date_renderer,
 		      sortable : false,
 		      className : 'dt-center',
@@ -1198,13 +1172,6 @@
 		      data : 'inventoryname',
 		      title : '货品名称',
 		      sortable : false,
-		      render : function(data, type, row) {
-			      if (row.purchase_in_detail_id == 0) {
-				      return "扣款";
-			      } else {
-				      return data;
-			      }
-		      },
 		    }, {
 		      data : 'specs',
 		      sortable : false,
@@ -1264,53 +1231,29 @@
 		      sortable : false,
 		      title : '订单编号'
 		    }, {
-		      data : 'rowno',
+		      data : 'po_row_no',
 		      sortable : false,
 		      title : '订单行号'
 		    }, {
-		      data : null,
+		      data : 'confirmed_memo',
 		      sortable : false,
 		      defaultContent : '',
 		      title : '订单备注'
 		    }, {
-		      data : null,
+		      data : 'delivery_code',
 		      sortable : false,
 		      defaultContent : '',
 		      title : '送货单号'
 		    }, {
-		      data : null,
+		      data : 'delivery_row_no',
 		      defaultContent : '',
 		      sortable : false,
 		      title : '送货单行号'
 		    }, {
-		      data : null,
+		      data : 'delivered_quantity',
 		      defaultContent : '',
 		      sortable : false,
 		      title : '送货单数量'
-		    }, {
-		      data : 'quantity',
-		      sortable : false,
-		      visible : false,
-		      title : '未对账数量',
-		      className : 'dt-right',
-		      render : function(data, type, record) {
-			      if (record.purchase_in_detail_id == 0)
-				      return '';
-			      else
-				      return parseFloat(data);
-		      }
-		    }, {
-		      data : 'closed_quantity',
-		      className : 'dt-right',
-		      visible : false,
-		      sortable : false,
-		      title : '对账数量',
-		    }, {
-		      data : 'memo',
-		      visible : false,
-		      sortable : false,
-		      className : 'edit-cell',
-		      title : '备注　　　　　　　',
 		    } ],
 		    order : [ [ 0, "asc" ], [ 3, "asc" ] ],
 		    footerCallback : function(row, data, start, end, display) {
@@ -1673,7 +1616,7 @@
 		      sortable : false,
 		      title : '订单号',
 		    }, {
-		      data : 'purchase_in_code',
+		      data : 'code',
 		      sortable : false,
 		      title : '入库单号',
 		    }, {
@@ -1952,43 +1895,12 @@
 			  var available = true;
 			  for (i = 0; i < exist_data.length; i++) {
 				  exist_row = exist_data[i];
-				  if (exist_row.purchase_in_code == item.code && exist_row.rowno == item.rowno) {
+				  if (exist_row.id == item.id) {
 					  available = false;
 					  break;
 				  }
 			  }
 			  if (available) {
-				  item.purchase_in_detail_id = item.id;
-				  item.purchase_in_code = item.code;
-				  item.purchase_in_date = item.date;
-
-				  item.taxprice = item.tax_price;
-				  item.taxcost = item.tax_cost;
-				  item.quantity = parseFloat(item.quantity);
-				  item.closed_money = item.cost;
-				  item.closed_price = item.nat_price;
-				  item.closed_tax_money = App.costNumber(item.nat_tax_price * item.quantity);
-				  item.closed_tax_price = item.nat_tax_price;
-				  item.invoice_tax_price = item.nat_tax_price;
-				  item.invoice_tax_money = App.costNumber(item.nat_tax_price * item.quantity);
-				  item.closed_quantity = item.quantity;
-
-				  item.real_quantity = null;
-				  item.yuanci = null;
-				  item.yinci = null;
-				  item.unit_weight = null;
-				  item.yinci_standard = null;
-				  item.yinci_chargeback = null;
-
-				  item.material_less_quantity = null;
-				  item.material_chargeback = null;
-				  item.memo = null;
-
-				  if ($('#type').val() == 2) {
-					  item.closed_tax_price = item.nat_tax_price;
-					  item.closed_price = App.priceNumber(item.closed_tax_price * 100 / (100 + parseFloat(item.nat_tax_rate)));
-				  }
-
 				  table.row.add(item);
 			  }
 		  })
