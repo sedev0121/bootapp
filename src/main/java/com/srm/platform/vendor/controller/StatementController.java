@@ -116,6 +116,7 @@ public class StatementController extends CommonController {
 					purchaseInDetailRepository.save(purchaseInDetail);
 				}
 			}
+			statementDetailRepository.deleteAll(detailList);
 			statementMainRepository.delete(main);
 //			postUnLock(main);
 		}
