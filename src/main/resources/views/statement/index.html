@@ -124,7 +124,7 @@
 	      createdCell : App.getInqueryStateClass,
 	      render : App.getStatementStateOfId
 	    }, {
-	      data : 'makedate',
+	      data : 'date',
 	      className : 'dt-center',
 	      title : '账单时间',
 	      render : $.fn.date_renderer
@@ -158,20 +158,22 @@
 	      data : 'invoice_code',
 	      title : '含税总金额',
 	    }, {
-	      data : 'invoice_code',
+	      data : null,
+	      orderable: false,
+	      defaultContent: '人民币',
 	      title : '币别',
 	    }, {
-	      data : 'makedate',
+	      data : 'make_date',
 	      className : 'dt-center',
 	      title : '创建日期',
 	      render : $.fn.date_renderer
 	    }, {
-	      data : 'confirmdate',
+	      data : 'confirm_date',
 	      className : 'dt-center',
 	      title : '确认日期',
 	      render : $.fn.date_renderer
 	    }, {
-	      data : 'verifydate',
+	      data : 'review_date',
 	      className : 'dt-center',
 	      title : '审核日期',
 	      render : $.fn.date_renderer	  
@@ -182,7 +184,7 @@
 	      data : 'invoice_code',
 	      title : '任务编号',
 	    }, {
-	      data : 'state',
+	      data : 'invoice_state',
 	      title : '发票状态',
 	      className : 'dt-center',
 	      render : App.getInvoiceStateOfId
@@ -190,37 +192,14 @@
 	      data : 'invoice_code',
 	      title : 'ERP发票号',
 	    }, {
-	      data : 'invoicenummaker',
+	      data : 'erp_invoice_make_name',
 	      className : 'dt-center',
 	      title : 'ERP发票制单人',
 	    }, {
-	      data : 'invoicenumdate',
+	      data : 'erp_invoice_make_date',
 	      className : 'dt-center',
 	      title : 'ERP发票日期',
-	      render : $.fn.date_renderer
-/*	      
-	    }, {
-	      data : 'maker',
-	      className : 'dt-center',
-	      title : '制单人',
-	    }, {
-	      data : 'confirmer',
-	      className : 'dt-center',
-	      title : '确认人',
-	    }, {
-	      data : 'verifier',
-	      className : 'dt-center',
-	      title : '审核人',
-	    }, {
-	      data : 'u8invoicemaker',
-	      className : 'dt-center',
-	      title : '生成U8采购发票人',
-	    }, {
-	      data : 'u8invoicedate',
-	      className : 'dt-center',
-	      title : '生成U8采购发票日期',
-	      render : $.fn.date_renderer
-*/	      
+	      render : $.fn.date_renderer 
 	    } ],
 	    order : [ [ 0, "desc" ] ]
 

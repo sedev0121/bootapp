@@ -26,23 +26,24 @@ import com.srm.platform.vendor.utility.Utils;
 
 @SqlResultSetMapping(name = "StatementSearchResult", classes = {
 		@ConstructorResult(targetClass = StatementSearchResult.class, columns = {
-				@ColumnResult(name = "code", type = String.class), @ColumnResult(name = "state", type = String.class),
-				@ColumnResult(name = "maker", type = String.class),
-				@ColumnResult(name = "makedate", type = String.class),
-				@ColumnResult(name = "verifier", type = String.class),
-				@ColumnResult(name = "verifydate", type = String.class),
-				@ColumnResult(name = "confirmer", type = String.class),
-				@ColumnResult(name = "confirmdate", type = String.class),
-				@ColumnResult(name = "invoicenummaker", type = String.class),
-				@ColumnResult(name = "invoicenumdate", type = String.class),
-				@ColumnResult(name = "u8invoicemaker", type = String.class),
-				@ColumnResult(name = "u8invoicedate", type = String.class),
-				@ColumnResult(name = "remark", type = String.class),
-				@ColumnResult(name = "invoice_code", type = String.class),
-				@ColumnResult(name = "vendor_name", type = String.class),
-				@ColumnResult(name = "vendor_code", type = String.class),
+				@ColumnResult(name = "code", type = String.class), 
+				@ColumnResult(name = "date", type = String.class),
 				@ColumnResult(name = "type", type = String.class),
-				@ColumnResult(name = "invoice_type", type = String.class) }) })
+				@ColumnResult(name = "company_name", type = String.class),
+				@ColumnResult(name = "vendor_code", type = String.class),
+				@ColumnResult(name = "vendor_name", type = String.class),
+				@ColumnResult(name = "state", type = String.class),
+				@ColumnResult(name = "make_date", type = String.class),
+				@ColumnResult(name = "review_date", type = String.class),
+				@ColumnResult(name = "deploy_date", type = String.class),
+				@ColumnResult(name = "confirm_date", type = String.class),
+				@ColumnResult(name = "invoice_code", type = String.class),
+				@ColumnResult(name = "invoice_state", type = String.class),
+				@ColumnResult(name = "invoice_type", type = String.class),
+				@ColumnResult(name = "erp_invoice_make_name", type = String.class),
+				@ColumnResult(name = "erp_invoice_make_date", type = String.class), 
+		}) 
+})
 
 @Table(name = "statement_main")
 public class StatementMain {

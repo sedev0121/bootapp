@@ -163,33 +163,17 @@ public class StatementController extends CommonController {
 		case "vendor_code":
 			order = "b.code";
 			break;
-		case "verifier":
-			order = "d.realname";
-			break;
-		case "confirmer":
-			order = "e.realname";
-			break;
-		case "invoicenummaker":
-			order = "f.realname";
-			break;
-		case "u8invoicemaker":
-			order = "g.realname";
-			break;
-		case "maker":
-			order = "c.realname";
-			break;
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "select a.*, b.name vendor_name, c.realname maker, d.realname verifier, e.realname confirmer, f.realname invoicenummaker, g.realname u8invoicemaker ";
+		String selectQuery = "select a.*, b.name vendor_name, com.name company_name ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "from statement_main a left join vendor b on a.vendor_code=b.code left join account c on a.maker_id=c.id "
-				+ "left join account d on a.verifier_id=d.id left join account e on a.confirmer_id=e.id left join account f on a.invoicenummaker_id=f.id "
-				+ "left join account g on a.u8invoicemaker_id=g.id where 1=1 ";
+		String bodyQuery = "from statement_main a left join vendor b on a.vendor_code=b.code  "
+				+ "left join company com on a.company_code=com.code where 1=1 ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -232,11 +216,11 @@ public class StatementController extends CommonController {
 		}
 
 		if (startDate != null) {
-			bodyQuery += " and a.makedate>=:startDate";
+			bodyQuery += " and a.make_date>=:startDate";
 			params.put("startDate", startDate);
 		}
 		if (endDate != null) {
-			bodyQuery += " and a.makedate<:endDate";
+			bodyQuery += " and a.make_date<:endDate";
 			params.put("endDate", endDate);
 		}
 
