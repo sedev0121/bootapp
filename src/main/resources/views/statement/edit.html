@@ -583,6 +583,7 @@
 				        rows_per_page : data.length,
 				        page_index : data.start / data.length + 1,
 				        vendor : $('#vendor').val(),
+				        company : $('#company').val(),
 				        inventory : $('#search_inventory').val(),
 				        code : $('#search_code').val(),
 				        type : ($('#type').val() == 1 ? '普通采购' : '委外加工'),
@@ -1379,7 +1380,11 @@
 			  	item.pi_detail_id = item.id;
 			  	item.pi_date = item.date;
 			  	item.pi_quantity = item.quantity;
+			  	item.invoice_quantity = item.quantity;
+			  	item.invoice_cost = item.tax_cost;
 			  	item.adjust_tax_cost = 0;
+			  	item.invoice_price = App.costNumber(item.invoice_cost/item.invoice_quantity);
+			  	
 				  table.row.add(item);
 			  }
 		  })
