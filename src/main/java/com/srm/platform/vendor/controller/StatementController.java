@@ -38,6 +38,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.Master;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
@@ -77,6 +78,17 @@ public class StatementController extends CommonController {
 	public String add(Model model) {
 		StatementMain main = new StatementMain();
 		main.setMaker(this.getLoginAccount());		
+		
+		Master master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
+		if (master == null) {
+			master = new Master();	
+			master.setItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
+			master.setItemValue(Constants.DEFAULT_STATEMENT_DATE);
+			masterRepository.save(master);
+		}
+		
+		Date statementDate = Utils.getStatementDate(master.getItemValue());
+		main.setDate(statementDate);
 		
 		model.addAttribute("main", main);
 		return "statement/edit";

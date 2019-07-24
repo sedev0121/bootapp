@@ -109,6 +109,9 @@ var store_search_url = [[@{/store/search/}]];
           return json.content;
         },
       },
+      fixedColumns : {
+		    leftColumns : 3,
+	    },
       createdRow: function( row, data, dataIndex ) {
           $(row).addClass('');
       },
@@ -205,6 +208,7 @@ var store_search_url = [[@{/store/search/}]];
       }, {
         data : 'state',
         className:'dt-right',
+        createdCell : App.getStateClass,
         title : 'SRM状态',
         render : App.getPurchaseInStateOfId,
 

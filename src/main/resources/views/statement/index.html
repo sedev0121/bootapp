@@ -124,7 +124,7 @@
 	      data : 'state',
 	      title : '状态',
 	      className : 'dt-center',
-	      createdCell : App.getInqueryStateClass,
+	      createdCell : App.getStateClass,
 	      render : App.getStatementStateOfId
 	    }, {
 	      data : 'date',
@@ -192,6 +192,7 @@
 	    }, {
 	      data : 'invoice_state',
 	      title : '发票状态',
+	      createdCell : App.getStateClass,
 	      className : 'dt-center',
 	      render : App.getInvoiceStateOfId
 	    }, {

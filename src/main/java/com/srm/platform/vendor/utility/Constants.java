@@ -108,4 +108,6 @@ public class Constants {
 	
 	public final static String VERSION = "20190722";
 	
+	public final static String DEFAULT_STATEMENT_DATE = "25";
+	
 }

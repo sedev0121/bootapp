@@ -295,35 +295,52 @@ select[readonly].select2-hidden-accessible+.select2-container .select2-selection
 	color: white;
 }
 
-
+.state_1,
 .delivery_state_1,
 .inquery_state_1 {
 	color: #4B77BE;
 }
 
+.state_2,
 .delivery_state_2,
 .inquery_state_2 {
 	color: #32C5D2;
 }
 
+.state_3,
 .delivery_state_3,
 .inquery_state_3 {
 	color: #1BA39C;
 }
 
+.state_4,
 .delivery_state_4,
 .inquery_state_4 {
 	color: red;
 }
 
+.state_5,
 .delivery_state_5,
 .inquery_state_5 {
 	color: #8E44AD;
 }
 
+.state_6,
 .delivery_state_6,
 .inquery_state_6 {
 	color: #C49F47;
+}
+
+.state_7,
+.delivery_state_7,
+.inquery_state_7 {
+	color: #349F47;
+}
+
+.state_8,
+.delivery_state_8,
+.inquery_state_8 {
+	color: #849F47;
 }
 
 #publish {

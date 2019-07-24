@@ -412,6 +412,9 @@ var App = function() {
     getDeliveryStateClass: function( td, cellData, rowData, row, col ) {
       $(td).addClass('delivery_state_' + cellData);
     },
+    getStateClass: function( td, cellData, rowData, row, col ) {
+      $(td).addClass('state_' + cellData);
+    },
     getNoticeReadStateClass: function( td, cellData, rowData, row, col ) {
       if (!rowData.read_date && rowData.state==3)
         $(td).addClass('new');

@@ -63,9 +63,7 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="maker">制单人:</label> 
-							<select name="maker" id="maker" class="form-control select2" readonly>
-								<option th:value="${main.maker?.id}" th:text="${main.maker?.realname}" selected="selected"></option>
-							</select>
+							<input type="text" th:value="${main.maker?.realname}" class="form-control" readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label>制单日期: </label> 
@@ -663,8 +661,6 @@
 
 	  }
 
-	  $('#date').datepicker();
-
 	  $("#search_date").datepicker({
 		  onSelect : function(dateText) {
 			  import_table.draw();
@@ -1145,13 +1141,18 @@
 		    },
 		    drawCallback : function(settings) {
 			    var data_list = this.api().rows().data().toArray()
-			    if (data_list.length > 0)
-				    $('#vendor').attr("readonly", true);
-			    else
-				    $('#vendor').attr("readonly", false);
+			    if (data_list.length > 0) {
+			    	$('#vendor').attr("readonly", true);
+			    	$('#company').attr("readonly", true);
+			    	$('#type').attr("readonly", true);
+			    } else {
+			    	$('#vendor').attr("readonly", false);
+			    	$('#company').attr("readonly", false);
+			    	$('#type').attr("readonly", false);
+			    }				    
 
-			    if ((state != 1 && state != 4) || is_readonly) {
-				    $('#vendor').attr("readonly", true);
+			    if (state != 1 || is_readonly) {
+				    $('input, select').attr("readonly", true);
 			    }
 
 			    summary_data = {};
@@ -1239,6 +1240,9 @@
 	    // define validation rules
 	    rules : {
 	      vendor : {
+		      required : true
+	      },
+	      company : {
 		      required : true
 	      },
 	      tax_rate : {
