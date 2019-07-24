@@ -272,6 +272,10 @@ public class StatementController extends CommonController {
 			main.setType(form.getType());
 			main.setTaxRate(form.getTax_rate());
 			main.setCompany(companyRepository.findOneById(form.getCompany()));
+			main.setCostSum(form.getCostSum());
+			main.setTaxCostSum(form.getTaxCostSum());
+			main.setAdjustCostSum(form.getAdjustCostSum());
+			main.setTaxSum(form.getTaxSum());
 
 //			String origianlFileName = null;
 //			String savedFileName = null;

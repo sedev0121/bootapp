@@ -20,6 +20,10 @@ public class StatementSaveForm {
 	private Integer type;
 	private Integer invoice_state;
 	private Integer invoice_type;
+	private Double costSum;
+	private Double taxCostSum;
+	private Double taxSum;
+	private Double adjustCostSum;
 
 	private Float tax_rate;
 
@@ -29,6 +33,39 @@ public class StatementSaveForm {
 
 	private String content;
 	
+	
+	public Double getCostSum() {
+		return costSum;
+	}
+
+	public void setCostSum(Double costSum) {
+		this.costSum = costSum;
+	}
+
+	public Double getTaxCostSum() {
+		return taxCostSum;
+	}
+
+	public void setTaxCostSum(Double taxCostSum) {
+		this.taxCostSum = taxCostSum;
+	}
+
+	public Double getTaxSum() {
+		return taxSum;
+	}
+
+	public void setTaxSum(Double taxSum) {
+		this.taxSum = taxSum;
+	}
+
+	public Double getAdjustCostSum() {
+		return adjustCostSum;
+	}
+
+	public void setAdjustCostSum(Double adjustCostSum) {
+		this.adjustCostSum = adjustCostSum;
+	}
+
 	public String getCode() {
 		return code;
 	}

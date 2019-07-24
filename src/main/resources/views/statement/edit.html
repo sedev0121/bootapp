@@ -86,7 +86,7 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="cost">未税金额: </label> 
-							<input type="number" id="cost" name="cost" th:value="${main.costSum}" class="form-control" readonly/>
+							<input type="number" id="cost" name="costSum" th:value="${main.costSum}" class="form-control" readonly/>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="tax_rate">税率: </label> 
@@ -94,15 +94,15 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="tax">税额: </label> 
-							<input type="number" id="tax" name="tax" th:value="${main.taxSum}" class="form-control" readonly/>
+							<input type="number" id="tax" name="taxSum" th:value="${main.taxSum}" class="form-control" readonly/>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="tax_cost">含税金额: </label> 
-							<input type="number" id="tax_cost" name="tax_cost" th:value="${main.taxCostSum}" class="form-control" readonly/>
+							<input type="number" id="tax_cost" name="taxCostSum" th:value="${main.taxCostSum}" class="form-control" readonly/>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="tax_cost">调整金额（含税）: </label> 
-							<input type="number" id="adjust_tax_cost" name="tax_cost" th:value="${main.adjustCostSum}" class="form-control" />
+							<input type="number" id="adjust_tax_cost" name="adjustCostSum" th:value="${main.adjustCostSum}" class="form-control" />
 						</div>
 					</div>
 					<div class="row margin-top-10">
@@ -502,12 +502,10 @@
 		    serverSide : false,
 		    processing : false,
 		    ajax : false,
-		    data : summary_data,
-		    fixedColumns : {
-			    leftColumns : 4,
-		    },
+		    data : summary_data,		    
 		    columns : [ {
 		      data : null,
+		      className : 'dt-center',
 		      render : $.fn.rowno_renderer,
 		      title : '行号',
 		    }, {
@@ -900,8 +898,8 @@
 		      attr : {
 			      type : "number"
 		      },
-		      id : "closed_tax_money",
-		      name : "closed_tax_money"
+		      id : "adjust_cost",
+		      name : "adjust_cost"
 		    }, {
 		      id : "memo",
 		      name : "memo"
@@ -1184,7 +1182,7 @@
 		    } ],
 		    order : [ [ 0, "asc" ], [ 3, "asc" ] ],
 		    footerCallback : function(row, data, start, end, display) {
-			    App.footerCallback(this.api(), [ [ 10, "cost" ], [ 11, "cost" ], [ 12, "quantity" ], [ 13, "quantity" ], [ 17, "cost" ], [ 18, "cost" ], [ 20, "cost" ] ]);
+			    App.footerCallback(this.api(), [ [ 9, "cost" ], [ 11, "cost" ], [ 12, "quantity" ], [ 13, "quantity" ], [ 15, "cost" ], [ 21, "cost" ] ]);
 		    },
 		    drawCallback : function(settings) {
 			    var data_list = this.api().rows().data().toArray()
@@ -1244,9 +1242,9 @@
 		  var footertr = $("<tr></tr>").appendTo(footer);
 
 		  //Add footer cells
-		  for (var i = 0; i < 13; i++) {
+		  for (var i = 0; i < 14; i++) {
 			  if (i == 0) {
-				  $("<th colspan='10' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
+				  $("<th colspan='9' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
 			  } else {
 				  $("<th></th>").appendTo(footertr);
 			  }
