@@ -16,14 +16,10 @@ public class StatementSaveForm {
 	private String remark;
 
 	private Integer state;
-	private Long maker;
-	private Date make_date;
+	private Long company;
 	private Integer type;
 	private Integer invoice_state;
 	private Integer invoice_type;
-
-	private Long verifier;
-	private Date verify_date;
 
 	private Float tax_rate;
 
@@ -89,14 +85,6 @@ public class StatementSaveForm {
 		this.tax_rate = tax_rate;
 	}
 
-	public void setMake_date(Date make_date) {
-		this.make_date = make_date;
-	}
-
-	public void setVerify_date(Date verify_date) {
-		this.verify_date = verify_date;
-	}
-
 	public String getInvoice_code() {
 		return invoice_code;
 	}
@@ -121,38 +109,6 @@ public class StatementSaveForm {
 		this.state = state;
 	}
 
-	public Long getMaker() {
-		return maker;
-	}
-
-	public void setMaker(Long maker) {
-		this.maker = maker;
-	}
-
-	public Date getMake_date() {
-		return make_date;
-	}
-
-	public void setMake_date(String make_date) {
-		this.make_date = Utils.parseDate(make_date);
-	}
-
-	public Long getVerifier() {
-		return verifier;
-	}
-
-	public void setVerifier(Long verifier) {
-		this.verifier = verifier;
-	}
-
-	public Date getVerify_date() {
-		return verify_date;
-	}
-
-	public void setVerify_date(String verify_date) {
-		this.verify_date = Utils.parseDate(verify_date);
-	}
-
 	public List<Map<String, String>> getTable() {
 		return table;
 	}
@@ -169,4 +125,13 @@ public class StatementSaveForm {
 		this.content = content;
 	}
 
+	public Long getCompany() {
+		return company;
+	}
+
+	public void setCompany(Long company) {
+		this.company = company;
+	}
+
+	
 }

@@ -174,7 +174,7 @@ public class StatementController extends CommonController {
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from statement_main a left join vendor b on a.vendor_code=b.code  "
-				+ "left join company com on a.company_code=com.code where 1=1 ";
+				+ "left join company com on a.company_id=com.id where 1=1 ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -268,9 +268,10 @@ public class StatementController extends CommonController {
 
 			main.setMakeDate(new Date());
 			main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
-			main.setMaker(accountRepository.findOneById(form.getMaker()));
+			main.setMaker(this.getLoginAccount());
 			main.setType(form.getType());
 			main.setTaxRate(form.getTax_rate());
+			main.setCompany(companyRepository.findOneById(form.getCompany()));
 
 //			String origianlFileName = null;
 //			String savedFileName = null;

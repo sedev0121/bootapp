@@ -55,7 +55,7 @@ public class StatementMain {
 	private Integer state = Constants.STATEMENT_STATE_NEW;
 	
 	@ManyToOne(cascade = { CascadeType.REFRESH })
-	@JoinColumn(name = "company_code", referencedColumnName = "code")
+	@JoinColumn(name = "company_id", referencedColumnName = "id")
 	private Company company;
 	
 	@ManyToOne(cascade = { CascadeType.REFRESH })

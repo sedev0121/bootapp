@@ -288,10 +288,12 @@
    var invoice_type = [[${main.invoiceType}]];
    var history_url = [[@{|/operation_history/list/statement/${main.code}}|]];
    var attach_url = [[@{/vendor/search}]];
+   var company_search_url = [[@{/company/search}]];
    +]*/
 
   $(document).ready(function() {
 
+  	
 	  $('.modal').on('shown.bs.modal', function() {
 		  load_import_table();
 	  });
@@ -675,7 +677,7 @@
 			  import_table.draw();
 	  });
 
-	  $(".select2").select2();
+	  $("#company").select2(App.getSelect2Options(company_search_url));
 	  $("#state").select2({
 	    data : App.getStatementStateData(),
 	    minimumResultsForSearch : -1
