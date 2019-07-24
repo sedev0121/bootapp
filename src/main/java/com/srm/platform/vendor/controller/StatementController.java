@@ -416,6 +416,7 @@ public class StatementController extends CommonController {
 					StatementDetail detail = new StatementDetail();
 					detail.setCode(main.getCode());
 					detail.setPiDetailId(Long.parseLong(row.get("pi_detail_id")));
+					detail.setAdjustTaxCost(Double.parseDouble(row.get("adjust_tax_cost")));
 					detail.setRowNo(i++);
 					detail = statementDetailRepository.save(detail);
 				}

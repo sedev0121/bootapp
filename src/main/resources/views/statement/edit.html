@@ -355,6 +355,8 @@
 	      className : 'select-checkbox',
 	    }, {
 	      data : 'row_no',
+	      className : 'dt-center',
+	      width : '30px', 
 	      title : '行号',
 	    }, {
 	      data : 'invoice_code',
@@ -438,6 +440,7 @@
 	      className : 'select-checkbox',
 	    }, {
 	      data : 'row_no',
+	      className : 'dt-center',
 	      title : '行号',
 	      width : '30px' 
 	    }, {
@@ -842,8 +845,8 @@
 		      attr : {
 			      type : "number"
 		      },
-		      id : "adjust_cost",
-		      name : "adjust_cost"
+		      id : "adjust_tax_cost",
+		      name : "adjust_tax_cost"
 		    }, {
 		      id : "memo",
 		      name : "memo"
@@ -1089,7 +1092,7 @@
 		    }, {
 		      data : 'adjust_tax_cost',
 		      sortable : false,
-		      className : 'dt-right',
+		      className : 'dt-right edit-cell',
 		      title : '含税调整金额',
 		    }, {
 		      data : 'invoice_quantity',
@@ -1113,6 +1116,7 @@
 		    }, {
 		      data : 'po_row_no',
 		      sortable : false,
+		      className : 'dt-center',
 		      title : '订单行号'
 		    }, {
 		      data : 'confirmed_memo',
@@ -1127,6 +1131,7 @@
 		    }, {
 		      data : 'delivery_row_no',
 		      defaultContent : '',
+		      className : 'dt-center',
 		      sortable : false,
 		      title : '送货单行号'
 		    }, {
@@ -1188,7 +1193,7 @@
 		    }
 		  };
 
-		  if ((state != 1 && state != 4) || is_readonly) {
+		  if (state != 1 || is_readonly) {
 			  table_options.select = false;
 			  table_options.buttons = [];
 		  }
@@ -1212,24 +1217,13 @@
 
 		  table = $('#detail_table').DataTable(table_options);
 
-		  if ((state == 1 || state == 4) && !is_readonly && !is_vendor) {
+		  if (state == 1 && !is_readonly && !is_vendor) {
 			  table.on('click', 'tbody td.edit-cell', function(e) {
 				  editor.inline(this, {
 				    submit : 'allIfChanged',
 				    submitOnBlur : true
 				  });
 			  });
-			  App.addKeyDownEditor(editor, 11, 15);
-		  }
-
-		  if (state == 2 && !is_readonly && is_vendor) {
-			  table.on('click', 'tbody td.vendor', function(e) {
-				  editor.inline(this, {
-				    submit : 'allIfChanged',
-				    submitOnBlur : true
-				  });
-			  });
-			  App.addKeyDownEditor(editor, 20, 20);
 		  }
 	  }
 
