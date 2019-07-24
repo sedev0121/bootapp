@@ -825,6 +825,33 @@
 		  
 		  table.rows().invalidate().draw();
 	  }
+	  
+	  function calcRowAdjustTaxCost() {
+	  	var adjustTaxCostSum = $('#adjust_tax_cost').val();
+	  	
+		  var taxCostSum = 0;
+		  var rowDatas = table.data();
+		  
+		  $.each(rowDatas, function(key, item) {
+		  	taxCostSum += item.tax_cost * 1;
+		  });	
+		  
+		  var tempSum = 0;
+		  for(var i=0; i<rowDatas.length; i++) {
+		  	var item = rowDatas[i];
+		  	if (i == rowDatas.length -1) {
+		  		item.adjust_tax_cost = adjustTaxCostSum - tempSum;
+		  	} else {
+		  		var temp = App.costNumber(adjustTaxCostSum * item.tax_cost/taxCostSum);
+		  		tempSum += parseFloat(temp);
+		  		item.adjust_tax_cost = temp;
+		  	}
+		  }	  
+
+		  updateData();
+		  
+		  table.rows().invalidate().draw();
+	  }
 
 	  function onChangeType() {
 		  var type = $('#type').val();
@@ -862,124 +889,6 @@
 			      }
 			    },
 		    }
-		  }).on('preSubmit', function(e, data, action) {
-			  if (action == 'remove') {
-				  return true;
-			  }
-
-			  var currentFieldName = e.currentTarget.s.includeFields[0];
-			  var isChargeBackRow = false;
-			  if (Object.keys(data.data)[0] == 0) {
-				  isChargeBackRow = true;
-			  }
-
-			  var editingField = editor.field(currentFieldName);
-			  if (currentFieldName != 'memo') {
-				  if (editingField.val() == undefined || editingField.val() == '' || (isChargeBackRow && parseFloat(editingField.val()) > 0) || (!isChargeBackRow && parseFloat(editingField.val()) < 0)) {
-					  editingField.input().addClass('error');
-					  return false;
-				  } else {
-					  editingField.input().removeClass('error');
-				  }
-			  }
-
-			  if (currentFieldName == 'nat_tax_rate') {
-
-				  if (parseFloat(editingField.val()) > 100) {
-					  editingField.input().addClass('error');
-					  return false;
-				  }
-				  editingField.input().removeClass('error');
-
-				  $.each(data.data, function(key, item) {
-					  if (item.closed_price != undefined && item.nat_tax_rate != undefined) {
-						  item.closed_price = parseFloat(item.closed_price).toFixed(2);
-						  value = (Number.parseFloat(item.nat_tax_rate) + 100) * item.closed_price / 100;
-						  item.closed_tax_price = value ? parseFloat(value).toFixed(2) : '';
-					  }
-					  if (item.closed_price != undefined && item.closed_quantity != undefined) {
-						  value = item.closed_price * item.closed_quantity;
-						  item.closed_money = value ? parseFloat(value).toFixed(2) : '';
-					  }
-					  if (item.closed_tax_price != undefined && item.closed_quantity != undefined) {
-						  value = item.closed_tax_price * item.closed_quantity
-						  item.closed_tax_money = value ? parseFloat(value).toFixed(2) : '';
-					  }
-				  });
-			  }
-
-			  if (currentFieldName == 'closed_price') {
-				  $.each(data.data, function(key, item) {
-					  if (item.closed_price != undefined && item.closed_quantity != undefined) {
-						  item.closed_price = parseFloat(item.closed_price).toFixed(2);
-						  value = item.closed_price * item.closed_quantity;
-						  item.closed_money = value ? parseFloat(value).toFixed(2) : '';
-					  }
-					  if (item.closed_price != undefined && item.nat_tax_rate != undefined) {
-						  value = (Number.parseFloat(item.nat_tax_rate) + 100) * item.closed_price / 100;
-						  item.closed_tax_price = value ? parseFloat(value).toFixed(2) : '';
-					  }
-					  if (item.closed_tax_price != undefined && item.closed_quantity != undefined) {
-						  value = item.closed_tax_price * item.closed_quantity
-						  item.closed_tax_money = value ? parseFloat(value).toFixed(2) : '';
-					  }
-				  });
-			  }
-
-			  if (currentFieldName == 'closed_money') {
-				  $.each(data.data, function(key, item) {
-					  if (item.closed_money != undefined && item.closed_quantity != undefined) {
-						  item.closed_money = parseFloat(item.closed_money).toFixed(2);
-						  value = item.closed_money / item.closed_quantity;
-						  item.closed_price = value ? parseFloat(value).toFixed(2) : '';
-					  }
-					  if (item.closed_price != undefined && item.nat_tax_rate != undefined) {
-						  value = (Number.parseFloat(item.nat_tax_rate) + 100) * item.closed_price / 100;
-						  item.closed_tax_price = value ? parseFloat(value).toFixed(2) : '';
-					  }
-					  if (item.closed_tax_price != undefined && item.closed_quantity != undefined) {
-						  value = item.closed_tax_price * item.closed_quantity
-						  item.closed_tax_money = value ? parseFloat(value).toFixed(2) : '';
-					  }
-				  });
-			  }
-
-			  if (currentFieldName == 'closed_tax_price') {
-				  $.each(data.data, function(key, item) {
-					  if (item.closed_tax_price != undefined && item.closed_quantity != undefined) {
-						  item.closed_tax_price = parseFloat(item.closed_tax_price).toFixed(2);
-						  value = item.closed_tax_price * item.closed_quantity;
-						  item.closed_tax_money = value ? parseFloat(value).toFixed(2) : '';
-					  }
-					  if (item.closed_tax_price != undefined && item.nat_tax_rate != undefined) {
-						  value = item.closed_tax_price * 100 / (Number.parseFloat(item.nat_tax_rate) + 100);
-						  item.closed_price = value ? parseFloat(value).toFixed(2) : '';
-					  }
-					  if (item.closed_price != undefined && item.closed_quantity != undefined) {
-						  value = item.closed_price * item.closed_quantity;
-						  item.closed_money = value ? parseFloat(value).toFixed(2) : '';
-					  }
-				  });
-			  }
-
-			  if (currentFieldName == 'closed_tax_money') {
-				  $.each(data.data, function(key, item) {
-					  if (item.closed_tax_money != undefined && item.closed_quantity != undefined) {
-						  item.closed_tax_money = parseFloat(item.closed_tax_money).toFixed(2);
-						  value = item.closed_tax_money / item.closed_quantity;
-						  item.closed_tax_price = value ? parseFloat(value).toFixed(2) : '';
-					  }
-					  if (item.closed_tax_price != undefined && item.nat_tax_rate != undefined) {
-						  value = item.closed_tax_price * 100 / (Number.parseFloat(item.nat_tax_rate) + 100);
-						  item.closed_price = value ? parseFloat(value).toFixed(2) : '';
-					  }
-					  if (item.closed_price != undefined && item.closed_quantity != undefined) {
-						  value = item.closed_price * item.closed_quantity;
-						  item.closed_money = value ? parseFloat(value).toFixed(2) : '';
-					  }
-				  });
-			  }
-
 		  }).on('submitSuccess', function(e, data, action) {
 		  	updateData();
 		  });
@@ -1446,5 +1355,8 @@
 		  $("#form").submit();
 	  });
 
+	  $("#adjust_tax_cost").change(function() {
+	  	calcRowAdjustTaxCost();
+	  })
   });
 </script>
