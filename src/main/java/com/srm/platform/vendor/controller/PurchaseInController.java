@@ -220,9 +220,11 @@ public class PurchaseInController extends CommonController {
 		String company = requestParams.getOrDefault("company", "");
 		String code = requestParams.getOrDefault("code", "");
 		String type = requestParams.getOrDefault("type", "普通采购");
+		String statementDateStr = requestParams.getOrDefault("statement_date", null);
 		String dateStr = requestParams.getOrDefault("date", null);
 		String inventory = requestParams.getOrDefault("inventory", "");
 
+		Date statementDate = Utils.getNextDate(statementDateStr);
 		Date date = Utils.parseDate(dateStr);
 
 		switch (order) {
@@ -260,14 +262,15 @@ public class PurchaseInController extends CommonController {
 				+ "left join purchase_order_detail po on a.po_code=po.code and a.po_row_no=po.row_no "
 				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
 				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
-				+ "left join vendor v on b.vendor_code=v.code where a.state=0 and type=:type and b.vendor_code=:vendor and com.id=:company";
+				+ "left join vendor v on b.vendor_code=v.code where a.state=0 and type=:type and b.vendor_code=:vendor and com.id=:company and b.date<:statementDate ";
 
 		Map<String, Object> params = new HashMap<>();
 
 		params.put("vendor", vendor);
 		params.put("company", company);
 		params.put("type", type);
-
+		params.put("statementDate", statementDate);
+		
 		if (!inventory.trim().isEmpty()) {
 			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
 			params.put("inventory", inventory.trim());

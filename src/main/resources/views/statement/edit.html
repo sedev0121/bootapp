@@ -585,6 +585,7 @@
 				        page_index : data.start / data.length + 1,
 				        vendor : $('#vendor').val(),
 				        company : $('#company').val(),
+				        statement_date : $('#date').val(),
 				        inventory : $('#search_inventory').val(),
 				        code : $('#search_code').val(),
 				        type : ($('#type').val() == 1 ? '普通采购' : '委外加工'),
@@ -840,7 +841,7 @@
 		  for(var i=0; i<rowDatas.length; i++) {
 		  	var item = rowDatas[i];
 		  	if (i == rowDatas.length -1) {
-		  		item.adjust_tax_cost = adjustTaxCostSum - tempSum;
+		  		item.adjust_tax_cost = App.costNumber(adjustTaxCostSum - tempSum);
 		  	} else {
 		  		var temp = App.costNumber(adjustTaxCostSum * item.tax_cost/taxCostSum);
 		  		tempSum += parseFloat(temp);
