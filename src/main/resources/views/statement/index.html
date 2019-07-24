@@ -107,6 +107,9 @@
 		      return json.content;
 	      },
 	    },
+	    fixedColumns : {
+		    leftColumns : 3,
+	    },
 	    createdRow : function(row, data, dataIndex) {
 		    $(row).addClass('');
 	    },
@@ -140,7 +143,7 @@
 	      visible : !is_vendor,
 	      title : '供应商名称',
 	    }, {
-	      data : 'vendor_name',
+	      data : 'vendor_address',
 	      visible : !is_vendor,
 	      title : '供应商地址',
 	    }, {
@@ -149,13 +152,13 @@
 	      className : 'dt-center',
 	      render : App.getStatementTypeOfId
 	    }, {
-	      data : 'invoice_code',
+	      data : 'cost_sum',
 	      title : '未税总金额',
 	    }, {
-	      data : 'invoice_code',
+	      data : 'tax_sum',
 	      title : '税额',
 	    }, {
-	      data : 'invoice_code',
+	      data : 'tax_cost_sum',
 	      title : '含税总金额',
 	    }, {
 	      data : null,
@@ -181,7 +184,7 @@
 	      data : 'invoice_code',
 	      title : '操作记录',
 	    }, {
-	      data : 'invoice_code',
+	      data : 'task_id',
 	      title : '任务编号',
 	    }, {
 	      data : 'invoice_state',

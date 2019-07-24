@@ -59,7 +59,7 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="task">任务编号: </label> 
-							<input type="text" name="task" id="task" class="form-control" readonly>
+							<input type="text" th:value="${main.taskId}" class="form-control" readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="maker">制单人:</label> 
@@ -86,7 +86,7 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="cost">未税金额: </label> 
-							<input type="number" id="cost" name="cost" th:value="${main.taxRate}" class="form-control" readonly/>
+							<input type="number" id="cost" name="cost" th:value="${main.costSum}" class="form-control" readonly/>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="tax_rate">税率: </label> 
@@ -94,15 +94,15 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="tax">税额: </label> 
-							<input type="number" id="tax" name="tax" th:value="${main.taxRate}" class="form-control" readonly/>
+							<input type="number" id="tax" name="tax" th:value="${main.taxSum}" class="form-control" readonly/>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="tax_cost">含税金额: </label> 
-							<input type="number" id="tax_cost" name="tax_cost" th:value="${main.taxRate}" class="form-control" readonly/>
+							<input type="number" id="tax_cost" name="tax_cost" th:value="${main.taxCostSum}" class="form-control" readonly/>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="tax_cost">调整金额（含税）: </label> 
-							<input type="number" id="adjust_tax_cost" name="tax_cost" th:value="${main.taxRate}" class="form-control" />
+							<input type="number" id="adjust_tax_cost" name="tax_cost" th:value="${main.adjustCostSum}" class="form-control" />
 						</div>
 					</div>
 					<div class="row margin-top-10">

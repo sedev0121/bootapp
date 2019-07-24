@@ -169,7 +169,7 @@ public class StatementController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "select a.*, b.name vendor_name, com.name company_name ";
+		String selectQuery = "select a.*, b.name vendor_name, b.address vendor_address, com.name company_name ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 

@@ -14,6 +14,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,6 +34,7 @@ import com.srm.platform.vendor.utility.Utils;
 				@ColumnResult(name = "company_name", type = String.class),
 				@ColumnResult(name = "vendor_code", type = String.class),
 				@ColumnResult(name = "vendor_name", type = String.class),
+				@ColumnResult(name = "vendor_address", type = String.class),
 				@ColumnResult(name = "state", type = String.class),
 				@ColumnResult(name = "make_date", type = String.class),
 				@ColumnResult(name = "review_date", type = String.class),
@@ -41,7 +44,12 @@ import com.srm.platform.vendor.utility.Utils;
 				@ColumnResult(name = "invoice_state", type = String.class),
 				@ColumnResult(name = "invoice_type", type = String.class),
 				@ColumnResult(name = "erp_invoice_make_name", type = String.class),
-				@ColumnResult(name = "erp_invoice_make_date", type = String.class), 
+				@ColumnResult(name = "erp_invoice_make_date", type = String.class),
+				@ColumnResult(name = "task_id", type = String.class), 
+				@ColumnResult(name = "cost_sum", type = String.class),
+				@ColumnResult(name = "tax_cost_sum", type = String.class),
+				@ColumnResult(name = "adjust_cost_sum", type = String.class),
+				@ColumnResult(name = "tax_sum", type = String.class),
 		}) 
 })
 
@@ -135,6 +143,21 @@ public class StatementMain {
 	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "invoice_cancel_id", referencedColumnName = "id")
 	Account invoiceCanceler;
+	
+	@JsonProperty("cost_sum")
+	private Double costSum;
+	
+	@JsonProperty("tax_cost_sum")
+	private Double taxCostSum;
+	
+	@JsonProperty("adjust_cost_sum")
+	private Double adjustCostSum;
+	
+	@JsonProperty("tax_sum")
+	private Double taxSum;
+	
+	@JsonProperty("task_id")
+	private Long taskId;
 
 	public StatementMain() {
 		setCode(Utils.generateId());
@@ -144,6 +167,45 @@ public class StatementMain {
 		setInvoiceState(Constants.INVOICE_STATE_NONE);
 	}
 
+	public Double getCostSum() {
+		return costSum;
+	}
+
+	public void setCostSum(Double costSum) {
+		this.costSum = costSum;
+	}
+
+	public Double getTaxCostSum() {
+		return taxCostSum;
+	}
+
+	public void setTaxCostSum(Double taxCostSum) {
+		this.taxCostSum = taxCostSum;
+	}
+
+	public Double getAdjustCostSum() {
+		return adjustCostSum;
+	}
+
+	public void setAdjustCostSum(Double adjustCostSum) {
+		this.adjustCostSum = adjustCostSum;
+	}
+
+	public Double getTaxSum() {
+		return taxSum;
+	}
+
+	public void setTaxSum(Double taxSum) {
+		this.taxSum = taxSum;
+	}
+
+	public Long getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(Long taskId) {
+		this.taskId = taskId;
+	}
 
 	public String getCode() {
 		return code;

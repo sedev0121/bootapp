@@ -12,6 +12,7 @@ public class StatementSearchResult implements Serializable {
 	String company_name;
 	String vendor_code;
 	String vendor_name;
+	String vendor_address;
 	String state;
 	
 	String make_date;	
@@ -24,10 +25,17 @@ public class StatementSearchResult implements Serializable {
 
 	String erp_invoice_make_name;
 	String erp_invoice_make_date;
+	
+	String task_id;
+	String cost_sum;
+	String tax_cost_sum;
+	String adjust_cost_sum;
+	String tax_sum;
 
 	public StatementSearchResult(String code, String date, String type, String company_name, String vendor_code, 
-			String vendor_name, String state, String make_date, String review_date, String deploy_date, String confirm_date,
-			String invoice_code, String invoice_state, String invoice_type, String erp_invoice_make_name, String erp_invoice_make_date) {
+			String vendor_name, String vendor_address, String state, String make_date, String review_date, String deploy_date, String confirm_date,
+			String invoice_code, String invoice_state, String invoice_type, String erp_invoice_make_name, String erp_invoice_make_date,
+			String task_id,	String cost_sum, String tax_cost_sum, String adjust_cost_sum, String tax_sum) {
 
 		this.code = code;
 		this.date = date;
@@ -35,6 +43,7 @@ public class StatementSearchResult implements Serializable {
 		this.company_name = company_name;
 		this.vendor_code = vendor_code;
 		this.vendor_name = vendor_name;
+		this.vendor_address = vendor_address;
 		this.state = state;
 		this.make_date = make_date;
 		this.review_date = review_date;
@@ -45,6 +54,60 @@ public class StatementSearchResult implements Serializable {
 		this.invoice_type = invoice_type;
 		this.erp_invoice_make_name = erp_invoice_make_name;
 		this.erp_invoice_make_date = erp_invoice_make_date;
+		
+		this.task_id = task_id;
+		this.cost_sum = cost_sum;
+		this.tax_cost_sum = tax_cost_sum;
+		this.adjust_cost_sum = adjust_cost_sum;
+		this.tax_sum = tax_sum;
+	}
+
+	public String getTask_id() {
+		return task_id;
+	}
+
+	public void setTask_id(String task_id) {
+		this.task_id = task_id;
+	}
+
+	public String getCost_sum() {
+		return cost_sum;
+	}
+
+	public void setCost_sum(String cost_sum) {
+		this.cost_sum = cost_sum;
+	}
+
+	public String getTax_cost_sum() {
+		return tax_cost_sum;
+	}
+
+	public void setTax_cost_sum(String tax_cost_sum) {
+		this.tax_cost_sum = tax_cost_sum;
+	}
+
+	public String getAdjust_cost_sum() {
+		return adjust_cost_sum;
+	}
+
+	public void setAdjust_cost_sum(String adjust_cost_sum) {
+		this.adjust_cost_sum = adjust_cost_sum;
+	}
+
+	public String getTax_sum() {
+		return tax_sum;
+	}
+
+	public void setTax_sum(String tax_sum) {
+		this.tax_sum = tax_sum;
+	}
+
+	public String getVendor_address() {
+		return vendor_address;
+	}
+
+	public void setVendor_address(String vendor_address) {
+		this.vendor_address = vendor_address;
 	}
 
 	public String getCode() {
