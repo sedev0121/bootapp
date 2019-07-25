@@ -18,10 +18,10 @@
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==4}" id="confirm"><i class="fa fa-check-square"></i> 确认</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==4}" id="deny"><i class="fa fa-undo"></i> 退回</a> 
 				
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==6 and main.invoiceState == 0}" id="invoice_make"><i class="fa fa-check-square"></i> 确认开票</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6}" id="invoice_approve"><i class="fa fa-recycle"></i> 审批通过</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6}" id="invoice_deny"><i class="fa fa-recycle"></i> 审批退回</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6}" id="invoice_upload"><i class="fa fa-recycle"></i> 传递ERP</a>
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==6}" id="invoice_make"><i class="fa fa-check-square"></i> 确认开票</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6 and main.invoiceState == 1}" id="invoice_approve"><i class="fa fa-recycle"></i> 审批通过</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6 and main.invoiceState == 1}" id="invoice_deny"><i class="fa fa-recycle"></i> 审批退回</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6 and main.invoiceState == 2}" id="invoice_upload"><i class="fa fa-recycle"></i> 传递ERP</a>
 				 
 				<a class="btn btn-primary" id="export_summary"><i class="fa fa-arrow-up"></i> 导出汇总信息</a> 
 				<a class="btn btn-primary" id="export_detail"><i class="fa fa-arrow-up"></i> 导出明细信息</a> 
@@ -273,9 +273,7 @@
 <script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
 	is_vendor = 1;
 </script>
-<script th:inline="javascript" sec:authorize="hasRole('ROLE_BUYER')">
-	is_readonly = 0;
-</script>
+
 <script th:inline="javascript">
 	var editor, invoice_editor, attach_editor, table_options, table, import_table, history_table, summary_table, summary_data, invoice_table, attach_table;
   var qty_sum, money_sum;
@@ -297,7 +295,41 @@
 
   $(document).ready(function() {
 
+  	function canEditInvoice() {
+  		if (state == 6 && invoice_state == 0 && is_vendor) {
+  			return true;
+  		}	else {
+  			return false;
+  		}
+  	}
   	
+  	function canEdit() {
+  		if (state == 1) {
+  			return true;
+  		}	else {
+  			return false;
+  		}
+  	}
+  	
+  	function updateInvoiceData() {
+  		if (invoice_table) {
+  			var table_data = invoice_table.rows().data().toArray();
+  		  var invoice_codes = [];
+  		  $.each(table_data, function(key, item) {
+  		  	if (item.invoice_code) {
+  		  		invoice_codes.push(item.invoice_code);	
+  		  	}  		  	
+  		  })
+  		  
+  		  $('#invoice_code').val(invoice_codes.join("; "));	
+  		}  		
+  	}
+  	
+	  if (!canEdit()) {
+		  $('input').attr("readonly", true);
+		  $('select').attr("readonly", true);
+	  }
+	  
 	  $('#import_dialog').on('shown.bs.modal', function() {
 		  load_import_table();
 	  });
@@ -335,7 +367,7 @@
 		  })
 		  invoice_table.rows().invalidate();
 	  }).on('submitSuccess', function(e, data, action) {
-		  updateInvoiceData();
+		  //updateInvoiceData();
 	  });
 	  
 	  invoice_table = $('#invoice_table').DataTable({
@@ -387,16 +419,21 @@
 	    }, {
 	      extend : "remove",
 	      editor : invoice_editor
-	    }, ],
+	    } ],
+	    drawCallback : function(settings) {
+	    	updateInvoiceData();
+	    }
 	  });
 
-	  if (!is_readonly) {
+	  if (canEditInvoice) {
 		  invoice_table.on('click', 'tbody td.edit-cell', function(e) {
 			  invoice_editor.inline(this, {
 			    submit : 'allIfChanged',
 			    submitOnBlur : true
 			  });
 		  });
+		  $('#invoice_type').attr("readonly", false);
+		  $('#invoice_info').collapse();
 	  }
 	  
 	  attach_editor = new $.fn.dataTable.Editor({
@@ -710,19 +747,7 @@
 	  
 	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
 
-	  if ((state != 1 && state != 4) || is_readonly) {
-		  $('input').attr("readonly", true);
-		  $('select').attr("readonly", true);
-	  }
 
-	  if ((state == 3 || state == 7) && is_vendor) {
-		  $('#invoice_code').removeAttr("disabled");
-		  $('#invoice_code').removeAttr("readonly");
-	  }
-
-	  if (state == 5 && !is_vendor) {
-		  $('#invoice_type').attr("readonly", false);
-	  }
 
 	  $('#save_history').click(function() {
 		  if (!$('#history_content').val()) {
@@ -1067,10 +1092,6 @@
 			    	$('#type').attr("readonly", false);
 			    }				    
 
-			    if (state != 1 || is_readonly) {
-				    $('input, select').attr("readonly", true);
-			    }
-
 			    summary_data = {};
 			    var index = 1;
 			    $.each(this.api().rows().data().toArray(), function(key, item) {
@@ -1106,7 +1127,7 @@
 		    }
 		  };
 
-		  if (state != 1 || is_readonly) {
+		  if (!canEdit()) {
 			  table_options.select = false;
 			  table_options.buttons = [];
 		  }
@@ -1130,7 +1151,7 @@
 
 		  table = $('#detail_table').DataTable(table_options);
 
-		  if (state == 1 && !is_readonly && !is_vendor) {
+		  if (canEdit()) {
 			  table.on('click', 'tbody td.edit-cell', function(e) {
 				  editor.inline(this, {
 				    submit : 'allIfChanged',
@@ -1156,7 +1177,10 @@
 		      required : true,
 	      },
 	      invoice_code : {
-		      required : state >= 3
+		      required : state==6
+	      },
+	      invoice_type : {
+	      	required : state==6
 	      },
 	    },
 
@@ -1328,7 +1352,6 @@
 	  });
 
 	  $("#cancel").click(function() {
-		  $('#invoice_code').rules('remove');
 		  $('#state').val(5);
 		  $("#form").submit();
 	  });

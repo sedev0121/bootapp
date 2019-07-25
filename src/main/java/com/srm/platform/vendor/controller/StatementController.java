@@ -359,6 +359,7 @@ public class StatementController extends CommonController {
 			
 		} else {
 			if (main.getInvoiceState() == Constants.INVOICE_STATE_DONE) {
+				main.setInvoiceType(form.getInvoice_type());
 				main.setInvoiceCode(form.getInvoice_code());
 				main.setInvoiceMaker(this.getLoginAccount());
 				main.setInvoiceMakeDate(new Date());
@@ -399,8 +400,9 @@ public class StatementController extends CommonController {
 				action = "传递ERP";
 				break;			
 			}
-			
+
 			main.setInvoiceState(form.getInvoice_state());
+			
 		}
 		
 
