@@ -18,7 +18,7 @@
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==4}" id="confirm"><i class="fa fa-check-square"></i> 确认</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==4}" id="deny"><i class="fa fa-undo"></i> 退回</a> 
 				
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==6}" id="invoice_make"><i class="fa fa-check-square"></i> 确认开票</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==6 and main.invoiceState == 0}" id="invoice_make"><i class="fa fa-check-square"></i> 确认开票</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6 and main.invoiceState == 1}" id="invoice_approve"><i class="fa fa-recycle"></i> 审批通过</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6 and main.invoiceState == 1}" id="invoice_deny"><i class="fa fa-recycle"></i> 审批退回</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6 and main.invoiceState == 2}" id="invoice_upload"><i class="fa fa-recycle"></i> 传递ERP</a>
@@ -277,6 +277,7 @@
 <script th:inline="javascript">
 	var editor, invoice_editor, attach_editor, table_options, table, import_table, history_table, summary_table, summary_data, invoice_table, attach_table;
   var qty_sum, money_sum;
+  var invoice_code_seperator = "; ";
   /*[+
    var sync_url = [[@{/sync/purchasein/vendor/}]];
    var detail_url = [[@{|/statement/${main.code}/details|}]];
@@ -286,6 +287,7 @@
    var vendor_search_url = [[@{/vendor/search}]];
    var state = [[${main.state}]];
    var invoice_state = [[${main.invoiceState}]];
+   var invoice_code = [[${main.invoiceCode}]];
    var type = [[${main.type}]];
    var invoice_type = [[${main.invoiceType}]];
    var history_url = [[@{|/operation_history/list/statement/${main.code}}|]];
@@ -321,7 +323,7 @@
   		  	}  		  	
   		  })
   		  
-  		  $('#invoice_code').val(invoice_codes.join("; "));	
+  		  $('#invoice_code').val(invoice_codes.join(invoice_code_seperator));	
   		}  		
   	}
   	
@@ -370,29 +372,32 @@
 		  //updateInvoiceData();
 	  });
 	  
+	  var invoice_table_data = [];
+	  
+	  if (invoice_code) {
+	  	var code_list = invoice_code.split(invoice_code_seperator);
+	  	for(var i=0; i<code_list.length; i++) {
+	  		invoice_table_data.push({
+	  				row_no: i+1,
+	  				invoice_code: code_list[i]
+	  		});
+	  	}
+	  }
+	  
 	  invoice_table = $('#invoice_table').DataTable({
 	    serverSide : false,
 	    processing : false,
 	    ajax : false,
-	    select : {
+	    select : (canEditInvoice()?{
 		    style : 'multi',
 		    selector: 'td:first-child',
-	    },
-	    data : [ {
-	    	row_no: 1,
-		    invoice_code : 245367
-	    }, {
-	    	row_no: 2,
-		    invoice_code : 245368
-	    }, {
-	    	row_no: 3,
-		    invoice_code : 245369
-	    } ],
+	    }:false),
+	    data : invoice_table_data,
 	    columns : [ {
 	      data : null,
 	      defaultContent : '',
 	      orderable : false,
-	      visible : !is_vendor,
+	      visible : canEditInvoice(),
 	      title : '选择',
 	      className : 'select-checkbox',
 	    }, {
@@ -405,7 +410,7 @@
 	      className : 'edit-cell',
 	      title : '发票号',
 	    } ],
-	    buttons : [ {
+	    buttons : canEditInvoice()?[ {
 	    	text : "添加行",
 	      action : function(e, dt, node, config) {
 		      var new_row = {		        
@@ -419,21 +424,24 @@
 	    }, {
 	      extend : "remove",
 	      editor : invoice_editor
-	    } ],
+	    } ]:false,
 	    drawCallback : function(settings) {
 	    	updateInvoiceData();
 	    }
 	  });
 
-	  if (canEditInvoice) {
+	  if (canEditInvoice()) {
 		  invoice_table.on('click', 'tbody td.edit-cell', function(e) {
 			  invoice_editor.inline(this, {
 			    submit : 'allIfChanged',
 			    submitOnBlur : true
 			  });
 		  });
-		  $('#invoice_type').attr("readonly", false);
-		  $('#invoice_info').collapse();
+		  $('#invoice_type').attr("readonly", false);		  
+	  }
+	  
+	  if (state == 6) {
+	  	$('#invoice_info').collapse();
 	  }
 	  
 	  attach_editor = new $.fn.dataTable.Editor({
@@ -463,10 +471,10 @@
 	    serverSide : false,
 	    processing : false,
 	    ajax : false,
-	    select : {
+	    select : canEdit()?{
 		    style : 'multi',
 		    selector: 'td:first-child',
-	    },
+	    }:false,
 	    data : [ {
 	    	id: 1,
 	    	row_no: 1,	    	
@@ -508,7 +516,7 @@
 		      return html;
 	      }
 	    } ],
-	    buttons : [ {
+	    buttons : canEdit()?[ {
 	      text : "添加行",
 	      action : function(e, dt, node, config) {
 		      var new_row = {
@@ -521,7 +529,7 @@
 	    }, {
 	      extend : "remove",
 	      editor : attach_editor
-	    }, ],
+	    } ]:false,
 	  });
 
 	  $('#show_modal_btn').click(function() {
@@ -620,9 +628,9 @@
 
 			  import_table = $('#import_table').DataTable({
 			    ordering : true,
-			    select : (state == 1) ? {
+			    select : {
 				    style : 'multi'
-			    } : false,
+			    },
 			    ajax : {
 			      url : import_url,
 			      data : function(data) {
@@ -925,13 +933,13 @@
 		    processing : false,
 		    destroy : true,
 		    ordering : false,
-		    select : {
+		    select : canEdit()?{
 			    style : 'multi'
-		    },
+		    }:false,
 		    fixedColumns : {
 			    leftColumns : 4,
 		    },
-		    buttons : [ {
+		    buttons : canEdit()?[ {
 		      text : "选择要对账的物料",
 		      action : function(e, dt, node, config) {
 
@@ -953,7 +961,7 @@
 		    }, {
 		      extend : "remove",
 		      editor : editor		    
-		    } ],
+		    } ]:false,
 		    ajax : {
 		      url : detail_url,
 		      dataSrc : function(json) {
@@ -969,7 +977,7 @@
 		      data : null,
 		      title : '选择',
 		      defaultContent : ' ',
-		      visible: state == 1,
+		      visible: canEdit(),
 		      orderable : false,
 		      className : 'select-checkbox',
 		    }, {
