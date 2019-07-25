@@ -32,7 +32,6 @@
 		<div class="panel panel-default">
 			<div class="panel-body">
 				<form id="form" th:action="@{/statement/update}" method="post" enctype="multipart/form-data">
-					<input type="hidden" name="invoice_state" id="invoice_state" th:value="${main.invoiceState}">
 					<div class="row">
 						<div class="col-lg-2 col-md-2">
 							<label for="code">对账单号: </label> 
@@ -120,9 +119,14 @@
 											</div>
 										</div>	
 										<div class="row">
-											<div class="col-lg-4 col-md-4">
+											<div class="col-lg-2 col-md-2">
 												<label for="code">发票类型: </label> 
 												<select id="invoice_type" name="invoice_type" class="form-control" readonly></select>
+											</div>
+											<div class="col-lg-2 col-md-2">
+												<label for="state">发票状态:</label> 
+												<select name="invoice_state" id="invoice_state" class="form-control" readonly>
+												</select>
 											</div>
 											<div class="col-lg-2 col-md-2">
 												<label for="code">发票制单人: </label> 
@@ -282,6 +286,7 @@
    var del_url = [[@{|/statement/${main.code}/delete|}]];
    var vendor_search_url = [[@{/vendor/search}]];
    var state = [[${main.state}]];
+   var invoice_state = [[${main.invoiceState}]];
    var type = [[${main.type}]];
    var invoice_type = [[${main.invoiceType}]];
    var history_url = [[@{|/operation_history/list/statement/${main.code}}|]];
@@ -686,7 +691,7 @@
 	    data : App.getStatementStateData(),
 	    minimumResultsForSearch : -1
 	  }).select2("val", state.toString());
-
+	  
 	  $("#type").select2({
 	    data : App.getStatementTypeData(),
 	    minimumResultsForSearch : -1
@@ -697,6 +702,11 @@
 	    minimumResultsForSearch : -1
 	  }).select2("val", invoice_type.toString());
 
+	  $("#invoice_state").select2({
+	    data : App.getInvoiceStateData(),
+	    minimumResultsForSearch : -1
+	  }).select2("val", invoice_state.toString());
+	  
 	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
 
 	  if ((state != 1 && state != 4) || is_readonly) {
@@ -1314,6 +1324,30 @@
 	  });
 
 	  $("#deny").click(function() {
+		  editor.submit();
+		  $('#state').val(7);
+		  $("#form").submit();
+	  });
+	  
+	  $("#invoice_make").click(function() {
+		  editor.submit();
+		  $('#state').val(7);
+		  $("#form").submit();
+	  });
+	  
+	  $("#invoice_approve").click(function() {
+		  editor.submit();
+		  $('#state').val(7);
+		  $("#form").submit();
+	  });
+	  
+	  $("#invoice_deny").click(function() {
+		  editor.submit();
+		  $('#state').val(7);
+		  $("#form").submit();
+	  });
+	  
+	  $("#invoice_upload").click(function() {
 		  editor.submit();
 		  $('#state').val(7);
 		  $("#form").submit();
