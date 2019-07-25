@@ -292,8 +292,12 @@
   $(document).ready(function() {
 
   	
-	  $('.modal').on('shown.bs.modal', function() {
+	  $('#import_dialog').on('shown.bs.modal', function() {
 		  load_import_table();
+	  });
+	  
+	  $('#history_dialog').on('shown.bs.modal', function() {
+		  $('#history_content').focus();
 	  });
 
 	  invoice_editor = new $.fn.dataTable.Editor({
@@ -481,6 +485,8 @@
 		  $('#history_dialog').modal('show');
 	  });
 
+	  loadNormalTable();
+	  
 	  function reloadSummaryTable() {
 		  if (summary_table) {
 			  summary_table.destroy();
@@ -707,10 +713,6 @@
 		  $('#invoice_type').attr("readonly", false);
 	  }
 
-	  $('#type').change(function() {
-		  onChangeType();
-	  });
-
 	  $('#save_history').click(function() {
 		  if (!$('#history_content').val()) {
 			  App.showErrorDialog("日志内容不能为空！");
@@ -852,17 +854,6 @@
 		  
 		  table.rows().invalidate().draw();
 	  }
-
-	  function onChangeType() {
-		  var type = $('#type').val();
-		  if (type == 1) {
-			  loadNormalTable();
-		  } else {
-			  loadWeiwaiTable();
-		  }
-	  }
-
-	  $('#type').trigger('change');
 
 	  function loadNormalTable() {
 		  editor = new $.fn.dataTable.Editor({
@@ -1187,13 +1178,15 @@
 		    } else if (new_state == 2) {
 			    confirmMessage = "提交";
 		    } else if (new_state == 3) {
-			    confirmMessage = "确认";
+			    confirmMessage = "审核";
+		    } else if (new_state == 4) {
+			    confirmMessage = "发布";
 		    } else if (new_state == 5) {
-			    confirmMessage = "收货";
+			    confirmMessage = "撤回";
 		    } else if (new_state == 6) {
-			    confirmMessage = "退回";
+			    confirmMessage = "确认";
 		    } else if (new_state == 7) {
-			    confirmMessage = "确认拒收";
+			    confirmMessage = "退回";
 		    }
 
 		    App.showInputConfirmDialog('确定要' + confirmMessage + '对账单吗?', function(submit_content) {
