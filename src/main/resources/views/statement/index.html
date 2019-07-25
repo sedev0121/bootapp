@@ -8,9 +8,9 @@
 		</ul>
 		<div class="row">
 			<div class="col-lg-12 box-top-bar">
-				<a class="btn btn-primary" th:href="@{/statement/add}"><i class="fa fa-plus-circle"></i> 新建</a>
-				<button class="btn btn-info" id="bulk_review"><i class="fa fa-check-square"></i> 批量审核</button>
-				<button class="btn btn-info" id="bulk_deploy"><i class="fa fa-share"></i> 批量发布</button>
+				<a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/提交')" th:href="@{/statement/add}"><i class="fa fa-plus-circle"></i> 新建</a>
+				<button class="btn btn-info" sec:authorize="hasAuthority('对账单管理-审核')" id="bulk_review"><i class="fa fa-check-square"></i> 批量审核</button>
+				<button class="btn btn-info" sec:authorize="hasAuthority('对账单管理-发布')" id="bulk_deploy"><i class="fa fa-share"></i> 批量发布</button>
 			</div>
 		</div>
 		<div class="search-content">

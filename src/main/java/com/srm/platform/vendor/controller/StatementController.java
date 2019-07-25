@@ -55,7 +55,6 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/statement")
-@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('订单管理-查看列表')")
 public class StatementController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -69,12 +68,13 @@ public class StatementController extends CommonController {
 	
 	// 查询列表
 	@GetMapping({ "", "/" })
+	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('对账单管理-查看列表') or hasRole('ROLE_VENDOR')")
 	public String index() {
 		return "statement/index";
 	}
 
 	@GetMapping({ "/add" })
-//	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
+	@PreAuthorize("hasAuthority('对账单管理-新建/提交')")
 	public String add(Model model) {
 		StatementMain main = new StatementMain();
 		main.setMaker(this.getLoginAccount());		
