@@ -38,6 +38,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.Master;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.StatementDetail;
@@ -46,6 +47,7 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.StatementSaveForm;
 import com.srm.platform.vendor.searchitem.StatementDetailItem;
 import com.srm.platform.vendor.searchitem.StatementSearchResult;
+import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.U8InvoicePostData;
@@ -58,6 +60,15 @@ import com.srm.platform.vendor.utility.Utils;
 public class StatementController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	private static Long LIST_FUNCTION_ACTION_ID = 20L;
+	private static Long NEW_FUNCTION_ACTION_ID = 21L;
+	private static Long REVIEW_FUNCTION_ACTION_ID = 22L;
+	private static Long DEPLOY_FUNCTION_ACTION_ID = 23L;
+	private static Long CANCEL_FUNCTION_ACTION_ID = 24L;
+	private static Long CONFIRM_FUNCTION_ACTION_ID = 25L;
+	private static Long ERP_FUNCTION_ACTION_ID = 26L;
+	
+	
 	@PersistenceContext
 	private EntityManager em;
 
@@ -100,6 +111,8 @@ public class StatementController extends CommonController {
 		if (main == null)
 			show404();
 
+		checkPermission(main, LIST_FUNCTION_ACTION_ID);
+		
 		model.addAttribute("main", main);
 		return "statement/edit";
 	}
@@ -192,25 +205,29 @@ public class StatementController extends CommonController {
 
 		if (isVendor()) {
 			Vendor vendor = this.getLoginAccount().getVendor();
-			vendorStr = vendor == null ? "0" : vendor.getCode();
+			vendorStr = vendor.getCode();
 			bodyQuery += " and b.code= :vendor";
 			params.put("vendor", vendorStr);
 
-			bodyQuery += " and a.state=" + Constants.STATEMENT_STATE_DEPLOY + " or a.state >=" + Constants.STATEMENT_STATE_CONFIRM;
+			bodyQuery += " and (a.state=" + Constants.STATEMENT_STATE_DEPLOY + " or a.state >=" + Constants.STATEMENT_STATE_CONFIRM + ")";
 
 		} else {
-//			List<String> vendorList = this.getVendorListOfUser();
-//			
-//			if (vendorList.size() == 0) {
-//				return new PageImpl<StatementSearchResult>(new ArrayList(), request, 0);
-//			}
-//			
-//			bodyQuery += " and b.code in :vendorList";
-//			params.put("vendorList", vendorList);
-//			if (!vendorStr.trim().isEmpty()) {
-//				bodyQuery += " and (b.name like CONCAT('%',:vendor, '%') or b.code like CONCAT('%',:vendor, '%')) ";
-//				params.put("vendor", vendorStr.trim());
-//			}
+			String subWhere = " 1=0 ";
+			
+			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
+				subWhere += " or a.company_id in :companyList";
+				params.put("companyList", allowedCompanyIdList);
+			}
+
+			List<String> allowedVendorCodeList = accountPermission.getVendorList();
+			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
+				subWhere += " or a.vendor_code in :vendorList";
+				params.put("vendorList", allowedVendorCodeList);
+			}
+
+			bodyQuery += " and (" + subWhere + ") ";
 		}
 
 		if (!code.trim().isEmpty()) {
@@ -636,5 +653,35 @@ public class StatementController extends CommonController {
 	private void postUnLock(StatementMain main) {
 		String postJson = createLockJsonString(main);
 		String response = apiClient.postUnLock(String.format("{%s}", postJson));
+	}
+	
+	private void checkPermission(StatementMain main, Long functionActionId) {
+		if (this.isVendor()) {
+			if (!main.getVendor().getCode().equals(this.getLoginAccount().getVendor().getCode())) {
+				show403();
+			}
+		} else {
+			if (!hasPermission(main, functionActionId)) {
+				show403();
+			}
+		}
+	}
+
+	private boolean hasPermission(StatementMain main, Long functionActionId) {
+		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
+		List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+		List<String> allowedVendorCodeList = accountPermission.getVendorList();
+
+		boolean isValid = false;
+
+		if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0) && main.getCompany() != null
+				&& allowedCompanyIdList.contains(main.getCompany().getId())) {
+			isValid = true;
+		} else if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0) && main.getVendor() != null
+				&& allowedVendorCodeList.contains(main.getVendor().getCode())) {
+			isValid = true;
+		}
+
+		return isValid;
 	}
 }
