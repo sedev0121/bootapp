@@ -61,14 +61,7 @@ public class PurchaseOrderDetail {
 
 	private Double money;
 	private Double sum;
-	@JsonProperty(value = "nat_price")
-	private Double natPrice;
-	@JsonProperty(value = "nat_tax_price")
-	private Double natTaxPrice;
-	@JsonProperty(value = "nat_money")
-	private Double natMoney;
-	@JsonProperty(value = "nat_sum")
-	private Double natSum;
+
 	@JsonProperty(value = "prepay_money")
 	private Double prepayMoney;
 	@JsonProperty(value = "arrive_date")
@@ -328,38 +321,6 @@ public class PurchaseOrderDetail {
 
 	public void setTaxPrice(Double taxPrice) {
 		this.taxPrice = taxPrice;
-	}
-
-	public Double getNatPrice() {
-		return natPrice;
-	}
-
-	public void setNatPrice(Double natPrice) {
-		this.natPrice = natPrice;
-	}
-
-	public Double getNatTaxPrice() {
-		return natTaxPrice;
-	}
-
-	public void setNatTaxPrice(Double natTaxPrice) {
-		this.natTaxPrice = natTaxPrice;
-	}
-
-	public Double getNatMoney() {
-		return natMoney;
-	}
-
-	public void setNatMoney(Double natMoney) {
-		this.natMoney = natMoney;
-	}
-
-	public Double getNatSum() {
-		return natSum;
-	}
-
-	public void setNatSum(Double natSum) {
-		this.natSum = natSum;
 	}
 
 	public Double getPrepayMoney() {

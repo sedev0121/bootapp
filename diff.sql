@@ -258,3 +258,8 @@ alter table account DROP column qq;
 alter table account DROP column gtalk;
 alter table account DROP column entry_time;
 
+/* 2019-07-25 */
+alter table purchase_order_detail DROP column nat_price;
+alter table purchase_order_detail DROP column nat_tax_price;
+alter table purchase_order_detail DROP column nat_money;
+alter table purchase_order_detail DROP column nat_sum;
