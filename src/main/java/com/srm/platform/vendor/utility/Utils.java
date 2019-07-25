@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.DeliveryDetail;
 import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
@@ -24,6 +26,11 @@ public class Utils {
 
 	private static SimpleDateFormat getDateTimeFormat() {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return dateFormat;
+	}
+	
+	private static SimpleDateFormat getStartDateTimeFormat() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd HH:mm");
 		return dateFormat;
 	}
 
@@ -149,6 +156,13 @@ public class Utils {
 
 		return getDateTimeFormat().format(date);
 	}
+	
+	public static String formatStatementDateTime(Date date) {
+		if (date == null)
+			return "";
+
+		return getStartDateTimeFormat().format(date);
+	}
 
 	public static String formatDateZeroTime(Date date) {
 		if (date == null)
@@ -273,5 +287,17 @@ public class Utils {
 		RestApiResponse response = apiClient.postForArrivalVouch(postData);
 		
 		return response;
+	}
+	
+	public static String convertMapToJson(Map<String, Object> map) {
+		String json = "";
+		try {
+			json = new ObjectMapper().writeValueAsString(map);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			json = e.getMessage();
+		}
+		
+		return json;
 	}
 }

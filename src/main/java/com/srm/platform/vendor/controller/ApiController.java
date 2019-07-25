@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Box;
 import com.srm.platform.vendor.model.Company;
@@ -193,35 +196,13 @@ public class ApiController {
 	}
 
 	@ResponseBody
-	@RequestMapping({ "/test" })
-	public GenericJsonResponse<Box> test() {
-		GenericJsonResponse<Box> jsonResponse;
-		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
-		
-		DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode("20190528182947786989");
-		if (deliveryMain == null) {
-			jsonResponse.setErrmsg("找不到发货单");
-			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
-			return jsonResponse;
-		}
-		
-		RestApiResponse u8Response = postForArrivalVouch(deliveryMain);
-		
-		if (!u8Response.isSuccess()) {
-			jsonResponse.setErrmsg("Fail");
-			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
-		}
-		
-		return jsonResponse;
-	}
-
-
-	
-	@ResponseBody
 	@RequestMapping({ "/pda" })
 	public Map<String, Object> pda(@RequestBody Map<String, Object> requestParams) {
 		String method = String.valueOf(requestParams.get("method"));
 		Object content = requestParams.get("content");
+		
+		logger.info("=========/api/pda============");
+		logger.info("<<< " + Utils.convertMapToJson(requestParams));
 		
 		Map<String, Object> response = null;
 		
@@ -249,6 +230,7 @@ public class ApiController {
 			response = this.cancelDHD(requestParams);
 		}
 		
+		logger.info(">>> " + Utils.convertMapToJson(response));
 		return response;
 	}
 	
@@ -861,7 +843,14 @@ public class ApiController {
 	@ResponseBody
 	@RequestMapping({ "/statement/all" })
 	public GenericJsonResponse<String> statement() {
-		return statement(null, null);
+		if (!isAutoTaskStartTime()) {
+			return new GenericJsonResponse<>(GenericJsonResponse.FAILED, "没有到时间", null);
+		} else {
+			logger.info("========/statement/all ==========");
+			logger.info("自动运行对账单生成");
+			return statement(null, null);	
+		}
+		
 	}
 	
 	@ResponseBody
@@ -882,8 +871,7 @@ public class ApiController {
 		return response;		
 	}
 	
-	private GenericJsonResponse<String> statement(String dateStr, Account loginAccount) {
-			
+	private GenericJsonResponse<String> statement(String dateStr, Account loginAccount) {			
 		
 		Date statementDate;
 		if (dateStr == null) {
@@ -943,8 +931,6 @@ public class ApiController {
 			String companyCode = item.getCompany_code();
 			String type = item.getType();
 			
-			this.logger.info(String.format("%s %s %s", vendorCode, companyCode, type));
-			
 			main = generateStatementMain(statementDate, vendorCode, companyCode, type, task);
 			generateStatementDetails(main);
 			saveTaskLog(main, task);
@@ -1002,8 +988,6 @@ public class ApiController {
 			statementDetail.setRowNo(index++);
 			statementDetail.setAdjustTaxCost(0D);
 			statementDetailRepository.save(statementDetail);
-			
-			this.logger.info(String.format("Details => %s %s %s", statementDetail.getPiDetailId(), statementDetail.getCode(), statementDetail.getRowNo()));
 		}
 		
 		taxSum = taxCostSum - costSum;
@@ -1033,5 +1017,43 @@ public class ApiController {
 		List<DimensionTargetItem> scopeList = permissionGroupRepository.findPermissionScopeOf(accountId, STATEMENT_LIST_FUNCTION_ACTION_ID);
 		AccountPermission accountPermission = new AccountPermission(accountId, STATEMENT_LIST_FUNCTION_ACTION_ID, scopeList);
 		return accountPermission;
+	}
+	
+
+	private boolean isAutoTaskStartTime() {
+		String dateStr, timeStr;
+		Master master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_START_DATE);
+		if (master == null) {
+			master = new Master();	
+			master.setItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
+			master.setItemValue(Constants.DEFAULT_STATEMENT_DATE);
+			masterRepository.save(master);
+		}
+		dateStr = master.getItemValue();
+		
+		master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_START_TIME);
+		if (master == null) {
+			master = new Master();	
+			master.setItemKey(Constants.KEY_AUTO_TASK_START_TIME);
+			master.setItemValue(Constants.DEFAULT_STATEMENT_TIME);
+			masterRepository.save(master);
+		}
+
+		timeStr = master.getItemValue();
+		
+		Date today = new Date();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+		String yearMonthStr = dateFormat.format(today);
+		String startDateStr = yearMonthStr + "-" + dateStr + " " + timeStr + ":00";
+		Date startDate = Utils.parseDateTime(startDateStr);
+		
+		String startTime = Utils.formatStatementDateTime(startDate);
+		String todayTime = Utils.formatStatementDateTime(today);
+		
+		if (startTime.equalsIgnoreCase(todayTime)) {
+			return true;
+		} else {
+			return false;
+		}		
 	}
 }
