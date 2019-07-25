@@ -169,7 +169,7 @@ public class Utils {
 		return id;
 	}
 	
-	public static String generateTaskId() {
+	public static String generateTaskCode() {
 		String id = "";
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmssSSS");
@@ -204,12 +204,6 @@ public class Utils {
 		return id;
 	}
 	
-	public static String generateTaskCode() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-		String code = dateFormat.format(new Date());
-		return code;
-	}
-
 	public static String generateResetPassword() {
 		int max = 1000000;
 		int min = 100000;

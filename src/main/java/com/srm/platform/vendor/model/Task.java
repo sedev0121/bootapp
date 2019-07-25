@@ -56,7 +56,7 @@ public class Task implements Serializable {
 
 	public Task() {
 		this.makeDate = new Date();
-		this.code = Utils.generateTaskId();
+		this.code = Utils.generateTaskCode();
 	}
 	
 	public Long getId() {

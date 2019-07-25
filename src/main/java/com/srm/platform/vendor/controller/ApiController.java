@@ -6,9 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,16 +47,19 @@ import com.srm.platform.vendor.repository.MasterRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.OperationHistoryRepository;
+import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.TaskLogRepository;
 import com.srm.platform.vendor.repository.TaskRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.searchitem.DimensionTargetItem;
 import com.srm.platform.vendor.searchitem.StatementPendingDetail;
 import com.srm.platform.vendor.searchitem.StatementPendingItem;
 import com.srm.platform.vendor.u8api.RestApiClient;
 import com.srm.platform.vendor.u8api.RestApiResponse;
+import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.Utils;
@@ -63,6 +71,9 @@ public class ApiController {
 
 	private static final String RESPONSE_SUCCESS = "1";
 	private static final String RESPONSE_FAIL = "2";
+	
+	@Autowired
+	public HttpSession httpSession;
 	
 	@Autowired
 	private RestApiClient apiClient;
@@ -114,6 +125,9 @@ public class ApiController {
 	
 	@Autowired
 	public CompanyRepository companyRepository;
+	
+	@Autowired
+	public PermissionGroupRepository permissionGroupRepository;
 	
 	private void addOpertionHistory(String targetId, String action, String content, String type, Account account) {
 		OperationHistory operationHistory = new OperationHistory();
@@ -845,9 +859,32 @@ public class ApiController {
 	}
 	
 	@ResponseBody
-	@RequestMapping({ "/statement" })
+	@RequestMapping({ "/statement/all" })
 	public GenericJsonResponse<String> statement() {
-		String dateStr = "2019-07-25";
+		return statement(null, null);
+	}
+	
+	@ResponseBody
+	@RequestMapping({ "/statement/{date}" })
+	public GenericJsonResponse<String> statementForAccount(@PathVariable("date") String date) {
+		Account loginAccount = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null) {
+			loginAccount = accountRepository.findOneByUsername(authentication.getName());	
+		}	
+		
+		GenericJsonResponse<String> response = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
+		if (loginAccount == null) {
+			response = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "没有权限", null);
+		} else {
+			response = statement(date, loginAccount);
+		}
+		return response;		
+	}
+	
+	private GenericJsonResponse<String> statement(String dateStr, Account loginAccount) {
+			
+		
 		Date statementDate;
 		if (dateStr == null) {
 			Master master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
@@ -863,14 +900,44 @@ public class ApiController {
 			statementDate = Utils.parseDate(dateStr);
 		}
 		
-		Date filterDate = Utils.getNextDate(statementDate);
+		Date filterDate = Utils.getNextDate(statementDate);		
+		
+		List<StatementPendingItem> pendingDataList = this.statementDetailRepository.findAllPendingData(filterDate);
+		List<StatementPendingItem> filteredList = new ArrayList<StatementPendingItem>();
+		if (loginAccount != null) {
+			AccountPermission accountPermission = getPermissionScopeOfStatement(loginAccount.getId());	
+			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
+				for (StatementPendingItem item : pendingDataList) {
+					if (allowedCompanyIdList.contains(item.getCompany_id())) {
+						filteredList.add(item);
+					}
+				}
+				pendingDataList = filteredList;
+			}
+
+			List<String> allowedVendorCodeList = accountPermission.getVendorList();
+			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
+				filteredList = new ArrayList<StatementPendingItem>();
+				for (StatementPendingItem item : pendingDataList) {
+					if (allowedVendorCodeList.contains(item.getVendor_code())) {
+						filteredList.add(item);
+					}
+				}
+				pendingDataList = filteredList;
+			}
+		} else {
+			loginAccount = accountRepository.findOneByRole("ROLE_ADMIN");
+		}
 		
 		Task task = new Task();
 		task.setStatementDate(statementDate);
+		task.setMakeDate(new Date());
+		task.setMaker(loginAccount);
 		task = taskRepository.save(task);
+		
 		StatementMain main;
 		
-		List<StatementPendingItem> pendingDataList = this.statementDetailRepository.findAllPendingData(filterDate);
 		for (StatementPendingItem item : pendingDataList) {
 			String vendorCode = item.getVendor_code();
 			String companyCode = item.getCompany_code();
@@ -903,7 +970,7 @@ public class ApiController {
 		main.setTaskCode(task.getCode());
 		main.setMakeDate(new Date());
 		main.setState(Constants.STATEMENT_STATE_SUBMIT);
-		
+		main.setMaker(task.getMaker());
 		main = statementMainRepository.save(main);
 		return main;
 	}
@@ -958,5 +1025,13 @@ public class ApiController {
 		
 		taskLog = taskLogRepository.save(taskLog);
 		return taskLog;
+	}
+	
+	private AccountPermission getPermissionScopeOfStatement(Long accountId) {
+		Long STATEMENT_LIST_FUNCTION_ACTION_ID = 20L;
+		
+		List<DimensionTargetItem> scopeList = permissionGroupRepository.findPermissionScopeOf(accountId, STATEMENT_LIST_FUNCTION_ACTION_ID);
+		AccountPermission accountPermission = new AccountPermission(accountId, STATEMENT_LIST_FUNCTION_ACTION_ID, scopeList);
+		return accountPermission;
 	}
 }
