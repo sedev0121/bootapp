@@ -84,6 +84,7 @@ public class SyncController {
 		this.inventory();
 		this.vendor();
 		this.order();
+		this.purchaseIn();
 		logger.info("=============== Sync End ==============");
 		return true;
 	}
@@ -128,11 +129,13 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = { "/inventory_class", "/inventory_class/" })
 	public int inventoryClass() {
+		logger.info("======/sync/inventory_class ======");
 		int totalCount = 0;
 		boolean hasMore = true;
 		while (hasMore) {
 			List<String> codes = new ArrayList<String>();
 
+			
 			RestApiResponse response = apiClient.postForInventoryClass();
 
 			if (response.isSuccess()) {
@@ -173,6 +176,7 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = { "/inventory", "/inventory/" })
 	public int inventory() {
+		logger.info("======/sync/inventory ======");
 		int totalCount = 0;
 		boolean hasMore = true;
 		while (hasMore) {
@@ -231,6 +235,7 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = { "/vendor_class", "/vendor_class/" })
 	public int vendorClass() {
+		logger.info("======/sync/vendor_class ======");
 		int totalCount = 0;
 		boolean hasMore = true;
 		while (hasMore) {
@@ -273,6 +278,7 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = { "/vendor", "/vendor/" })
 	public int vendor() {
+		logger.info("======/sync/vendor ======");
 		int totalCount = 0;
 		boolean hasMore = true;
 		while (hasMore) {
@@ -330,6 +336,7 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = { "/order", "/order/" })
 	public int order() {
+		logger.info("======/sync/order ======");
 		int totalCount = 0;
 		boolean hasMore = true;
 		while (hasMore) {
@@ -538,6 +545,7 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = { "/purchasein", "/purchasein/" })
 	public int purchaseIn() {
+		logger.info("====== /sync/purchasein =====");
 		int totalCount = 0;
 		boolean hasMore = true;
 		while (hasMore) {
