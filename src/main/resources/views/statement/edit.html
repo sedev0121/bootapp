@@ -14,7 +14,7 @@
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==2}" id="review"><i class="fa fa-arrow-up"></i> 审核</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==3}" id="deploy"><i class="fa fa-arrow-up"></i> 发布</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==3 or main.state==4}" id="cancel"><i class="fa fa-recycle"></i> 撤回</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==3 or main.state==4 or main.state==7}" id="cancel"><i class="fa fa-recycle"></i> 撤回</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==4}" id="confirm"><i class="fa fa-check-square"></i> 确认</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==4}" id="deny"><i class="fa fa-undo"></i> 退回</a> 
 				
@@ -25,7 +25,7 @@
 				 
 				<a class="btn btn-primary" id="export_summary"><i class="fa fa-arrow-up"></i> 导出汇总信息</a> 
 				<a class="btn btn-primary" id="export_detail"><i class="fa fa-arrow-up"></i> 导出明细信息</a> 
-				<a class="btn btn-primary" id="print"><i class="fa fa-print"></i>打印</a> 
+				<a class="btn btn-primary" th:if="${main.state==6 and main.invoiceState >= 1}" id="print"><i class="fa fa-print"></i>打印</a> 
 				<a class="btn btn-default" th:href="@{/statement}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -490,7 +490,7 @@
 	      data : null,
 	      defaultContent : '',
 	      orderable : false,
-	      visible : !is_vendor,
+	      visible : canEditInvoice(),
 	      title : '选择',
 	      className : 'select-checkbox',
 	    }, {

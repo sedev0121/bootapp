@@ -196,7 +196,7 @@ public class StatementController extends CommonController {
 			bodyQuery += " and b.code= :vendor";
 			params.put("vendor", vendorStr);
 
-			bodyQuery += " and a.state>=" + Constants.STATEMENT_STATE_REVIEW;
+			bodyQuery += " and a.state=" + Constants.STATEMENT_STATE_DEPLOY + " or a.state >=" + Constants.STATEMENT_STATE_CONFIRM;
 
 		} else {
 //			List<String> vendorList = this.getVendorListOfUser();
@@ -280,6 +280,8 @@ public class StatementController extends CommonController {
 		List<Account> toList = new ArrayList<>();
 		
 		if (!form.isInvoiceAction()) {
+			main.setState(form.getState());
+			
 			if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
 
 				main.setMakeDate(new Date());
@@ -317,9 +319,10 @@ public class StatementController extends CommonController {
 			} else if (form.getState() == Constants.STATEMENT_STATE_CONFIRM) {
 				main.setConfirmer(this.getLoginAccount());
 				main.setConfirmDate(new Date());
-			} else if (main.getState() == Constants.STATEMENT_STATE_CANCEL || form.getState() == Constants.STATEMENT_STATE_DENY) {
+			} else if (form.getState() == Constants.STATEMENT_STATE_CANCEL) {
 				main.setCanceler(this.getLoginAccount());
 				main.setCancelDate(new Date());
+				main.setState(Constants.STATEMENT_STATE_NEW);
 			}
 			
 			switch (form.getState()) {
@@ -355,22 +358,21 @@ public class StatementController extends CommonController {
 				break;
 			}
 			
-			main.setState(form.getState());
-			
 		} else {
-			if (main.getInvoiceState() == Constants.INVOICE_STATE_DONE) {
+			if (form.getInvoice_state() == Constants.INVOICE_STATE_DONE) {
 				main.setInvoiceType(form.getInvoice_type());
 				main.setInvoiceCode(form.getInvoice_code());
 				main.setInvoiceMaker(this.getLoginAccount());
 				main.setInvoiceMakeDate(new Date());
-			} else if (main.getInvoiceState() == Constants.INVOICE_STATE_CONFIRMED) {
+			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CONFIRMED) {
 				main.setInvoiceConfirmer(this.getLoginAccount());
 				main.setInvoiceConfirmDate(new Date());
-			} else if (main.getInvoiceState() == Constants.INVOICE_STATE_CANCELED) {
+			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCELED) {
 				main.setInvoiceCanceler(this.getLoginAccount());
 				main.setInvoiceCancelDate(new Date());
 			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
-				
+				main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
+				main.setErpInvoiceMakeDate(new Date());
 				
 //				main.setInvoiceType(form.getInvoice_type());
 //				GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
