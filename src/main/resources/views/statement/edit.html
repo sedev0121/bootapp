@@ -505,9 +505,8 @@
 		    ajax : false,
 		    data : summary_data,		    
 		    columns : [ {
-		      data : null,
+		      data : 'row_no',
 		      className : 'dt-center',
-		      render : $.fn.rowno_renderer,
 		      title : '行号',
 		    }, {
 		      data : 'inventory_code',
@@ -1071,6 +1070,7 @@
 			    }
 
 			    summary_data = {};
+			    var index = 1;
 			    $.each(this.api().rows().data().toArray(), function(key, item) {
 				    var key = item.inventory_code;
 				    if (!summary_data[key]) {
@@ -1087,6 +1087,7 @@
 					      invoice_cost : item.invoice_cost,
 					      invoice_quantity : item.invoice_quantity,
 					      invoice_price : item.invoice_price,
+					      row_no : index++
 					    }
 				    } else {
 					    summary_data[key].pi_quantity += App.floatVal(item.pi_quantity);
@@ -1358,6 +1359,25 @@
 
 	  $("#adjust_tax_cost").change(function() {
 	  	calcRowAdjustTaxCost();
-	  })
+	  });
+	  
+	  $("#print").click(function() {
+	  	var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
+	  	if (window.location.host.startsWith("192.")) {
+	  		url = "http://192.168.30.204:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
+	  	}	  	
+	  	var win = window.open(url, '_blank');
+	    win.focus();
+	  });
+	  
+	  $('#export_detail').click(function() {
+	  	var file_name = $('#code').val() + "_明细信息.csv";
+	  	App.exportCSVFromDatatable(table, file_name);
+	  });
+	  
+	  $('#export_summary').click(function() {
+	  	var file_name = $('#code').val() + "_汇总信息.csv";
+	  	App.exportCSVFromDatatable(summary_table, file_name);
+	  });
   });
 </script>

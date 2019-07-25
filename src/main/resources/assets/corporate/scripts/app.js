@@ -50,7 +50,9 @@ var App = function() {
 
   function escapeComma(str) {
   	console.log(str);
-  	str = str + '';
+  	str = str + ' ';
+  	str = str.replace(/null/g, '');
+  	str = str.replace(/undefined/g, '');
     if (str && str.indexOf(',') > -1) {
       return '"' + str + '"';
     } else {
