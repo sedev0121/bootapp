@@ -33,7 +33,16 @@ public class StatementSaveForm {
 
 	private String content;
 	
+	private String action;
 	
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
 	public Double getCostSum() {
 		return costSum;
 	}
@@ -170,5 +179,7 @@ public class StatementSaveForm {
 		this.company = company;
 	}
 
-	
+	public boolean isInvoiceAction() {
+		return "invoice".equalsIgnoreCase(action);
+	}
 }

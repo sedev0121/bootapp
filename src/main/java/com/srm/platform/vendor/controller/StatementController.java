@@ -276,105 +276,133 @@ public class StatementController extends CommonController {
 			main.setCode(form.getCode());
 		}
 
-		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
-
-			main.setMakeDate(new Date());
-			main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
-			main.setMaker(this.getLoginAccount());
-			main.setType(form.getType());
-			main.setTaxRate(form.getTax_rate());
-			main.setCompany(companyRepository.findOneById(form.getCompany()));
-			main.setCostSum(form.getCostSum());
-			main.setTaxCostSum(form.getTaxCostSum());
-			main.setAdjustCostSum(form.getAdjustCostSum());
-			main.setTaxSum(form.getTaxSum());
-
-//			String origianlFileName = null;
-//			String savedFileName = null;
-//			MultipartFile attach = form.getAttach();
-//			if (attach != null) {
-//				origianlFileName = attach.getOriginalFilename();
-//				File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_STATEMENT);
-//
-//				if (file != null)
-//					savedFileName = file.getName();
-//			}
-//
-//			if (savedFileName != null) {
-//				main.setAttachFileName(savedFileName);
-//				main.setAttachOriginalName(origianlFileName);
-//			}
-		} else if (form.getState() == Constants.STATEMENT_STATE_REVIEW) {
-			main.setReviewer(this.getLoginAccount());
-			main.setReviewDate(new Date());
-		} else if (form.getState() == Constants.STATEMENT_STATE_DEPLOY) {
-			main.setDeployer(this.getLoginAccount());
-			main.setDeployDate(new Date());
-		} else if (form.getState() == Constants.STATEMENT_STATE_CONFIRM) {
-			main.setConfirmer(this.getLoginAccount());
-			main.setConfirmDate(new Date());
-		} else if (main.getState() == Constants.STATEMENT_STATE_CANCEL || form.getState() == Constants.STATEMENT_STATE_DENY) {
-			main.setCanceler(this.getLoginAccount());
-			main.setCancelDate(new Date());
-		}
-		
-		if (main.getInvoiceState() == Constants.INVOICE_STATE_DONE) {
-			main.setInvoiceMaker(this.getLoginAccount());
-			main.setInvoiceMakeDate(new Date());
-		} else if (main.getInvoiceState() == Constants.INVOICE_STATE_CONFIRMED) {
-			main.setInvoiceConfirmer(this.getLoginAccount());
-			main.setInvoiceConfirmDate(new Date());
-		} else if (main.getInvoiceState() == Constants.INVOICE_STATE_CANCELED) {
-			main.setInvoiceCanceler(this.getLoginAccount());
-			main.setInvoiceCancelDate(new Date());
-		} else if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
-			main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
-			main.setErpInvoiceMakeDate(new Date());
-			
-//			main.setInvoiceType(form.getInvoice_type());
-//			GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
-//			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
-//				main.setInvoiceMaker(this.getLoginAccount());
-//				main.setInvoiceMakeDate(new Date());
-//			} else {
-//				return u8Response;
-//			}
-		}
-
 		String action = null;
 		List<Account> toList = new ArrayList<>();
-		switch (form.getState()) {
-		case Constants.STATEMENT_STATE_NEW:
-			toList.add(main.getMaker());
-			action = "保存";
-			break;
-		case Constants.STATEMENT_STATE_SUBMIT:
-			toList.add(main.getMaker());
-			action = "提交";
-			break;
-		case Constants.STATEMENT_STATE_REVIEW:
-			toList.add(main.getMaker());
-			action = "审核";
-			break;
-		case Constants.STATEMENT_STATE_DEPLOY:
-			toList.add(main.getMaker());
-			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			action = "发布";
-			break;
-		case Constants.STATEMENT_STATE_CANCEL:
-			toList.add(main.getMaker());
-			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			action = "撤回";
-			break;
-		case Constants.STATEMENT_STATE_CONFIRM:
-			toList.add(main.getMaker());
-			action = "确认";
-			break;
-		case Constants.STATEMENT_STATE_DENY:
-			toList.add(main.getMaker());
-			action = "退回";
-			break;
+		
+		if (!form.isInvoiceAction()) {
+			if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
+
+				main.setMakeDate(new Date());
+				main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
+				main.setMaker(this.getLoginAccount());
+				main.setType(form.getType());
+				main.setTaxRate(form.getTax_rate());
+				main.setCompany(companyRepository.findOneById(form.getCompany()));
+				main.setCostSum(form.getCostSum());
+				main.setTaxCostSum(form.getTaxCostSum());
+				main.setAdjustCostSum(form.getAdjustCostSum());
+				main.setTaxSum(form.getTaxSum());
+
+//				String origianlFileName = null;
+//				String savedFileName = null;
+//				MultipartFile attach = form.getAttach();
+//				if (attach != null) {
+//					origianlFileName = attach.getOriginalFilename();
+//					File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_STATEMENT);
+	//
+//					if (file != null)
+//						savedFileName = file.getName();
+//				}
+	//
+//				if (savedFileName != null) {
+//					main.setAttachFileName(savedFileName);
+//					main.setAttachOriginalName(origianlFileName);
+//				}
+			} else if (form.getState() == Constants.STATEMENT_STATE_REVIEW) {
+				main.setReviewer(this.getLoginAccount());
+				main.setReviewDate(new Date());
+			} else if (form.getState() == Constants.STATEMENT_STATE_DEPLOY) {
+				main.setDeployer(this.getLoginAccount());
+				main.setDeployDate(new Date());
+			} else if (form.getState() == Constants.STATEMENT_STATE_CONFIRM) {
+				main.setConfirmer(this.getLoginAccount());
+				main.setConfirmDate(new Date());
+			} else if (main.getState() == Constants.STATEMENT_STATE_CANCEL || form.getState() == Constants.STATEMENT_STATE_DENY) {
+				main.setCanceler(this.getLoginAccount());
+				main.setCancelDate(new Date());
+			}
+			
+			switch (form.getState()) {
+			case Constants.STATEMENT_STATE_NEW:
+				toList.add(main.getMaker());
+				action = "保存";
+				break;
+			case Constants.STATEMENT_STATE_SUBMIT:
+				toList.add(main.getMaker());
+				action = "提交";
+				break;
+			case Constants.STATEMENT_STATE_REVIEW:
+				toList.add(main.getMaker());
+				action = "审核";
+				break;
+			case Constants.STATEMENT_STATE_DEPLOY:
+				toList.add(main.getMaker());
+				toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+				action = "发布";
+				break;
+			case Constants.STATEMENT_STATE_CANCEL:
+				toList.add(main.getMaker());
+				toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
+				action = "撤回";
+				break;
+			case Constants.STATEMENT_STATE_CONFIRM:
+				toList.add(main.getMaker());
+				action = "确认";
+				break;
+			case Constants.STATEMENT_STATE_DENY:
+				toList.add(main.getMaker());
+				action = "退回";
+				break;
+			}
+			
+			main.setState(form.getState());
+			
+		} else {
+			if (main.getInvoiceState() == Constants.INVOICE_STATE_DONE) {
+				main.setInvoiceCode(form.getInvoice_code());
+				main.setInvoiceMaker(this.getLoginAccount());
+				main.setInvoiceMakeDate(new Date());
+			} else if (main.getInvoiceState() == Constants.INVOICE_STATE_CONFIRMED) {
+				main.setInvoiceConfirmer(this.getLoginAccount());
+				main.setInvoiceConfirmDate(new Date());
+			} else if (main.getInvoiceState() == Constants.INVOICE_STATE_CANCELED) {
+				main.setInvoiceCanceler(this.getLoginAccount());
+				main.setInvoiceCancelDate(new Date());
+			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
+				
+				
+//				main.setInvoiceType(form.getInvoice_type());
+//				GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
+//				if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
+//					main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
+//					main.setErpInvoiceMakeDate(new Date());
+//				} else {
+//					return u8Response;
+//				}
+			}
+			
+			switch (form.getInvoice_state()) {
+			case Constants.INVOICE_STATE_DONE:
+				toList.add(main.getMaker());
+				action = "确认开票";
+				break;
+			case Constants.INVOICE_STATE_CONFIRMED:
+				toList.add(main.getMaker());
+				action = "审批通过";
+				break;
+			case Constants.INVOICE_STATE_CANCELED:
+				toList.add(main.getMaker());
+				action = "审批退回";
+				break;
+			case Constants.INVOICE_STATE_UPLOAD_ERP:
+				toList.add(main.getMaker());
+				action = "传递ERP";
+				break;			
+			}
+			
+			main.setInvoiceState(form.getInvoice_state());
 		}
+		
 
 		if (action != null) {
 			String title = String.format("对账单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(),
@@ -385,11 +413,6 @@ public class StatementController extends CommonController {
 		
 		this.addOpertionHistory(main.getCode(), action, form.getContent());
 		
-		if (this.isVendor() && form.getInvoice_code() != null && !form.getInvoice_code().isEmpty()) {
-			main.setInvoiceCode(form.getInvoice_code());
-		}
-
-		main.setState(form.getState());
 		main = statementMainRepository.save(main);
 
 		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,

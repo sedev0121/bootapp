@@ -39,8 +39,8 @@ public class Constants {
 	
 	public final static int INVOICE_STATE_NONE = 0; //未开发票
 	public final static int INVOICE_STATE_DONE = 1; //供应商已开发票
-	public final static int INVOICE_STATE_CANCELED = 2; //采购发票已退回
-	public final static int INVOICE_STATE_CONFIRMED = 3; //采购发票已审核
+	public final static int INVOICE_STATE_CONFIRMED = 2; //采购发票已审核
+	public final static int INVOICE_STATE_CANCELED = 3; //采购发票已退回
 	public final static int INVOICE_STATE_UPLOAD_ERP = 4; //采购已传递ERP
 	
 	public final static int NOTICE_TYPE_USER = 1;

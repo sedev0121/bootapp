@@ -18,7 +18,7 @@
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==4}" id="confirm"><i class="fa fa-check-square"></i> 确认</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==4}" id="deny"><i class="fa fa-undo"></i> 退回</a> 
 				
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==6}" id="invoice_make"><i class="fa fa-check-square"></i> 确认开票</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==6 and main.invoiceState == 0}" id="invoice_make"><i class="fa fa-check-square"></i> 确认开票</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6}" id="invoice_approve"><i class="fa fa-recycle"></i> 审批通过</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6}" id="invoice_deny"><i class="fa fa-recycle"></i> 审批退回</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==6}" id="invoice_upload"><i class="fa fa-recycle"></i> 传递ERP</a>
@@ -32,6 +32,7 @@
 		<div class="panel panel-default">
 			<div class="panel-body">
 				<form id="form" th:action="@{/statement/update}" method="post" enctype="multipart/form-data">
+					<input type="hidden" id="action" name="action"/>
 					<div class="row">
 						<div class="col-lg-2 col-md-2">
 							<label for="code">对账单号: </label> 
@@ -130,11 +131,11 @@
 											</div>
 											<div class="col-lg-2 col-md-2">
 												<label for="code">发票制单人: </label> 
-												<input type="text" id="invoice_maker" name="invoice_maker" th:value="${main.erpInvoiceMakeName}" class="form-control" readonly />
+												<input type="text" th:value="${main.erpInvoiceMakeName}" class="form-control" readonly />
 											</div>
 											<div class="col-lg-2 col-md-2">
 												<label for="code">发票入账日期: </label> 
-												<input type="text" id="invoice_make_date" name="invoice_make_date" th:value="${#dates.format(main.erpInvoiceMakeDate, 'yyyy-MM-dd')}" class="form-control" readonly />
+												<input type="text" th:value="${#dates.format(main.erpInvoiceMakeDate, 'yyyy-MM-dd')}" class="form-control" readonly />
 											</div>
 											<div class="col-lg-2 col-md-2">
 												<label for="code">币种: </label> 
@@ -1182,22 +1183,38 @@
 		    }
 
 		    var new_state = $('#state').val();
+		    var action = $('#action').val();
+		    var invoice_state = $('#invoice_state').val();
 		    var confirmMessage = "";
-		    if (new_state == 1) {
-			    confirmMessage = "保存";
-		    } else if (new_state == 2) {
-			    confirmMessage = "提交";
-		    } else if (new_state == 3) {
-			    confirmMessage = "审核";
-		    } else if (new_state == 4) {
-			    confirmMessage = "发布";
-		    } else if (new_state == 5) {
-			    confirmMessage = "撤回";
-		    } else if (new_state == 6) {
-			    confirmMessage = "确认";
-		    } else if (new_state == 7) {
-			    confirmMessage = "退回";
+		    
+		    if (action == "invoice") {
+		    	if (invoice_state == 1) {
+				    confirmMessage = "确认开票";
+			    } else if (invoice_state == 2) {
+				    confirmMessage = "审批通过";
+			    } else if (invoice_state == 3) {
+				    confirmMessage = "审批退回";
+			    } else if (invoice_state == 4) {
+				    confirmMessage = "传递ERP";
+			    }
+		    } else {
+		    	if (new_state == 1) {
+				    confirmMessage = "保存";
+			    } else if (new_state == 2) {
+				    confirmMessage = "提交";
+			    } else if (new_state == 3) {
+				    confirmMessage = "审核";
+			    } else if (new_state == 4) {
+				    confirmMessage = "发布";
+			    } else if (new_state == 5) {
+				    confirmMessage = "撤回";
+			    } else if (new_state == 6) {
+				    confirmMessage = "确认";
+			    } else if (new_state == 7) {
+				    confirmMessage = "退回";
+			    }
 		    }
+		    
 
 		    App.showInputConfirmDialog('确定要' + confirmMessage + '对账单吗?', function(submit_content) {
 			    post_data.content = submit_content;
@@ -1293,7 +1310,7 @@
 		  }
 		  var data = table.rows().data().toArray();
 		  if (data.length == 0) {
-			  App.showErrorDialog("操作失败", "没有要发布的物料");
+			  App.showErrorDialog("操作失败", "没有要提交的货品");
 			  return;
 		  }
 		  $('#state').val(2);
@@ -1311,45 +1328,42 @@
 	  });
 
 	  $("#cancel").click(function() {
-		  editor.submit();
 		  $('#invoice_code').rules('remove');
 		  $('#state').val(5);
 		  $("#form").submit();
 	  });
 	  
 	  $("#confirm").click(function() {
-		  editor.submit();
 		  $('#state').val(6);
 		  $("#form").submit();
 	  });
 
 	  $("#deny").click(function() {
-		  editor.submit();
 		  $('#state').val(7);
 		  $("#form").submit();
 	  });
 	  
 	  $("#invoice_make").click(function() {
-		  editor.submit();
-		  $('#state').val(7);
+	  	$('#action').val("invoice");
+		  $('#invoice_state').val(1);
 		  $("#form").submit();
 	  });
 	  
 	  $("#invoice_approve").click(function() {
-		  editor.submit();
-		  $('#state').val(7);
+	  	$('#action').val("invoice");
+	  	$('#invoice_state').val(2);
 		  $("#form").submit();
 	  });
 	  
 	  $("#invoice_deny").click(function() {
-		  editor.submit();
-		  $('#state').val(7);
+	  	$('#action').val("invoice");
+	  	$('#invoice_state').val(3);
 		  $("#form").submit();
 	  });
 	  
 	  $("#invoice_upload").click(function() {
-		  editor.submit();
-		  $('#state').val(7);
+	  	$('#action').val("invoice");
+	  	$('#invoice_state').val(4);
 		  $("#form").submit();
 	  });
 	  
@@ -1372,16 +1386,6 @@
 				  });
 			  });
 		  });
-	  });
-
-	  $("#u8invoice").click(function() {
-		  $('#state').val(6);
-		  $("#form").submit();
-	  });
-
-	  $("#buyer_cancel").click(function() {
-		  $('#state').val(1);
-		  $("#form").submit();
 	  });
 
 	  $("#adjust_tax_cost").change(function() {
