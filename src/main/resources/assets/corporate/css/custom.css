@@ -680,4 +680,16 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
 
 #auto_setting_form .content .auto-setting{
 	width: 30px;
+	text-align: center;
+	color: #428bca;
+	border: none;
+	border-bottom: solid 1px black;
+}
+
+#auto_start_time {
+	width: 60px;
+	text-align: center;
+	color: #428bca;
+	border: none;
+	border-bottom: solid 1px black;
 }
