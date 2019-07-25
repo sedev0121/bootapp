@@ -263,3 +263,19 @@ alter table purchase_order_detail DROP column nat_price;
 alter table purchase_order_detail DROP column nat_tax_price;
 alter table purchase_order_detail DROP column nat_money;
 alter table purchase_order_detail DROP column nat_sum;
+
+INSERT INTO `action` VALUES (12, '新建/提交');
+INSERT INTO `action` VALUES (13, '审核');
+INSERT INTO `action` VALUES (14, '发布');
+INSERT INTO `action` VALUES (15, '撤回');
+INSERT INTO `action` VALUES (16, '审批');
+INSERT INTO `action` VALUES (17, '传递ERP');
+
+INSERT INTO `function` VALUES (8, '对账单管理');
+INSERT INTO `function_action` VALUES (20, 8, 1); / *对账单 查看列表 */
+INSERT INTO `function_action` VALUES (21, 8, 12); / *对账单 新建/提交 */
+INSERT INTO `function_action` VALUES (22, 8, 13); / *对账单 审核 */
+INSERT INTO `function_action` VALUES (23, 8, 14); / *对账单 发布 */
+INSERT INTO `function_action` VALUES (24, 8, 15); / *对账单 撤回 */
+INSERT INTO `function_action` VALUES (25, 8, 16); / *对账单 审批 */
+INSERT INTO `function_action` VALUES (26, 8, 17); / *对账单 传递ERP */
