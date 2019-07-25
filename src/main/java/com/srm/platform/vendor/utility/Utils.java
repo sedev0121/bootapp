@@ -169,6 +169,15 @@ public class Utils {
 		return id;
 	}
 	
+	public static String generateTaskId() {
+		String id = "";
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmssSSS");
+		id = dateFormat.format(new Date());
+
+		return id;
+	}
+	
 	public static List<String> generateStaticBoxCode(String classCode, String serialNumberStr, Integer count) {
 		Long serialNumber = Long.parseLong(serialNumberStr);
 		List<String> codeList = new ArrayList<String>();

@@ -156,11 +156,12 @@ public class TaskController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT a.*, c.name vendor_name ";
+		String selectQuery = "SELECT a.*, c.name vendor_name, d.type, e.name company_name ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM task_log a left join task b on a.task_id=b.id left join vendor c on a.vendor_code=c.code where a.task_id=:id ";
+		String bodyQuery = "FROM task_log a left join task b on a.task_id=b.id left join vendor c on a.vendor_code=c.code "
+				+ "left join statement_main d on a.statement_code=d.code left join company e on d.company_id=e.id where a.task_id=:id ";
 
 		Map<String, Object> params = new HashMap<>();
 		params.put("id", id);

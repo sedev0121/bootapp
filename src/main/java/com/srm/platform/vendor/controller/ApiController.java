@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Box;
+import com.srm.platform.vendor.model.Company;
 import com.srm.platform.vendor.model.DeliveryDetail;
 import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.Inventory;
+import com.srm.platform.vendor.model.Master;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.model.OperationHistory;
@@ -27,17 +29,27 @@ import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
+import com.srm.platform.vendor.model.Task;
+import com.srm.platform.vendor.model.TaskLog;
+import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.BoxRepository;
+import com.srm.platform.vendor.repository.CompanyRepository;
 import com.srm.platform.vendor.repository.DeliveryDetailRepository;
 import com.srm.platform.vendor.repository.DeliveryMainRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
+import com.srm.platform.vendor.repository.MasterRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.OperationHistoryRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
+import com.srm.platform.vendor.repository.TaskLogRepository;
+import com.srm.platform.vendor.repository.TaskRepository;
+import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.searchitem.StatementPendingDetail;
+import com.srm.platform.vendor.searchitem.StatementPendingItem;
 import com.srm.platform.vendor.u8api.RestApiClient;
 import com.srm.platform.vendor.u8api.RestApiResponse;
 import com.srm.platform.vendor.utility.Constants;
@@ -87,6 +99,21 @@ public class ApiController {
 	
 	@Autowired
 	private InventoryRepository inventoryRepository;
+	
+	@Autowired
+	public MasterRepository masterRepository;
+	
+	@Autowired
+	public TaskRepository taskRepository;
+	
+	@Autowired
+	public TaskLogRepository taskLogRepository;
+	
+	@Autowired
+	public VendorRepository vendorRepository;
+	
+	@Autowired
+	public CompanyRepository companyRepository;
 	
 	private void addOpertionHistory(String targetId, String action, String content, String type, Account account) {
 		OperationHistory operationHistory = new OperationHistory();
@@ -815,5 +842,121 @@ public class ApiController {
 			return response;
 		}
 		
+	}
+	
+	@ResponseBody
+	@RequestMapping({ "/statement" })
+	public GenericJsonResponse<String> statement() {
+		String dateStr = "2019-07-25";
+		Date statementDate;
+		if (dateStr == null) {
+			Master master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
+			if (master == null) {
+				master = new Master();	
+				master.setItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
+				master.setItemValue(Constants.DEFAULT_STATEMENT_DATE);
+				masterRepository.save(master);
+			}
+			
+			statementDate = Utils.getStatementDate(master.getItemValue());	
+		} else {
+			statementDate = Utils.parseDate(dateStr);
+		}
+		
+		Date filterDate = Utils.getNextDate(statementDate);
+		
+		Task task = new Task();
+		task.setStatementDate(statementDate);
+		task = taskRepository.save(task);
+		StatementMain main;
+		
+		List<StatementPendingItem> pendingDataList = this.statementDetailRepository.findAllPendingData(filterDate);
+		for (StatementPendingItem item : pendingDataList) {
+			String vendorCode = item.getVendor_code();
+			String companyCode = item.getCompany_code();
+			String type = item.getType();
+			
+			this.logger.info(String.format("%s %s %s", vendorCode, companyCode, type));
+			
+			main = generateStatementMain(statementDate, vendorCode, companyCode, type, task);
+			generateStatementDetails(main);
+			saveTaskLog(main, task);
+		}
+		
+		GenericJsonResponse<String> response = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);	
+		
+		
+		return response;
+	}
+	
+	private StatementMain generateStatementMain(Date statementDate, String vendorCode, String companyCode, String type, Task task) {
+		StatementMain main = new StatementMain();		
+		
+		Integer statementType = "普通采购".equalsIgnoreCase(type)? Constants.STATEMENT_TYPE_BASIC : Constants.STATEMENT_TYPE_WEIWAI;
+		Vendor vendor = vendorRepository.findOneByCode(vendorCode);
+		Company company = companyRepository.findOneByCode(companyCode);
+		
+		main.setDate(statementDate);
+		main.setVendor(vendor);
+		main.setCompany(company);
+		main.setType(statementType);
+		main.setTaskCode(task.getCode());
+		main.setMakeDate(new Date());
+		main.setState(Constants.STATEMENT_STATE_SUBMIT);
+		
+		main = statementMainRepository.save(main);
+		return main;
+	}
+	
+	private void generateStatementDetails(StatementMain main) {
+		String vendorCode = main.getVendor().getCode();
+		String companyCode = main.getCompany().getCode();
+		String type = main.getType() == 1 ? "普通采购":"委外加工";
+		Date filterDate = Utils.getNextDate(main.getDate());
+		
+		List<StatementPendingDetail> pendingDetailList = this.statementDetailRepository.findAllPendingDetail(vendorCode, companyCode, type, filterDate);
+		int index = 1;
+		double costSum = 0, taxCostSum = 0, taxSum = 0;
+		for (StatementPendingDetail detail : pendingDetailList) {
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getId());
+			if (purchaseInDetail.getState() != Constants.PURCHASE_IN_STATE_WAIT) {
+				this.logger.info(String.format("Details continue=> %s %s", detail.getId(), detail.getCode()));
+				continue;
+			}			
+			costSum += purchaseInDetail.getCost();
+			taxCostSum += purchaseInDetail.getTaxCost();
+			
+			purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);	
+			purchaseInDetailRepository.save(purchaseInDetail);
+			
+			StatementDetail statementDetail = new StatementDetail();
+			statementDetail.setCode(main.getCode());
+			statementDetail.setPiDetailId(detail.getId());
+			statementDetail.setRowNo(index++);
+			statementDetail.setAdjustTaxCost(0D);
+			statementDetailRepository.save(statementDetail);
+			
+			this.logger.info(String.format("Details => %s %s %s", statementDetail.getPiDetailId(), statementDetail.getCode(), statementDetail.getRowNo()));
+		}
+		
+		taxSum = taxCostSum - costSum;
+		
+		main.setCostSum(costSum);
+		main.setTaxCostSum(taxCostSum);
+		main.setTaxSum(taxSum);
+		main.setAdjustCostSum(0D);
+		main = statementMainRepository.save(main);
+	}
+	
+	private TaskLog saveTaskLog(StatementMain main, Task task) {
+		TaskLog taskLog = new TaskLog();
+		taskLog.setTask(task);
+		taskLog.setVendor(main.getVendor());
+		taskLog.setCreateDate(main.getMakeDate());
+		taskLog.setStatement(main);
+		taskLog.setState(1);
+		
+		taskLog = taskLogRepository.save(taskLog);
+		return taskLog;
 	}
 }

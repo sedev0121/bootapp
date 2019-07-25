@@ -124,7 +124,6 @@ public class StatementController extends CommonController {
 	}
 
 	@GetMapping("/{code}/delete")
-//	@PreAuthorize("hasAuthority('对账单管理-删除')")
 	public @ResponseBody Boolean delete(@PathVariable("code") String code) {
 		StatementMain main = statementMainRepository.findOneByCode(code);
 		if (main != null) {
@@ -460,7 +459,12 @@ public class StatementController extends CommonController {
 					StatementDetail detail = new StatementDetail();
 					detail.setCode(main.getCode());
 					detail.setPiDetailId(Long.parseLong(row.get("pi_detail_id")));
-					detail.setAdjustTaxCost(Double.parseDouble(row.get("adjust_tax_cost")));
+					try {
+						detail.setAdjustTaxCost(Double.parseDouble(row.get("adjust_tax_cost")));
+					}catch(Exception e) {
+						
+					}
+					
 					detail.setRowNo(i++);
 					detail = statementDetailRepository.save(detail);
 				}
@@ -683,5 +687,51 @@ public class StatementController extends CommonController {
 		}
 
 		return isValid;
+	}
+	
+	@Transactional
+	@GetMapping("/bulk_review")
+	public @ResponseBody GenericJsonResponse<String> bulkReview() {
+		GenericJsonResponse<String> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
+		if (!this.hasAuthority("对账单管理-审核")) {
+			jsonResponse.setSuccess(GenericJsonResponse.SUCCESS);
+			jsonResponse.setErrmsg("没有此权限");
+		} else {
+			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
+				statementMainRepository.bulkReviewByCompany(allowedCompanyIdList);
+			}
+
+			List<String> allowedVendorCodeList = accountPermission.getVendorList();
+			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
+				statementMainRepository.bulkReviewByVendor(allowedVendorCodeList);
+			}
+		}
+		
+		return jsonResponse;
+	}
+	
+	@Transactional
+	@GetMapping("/bulk_deploy")
+	public @ResponseBody GenericJsonResponse<String> bulkDeploy() {
+		GenericJsonResponse<String> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
+		if (!this.hasAuthority("对账单管理-发布")) {
+			jsonResponse.setSuccess(GenericJsonResponse.SUCCESS);
+			jsonResponse.setErrmsg("没有此权限");
+		} else {
+			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
+				statementMainRepository.bulkDeployByCompany(allowedCompanyIdList);
+			}
+
+			List<String> allowedVendorCodeList = accountPermission.getVendorList();
+			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
+				statementMainRepository.bulkDeployByVendor(allowedVendorCodeList);
+			}
+		}
+		
+		return jsonResponse;
 	}
 }

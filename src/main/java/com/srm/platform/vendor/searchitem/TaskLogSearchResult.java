@@ -17,7 +17,12 @@ public class TaskLogSearchResult implements Serializable {
 	@JsonProperty("vendor_name")
 	private String vendorName;
 	
+
+	@JsonProperty("company_name")
+	private String companyName;
+	
 	private Integer state;
+	private Integer type;
 	
 	@JsonProperty("failed_reason")
 	private String failedReason;
@@ -25,10 +30,12 @@ public class TaskLogSearchResult implements Serializable {
 	@JsonProperty("create_date")
 	private Date createDate;
 	
-	public TaskLogSearchResult(Long id, String vendorCode, String vendorName, Integer state, String failedReason, Date createDate) {
+	public TaskLogSearchResult(Long id, String vendorCode, String vendorName, String companyName, Integer type, Integer state, String failedReason, Date createDate) {
 		this.id = id;
 		this.vendorCode = vendorCode;
+		this.companyName = companyName;
 		this.vendorName = vendorName;
+		this.type = type;
 		this.state = state;
 		this.failedReason = failedReason;	
 		this.createDate = createDate;
@@ -42,6 +49,23 @@ public class TaskLogSearchResult implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
 
 

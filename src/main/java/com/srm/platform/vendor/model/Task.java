@@ -20,6 +20,7 @@ import org.hibernate.annotations.NotFoundAction;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 import com.srm.platform.vendor.searchitem.TaskSearchResult;
+import com.srm.platform.vendor.utility.Utils;
 
 @Entity
 
@@ -53,6 +54,11 @@ public class Task implements Serializable {
 	@ManyToOne()
 	private Account maker;
 
+	public Task() {
+		this.makeDate = new Date();
+		this.code = Utils.generateTaskId();
+	}
+	
 	public Long getId() {
 		return id;
 	}

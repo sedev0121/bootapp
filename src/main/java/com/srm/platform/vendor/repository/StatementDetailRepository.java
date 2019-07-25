@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.searchitem.StatementDetailItem;
+import com.srm.platform.vendor.searchitem.StatementPendingDetail;
+import com.srm.platform.vendor.searchitem.StatementPendingItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
@@ -28,5 +31,14 @@ public interface StatementDetailRepository extends JpaRepository<StatementDetail
 			+ "left join inventory e on c.inventory_code=e.code "
 			+ "where a.code=?1 order by a.row_no", nativeQuery = true)
 	List<StatementDetailItem> findDetailsByCode(String code);
+	
+	
+	@Query(value = "select b.vendor_code, b.type, b.company_code from purchase_in_detail a left join purchase_in_main b on a.code=b.code "
+			+ "where a.state=0 and b.company_code is not null and b.date < ?1 GROUP BY b.vendor_code, b.type, b.company_code", nativeQuery = true)
+	List<StatementPendingItem> findAllPendingData(Date filterDate);
+	
+	@Query(value = "select a.id, a.code from purchase_in_detail a left join purchase_in_main b on a.code=b.code "
+			+ "where a.state=0 and b.company_code is not null and b.vendor_code = ?1 and b.company_code = ?2 and b.type = ?3 and b.date < ?4", nativeQuery = true)
+	List<StatementPendingDetail> findAllPendingDetail(String vendorCode, String companyCode, String type, Date filterDate);
 
 }

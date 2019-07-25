@@ -45,7 +45,7 @@ import com.srm.platform.vendor.utility.Utils;
 				@ColumnResult(name = "invoice_type", type = String.class),
 				@ColumnResult(name = "erp_invoice_make_name", type = String.class),
 				@ColumnResult(name = "erp_invoice_make_date", type = String.class),
-				@ColumnResult(name = "task_id", type = String.class), 
+				@ColumnResult(name = "task_code", type = String.class), 
 				@ColumnResult(name = "cost_sum", type = String.class),
 				@ColumnResult(name = "tax_cost_sum", type = String.class),
 				@ColumnResult(name = "adjust_cost_sum", type = String.class),
@@ -156,8 +156,8 @@ public class StatementMain {
 	@JsonProperty("tax_sum")
 	private Double taxSum;
 	
-	@JsonProperty("task_id")
-	private Long taskId;
+	@JsonProperty("task_code")
+	private String taskCode;
 
 	public StatementMain() {
 		setCode(Utils.generateId());
@@ -197,20 +197,19 @@ public class StatementMain {
 
 	public void setTaxSum(Double taxSum) {
 		this.taxSum = taxSum;
+	}	
+
+	public String getTaskCode() {
+		return taskCode;
 	}
 
-	public Long getTaskId() {
-		return taskId;
-	}
-
-	public void setTaskId(Long taskId) {
-		this.taskId = taskId;
+	public void setTaskCode(String taskCode) {
+		this.taskCode = taskCode;
 	}
 
 	public String getCode() {
 		return code;
 	}
-
 
 	public void setCode(String code) {
 		this.code = code;

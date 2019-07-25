@@ -26,7 +26,7 @@ public class StatementSearchResult implements Serializable {
 	String erp_invoice_make_name;
 	String erp_invoice_make_date;
 	
-	String task_id;
+	String task_code;
 	String cost_sum;
 	String tax_cost_sum;
 	String adjust_cost_sum;
@@ -35,7 +35,7 @@ public class StatementSearchResult implements Serializable {
 	public StatementSearchResult(String code, String date, String type, String company_name, String vendor_code, 
 			String vendor_name, String vendor_address, String state, String make_date, String review_date, String deploy_date, String confirm_date,
 			String invoice_code, String invoice_state, String invoice_type, String erp_invoice_make_name, String erp_invoice_make_date,
-			String task_id,	String cost_sum, String tax_cost_sum, String adjust_cost_sum, String tax_sum) {
+			String task_code, String cost_sum, String tax_cost_sum, String adjust_cost_sum, String tax_sum) {
 
 		this.code = code;
 		this.date = date;
@@ -55,19 +55,19 @@ public class StatementSearchResult implements Serializable {
 		this.erp_invoice_make_name = erp_invoice_make_name;
 		this.erp_invoice_make_date = erp_invoice_make_date;
 		
-		this.task_id = task_id;
+		this.task_code = task_code;
 		this.cost_sum = cost_sum;
 		this.tax_cost_sum = tax_cost_sum;
 		this.adjust_cost_sum = adjust_cost_sum;
 		this.tax_sum = tax_sum;
 	}
 
-	public String getTask_id() {
-		return task_id;
+	public String getTask_code() {
+		return task_code;
 	}
 
-	public void setTask_id(String task_id) {
-		this.task_id = task_id;
+	public void setTask_code(String task_code) {
+		this.task_code = task_code;
 	}
 
 	public String getCost_sum() {

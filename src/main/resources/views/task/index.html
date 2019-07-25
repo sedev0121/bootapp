@@ -146,19 +146,23 @@
 	    columns : [ {
 	      data : 'code',
 	      title : '任务编号',
+	      width : '150px',
 	    }, {
 	      data : 'make_date',
 	      title : '日期',
+	      width : '150px',
 	      className : 'dt-center',
 	      render : $.fn.date_renderer
 	    }, {
 	      data : 'statement_date',
 	      title : '账期',
+	      width : '150px',
 	      className : 'dt-center',
 	      render : $.fn.date_renderer
 	    }, {
 	      data : 'maker',
 	      title : '操作人',
+	      width : '150px',
 	      className : 'dt-center',
 	      render : $.fn.date_renderer
 	    }, {
@@ -221,8 +225,16 @@
 		    }, {
 		      data : 'vendor_name',
 		      title : '供应商名称',
-		      width : '100px',
 		      className : 'dt-center',
+		    }, {
+		      data : 'company_name',
+		      title : '业务实体',
+		      className : 'dt-center',
+		    }, {
+		      data : 'type',
+		      title : '对账类型',
+		      className : 'dt-center',
+		      render : App.getStatementTypeOfId
 		    }, {
 		      data : 'state',
 		      title : '成功/失败',

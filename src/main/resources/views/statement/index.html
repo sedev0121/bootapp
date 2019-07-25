@@ -59,6 +59,8 @@
 	/*[+
    var list_url = [[@{/statement/list}]];
    var edit_url = [[@{/statement/}]];
+   var bluk_review_url = [[@{/statement/bulk_review}]];
+   var bluk_deploy_url = [[@{/statement/bulk_deploy}]];
    +]*/
 
   $(document).ready(function() {
@@ -187,7 +189,7 @@
 	      data : 'invoice_code',
 	      title : '操作记录',
 	    }, {
-	      data : 'task_id',
+	      data : 'task_code',
 	      title : '任务编号',
 	    }, {
 	      data : 'invoice_state',
@@ -223,6 +225,32 @@
 	  $('#vendor, #code, #start_date, #end_date').keyup(function(e) {
 		  if (e.keyCode == 13)
 			  table.draw();
+	  });
+	  
+	  $('#bulk_review').click(function() {
+	  	App.showConfirmDialog('确定要批量审核吗?', function() {
+			  $.get(bluk_review_url, function(res, status) {
+			  	if (res.success == 1) {
+			  		table.draw();
+			  		App.showSuccessDialog("操作成功");
+			  	} else {
+			  		App.showErrorDialog(res.errmsg);
+			  	}				  
+			  });
+		  });
+	  });
+	  
+	  $('#bulk_deploy').click(function() {
+	  	App.showConfirmDialog('确定要批量发布吗?', function() {
+			  $.get(bluk_deploy_url, function(res, status) {
+			  	if (res.success == 1) {
+			  		table.draw();
+			  		App.showSuccessDialog("操作成功");
+			  	} else {
+			  		App.showErrorDialog(res.errmsg);
+			  	}				  
+			  });
+		  });
 	  });
   });
 </script>

@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
@@ -27,6 +28,8 @@ import com.srm.platform.vendor.searchitem.TaskLogSearchResult;
 		@ColumnResult(name = "id", type = Long.class), 
 		@ColumnResult(name = "vendor_code", type = String.class), 
 		@ColumnResult(name = "vendor_name", type = String.class), 
+		@ColumnResult(name = "company_name", type = String.class),
+		@ColumnResult(name = "type", type = Integer.class),
 		@ColumnResult(name = "state", type = Integer.class),
 		@ColumnResult(name = "failed_reason", type = String.class),
 		@ColumnResult(name = "create_date", type = Date.class),
@@ -56,6 +59,11 @@ public class TaskLog implements Serializable {
 	@JoinColumn(name = "vendor_code", referencedColumnName = "code", nullable=true)
 	private Vendor vendor;
 	
+	@OneToOne()
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "statement_code", referencedColumnName = "code", nullable=true)
+	private StatementMain statement;
+	
 	@JsonProperty("create_date")
 	private Date createDate;
 
@@ -65,6 +73,14 @@ public class TaskLog implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public StatementMain getStatement() {
+		return statement;
+	}
+
+	public void setStatement(StatementMain statement) {
+		this.statement = statement;
 	}
 
 	public String getFailedReason() {
