@@ -429,6 +429,7 @@ public class StatementController extends CommonController {
 				}
 			}
 			
+			main.setInvoiceState(form.getInvoice_state());
 			
 			switch (form.getInvoice_state()) {
 			case Constants.INVOICE_STATE_DONE:
@@ -446,11 +447,13 @@ public class StatementController extends CommonController {
 			case Constants.INVOICE_STATE_UPLOAD_ERP:
 				toList.add(main.getMaker());
 				action = "传递ERP";
-				break;			
+				break;	
+			case Constants.INVOICE_STATE_CANCEL_UPLOAD:
+				main.setInvoiceState(Constants.INVOICE_STATE_DONE);
+				toList.add(main.getMaker());
+				action = "审批撤消";
+				break;	
 			}
-
-			main.setInvoiceState(form.getInvoice_state());
-			
 		}
 		
 
@@ -469,19 +472,7 @@ public class StatementController extends CommonController {
 				main);
 
 		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
-
-//			postUnLock(main);
-			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
-			for (StatementDetail detail : detailList) {
-				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
-						.findOneById(detail.getPiDetailId());
-
-				if (purchaseInDetail != null) {
-					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_WAIT);
-					purchaseInDetailRepository.save(purchaseInDetail);
-				}
-			}
-
+			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_WAIT);
 			statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
 			if (form.getTable() != null) {
 				int i = 1;
@@ -499,35 +490,14 @@ public class StatementController extends CommonController {
 					detail = statementDetailRepository.save(detail);
 				}
 			}
+			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START);
 		}
 
-		if (main.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
-			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
-			for (StatementDetail detail : detailList) {
-				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
-						.findOneById(detail.getPiDetailId());
-
-				if (purchaseInDetail != null) {
-					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);
-					purchaseInDetailRepository.save(purchaseInDetail);
-				}
-			}
-//		} else if (main.getState() == Constants.STATEMENT_STATE_INVOICE_PUBLISH) {
-//			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
-//			for (StatementDetail detail : detailList) {
-//				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
-//						.findOneById(detail.getPiDetailId());
-//
-//				if (purchaseInDetail != null) {
-//					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_FINISH);
-//					purchaseInDetailRepository.save(purchaseInDetail);
-//				}
-//			}
+		if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
+			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_FINISH);
+		} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCEL_UPLOAD) {
+			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START);
 		}
-
-//		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
-//			postLock(main);
-//		}
 
 		return jsonResponse;
 	}
@@ -708,5 +678,18 @@ public class StatementController extends CommonController {
 		
 		logger.info("end count=" + list.size());
 		return list;
+	}
+	
+	private void setPurchaseInDetailState(StatementMain main, int state) {
+		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
+		for (StatementDetail detail : detailList) {
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
+					.findOneById(detail.getPiDetailId());
+
+			if (purchaseInDetail != null) {
+				purchaseInDetail.setState(state);
+				purchaseInDetailRepository.save(purchaseInDetail);
+			}
+		}
 	}
 }
