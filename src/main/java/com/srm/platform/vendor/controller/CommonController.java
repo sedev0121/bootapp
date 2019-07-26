@@ -100,7 +100,7 @@ public class CommonController {
 	public final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
-	public ApiClient apiClient;
+	public RestApiClient apiClient;
 	
 	@Autowired
 	public RestApiClient restApiClient;
@@ -379,32 +379,32 @@ public class CommonController {
 
 		GenericJsonResponse<VenPriceAdjustMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS,
 				null, main);
-		try {
-
-			map = new HashMap<>();
-
-			String postJson = createJsonString(main);
-			Map<String, String> getParams = new HashMap<>();
-
-			getParams.put("biz_id", main.getCcode());
-			getParams.put("sync", "1");
-
-			String response = apiClient.generateVenpriceadjust(getParams, postJson);
-
-			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
-			});
-
-			int errorCode = Integer.parseInt((String) map.get("errcode"));
-			String errmsg = String.valueOf(map.get("errmsg"));
-
-			if (errorCode != appProperties.getError_code_success()) {
-				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
-			}
-
-		} catch (IOException e) {
-			logger.info(e.getMessage());
-			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "服务器错误！", main);
-		}
+//		try {
+//
+//			map = new HashMap<>();
+//
+//			String postJson = createJsonString(main);
+//			Map<String, String> getParams = new HashMap<>();
+//
+//			getParams.put("biz_id", main.getCcode());
+//			getParams.put("sync", "1");
+//
+//			String response = apiClient.generateVenpriceadjust(getParams, postJson);
+//
+//			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
+//			});
+//
+//			int errorCode = Integer.parseInt((String) map.get("errcode"));
+//			String errmsg = String.valueOf(map.get("errmsg"));
+//
+//			if (errorCode != appProperties.getError_code_success()) {
+//				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
+//			}
+//
+//		} catch (IOException e) {
+//			logger.info(e.getMessage());
+//			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "服务器错误！", main);
+//		}
 
 		return jsonResponse;
 	}

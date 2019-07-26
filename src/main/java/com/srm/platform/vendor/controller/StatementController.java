@@ -49,6 +49,7 @@ import com.srm.platform.vendor.saveform.StatementSaveForm;
 import com.srm.platform.vendor.searchitem.StatementDetailItem;
 import com.srm.platform.vendor.searchitem.StatementPendingItem;
 import com.srm.platform.vendor.searchitem.StatementSearchResult;
+import com.srm.platform.vendor.u8api.RestApiResponse;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
@@ -368,19 +369,15 @@ public class StatementController extends CommonController {
 				main.setInvoiceCanceler(this.getLoginAccount());
 				main.setInvoiceCancelDate(new Date());
 			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
-				main.setInvoiceType(form.getInvoice_type());
-				main.setInvoiceCode(form.getInvoice_code());
-				main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
-				main.setErpInvoiceMakeDate(new Date());
-				
-//				main.setInvoiceType(form.getInvoice_type());
-//				GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
-//				if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
-//					main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
-//					main.setErpInvoiceMakeDate(new Date());
-//				} else {
-//					return u8Response;
-//				}
+				GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
+				if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
+					main.setInvoiceType(form.getInvoice_type());
+					main.setInvoiceCode(form.getInvoice_code());				
+					main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
+					main.setErpInvoiceMakeDate(new Date());
+				} else {
+					return u8Response;
+				}
 			}
 			
 			List<Long> attachIdList = form.getAttachIds();
@@ -537,111 +534,22 @@ public class StatementController extends CommonController {
 
 	private GenericJsonResponse<StatementMain> u8invoice(StatementMain main) {
 
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		Map<String, Object> map = new HashMap<>();
-
 		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
 				main);
-		try {
 
-			map = new HashMap<>();
+		RestApiResponse response = apiClient.postForU8Iinvoice(createU8InvoicePostData(main));
 
-			String postJson = createJsonString(main);
-			Map<String, String> getParams = new HashMap<>();
-
-			String response = apiClient.generateLinkU8PurchaseInvoice(getParams, postJson);
-
-			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
-			});
-
-			int errorCode = Integer.parseInt((String) map.get("errcode"));
-			String errmsg = String.valueOf(map.get("errmsg"));
-
-			if (errorCode == 0) {
-				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
-			}
-
-		} catch (IOException e) {
-			logger.info(e.getMessage());
-			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "服务器错误！", main);
+		if (!response.isSuccess()) {
+			response.getErrmsg();
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, response.getErrmsg(), main);
 		}
 
 		return jsonResponse;
 	}
 
-	private String createJsonString(StatementMain main) {
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonString = "";
-
-		U8InvoicePostData post = new U8InvoicePostData();
-		post.setCpbvcode(main.getInvoiceCode());
-		post.setCunitcode(main.getVendor().getCode());
-		post.setCvencode(main.getVendor().getCode());
-		post.setCpbvbilltype(main.getInvoiceType() == 1 ? "01" : "02");
-		post.setCbustype(main.getType() == 1 ? "普通采购" : "委外加工");
-		post.setCptcode(main.getType() == 1 ? "01" : "05");
-		post.setCpbvmaker(this.getLoginAccount().getRealname());
-		post.setIpbvtaxrate(main.getTaxRate());
-		post.setIdiscountaxtype(main.getInvoiceType() == 1 ? "0" : "1");
-
-		List<U8InvoicePostEntry> entryList = new ArrayList<>();
-
-		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
-
-		double chargeBack = 0D, closedMoneySum = 0D, closedTaxMoneySum = 0D, closedQuantitySum = 0D;
-
-
-		int i = 1, index = 0;
-		double invoiceMoneySum = 0D, invoiceTaxMoneySum = 0D;
-
-		for (StatementDetail detail : detailList) {
-			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPiDetailId());
-
-			index++;
-			if (purchaseInDetail == null)
-				continue;
-
-			U8InvoicePostEntry entry = new U8InvoicePostEntry();
-
-			
-
-			entryList.add(entry);
-			i++;
-		}
-		
-		boolean is_bug = false;
-		String bug_message = "";
-		
-		if ((closedQuantitySum == 0) && (invoiceTaxMoneySum == 0)) {
-			is_bug = true;
-			// bug_message = "合计数量和合计发票金额不可同时0";
-		}
-		else if ((closedQuantitySum > 0) && (invoiceTaxMoneySum < 0)) {
-			is_bug = true;
-		}
-		else if ((closedQuantitySum < 0) && (invoiceTaxMoneySum > 0)) {
-			is_bug = true;
-		}
-		else if ((closedQuantitySum >= 0) && (invoiceTaxMoneySum >= 0)) {
-			post.setIsBlue("1");
-		}
-		else if ((closedQuantitySum <= 0) && (invoiceTaxMoneySum <= 0)) {
-			post.setIsBlue("0");
-		}
-
-		post.setList(entryList);
-
-		try {
-			// Map<String, U8InvoicePostData> map = new HashMap<>();
-			// map.put("StrJson", post);
-			//
-			jsonString = mapper.writeValueAsString(post);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return jsonString;
+	private Map<String, Object> createU8InvoicePostData(StatementMain main) {
+		Map<String, Object> postParams = new HashMap<>();
+		return postParams;
 	}
 
 	@GetMapping("/{code}/download/{rowNo}")
@@ -683,13 +591,13 @@ public class StatementController extends CommonController {
 	}
 
 	private void postLock(StatementMain main) {
-		String postJson = createLockJsonString(main);
-		String response = apiClient.postLock(String.format("{%s}", postJson));
+//		String postJson = createLockJsonString(main);
+//		String response = apiClient.postLock(String.format("{%s}", postJson));
 	}
 
 	private void postUnLock(StatementMain main) {
-		String postJson = createLockJsonString(main);
-		String response = apiClient.postUnLock(String.format("{%s}", postJson));
+//		String postJson = createLockJsonString(main);
+//		String response = apiClient.postUnLock(String.format("{%s}", postJson));
 	}
 	
 	private void checkPermission(StatementMain main, Long functionActionId) {

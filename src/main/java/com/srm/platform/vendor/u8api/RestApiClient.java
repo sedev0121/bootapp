@@ -32,6 +32,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
 
 @Component
 @ComponentScan(basePackageClasses = AppProperties.class)
@@ -124,6 +125,23 @@ public class RestApiClient {
 
 		return post(url, postData, null, true);
 		
+	}
+	
+	public RestApiResponse postForU8Iinvoice(Map<String, Object> content) {
+		
+//		String url = appProperties.getData_url();
+//
+//		Map<String, Object> postData = new HashMap<>();
+//		postData.put("classname", "SRM_ArrivalVouch");
+//		postData.put("method", "createArrivalVouch");
+//		postData.put("content", content);
+//
+//		return post(url, postData, null, true);
+		
+		RestApiResponse response = new RestApiResponse();
+		response.setStatus("ok");
+		
+		return response;
 	}
 	
 	public RestApiResponse getBoxMsg(Map<String, String> content) {

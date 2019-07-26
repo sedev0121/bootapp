@@ -106,20 +106,20 @@ public class InqueryController extends CommonController {
 		return list;
 	}
 
-	@GetMapping("/{ccode}/deleteattach")
-	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
-	public @ResponseBody Boolean deleteAttach(@PathVariable("ccode") String ccode) {
-		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
-
-		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_INQUERY) + File.separator
-				+ main.getAttachFileName());
-		if (attach.exists())
-			attach.delete();
-		main.setAttachFileName(null);
-		main.setAttachOriginalName(null);
-		venPriceAdjustMainRepository.save(main);
-		return true;
-	}
+//	@GetMapping("/{ccode}/deleteattach")
+//	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
+//	public @ResponseBody Boolean deleteAttach(@PathVariable("ccode") String ccode) {
+//		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
+//
+//		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_INQUERY) + File.separator
+//				+ main.getAttachFileName());
+//		if (attach.exists())
+//			attach.delete();
+//		main.setAttachFileName(null);
+//		main.setAttachOriginalName(null);
+//		venPriceAdjustMainRepository.save(main);
+//		return true;
+//	}
 
 	// 删除API
 	@PreAuthorize("hasAuthority('询价管理-删除') or hasRole('ROLE_VENDOR')")
