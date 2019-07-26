@@ -46,6 +46,7 @@ import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.StatementSaveForm;
 import com.srm.platform.vendor.searchitem.StatementDetailItem;
+import com.srm.platform.vendor.searchitem.StatementPendingItem;
 import com.srm.platform.vendor.searchitem.StatementSearchResult;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
@@ -699,15 +700,16 @@ public class StatementController extends CommonController {
 		} else {
 			Account account = this.getLoginAccount();
 			Date today = new Date();
-			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
-			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
-				statementMainRepository.bulkReviewByCompany(allowedCompanyIdList, account.getId(), today);
-			}
-
-			List<String> allowedVendorCodeList = accountPermission.getVendorList();
-			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
-				statementMainRepository.bulkReviewByVendor(allowedVendorCodeList, account.getId(), today);
+			List<StatementMain> list = statementMainRepository.findAllPending(Constants.STATEMENT_STATE_SUBMIT);
+			list = filter(list);
+			
+			for (StatementMain item : list) {
+				item.setState(Constants.STATEMENT_STATE_REVIEW);
+				item.setReviewDate(today);
+				item.setReviewer(account);
+				
+				statementMainRepository.save(item);				
+				this.addOpertionHistory(item.getCode(), "批量审核", null);
 			}
 		}
 		
@@ -724,18 +726,47 @@ public class StatementController extends CommonController {
 		} else {
 			Account account = this.getLoginAccount();
 			Date today = new Date();
-			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
-			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
-				statementMainRepository.bulkDeployByCompany(allowedCompanyIdList, account.getId(), today);
-			}
-
-			List<String> allowedVendorCodeList = accountPermission.getVendorList();
-			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
-				statementMainRepository.bulkDeployByVendor(allowedVendorCodeList, account.getId(), today);
+			List<StatementMain> list = statementMainRepository.findAllPending(Constants.STATEMENT_STATE_REVIEW);
+			list = filter(list);
+			
+			for (StatementMain item : list) {
+				item.setState(Constants.STATEMENT_STATE_DEPLOY);
+				item.setDeployDate(today);
+				item.setDeployer(account);
+				
+				statementMainRepository.save(item);				
+				this.addOpertionHistory(item.getCode(), "批量发布", null);
 			}
 		}
 		
 		return jsonResponse;
+	}
+	
+	private List<StatementMain> filter(List<StatementMain> list) {
+		logger.info("start count=" + list.size());
+		List<StatementMain> filteredList = new ArrayList<StatementMain>();
+		AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+		List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+		if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
+			for (StatementMain item : list) {
+				if (allowedCompanyIdList.contains(item.getCompany().getId())) {
+					filteredList.add(item);
+				}
+			}
+			list = filteredList;
+		}
+
+		List<String> allowedVendorCodeList = accountPermission.getVendorList();
+		if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
+			for (StatementMain item : list) {
+				if (allowedVendorCodeList.contains(item.getVendor().getCode())) {
+					filteredList.add(item);
+				}
+			}
+			list = filteredList;
+		}
+		
+		logger.info("end count=" + list.size());
+		return list;
 	}
 }

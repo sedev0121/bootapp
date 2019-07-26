@@ -873,6 +873,7 @@ public class ApiController {
 	
 	private GenericJsonResponse<String> statement(String dateStr, Account loginAccount) {			
 		
+		String actionName = dateStr==null?"自动批量生成":"手动批量生成";
 		Date statementDate;
 		if (dateStr == null) {
 			Master master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
@@ -934,6 +935,7 @@ public class ApiController {
 			main = generateStatementMain(statementDate, vendorCode, companyCode, type, task);
 			generateStatementDetails(main);
 			saveTaskLog(main, task);
+			saveOperationHistory(main, actionName);			
 		}
 		
 		GenericJsonResponse<String> response = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);	
@@ -1009,6 +1011,16 @@ public class ApiController {
 		
 		taskLog = taskLogRepository.save(taskLog);
 		return taskLog;
+	}
+	
+	private void saveOperationHistory(StatementMain main, String actionName) {
+		OperationHistory operationHistory = new OperationHistory();
+		operationHistory.setTargetId(main.getCode());
+		operationHistory.setTargetType("statement");
+		operationHistory.setAction(actionName);
+		operationHistory.setAccount(main.getMaker());
+
+		operationHistory = operationHistoryRepository.save(operationHistory);
 	}
 	
 	private AccountPermission getPermissionScopeOfStatement(Long accountId) {
