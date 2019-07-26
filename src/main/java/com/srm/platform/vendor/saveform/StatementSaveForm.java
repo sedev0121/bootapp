@@ -27,7 +27,7 @@ public class StatementSaveForm {
 
 	private Float tax_rate;
 
-	private MultipartFile attach;
+	private List<MultipartFile> attach;
 
 	private List<Map<String, String>> table;
 
@@ -107,11 +107,11 @@ public class StatementSaveForm {
 		this.invoice_type = invoice_type;
 	}
 
-	public MultipartFile getAttach() {
+	public List<MultipartFile> getAttach() {
 		return attach;
 	}
 
-	public void setAttach(MultipartFile attach) {
+	public void setAttach(List<MultipartFile> attach) {
 		this.attach = attach;
 	}
 

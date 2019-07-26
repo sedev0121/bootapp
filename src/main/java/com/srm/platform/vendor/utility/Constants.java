@@ -2,6 +2,9 @@ package com.srm.platform.vendor.utility;
 
 public class Constants {
 
+	public final static String ATTACH_TYPE_STATEMENT = "statement";
+	
+	
 	public final static int STATE_NEW = 1;
 	public final static int STATE_SUBMIT = 2;
 	public final static int STATE_CONFIRM = 3;

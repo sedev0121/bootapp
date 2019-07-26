@@ -42,6 +42,7 @@ import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.AttachFileRepository;
 import com.srm.platform.vendor.repository.BoxClassRepository;
 import com.srm.platform.vendor.repository.BoxRepository;
 import com.srm.platform.vendor.repository.CompanyRepository;
@@ -214,6 +215,9 @@ public class CommonController {
 
 	@Autowired
 	public VendorClassRepository vendorClassRepository;
+	
+	@Autowired
+	public AttachFileRepository attachFileRepository;
 
 	protected int currentPage;
 	protected int maxResults;

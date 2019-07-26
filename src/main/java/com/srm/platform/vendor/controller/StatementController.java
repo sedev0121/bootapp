@@ -38,6 +38,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.AttachFile;
 import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.Master;
 import com.srm.platform.vendor.model.PurchaseInDetail;
@@ -164,6 +165,20 @@ public class StatementController extends CommonController {
 		return true;
 	}
 
+	@GetMapping("/{code}/uploadattach")
+	public @ResponseBody Boolean uploadAttach(@PathVariable("code") String code, @RequestParam Map<String, String> requestParams) {
+		StatementMain main = statementMainRepository.findOneByCode(code);
+
+//		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_STATEMENT) + File.separator
+//				+ main.getAttachFileName());
+//		if (attach.exists())
+//			attach.delete();
+//		main.setAttachFileName(null);
+//		main.setAttachOriginalName(null);
+		statementMainRepository.save(main);
+		return true;
+	}
+	
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<StatementSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
@@ -278,6 +293,13 @@ public class StatementController extends CommonController {
 	@RequestMapping(value = "/{code}/details", produces = "application/json")
 	public @ResponseBody List<StatementDetailItem> details_ajax(@PathVariable("code") String code) {
 		List<StatementDetailItem> list = statementDetailRepository.findDetailsByCode(code);
+
+		return list;
+	}
+	
+	@RequestMapping(value = "/{code}/attaches", produces = "application/json")
+	public @ResponseBody List<AttachFile> listAttaches(@PathVariable("code") String code) {
+		List<AttachFile> list = attachFileRepository.findAllByTypeCode(Constants.ATTACH_TYPE_STATEMENT, code);
 
 		return list;
 	}
@@ -618,15 +640,15 @@ public class StatementController extends CommonController {
 		return jsonString;
 	}
 
-//	@GetMapping("/{code}/download")
-//	public ResponseEntity<Resource> download(@PathVariable("code") String code) {
-//		StatementMain main = this.statementMainRepository.findOneByCode(code);
-//		if (main == null)
-//			show404();
-//
-//		return download(Constants.PATH_UPLOADS_STATEMENT + File.separator + main.getAttachFileName(),
-//				main.getAttachOriginalName());
-//	}
+	@GetMapping("/{code}/download/{rowNo}")
+	public ResponseEntity<Resource> download(@PathVariable("code") String code, @PathVariable("rowNo") Integer rowNo) {
+		AttachFile attach = this.attachFileRepository.findOneByTypeCodeAndRowNo(Constants.ATTACH_TYPE_STATEMENT, code, rowNo);
+		if (attach == null) {
+			show404();
+		}
+		return download(Constants.PATH_UPLOADS_STATEMENT + File.separator + attach.getFilename(),
+				attach.getOriginalName());
+	}
 
 	private String createLockJsonString(StatementMain main) {
 		String jsonString = "";
