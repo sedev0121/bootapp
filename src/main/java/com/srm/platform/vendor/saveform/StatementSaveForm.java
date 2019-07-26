@@ -14,7 +14,7 @@ public class StatementSaveForm {
 	private String vendor;
 	private String invoice_code;
 	private String remark;
-
+	private String date;
 	private Integer state;
 	private Long company;
 	private Integer type;
@@ -41,6 +41,14 @@ public class StatementSaveForm {
 
 	public void setAction(String action) {
 		this.action = action;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
 	}
 
 	public Double getCostSum() {

@@ -300,7 +300,7 @@ public class StatementController extends CommonController {
 			main.setState(form.getState());
 			
 			if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
-
+				main.setDate(Utils.parseDate(form.getDate()));
 				main.setMakeDate(new Date());
 				main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
 				main.setMaker(this.getLoginAccount());
