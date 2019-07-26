@@ -150,35 +150,6 @@ public class StatementController extends CommonController {
 		return true;
 	}
 
-	@GetMapping("/{code}/deleteattach")
-//	@PreAuthorize("hasAuthority('对账单管理-新建/发布')")
-	public @ResponseBody Boolean deleteAttach(@PathVariable("code") String code) {
-		StatementMain main = statementMainRepository.findOneByCode(code);
-
-//		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_STATEMENT) + File.separator
-//				+ main.getAttachFileName());
-//		if (attach.exists())
-//			attach.delete();
-//		main.setAttachFileName(null);
-//		main.setAttachOriginalName(null);
-		statementMainRepository.save(main);
-		return true;
-	}
-
-	@GetMapping("/{code}/uploadattach")
-	public @ResponseBody Boolean uploadAttach(@PathVariable("code") String code, @RequestParam Map<String, String> requestParams) {
-		StatementMain main = statementMainRepository.findOneByCode(code);
-
-//		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_STATEMENT) + File.separator
-//				+ main.getAttachFileName());
-//		if (attach.exists())
-//			attach.delete();
-//		main.setAttachFileName(null);
-//		main.setAttachOriginalName(null);
-		statementMainRepository.save(main);
-		return true;
-	}
-	
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<StatementSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
@@ -333,22 +304,6 @@ public class StatementController extends CommonController {
 				main.setTaxCostSum(form.getTaxCostSum());
 				main.setAdjustCostSum(form.getAdjustCostSum());
 				main.setTaxSum(form.getTaxSum());
-
-//				String origianlFileName = null;
-//				String savedFileName = null;
-//				MultipartFile attach = form.getAttach();
-//				if (attach != null) {
-//					origianlFileName = attach.getOriginalFilename();
-//					File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_STATEMENT);
-	//
-//					if (file != null)
-//						savedFileName = file.getName();
-//				}
-	//
-//				if (savedFileName != null) {
-//					main.setAttachFileName(savedFileName);
-//					main.setAttachOriginalName(origianlFileName);
-//				}
 			} else if (form.getState() == Constants.STATEMENT_STATE_REVIEW) {
 				main.setReviewer(this.getLoginAccount());
 				main.setReviewDate(new Date());
@@ -395,8 +350,7 @@ public class StatementController extends CommonController {
 				toList.add(main.getMaker());
 				action = "退回";
 				break;
-			}
-			
+			}			
 		} else {
 			if (form.getInvoice_state() == Constants.INVOICE_STATE_DONE) {
 				main.setInvoiceType(form.getInvoice_type());
@@ -428,6 +382,56 @@ public class StatementController extends CommonController {
 //					return u8Response;
 //				}
 			}
+			
+			List<Long> attachIdList = form.getAttachIds();
+			for(Long attachId : attachIdList) {
+				logger.info("ID=" + attachId);
+			}
+			
+			List<AttachFile> oldAttachList = attachFileRepository.findAllByTypeCode(Constants.ATTACH_TYPE_STATEMENT, main.getCode());
+			List<AttachFile> newAttachList = new ArrayList<AttachFile>();
+			if (attachIdList == null) {
+				attachFileRepository.deleteAll(oldAttachList);
+			} else {
+				for(AttachFile attach : oldAttachList) {
+					if (!attachIdList.contains(attach.getId())) {
+						deleteAttach(Constants.PATH_UPLOADS_STATEMENT + File.separator + attach.getFilename());
+						attachFileRepository.delete(attach);
+					} else {
+						newAttachList.add(attach);
+					}
+				}
+			}
+			
+			int index = 1;
+			for(AttachFile attach : newAttachList) {
+				attach.setRowNo(index++);
+				attachFileRepository.save(attach);
+			}
+			
+			List<MultipartFile> attachList = form.getAttach();
+			if (attachList != null) {
+				for(MultipartFile attach : attachList) {
+					if (attach != null) {
+						String origianlFileName = attach.getOriginalFilename();
+						File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_STATEMENT);
+
+						String savedFileName = null;
+						if (file != null) {
+							savedFileName = file.getName();
+						}
+						
+						AttachFile attachFile = new AttachFile();
+						attachFile.setType(Constants.ATTACH_TYPE_STATEMENT);
+						attachFile.setCode(main.getCode());
+						attachFile.setFilename(savedFileName);
+						attachFile.setOriginalName(origianlFileName);
+						attachFile.setRowNo(index++);
+						attachFileRepository.save(attachFile);
+					}
+				}
+			}
+			
 			
 			switch (form.getInvoice_state()) {
 			case Constants.INVOICE_STATE_DONE:

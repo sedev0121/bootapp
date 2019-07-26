@@ -30,6 +30,8 @@ public class StatementSaveForm {
 	private List<MultipartFile> attach;
 
 	private List<Map<String, String>> table;
+	
+	private List<Long> attachIds;
 
 	private String content;
 	
@@ -41,6 +43,14 @@ public class StatementSaveForm {
 
 	public void setAction(String action) {
 		this.action = action;
+	}
+
+	public List<Long> getAttachIds() {
+		return attachIds;
+	}
+
+	public void setAttachIds(List<Long> attachIds) {
+		this.attachIds = attachIds;
 	}
 
 	public String getDate() {

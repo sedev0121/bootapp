@@ -491,5 +491,19 @@ public class CommonController {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileName + "\"")
 				.body(file);
 	}
+	
+	public void deleteAttach(String filePath) {
+
+		Resource file = UploadFileHelper.getResource(filePath);
+		if (file != null) {
+			try {
+				file.getFile().delete();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
 
 }

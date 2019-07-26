@@ -105,104 +105,104 @@
 						</div>
 					</div>
 					<div class="row margin-top-10">
-					<div class="col-lg-12">
-						<div class="panel panel-default">
-							<div class="panel-heading">
-								<h4 class="panel-title">
-									<a class="accordion-toggle" data-toggle="collapse" href="#invoice_info"><span class="glyphicon glyphicon-chevron-down"> </span> 发票信息 </a>
-								</h4>
-							</div>
-							<div id="invoice_info" class="panel-collapse collapse">
-								<div class="panel-body">
-									<div class="row">
-										<div class="col-lg-12 col-md-12">
-											<label for="code">发票号: </label> 
-											<input type="text" id="invoice_code" name="invoice_code" th:value="${main.invoiceCode}" class="form-control" readonly />
-										</div>
-									</div>	
-									<div class="row">
-										<div class="col-lg-2 col-md-2">
-											<label for="code">发票类型: </label> 
-											<select id="invoice_type" name="invoice_type" class="form-control" readonly></select>
-										</div>
-										<div class="col-lg-2 col-md-2">
-											<label for="state">发票状态:</label> 
-											<select name="invoice_state" id="invoice_state" class="form-control" readonly>
-											</select>
-										</div>
-										<div class="col-lg-2 col-md-2">
-											<label for="code">发票制单人: </label> 
-											<input type="text" th:value="${main.erpInvoiceMakeName}" class="form-control" readonly />
-										</div>
-										<div class="col-lg-2 col-md-2">
-											<label for="code">发票入账日期: </label> 
-											<input type="text" th:value="${#dates.format(main.erpInvoiceMakeDate, 'yyyy-MM-dd')}" class="form-control" readonly />
-										</div>
-										<div class="col-lg-2 col-md-2">
-											<label for="code">币种: </label> 
-											<input type="text" value="人民币" class="form-control" readonly />
-										</div>
-										<div class="col-lg-2 col-md-2">
-											<label for="code">汇率: </label> 
-											<input type="text" value="1" class="form-control" readonly />
-										</div>
-									</div>										
+						<div class="col-lg-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<a class="accordion-toggle" data-toggle="collapse" href="#invoice_info"><span class="glyphicon glyphicon-chevron-down"> </span> 发票信息 </a>
+									</h4>
 								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				</form>
-				<div class="row margin-top-10">
-					<div class="col-lg-12">
-						<div class="tab-style-1" id="tabs">
-							<ul class="nav nav-tabs">
-								<li class="active"><a data-toggle="tab" href="#tab-1">明细</a></li>
-								<li><a data-toggle="tab" href="#tab-2">汇总</a></li>
-								<li><a data-toggle="tab" href="#tab-3">发票号</a></li>
-								<li><a data-toggle="tab" href="#tab-4">附件</a></li>
-								<li><a data-toggle="tab" href="#tab-5">操作日志</a></li>
-							</ul>
-							<div class="tab-content">
-								<div id="tab-1" class="tab-pane row-fluid fade in active">
-									<table id="detail_table" class="table table-striped table-bordered nowrap table-hover" style="width: 100%">
-									</table>
-								</div>
-								<div id="tab-2" class="tab-pane row-fluid fade in ">
-									<table id="summary_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-										<tfoot>
-											<tr>
-												<th colspan="5" class="dt-center">合计</th>
-												<th></th>
-												<th colspan="2"></th>
-												<th></th>
-												<th></th>
-												<th></th>
-												<th></th>
-												<th></th>
-											</tr>
-										</tfoot>
-									</table>
-								</div>
-								<div id="tab-3" class="tab-pane row-fluid fade in">
-									<table id="invoice_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-									</table>
-								</div>
-								<div id="tab-4" class="tab-pane row-fluid fade in">
-									<table id="attach_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-									</table>
-								</div>
-								<div id="tab-5" class="tab-pane row-fluid fade in">
-									<div class="row edit-history">
-										<a class="btn btn-primary save-history" id="show_modal_btn"><i class="fa fa-plus"></i> 添加说明</a>
+								<div id="invoice_info" class="panel-collapse collapse">
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-lg-12 col-md-12">
+												<label for="code">发票号: </label> 
+												<input type="text" id="invoice_code" name="invoice_code" th:value="${main.invoiceCode}" class="form-control" readonly />
+											</div>
+										</div>	
+										<div class="row">
+											<div class="col-lg-2 col-md-2">
+												<label for="code">发票类型: </label> 
+												<select id="invoice_type" name="invoice_type" class="form-control" readonly></select>
+											</div>
+											<div class="col-lg-2 col-md-2">
+												<label for="state">发票状态:</label> 
+												<select name="invoice_state" id="invoice_state" class="form-control" readonly>
+												</select>
+											</div>
+											<div class="col-lg-2 col-md-2">
+												<label for="code">发票制单人: </label> 
+												<input type="text" th:value="${main.erpInvoiceMakeName}" class="form-control" readonly />
+											</div>
+											<div class="col-lg-2 col-md-2">
+												<label for="code">发票入账日期: </label> 
+												<input type="text" th:value="${#dates.format(main.erpInvoiceMakeDate, 'yyyy-MM-dd')}" class="form-control" readonly />
+											</div>
+											<div class="col-lg-2 col-md-2">
+												<label for="code">币种: </label> 
+												<input type="text" value="人民币" class="form-control" readonly />
+											</div>
+											<div class="col-lg-2 col-md-2">
+												<label for="code">汇率: </label> 
+												<input type="text" value="1" class="form-control" readonly />
+											</div>
+										</div>										
 									</div>
-									<table id="history_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-									</table>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+					<div class="row margin-top-10">
+						<div class="col-lg-12">
+							<div class="tab-style-1" id="tabs">
+								<ul class="nav nav-tabs">
+									<li class="active"><a data-toggle="tab" href="#tab-1">明细</a></li>
+									<li><a data-toggle="tab" href="#tab-2">汇总</a></li>
+									<li><a data-toggle="tab" href="#tab-3">发票号</a></li>
+									<li><a data-toggle="tab" href="#tab-4">附件</a></li>
+									<li><a data-toggle="tab" href="#tab-5">操作日志</a></li>
+								</ul>
+								<div class="tab-content">
+									<div id="tab-1" class="tab-pane row-fluid fade in active">
+										<table id="detail_table" class="table table-striped table-bordered nowrap table-hover" style="width: 100%">
+										</table>
+									</div>
+									<div id="tab-2" class="tab-pane row-fluid fade in ">
+										<table id="summary_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+											<tfoot>
+												<tr>
+													<th colspan="5" class="dt-center">合计</th>
+													<th></th>
+													<th colspan="2"></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+									<div id="tab-3" class="tab-pane row-fluid fade in">
+										<table id="invoice_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
+									</div>
+									<div id="tab-4" class="tab-pane row-fluid fade in">
+										<table id="attach_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
+									</div>
+									<div id="tab-5" class="tab-pane row-fluid fade in">
+										<div class="row edit-history">
+											<a class="btn btn-primary save-history" id="show_modal_btn"><i class="fa fa-plus"></i> 添加说明</a>
+										</div>
+										<table id="history_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
 				<div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
@@ -1196,6 +1196,14 @@
 	    },
 
 	    submitHandler : function(form) {
+		    
+		    var attaches = attach_table.rows().data().toArray();
+		    var postAttachIds = [];
+		    $.each(attaches, function(key, item) {
+		    	if (item.id)
+		    		postAttachIds.push(item.id);
+		    });
+		    
 		    var details = table.rows().data().toArray();
 		    var post_table = [];
 		    $.each(details, function(key, item) {
@@ -1206,7 +1214,11 @@
 		    	};
 		    	post_table.push(row);
 		    });
-		    var post_data = {};
+		    
+		    var post_data = {
+		    		attachIds: postAttachIds.join(",")
+		    };
+		    
 		    if ($('#state').val() <= 3) {
 			    post_data.table = post_table;
 		    }

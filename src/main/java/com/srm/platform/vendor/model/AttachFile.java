@@ -3,6 +3,8 @@ package com.srm.platform.vendor.model;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -12,11 +14,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Table(name = "attach_file")
 public class AttachFile {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
 	private String type;
 	private String code;
 	private String filename;
-	private Date date;
+	private Date date = new Date();
 	
 	@JsonProperty("original_name")
 	private String originalName;
