@@ -382,12 +382,18 @@ public class StatementController extends CommonController {
 				main.setInvoiceMaker(this.getLoginAccount());
 				main.setInvoiceMakeDate(new Date());
 			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CONFIRMED) {
+				main.setInvoiceType(form.getInvoice_type());
+				main.setInvoiceCode(form.getInvoice_code());
 				main.setInvoiceConfirmer(this.getLoginAccount());
 				main.setInvoiceConfirmDate(new Date());
 			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCELED) {
+				main.setInvoiceType(form.getInvoice_type());
+				main.setInvoiceCode(form.getInvoice_code());
 				main.setInvoiceCanceler(this.getLoginAccount());
 				main.setInvoiceCancelDate(new Date());
 			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
+				main.setInvoiceType(form.getInvoice_type());
+				main.setInvoiceCode(form.getInvoice_code());
 				main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
 				main.setErpInvoiceMakeDate(new Date());
 				

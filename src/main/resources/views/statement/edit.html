@@ -298,7 +298,7 @@
   $(document).ready(function() {
 
   	function canEditInvoice() {
-  		if (state == 6 && invoice_state == 0 && is_vendor) {
+  		if (state == 6 && (invoice_state == 0 && is_vendor || invoice_state > 0 && invoice_state < 4 && !is_vendor)) {
   			return true;
   		}	else {
   			return false;
@@ -471,7 +471,7 @@
 	    serverSide : false,
 	    processing : false,
 	    ajax : false,
-	    select : canEdit()?{
+	    select : canEditInvoice()?{
 		    style : 'multi',
 		    selector: 'td:first-child',
 	    }:false,
@@ -516,7 +516,7 @@
 		      return html;
 	      }
 	    } ],
-	    buttons : canEdit()?[ {
+	    buttons : canEditInvoice()?[ {
 	      text : "添加行",
 	      action : function(e, dt, node, config) {
 		      var new_row = {
