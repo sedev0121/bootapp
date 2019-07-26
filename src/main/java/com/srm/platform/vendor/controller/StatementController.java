@@ -697,15 +697,17 @@ public class StatementController extends CommonController {
 			jsonResponse.setSuccess(GenericJsonResponse.SUCCESS);
 			jsonResponse.setErrmsg("没有此权限");
 		} else {
+			Account account = this.getLoginAccount();
+			Date today = new Date();
 			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
 			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
 			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
-				statementMainRepository.bulkReviewByCompany(allowedCompanyIdList);
+				statementMainRepository.bulkReviewByCompany(allowedCompanyIdList, account.getId(), today);
 			}
 
 			List<String> allowedVendorCodeList = accountPermission.getVendorList();
 			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
-				statementMainRepository.bulkReviewByVendor(allowedVendorCodeList);
+				statementMainRepository.bulkReviewByVendor(allowedVendorCodeList, account.getId(), today);
 			}
 		}
 		
@@ -720,15 +722,17 @@ public class StatementController extends CommonController {
 			jsonResponse.setSuccess(GenericJsonResponse.SUCCESS);
 			jsonResponse.setErrmsg("没有此权限");
 		} else {
+			Account account = this.getLoginAccount();
+			Date today = new Date();
 			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
 			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
 			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
-				statementMainRepository.bulkDeployByCompany(allowedCompanyIdList);
+				statementMainRepository.bulkDeployByCompany(allowedCompanyIdList, account.getId(), today);
 			}
 
 			List<String> allowedVendorCodeList = accountPermission.getVendorList();
 			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
-				statementMainRepository.bulkDeployByVendor(allowedVendorCodeList);
+				statementMainRepository.bulkDeployByVendor(allowedVendorCodeList, account.getId(), today);
 			}
 		}
 		
