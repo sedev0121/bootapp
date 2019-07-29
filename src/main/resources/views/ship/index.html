@@ -3,12 +3,8 @@
 <body>
   <div class="container"  layout:fragment="content">  
       <ul class="breadcrumb">
-        <li>
-          <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
-        </li>
-        <li th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}">订单管理</li>
-        <li class="active" th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}">订单发货</li>
-        <li class="active" th:if="${#strings.startsWith(#request.requestURI,'/ship/view')}">出货看板</li>
+        <li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+        <li th:if="${#strings.startsWith(#request.requestURI,'/ship')}">出货看板</li>
       </ul>
       <div class="search-content">
           <div class="search-cell width-10">
@@ -160,79 +156,154 @@ $(document).ready(function() {
     
     columns : [ {
       data : 'code',
-      title : '订单号',
+      title : '序号',
+    }, {
+      data : 'code',
+      title : '业务实体',
+    }, {
+      data : 'code',
+      title : '订单编号',
     }, {
       data : 'rowno',
       className: 'dt-center',
       title : '订单行号',
     }, {
-      data : 'vendorname',
-      visible: !is_vendor,
-      title : '供应商名称',
-    }, {
       data : 'vendorcode',
       visible: !is_vendor,
       title : '供应商编码',
     }, {
+      data : 'vendorname',
+      visible: !is_vendor,
+      title : '供应商名称',
+    }, {
       data : 'inventorycode',
-      title : '物料编码',              
+      title : '货品代码',              
     }, {
       data : 'inventoryname',
-      title : '物料名称',
+      title : '货品名称',
     }, {
       data : 'specs',
-      title : '物料描述',
+      title : '规格型号',
     }, {
       data : 'unitname',
       className: 'dt-center',
       title : '单位',
     }, {
+      data : 'lastshipdate',
+      className: 'dt-center',
+      title : '订单交期',
+      render: $.fn.date_renderer,
+    }, {
       data : 'quantity',
       className: 'dt-right',
-      title : '数量',
+      title : '订单数量',
+    }, {
+      data : 'quantity',
+      className: 'dt-right',
+      title : '换算率',
     }, {
       data : 'lastshipdate',
       className: 'dt-center',
-      title : '最新预发货日期',
-      render: $.fn.date_renderer,
+      title : '订单件数',
     }, {
       data : 'shipped_quantity',
       className: 'dt-right',
-      title : '最新预发货数量',    
-    }, {
-      data : null,
-      className: 'dt-center',
-      visible: editable,
-      orderable: false,
-      title : '本次预发货日期',
-      defaultContent: today
-    }, {
-      data : 'today_quantity',
-      className: 'dt-right edit-cell',
-      visible: editable,
-      orderable: false,
-      title : '本次预发货数量',
-      defaultContent: '',
+      title : '装箱规格',    
     }, {
       data : 'remain_quantity',
       className: 'dt-right edit-cell',
-      title : '未交数量',               
+      title : '每箱数量',               
     }, {
-      data : 'arrivedate',
-      className: 'dt-center',
-      title : '需求日期',
-      render: $.fn.date_renderer,
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '订单箱数',               
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '订单已发数量',               
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '订单已发件数',               
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '订单已发箱数',               
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '订单到货数量',               
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '订单到货件数',               
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '订单到货箱数',      
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '订单入库数量',               
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '订单未发数量',               
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '订单未发件数',               
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '订单未发箱数',  
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '拒收次数',  
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '拒收数量',  
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '退货数量',  
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '未税单价',  
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '未税金额',  
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '税率',  
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '含税单价',  
+    }, {
+      data : 'remain_quantity',
+      className: 'dt-right edit-cell',
+      title : '含税金额',  
     }, {
       data : 'arrivenote',
-      title : '备注',
+      title : '技术要求',
     }, {
-      data : 'confirmdate',
-      className: 'dt-center',
-      title : '承诺交货日期',
-      render: $.fn.date_renderer,
+      data : 'arrivenote',
+      title : '购方备注',
     }, {
-      data : 'confirmnote',
+      data : 'arrivenote',
       title : '供方备注',
+    }, {
+      data : 'close_date',
+      title : '行状态',
+      render : function(data, display, record) {
+	      return record.close_date ? '关闭' : '';
+      },
     } ],
     order: [ [14, 'desc'] ],
     createdRow: function ( row, data, index ) {
