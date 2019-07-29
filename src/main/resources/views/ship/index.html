@@ -41,31 +41,8 @@
       </div>
       <form id="export_form" th:action="@{/ship/export}" method="post">
         <input type="hidden" id="export_data" name="export_data"/>
-      </form> 
-      <form id="save_form" th:action="@{/ship/save}" method="post">        
-      </form>     
-      <div class="modal fade" id="import_dialog" tabindex="-1" role="dialog" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                  <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">
-                                                      选择导入Excel文档
-                      </h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      </button>
-                  </div>
-                  <div class="modal-body">
-                      <form id="import_form" th:action="@{/ship/import}" method="post" enctype="multipart/form-data">
-                        <input type="file" id="import_file" name="import_file"/>
-                      </form>  
-                  </div>
-                  <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                      <button type="button" class="btn btn-primary" id="start_import">导入</button>
-                  </div>
-              </div>
-          </div>
-      </div> 
+      </form>
+      
   </div>  
 </body>
 </html>
@@ -162,7 +139,6 @@ $(document).ready(function() {
 			      item.not_arrived_quantity = item.quantity - item.delivered_quantity * 1;
 			      item.not_arrived_box_quantity = App.getBoxCount(item.not_arrived_quantity, item.count_per_box);
 			      item.not_arrived_package_quantity = App.getPackageQuantity(item.not_arrived_quantity, item.package_rate);
-			      item.aaa = 1234;
 		      });
 		      json.recordsTotal = json.totalElements;
 		      json.recordsFiltered = json.totalElements;
@@ -400,31 +376,50 @@ $(document).ready(function() {
 		  });
 	  });
 
-	  $("#export").click(function() {
+	  $('#export').click(function() {
+      var table_order = table.order();
+      var table_order_column = table.settings().init().columns[table_order[0][0]].data;
 
-		  var order = table.order();
-		  var selected_data = table.rows('.selected').data().toArray();
+      var filter = {};
 
-		  if (selected_data.length == 0) {
-			  App.showErrorDialog("请选择至少一行数据！");
-			  return;
-		  }
+      filter.start_date = $('#start_date').val();
+      filter.end_date = $('#end_date').val();
+      filter.inventory = $('#inventory').val();
+      filter.vendor = $('#vendor').val();
+      filter.state = $('#state').val();
 
-		  var export_list = [];
-		  $.each(selected_data, function(key, item) {
-			  export_list.push(item.id);
+      filter.sortName = table_order_column;
+      filter.sortDir = table_order[0][1];
+      filter.start = 0;
+      filter.length = -1;
+      filter["_csrf"] = $("#export_form input").val();
+      
+      $.ajax({
+      	url: table.ajax.url(),
+      	type : "post",
+		    data : filter,
+		  }).done(function(resp) {
+		  	$.each(resp.content, function(key, item) {
+		      item.box_quantity = App.getBoxCount(item.quantity, item.count_per_box);
+		      
+		      item.delivered_package_quantity = App.getPackageQuantity(item.delivered_quantity, item.package_rate);
+		      item.delivered_box_quantity = App.getBoxCount(item.delivered_quantity, item.count_per_box);
+		      item.package_rate = App.getPackageRate(item.quantity, item.package_quantity);
+
+		      item.arrived_box_quantity = App.getBoxCount(item.arrived_quantity, item.count_per_box);
+		      item.arrived_package_quantity = App.getPackageQuantity(item.arrived_quantity, item.package_rate);
+
+		      item.not_arrived_quantity = item.quantity - item.delivered_quantity * 1;
+		      item.not_arrived_box_quantity = App.getBoxCount(item.not_arrived_quantity, item.count_per_box);
+		      item.not_arrived_package_quantity = App.getPackageQuantity(item.not_arrived_quantity, item.package_rate);
+	      });
+		  	
+			  var file_name = "出货看板.csv";
+			  App.exportCSVFromDatatable(table, file_name);
+		  }).fail(function() {
+		  	App.showErrorDialog("操作失败", "请重新试试");
 		  });
 
-		  var post_data = {
-		    order : "code",
-		    dir : "asc",
-		    inventory : $('#inventory').val(),
-		    code : $('#code').val(),
-		    list : export_list,
-		  };
-
-		  $('#export_data').val(JSON.stringify(post_data));
-		  $('#export_form').submit();
 	  });
 
 	  $('#start_date, #inventory, #end_date, #vendor').keyup(function(e) {

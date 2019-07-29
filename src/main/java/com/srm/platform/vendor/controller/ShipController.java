@@ -87,8 +87,8 @@ public class ShipController extends CommonController {
 			@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
-		String order = requestParams.getOrDefault("order", "ccode");
-		String dir = requestParams.getOrDefault("dir", "asc");
+		String order = requestParams.getOrDefault("order", "code");
+		String dir = requestParams.getOrDefault("dir", "desc");
 		
 		String vendorStr = requestParams.getOrDefault("vendor", "");
 		String inventory = requestParams.getOrDefault("inventory", "");		

@@ -625,7 +625,7 @@ var App = function() {
           if (isExportIgnoreCell(column_setting)) {
             continue;
           }
-          if (column_setting.data == "row_no") {
+          if (column_setting.data == "row_no" || column_setting.render == $.fn.rowno_renderer) {
           	cell_value = row_index + 1;
           } else if (column_setting.render) {
           	cell_value = escapeComma(column_setting.render(null, null, row_data));
