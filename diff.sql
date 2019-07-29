@@ -279,3 +279,7 @@ INSERT INTO `function_action` VALUES (23, 8, 14); /*对账单 发布 */
 INSERT INTO `function_action` VALUES (24, 8, 15); /*对账单 撤回 */
 INSERT INTO `function_action` VALUES (25, 8, 16); /*对账单 审批 */
 INSERT INTO `function_action` VALUES (26, 8, 17); /*对账单 传递ERP */
+
+/* 2019-07-29 */
+INSERT INTO `function` VALUES (9, '出货看板');
+INSERT INTO `function_action` VALUES (30, 9, 1); /*出货看板 查看列表*/
