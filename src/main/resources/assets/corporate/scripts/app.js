@@ -180,7 +180,7 @@ var App = function() {
 		  }
 		},
     getBoxCount : function (total, countPerBox) {
-		  if (!countPerBox || !total) {
+		  if (!countPerBox || countPerBox == "0" || !total) {
 		  	return '';
 		  } else {
 		  	var boxCount = parseFloat(total)/parseFloat(countPerBox);
