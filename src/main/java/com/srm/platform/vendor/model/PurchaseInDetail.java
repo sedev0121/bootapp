@@ -13,48 +13,89 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.srm.platform.vendor.searchitem.PurchaseInDetailResult;
+import com.srm.platform.vendor.searchitem.ShipSearchResult;
 import com.srm.platform.vendor.utility.Constants;
 
 @Entity
 
-@SqlResultSetMapping(name = "PurchaseInDetailResult", classes = {
-		@ConstructorResult(targetClass = PurchaseInDetailResult.class, columns = {
-				@ColumnResult(name = "id", type = String.class), 
-				@ColumnResult(name = "code", type = String.class),
-				@ColumnResult(name = "date", type = String.class),
-				@ColumnResult(name = "verify_date", type = String.class),
-				@ColumnResult(name = "row_no", type = Integer.class),
-				@ColumnResult(name = "inventory_name", type = String.class),
-				@ColumnResult(name = "inventory_code", type = String.class),
-				@ColumnResult(name = "specs", type = String.class),
-				@ColumnResult(name = "unitname", type = String.class),
-				@ColumnResult(name = "quantity", type = String.class),
-				@ColumnResult(name = "price", type = String.class), 
-				@ColumnResult(name = "cost", type = String.class),
-				@ColumnResult(name = "tax_price", type = String.class),
-				@ColumnResult(name = "tax_rate", type = String.class),
-				@ColumnResult(name = "tax_cost", type = String.class),
-				@ColumnResult(name = "confirmed_memo", type = String.class),
-				@ColumnResult(name = "vendorname", type = String.class),
-				@ColumnResult(name = "vendorcode", type = String.class),
-				@ColumnResult(name = "type", type = String.class),
-				@ColumnResult(name = "bredvouch", type = String.class),
-				@ColumnResult(name = "state", type = String.class),
-				@ColumnResult(name = "po_code", type = String.class),
-				@ColumnResult(name = "po_row_no", type = Integer.class),
-				@ColumnResult(name = "delivery_code", type = String.class),
-				@ColumnResult(name = "delivery_row_no", type = Integer.class),
-				@ColumnResult(name = "delivered_quantity", type = String.class),
-				@ColumnResult(name = "company_name", type = String.class),
-				@ColumnResult(name = "store_name", type = String.class),
-				@ColumnResult(name = "sync_date", type = Date.class),
-			}) 
-	})
+
+@SqlResultSetMappings({
+	@SqlResultSetMapping(name = "PurchaseInDetailResult", classes = {
+			@ConstructorResult(targetClass = PurchaseInDetailResult.class, columns = {
+					@ColumnResult(name = "id", type = String.class), 
+					@ColumnResult(name = "code", type = String.class),
+					@ColumnResult(name = "date", type = String.class),
+					@ColumnResult(name = "verify_date", type = String.class),
+					@ColumnResult(name = "row_no", type = Integer.class),
+					@ColumnResult(name = "inventory_name", type = String.class),
+					@ColumnResult(name = "inventory_code", type = String.class),
+					@ColumnResult(name = "specs", type = String.class),
+					@ColumnResult(name = "unitname", type = String.class),
+					@ColumnResult(name = "quantity", type = String.class),
+					@ColumnResult(name = "price", type = String.class), 
+					@ColumnResult(name = "cost", type = String.class),
+					@ColumnResult(name = "tax_price", type = String.class),
+					@ColumnResult(name = "tax_rate", type = String.class),
+					@ColumnResult(name = "tax_cost", type = String.class),
+					@ColumnResult(name = "confirmed_memo", type = String.class),
+					@ColumnResult(name = "vendorname", type = String.class),
+					@ColumnResult(name = "vendorcode", type = String.class),
+					@ColumnResult(name = "type", type = String.class),
+					@ColumnResult(name = "bredvouch", type = String.class),
+					@ColumnResult(name = "state", type = String.class),
+					@ColumnResult(name = "po_code", type = String.class),
+					@ColumnResult(name = "po_row_no", type = Integer.class),
+					@ColumnResult(name = "delivery_code", type = String.class),
+					@ColumnResult(name = "delivery_row_no", type = Integer.class),
+					@ColumnResult(name = "delivered_quantity", type = String.class),
+					@ColumnResult(name = "company_name", type = String.class),
+					@ColumnResult(name = "store_name", type = String.class),
+					@ColumnResult(name = "sync_date", type = Date.class),
+				}
+			) 
+		}
+	),
+	@SqlResultSetMapping(name = "ShipSearchResult", classes = {
+			@ConstructorResult(targetClass = ShipSearchResult.class, columns = {
+					@ColumnResult(name = "company_name", type = String.class),
+					@ColumnResult(name = "code", type = String.class),
+					@ColumnResult(name = "row_no", type = String.class),
+					@ColumnResult(name = "orderdate", type = String.class),	
+					@ColumnResult(name = "vencode", type = String.class),
+					@ColumnResult(name = "vendor_name", type = String.class),
+					@ColumnResult(name = "inventory_code", type = String.class),
+					@ColumnResult(name = "inventory_name", type = String.class),
+					@ColumnResult(name = "specs", type = String.class),
+					@ColumnResult(name = "unit_name", type = String.class),
+					@ColumnResult(name = "arrive_date", type = String.class),
+					@ColumnResult(name = "quantity", type = String.class),
+					@ColumnResult(name = "package_quantity", type = String.class),
+					@ColumnResult(name = "box_class_name", type = String.class),
+					@ColumnResult(name = "count_per_box", type = String.class),
+					@ColumnResult(name = "arrived_quantity", type = String.class),
+					@ColumnResult(name = "delivered_quantity", type = String.class),
+					@ColumnResult(name = "backed_quantity", type = String.class),
+					@ColumnResult(name = "invoiced_quantity", type = String.class),
+					@ColumnResult(name = "close_date", type = String.class),
+					@ColumnResult(name = "memo", type = String.class),
+					@ColumnResult(name = "confirmed_memo", type = String.class),
+					@ColumnResult(name = "price", type = String.class),
+					@ColumnResult(name = "money", type = String.class),
+					@ColumnResult(name = "tax_rate", type = String.class),
+					@ColumnResult(name = "tax_price", type = String.class),
+					@ColumnResult(name = "sum", type = String.class),
+				}
+			) 
+		}
+	)
+})
+
 
 @Table(name = "purchase_in_detail")
 public class PurchaseInDetail {

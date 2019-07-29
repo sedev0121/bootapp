@@ -52,7 +52,7 @@ import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.saveform.ExportShipForm;
-import com.srm.platform.vendor.searchitem.PurchaseOrderDetailSearchResult;
+import com.srm.platform.vendor.searchitem.ShipSearchResult;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
@@ -83,68 +83,57 @@ public class ShipController extends CommonController {
 	}
 
 	@RequestMapping(value = "/list", produces = "application/json")
-	public @ResponseBody Page<PurchaseOrderDetailSearchResult> list_ajax(Principal principal,
+	public @ResponseBody Page<ShipSearchResult> list_ajax(Principal principal,
 			@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "ccode");
 		String dir = requestParams.getOrDefault("dir", "asc");
+		
 		String vendorStr = requestParams.getOrDefault("vendor", "");
-		String inventory = requestParams.getOrDefault("inventory", "");
-		String code = requestParams.getOrDefault("code", "");
-		String arrive_date = requestParams.getOrDefault("arrive_date", null);
-		String confirm_date = requestParams.getOrDefault("confirm_date", null);
+		String inventory = requestParams.getOrDefault("inventory", "");		
+		String stateStr = requestParams.getOrDefault("state", "0");
+		String start_date = requestParams.getOrDefault("start_date", null);
+		String end_date = requestParams.getOrDefault("end_date", null);
+		
+		Date startDate = Utils.parseDate(start_date);
+		Date endDate = Utils.getNextDate(end_date);
+		Integer state = Integer.parseInt(stateStr);
 
-		Date arriveDate = Utils.parseDate(arrive_date);
-		Date confirmDate = Utils.parseDate(confirm_date);
-
-		switch (order) {
-		case "remain_quantity":
-			order = "remain_quantity";
-			break;
-
-		case "vendorname":
-			order = "d.name";
-			break;
-		case "vendorcode":
-			order = "d.code";
-			break;
-		case "inventoryname":
-			order = "c.name";
-			break;
-		case "lastshipdate":
-			order = "a.last_ship_date";
-			break;
-		case "specs":
-			order = "c.specs";
-			break;
-		case "unitname":
-			order = "e.name";
-			break;
-		}
+//		switch (order) {
+//		case "remain_quantity":
+//			order = "remain_quantity";
+//			break;
+//
+//		case "vendorname":
+//			order = "d.name";
+//			break;
+//		case "vendorcode":
+//			order = "d.code";
+//			break;
+//		case "inventoryname":
+//			order = "c.name";
+//			break;
+//		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, d.code vendorcode, (a.quantity-ifnull(a.shipped_quantity,0)) remain_quantity, d.name vendorname, c.name inventoryname, c.specs, e.name unitname ";
+		String selectQuery = "select a.*, b.orderdate, b.vencode, c.name company_name, e.name box_class_name, f.name vendor_name, d.specs  ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "from purchase_order_detail a left join purchase_order_main b on a.code = b.code "
-				+ "left join inventory c on a.inventorycode=c.code left join vendor d on b.vencode=d.code "
-				+ "left join measurement_unit e on c.main_measure=e.code where b.srmstate=2 ";
+		String bodyQuery = "from purchase_order_detail a "
+				+ "left join purchase_order_main b on a.code=b.code left join company c on b.company_id=c.id "
+				+ "left join inventory d on  a.inventory_code=d.code left join box_class e on d.box_class_id=e.id "
+				+ "left join vendor f on b.vencode=f.code where 1=1 ";
 
 		Map<String, Object> params = new HashMap<>();
-
-		if (!code.trim().isEmpty()) {
-			bodyQuery += " and a.code like CONCAT('%',:code, '%') ";
-			params.put("code", code.trim());
-		}
 
 		if (isVendor()) {
 			Vendor vendor = this.getLoginAccount().getVendor();
 			vendorStr = vendor == null ? "0" : vendor.getCode();
-			bodyQuery += " and d.code= :vendor";
+			bodyQuery += " and f.code= :vendor";
 			params.put("vendor", vendorStr);
 		} else {
 //			List<String> vendorList = this.getVendorListOfUser();
@@ -162,19 +151,28 @@ public class ShipController extends CommonController {
 
 		}
 
+		if (state >= 0) {
+			bodyQuery += " and b.srmstate=:state";
+			params.put("state", state);
+		}
+		
 		if (!inventory.trim().isEmpty()) {
-			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
+			bodyQuery += " and (d.name like CONCAT('%',:inventory, '%') or d.code like CONCAT('%',:inventory, '%')) ";
 			params.put("inventory", inventory.trim());
 		}
 
-		if (arriveDate != null) {
-			bodyQuery += " and a.arrivedate=:arrivedate";
-			params.put("arrivedate", arriveDate);
+		if (!vendorStr.trim().isEmpty()) {
+			bodyQuery += " and (f.name like CONCAT('%',:vendor, '%') or f.code like CONCAT('%',:vendor, '%')) ";
+			params.put("vendor", vendorStr.trim());
 		}
 
-		if (confirmDate != null) {
-			bodyQuery += " and a.confirmdate=:confirmdate";
-			params.put("confirmdate", confirmDate);
+		if (startDate != null) {
+			bodyQuery += " and b.orderdate>=:startDate";
+			params.put("startDate", startDate);
+		}
+		if (endDate != null) {
+			bodyQuery += " and b.orderdate<:endDate";
+			params.put("endDate", endDate);
 		}
 
 		countQuery += bodyQuery;
@@ -187,14 +185,14 @@ public class ShipController extends CommonController {
 		BigInteger totalCount = (BigInteger) q.getSingleResult();
 
 		selectQuery += bodyQuery + orderBy;
-		q = em.createNativeQuery(selectQuery, "PurchaseOrderDetailSearchResult");
+		q = em.createNativeQuery(selectQuery, "ShipSearchResult");
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			q.setParameter(entry.getKey(), entry.getValue());
 		}
 
 		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
 
-		return new PageImpl<PurchaseOrderDetailSearchResult>(list, request, totalCount.longValue());
+		return new PageImpl<ShipSearchResult>(list, request, totalCount.longValue());
 
 	}
 
