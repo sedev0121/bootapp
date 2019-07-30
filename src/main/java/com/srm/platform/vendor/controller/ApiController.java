@@ -1019,7 +1019,7 @@ public class ApiController {
 	}
 	
 	private AccountPermission getPermissionScopeOfStatement(Long accountId) {
-		Long STATEMENT_LIST_FUNCTION_ACTION_ID = 20L;
+		Long STATEMENT_LIST_FUNCTION_ACTION_ID = 21L;
 		
 		List<DimensionTargetItem> scopeList = permissionGroupRepository.findPermissionScopeOf(accountId, STATEMENT_LIST_FUNCTION_ACTION_ID);
 		AccountPermission accountPermission = new AccountPermission(accountId, STATEMENT_LIST_FUNCTION_ACTION_ID, scopeList);
