@@ -107,6 +107,6 @@ public class Constants {
 	
 	public final static String DEFAULT_SECOND_PASSWORD = "123";
 	
-	public final static String VERSION = "20190730";
+	public final static String VERSION = "20190730-2";
 	
 }
