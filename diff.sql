@@ -135,6 +135,7 @@ INSERT INTO `function_action` VALUES (17, 6, 8);
 INSERT INTO `function_action` VALUES (18, 7, 1);
 INSERT INTO `function_action` VALUES (19, 7, 6);
 
+
 alter table box modify COLUMN box_class_id int(11) NULL DEFAULT NULL;
 alter table box add column inventory_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 alter table box add column delivery_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
@@ -264,21 +265,24 @@ alter table purchase_order_detail DROP column nat_tax_price;
 alter table purchase_order_detail DROP column nat_money;
 alter table purchase_order_detail DROP column nat_sum;
 
-INSERT INTO `action` VALUES (12, '新建/提交');
-INSERT INTO `action` VALUES (13, '审核');
-INSERT INTO `action` VALUES (14, '发布');
-INSERT INTO `action` VALUES (15, '撤回');
-INSERT INTO `action` VALUES (16, '审批');
-INSERT INTO `action` VALUES (17, '传递ERP');
+INSERT INTO `action` VALUES (12, '收货');
+INSERT INTO `function_action` VALUES (20, 7, 12);
 
 INSERT INTO `function` VALUES (8, '对账单管理');
-INSERT INTO `function_action` VALUES (20, 8, 1); /*对账单 查看列表 */
-INSERT INTO `function_action` VALUES (21, 8, 12); /*对账单 新建/提交 */
-INSERT INTO `function_action` VALUES (22, 8, 13); /*对账单 审核 */
-INSERT INTO `function_action` VALUES (23, 8, 14); /*对账单 发布 */
-INSERT INTO `function_action` VALUES (24, 8, 15); /*对账单 撤回 */
-INSERT INTO `function_action` VALUES (25, 8, 16); /*对账单 审批 */
-INSERT INTO `function_action` VALUES (26, 8, 17); /*对账单 传递ERP */
+INSERT INTO `action` VALUES (13, '新建/提交');
+INSERT INTO `action` VALUES (14, '审核');
+INSERT INTO `action` VALUES (15, '发布');
+INSERT INTO `action` VALUES (16, '撤回');
+INSERT INTO `action` VALUES (17, '审批');
+INSERT INTO `action` VALUES (18, '传递ERP');
+
+INSERT INTO `function_action` VALUES (21, 8, 1); /*对账单 查看列表 */
+INSERT INTO `function_action` VALUES (22, 8, 13); /*对账单 新建/提交 */
+INSERT INTO `function_action` VALUES (23, 8, 14); /*对账单 审核 */
+INSERT INTO `function_action` VALUES (24, 8, 15); /*对账单 发布 */
+INSERT INTO `function_action` VALUES (25, 8, 16); /*对账单 撤回 */
+INSERT INTO `function_action` VALUES (26, 8, 17); /*对账单 审批 */
+INSERT INTO `function_action` VALUES (27, 8, 18); /*对账单 传递ERP */
 
 /* 2019-07-29 */
 INSERT INTO `function` VALUES (9, '出货看板');

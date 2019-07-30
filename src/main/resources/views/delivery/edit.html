@@ -13,7 +13,7 @@
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==1}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
 				<a class="btn btn-primary" th:if="${main.state==2 && canConfirm}" id="pass"><i class="fa fa-arrow-up"></i>确认</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==4}" id="accept"><i class="fa fa-check-circle"></i> 收货</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('发货单管理-收货')" th:if="${main.state==4}" id="accept"><i class="fa fa-check-circle"></i> 收货</a> 
 				<a class="btn btn-danger" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==5}" id="confirm_cancel"><i class="fa fa-check"></i> 确认拒收</a>
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state<5 && main.state>=2}" id="cancel"><i class="fa fa-undo"></i> 退回</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state>1}" id="print"><i class="fa fa-print"></i> 打印</a> 
@@ -354,7 +354,7 @@ is_readonly = 0;
 	      },
 	    },
 	    fixedColumns: {
-        leftColumns: 5,
+        leftColumns: 8,
     	},
 	    columns : [ {
 	      data : null,
@@ -381,20 +381,20 @@ is_readonly = 0;
 	      data : 'purchaseOrderDetail.inventory_name',
 	      title : '货品名称',
 	    }, {
-	      data : 'purchaseOrderDetail.main.purchase_type_name',
-	      className : 'dt-center',
-	      title : '采购类型',
-	    }, {
 	      data : 'purchaseOrderDetail.inventory.specs',
 	      title : '规格型号',
-	    }, {
-	      data : 'purchaseOrderDetail.unit_name',
-	      className : 'dt-center',
-	      title : '单位',
 	    }, {
 	      data : 'purchaseOrderDetail.quantity',
 	      className : 'dt-right',
 	      title : '订单数量',
+	    }, {
+	      data : 'purchaseOrderDetail.main.purchase_type_name',
+	      className : 'dt-center',
+	      title : '采购类型',
+	    }, {
+	      data : 'purchaseOrderDetail.unit_name',
+	      className : 'dt-center',
+	      title : '单位',
 	    }, {
 	      data : 'package_rate',
 	      className : 'dt-right',
@@ -519,8 +519,18 @@ is_readonly = 0;
 		    $('input.editor-valid', row).prop('checked', data.ivalid == 1);
 	    },
 	    drawCallback: function( settings ) {
+	    	var tableData = this.api().rows().data().toArray();
+	    	if (tableData.length > 0) {
+	    		$('#company').attr("readonly", true);
+	    		$('#store').attr("readonly", true);
+	    		$('#type').attr("readonly", true);
+	    	} else {
+	    		$('#company').attr("readonly", false);
+	    		$('#store').attr("readonly", false);
+	    		$('#type').attr("readonly", false);
+	    	}
 	    	summary_data = {};	    	
-		  	$.each(this.api().rows().data().toArray(), function(key, item) {
+		  	$.each(tableData, function(key, item) {
 		  		var key = item.purchaseOrderDetail.inventory.code;
 		  		if (!summary_data[key]) {
 		  			summary_data[key] = {
@@ -909,11 +919,24 @@ is_readonly = 0;
 	  });
 
 	  $.validator.addMethod("checkTable", function(value, element) {
-	  	if ($('#state').val() >= 5) {
+		  var exist_data = table.rows().data().toArray();
+
+		  if ($('#state').val() == 5 || $('#state').val() == 6) {
 	  		return true;
 	  	};
 	  	
-		  var exist_data = table.rows().data().toArray();
+	  	if ($('#state').val() == 7) {
+	  		for (i = 0; i < exist_data.length; i++) {
+				  var exist_row = exist_data[i];
+			  	var cancel_quantity = exist_row.cancel_quantity;
+	    		var cancel_confirmed = exist_row.cancel_confirmed;
+				  if (cancel_confirmed && exist_row.delivered_quantity != cancel_quantity) {
+				  	App.showErrorDialog("操作失败", "存在拒收数量与发货数量不一致的货品");
+					  return false;
+				  }			  			  			  
+			  }	
+	  	}	  	
+	  	
 		 
 		  var store_set = $('#store_set').val();
 

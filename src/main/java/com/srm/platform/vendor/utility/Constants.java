@@ -110,7 +110,7 @@ public class Constants {
 	
 	public final static String DEFAULT_SECOND_PASSWORD = "123";
 	
-	public final static String VERSION = "20190722";
+	public final static String VERSION = "20190730-2";
 	
 	public final static String DEFAULT_STATEMENT_DATE = "25";
 	public final static String DEFAULT_STATEMENT_TIME = "09:00";

@@ -581,17 +581,12 @@ public class ApiController {
 					return response;
 				} else {
 					String detailInventoryCode = detail.getPurchaseOrderDetail().getInventory().getCode();
-					Double detailDeliveredQuantity = detail.getDeliveredQuantity();
+
 					if (!detailInventoryCode.equals(inventoryCode)) {
 						response.put("error_code", RESPONSE_FAIL);
 						response.put("msg", "行号为" + rowNo + "的货品编码（"+ detailInventoryCode + "）不一致");	
 						return response;
-					} else if (detailDeliveredQuantity.doubleValue() != quantity) {
-						response.put("error_code", RESPONSE_FAIL);
-						response.put("msg", "行号为" + rowNo + "的货品数量（"+ detailDeliveredQuantity + "）不一致");	
-						return response;
 					} else {
-						
 						detail.setCancelQuantity(quantity);
 						detail.setCancelReason(reason);
 						detail.setCancelDate(new Date());
