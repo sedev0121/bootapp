@@ -113,6 +113,7 @@ INSERT INTO `action` VALUES (9, '生成箱码');
 INSERT INTO `action` VALUES (10, '启用/停用');
 INSERT INTO `action` VALUES (11, '解绑');
 
+
 TRUNCATE TABLE function_action;
 ALTER TABLE function_action AUTO_INCREMENT = 1;
 INSERT INTO `function_action` VALUES (1, 1, 1);
@@ -134,6 +135,7 @@ INSERT INTO `function_action` VALUES (16, 6, 7);
 INSERT INTO `function_action` VALUES (17, 6, 8);
 INSERT INTO `function_action` VALUES (18, 7, 1);
 INSERT INTO `function_action` VALUES (19, 7, 6);
+
 
 alter table box modify COLUMN box_class_id int(11) NULL DEFAULT NULL;
 alter table box add column inventory_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
@@ -235,3 +237,7 @@ alter table purchase_order_detail add column package_quantity double(16,6) NULL 
 alter table purchase_order_detail add column delivered_package_quantity double(16,6) NULL DEFAULT NULL;
 alter table delivery_detail add column delivered_package_quantity double(16,6) NULL DEFAULT NULL;
 
+
+/* 2019-07-30 */
+INSERT INTO `action` VALUES (12, '收货');
+INSERT INTO `function_action` VALUES (20, 7, 12);
