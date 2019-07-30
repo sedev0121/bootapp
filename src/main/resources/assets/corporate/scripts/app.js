@@ -487,6 +487,9 @@ var App = function() {
     getStatementStateOfId: function(id) {
       return getLabelOfId(statement_state_data, id);
     },
+    getContractStateOfId: function(id) {
+      return getLabelOfId(contract_state_data, id);
+    },
     getInvoiceStateOfId: function(id) {
       return getLabelOfId(invoice_state_data, id);
     },

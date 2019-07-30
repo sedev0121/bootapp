@@ -66,11 +66,9 @@
 </script>
 <script th:inline="javascript">
 	/*[+
-   var list_url = [[@{/statement/list}]];
-   var edit_url = [[@{/statement/}]];
-   var bluk_review_url = [[@{/statement/bulk_review}]];
-   var bluk_deploy_url = [[@{/statement/bulk_deploy}]];
-   var log_url = [[@{/operation_history/list/statement/}]];
+   var list_url = [[@{/contract/list}]];
+   var edit_url = [[@{/contract/}]];
+   var log_url = [[@{/operation_history/list/contract/}]];
    +]*/
    
   var log_table, selected_code;
@@ -133,7 +131,7 @@
 	      title : '合同状态',
 	      className : 'dt-center',
 	      createdCell : App.getStateClass,
-	      render : App.getStatementStateOfId
+	      render : App.getContractStateOfId
 	    }, {
 	      data : 'vendor_address',
 	      title : '合同名称',
@@ -272,32 +270,6 @@
 	  $('#vendor, #code, #start_date, #end_date').keyup(function(e) {
 		  if (e.keyCode == 13)
 			  table.draw();
-	  });
-	  
-	  $('#bulk_review').click(function() {
-	  	App.showConfirmDialog('确定要批量审核吗?', function() {
-			  $.get(bluk_review_url, function(res, status) {
-			  	if (res.success == 1) {
-			  		table.draw();
-			  		App.showSuccessDialog("操作成功");
-			  	} else {
-			  		App.showErrorDialog(res.errmsg);
-			  	}				  
-			  });
-		  });
-	  });
-	  
-	  $('#bulk_deploy').click(function() {
-	  	App.showConfirmDialog('确定要批量发布吗?', function() {
-			  $.get(bluk_deploy_url, function(res, status) {
-			  	if (res.success == 1) {
-			  		table.draw();
-			  		App.showSuccessDialog("操作成功");
-			  	} else {
-			  		App.showErrorDialog(res.errmsg);
-			  	}				  
-			  });
-		  });
 	  });
   });
 </script>
