@@ -279,7 +279,7 @@
 	      },
 	    },
 	    fixedColumns : {
-		    leftColumns : 4,
+		    leftColumns : 6,
 	    },
 	    columns : [ {
 	      data : null,
@@ -307,7 +307,6 @@
 	    }, {
 	      data : null,
 	      defaultContent : '',
-	      className : 'dt-right',
 	      title : '规格型号',
 	      render: function (data, display, record) {
 	        if (record.inventory) {
@@ -317,13 +316,13 @@
 	        }
 	      },
 	    }, {
-	      data : 'unit_name',
-	      className : 'dt-center',
-	      title : '单位',
-	    }, {
 	      data : 'quantity',
 	      className : 'dt-right',
 	      title : '订单数量',
+	    }, {
+	      data : 'unit_name',
+	      className : 'dt-center',
+	      title : '单位',
 	    }, {
 	      data : 'package_rate',
 	      className : 'dt-right',

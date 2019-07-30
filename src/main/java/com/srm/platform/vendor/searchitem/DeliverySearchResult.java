@@ -46,6 +46,7 @@ public class DeliverySearchResult implements Serializable {
 		this.estimatedArriavlDate = estimatedArriavlDate;
 		this.createDate = createDate;
 		this.state = state;
+		this.contact = contact;
 	}
 
 	public Long getId() {
