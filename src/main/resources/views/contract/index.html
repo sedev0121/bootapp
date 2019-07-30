@@ -133,14 +133,16 @@
 	      createdCell : App.getStateClass,
 	      render : App.getContractStateOfId
 	    }, {
-	      data : 'vendor_address',
+	      data : 'name',
 	      title : '合同名称',
 	    }, {
-	      data : 'vendor_address',
+	      data : 'type',
 	      title : '合同类型',
+	      render : App.getContractTypeOfId
 	    }, {
-	      data : 'vendor_address',
+	      data : 'kind',
 	      title : '合同性质',
+	      render : App.getContractKindOfId
 	    }, {
 	      data : 'company_name',
 	      title : '业务实体',
@@ -153,11 +155,12 @@
 	      visible : !is_vendor,
 	      title : '供应商名称',
 	    }, {
-	      data : 'company_name',
+	      data : 'project_no',
 	      title : '项目编码',
 	    }, {
-	      data : 'company_name',
+	      data : 'price_type',
 	      title : '价格类型',
+	      render : App.getContractPriceOfId
 	    }, {
 	      data : null,
 	      defaultContent: 'CYN',
@@ -168,31 +171,27 @@
 	      title : '签订日期',
 	      render : $.fn.date_renderer
 	    }, {
-	      data : 'date',
+	      data : 'start_date',
 	      className : 'dt-center',
 	      title : '合同开始时间',
 	      render : $.fn.date_renderer
 	    }, {
-	      data : 'date',
+	      data : 'end_date',
 	      className : 'dt-center',
 	      title : '合同结束时间',
 	      render : $.fn.date_renderer
 	    }, {
-	      data : 'company_name',
+	      data : 'quantity_type',
 	      title : '数量控制方式',
+	      render : App.getContractQuantityOfId
 	    }, {
-	      data : 'company_name',
+	      data : 'tax_rate',
 	      title : '税率%',
 	    }, {
-	      data : 'company_name',
+	      data : 'pay_mode',
 	      title : '付款方式',
 	    }, {
-	      data : null,
-	      orderable: false,
-	      defaultContent: '人民币',
-	      title : '币别',
-	    }, {
-	      data : 'company_name',
+	      data : 'make_name',
 	      title : '创建人',
 	    }, {
 	      data : 'make_date',
@@ -207,7 +206,7 @@
 		      return '<a class="log" code="' + record.code + '" href="#">操作记录</a>';
 	      },
 	    }, {
-	      data : 'company_name',
+	      data : 'memo',
 	      title : '备注',
 	    } ],
 	    order : [ [ 0, "desc" ] ],

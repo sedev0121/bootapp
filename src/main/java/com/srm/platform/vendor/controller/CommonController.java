@@ -46,6 +46,8 @@ import com.srm.platform.vendor.repository.AttachFileRepository;
 import com.srm.platform.vendor.repository.BoxClassRepository;
 import com.srm.platform.vendor.repository.BoxRepository;
 import com.srm.platform.vendor.repository.CompanyRepository;
+import com.srm.platform.vendor.repository.ContractDetailRepository;
+import com.srm.platform.vendor.repository.ContractMainRepository;
 import com.srm.platform.vendor.repository.DeliveryDetailRepository;
 import com.srm.platform.vendor.repository.DeliveryMainRepository;
 import com.srm.platform.vendor.repository.FunctionActionRepository;
@@ -209,7 +211,13 @@ public class CommonController {
 
 	@Autowired
 	public StatementDetailRepository statementDetailRepository;
+	
+	@Autowired
+	public ContractMainRepository contractMainRepository;
 
+	@Autowired
+	public ContractDetailRepository contractDetailRepository;	
+	
 	@Autowired
 	public StoreRepository storeRepository;
 

@@ -28,7 +28,7 @@
 						</div>
 						<div class="col-lg-4 col-md-4">
 							<label for="code">合同名称: </label> 
-							<input type="text" class="form-control"/>
+							<input type="text" name="name" th:value="${main.name}" class="form-control"/>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="makedate">签订日期: </label> 
@@ -36,21 +36,19 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="makedate">合同开始时间: </label> 
-							<input type="text" name="start_date" id="start_date" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" class="form-control">
+							<input type="text" name="start_date" th:value="${#dates.format(main.startDate, 'yyyy-MM-dd')}" class="form-control">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="makedate">合同结束时间: </label> 
-							<input type="text" name="end_date" id="end_date" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" class="form-control">
+							<input type="text" name="end_date" th:value="${#dates.format(main.endDate, 'yyyy-MM-dd')}" class="form-control">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="type">合同类型:</label> 
-							<select id="type" name="type" class="form-control">								
-							</select>
+							<select id="type" name="type" class="form-control"></select>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="vendor">合同性质:</label> 
-							<select id="class" name="class" class="form-control">
-							</select>
+							<select id="kind" name="kind" class="form-control"></select>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="quantity_type">数量控制: </label> 
@@ -62,11 +60,11 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="task">基材基准价格: </label> 
-							<input type="text" th:value="${main.taskCode}" class="form-control">
+							<input type="text" th:value="${main.basePrice}" class="form-control">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="task">基材阶梯浮动幅度: </label> 
-							<input type="text" th:value="${main.taskCode}" class="form-control">
+							<input type="text" th:value="${main.floatingPrice}" class="form-control">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="company">业务实体: </label> 
@@ -82,19 +80,23 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="tax_cost">付款方式: </label> 
-							<input type="number" id="adjust_tax_cost" name="adjustCostSum" th:value="${main.adjustCostSum}" class="form-control" />
+							<input type="text" name="pay_mode" th:value="${main.payMode}" class="form-control" />
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="code">项目编码: </label> 
-							<input type="text" class="form-control"/>
+							<input type="text" name="project_no" th:value="${main.projectNo}" class="form-control"/>
 						</div>						
 						<div class="col-lg-2 col-md-2">
 							<label for="tax_cost">税率: </label> 
-							<input type="number" id="tax_cost" name="taxCostSum" th:value="${main.taxCostSum}" class="form-control"/>
+							<input type="number" id="tax_rate" name="tax_rate" th:value="${main.taxRate}" class="form-control"/>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="code">币别: </label> 
 							<input type="text" class="form-control" value="CYN" readonly/>
+						</div>
+						<div class="col-lg-4 col-md-4">
+							<label for="code">备注: </label> 
+							<input type="text" name="memo" th:value="${main.memo}" class="form-control"/>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="maker">创建人:</label> 
@@ -107,6 +109,7 @@
 						<div class="col-lg-2 col-md-2">
 							<label for="state">状态:</label> 
 							<select name="state" id="state" class="form-control" readonly>
+								<option th:value="${main.state}" selected="selected"></option>
 							</select>
 						</div>
 					</div>
@@ -238,21 +241,21 @@
   var qty_sum, money_sum;
   var invoice_code_seperator = "; ";
   /*[+
-   var sync_url = [[@{/sync/purchasein/vendor/}]];
-   var detail_url = [[@{|/statement/${main.code}/details|}]];
-   var attach_list_url = [[@{|/statement/${main.code}/attaches|}]];
-   var edit_url = [[@{/statement/}]];
+   var detail_url = [[@{|/contract/${main.code}/details|}]];
+   var attach_list_url = [[@{|/contract/${main.code}/attaches|}]];
+   var edit_url = [[@{/contract/}]];
    var import_url = [[@{/purchasein/select}]];
-   var del_url = [[@{|/statement/${main.code}/delete|}]];
+   var del_url = [[@{|/contract/${main.code}/delete|}]];
    var vendor_search_url = [[@{/vendor/search}]];
    var state = [[${main.state}]];
-   var invoice_state = [[${main.invoiceState}]];
-   var invoice_code = [[${main.invoiceCode}]];
    var type = [[${main.type}]];
-   var invoice_type = [[${main.invoiceType}]];
-   var history_url = [[@{|/operation_history/list/statement/${main.code}}|]];
+   var kind = [[${main.kind}]];
+   var price_type = [[${main.priceType}]];
+   var quantity_type = [[${main.quantityType}]];
+   
+   var history_url = [[@{|/operation_history/list/contract/${main.code}}|]];
    var company_search_url = [[@{/company/search}]];
-   var download_url = [[@{|/statement/${main.code}/download|}]];
+   var download_url = [[@{|/contract/${main.code}/download|}]];
    +]*/
 
   $(document).ready(function() {
@@ -263,31 +266,31 @@
 	  $("#state").select2({
 	    data : App.getStatementStateData(),
 	    minimumResultsForSearch : -1
-	  });
+	  }).select2("val", state.toString());
 	  
 	  $("#type").select2({
 	    data : App.getContractTypeData(),
 	    minimumResultsForSearch : -1
-	  });
+	  }).select2("val", type.toString());
 
-	  $("#class").select2({
-	    data : App.getContractClassData(),
+	  $("#kind").select2({
+	    data : App.getContractKindData(),
 	    minimumResultsForSearch : -1
-	  });
+	  }).select2("val", kind.toString());
 	  
 	  $("#price_type").select2({
 	    data : App.getContractPriceData(),
 	    minimumResultsForSearch : -1
-	  });
+	  }).select2("val", price_type.toString());
 	  
 	  $("#quantity_type").select2({
 	    data : App.getContractQuantityData(),
 	    minimumResultsForSearch : -1
-	  });
+	  }).select2("val", quantity_type.toString());
 	  
 	  
   	function canEditInvoice() {
-  		if (state == 6 && (invoice_state == 0 && is_vendor || invoice_state > 0 && invoice_state < 4 && !is_vendor)) {
+  		if (state == 6 ) {
   			return true;
   		}	else {
   			return false;
@@ -300,20 +303,6 @@
   		}	else {
   			return false;
   		}
-  	}
-  	
-  	function updateInvoiceData() {
-  		if (invoice_table) {
-  			var table_data = invoice_table.rows().data().toArray();
-  		  var invoice_codes = [];
-  		  $.each(table_data, function(key, item) {
-  		  	if (item.invoice_code) {
-  		  		invoice_codes.push(item.invoice_code);	
-  		  	}  		  	
-  		  })
-  		  
-  		  $('#invoice_code').val(invoice_codes.join(invoice_code_seperator));	
-  		}  		
   	}
   	
 	  if (!canEdit()) {
@@ -329,6 +318,9 @@
 		  $('#history_content').focus();
 	  });
 
+	  
+	  
+	  var invoice_table_data = [];
 	  invoice_editor = new $.fn.dataTable.Editor({
 	    table : "#invoice_table",
 	    idSrc : "row_no",
@@ -358,20 +350,8 @@
 		  })
 		  invoice_table.rows().invalidate();
 	  }).on('submitSuccess', function(e, data, action) {
-		  //updateInvoiceData();
+		  
 	  });
-	  
-	  var invoice_table_data = [];
-	  
-	  if (invoice_code) {
-	  	var code_list = invoice_code.split(invoice_code_seperator);
-	  	for(var i=0; i<code_list.length; i++) {
-	  		invoice_table_data.push({
-	  				row_no: i+1,
-	  				invoice_code: code_list[i]
-	  		});
-	  	}
-	  }
 	  
 	  invoice_table = $('#invoice_table').DataTable({
 	    serverSide : false,
@@ -415,7 +395,7 @@
 	      editor : invoice_editor
 	    } ]:false,
 	    drawCallback : function(settings) {
-	    	updateInvoiceData();
+	    	
 	    }
 	  });
 
@@ -899,9 +879,6 @@
 		    select : canEdit()?{
 			    style : 'multi'
 		    }:false,
-		    fixedColumns : {
-			    leftColumns : 4,
-		    },
 		    buttons : canEdit()?[ {
 		      text : "选择要对账的物料",
 		      action : function(e, dt, node, config) {
@@ -929,9 +906,7 @@
 		      url : detail_url,
 		      dataSrc : function(json) {
 		      	$.each(json, function(key, item) {
-		  			  item.invoice_quantity = item.pi_quantity;
-		  		  	item.invoice_cost = item.tax_cost * 1 + item.adjust_tax_cost * 1;
-		  			  item.invoice_price = App.priceNumber(item.invoice_cost/item.invoice_quantity);
+		  		  	item.tax_cost = App.costNumber(item.tax_price * item.quantity);
 		  		  });	
 			      return json;
 		      },
@@ -949,43 +924,36 @@
 		      className : 'dt-center',
 		      title : '行号'
 		    }, {
-		      data : 'pi_code',
-		      sortable : false,
-		      title : '接收单号',
-		    }, {
-		      data : 'pi_date',
-		      render : $.fn.date_renderer,
-		      sortable : false,
-		      className : 'dt-center',
-		      title : '接收日期',
-		    }, {
-		      data : 'inventory_code',
+		      data : 'inventory.code',
 		      sortable : false,
 		      title : '货品代码',
 		    }, {
-		      data : 'inventory_name',
+		      data : 'inventory.name',
 		      title : '货品名称',
 		      sortable : false,
 		    }, {
-		      data : 'specs',
+		      data : 'inventory.specs',
 		      sortable : false,
 		      className : 'dt-center',
 		      title : '规格型号',
 		    }, {
-		      data : 'unitname',
+		      data : 'inventory.main_measure',
 		      sortable : false,
 		      className : 'dt-center',
 		      title : '单位',
 		    }, {
-		      data : 'tax_rate',
+		      data : 'quantity',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '数量',
+		    }, {
+		      data : null,
 		      sortable : false,
 		      className : 'dt-center',
 		      title : '税率',
-		    }, {
-		      data : 'pi_quantity',
-		      sortable : false,
-		      className : 'dt-center',
-		      title : '接收数量',
+		      render: function() {
+		      	return $("#tax_rate").val();
+		      }
 		    }, {
 		      data : 'tax_price',
 		      sortable : false,
@@ -997,59 +965,14 @@
 		      className : 'dt-right',
 		      title : '含税金额',
 		    }, {
-		      data : 'adjust_tax_cost',
-		      sortable : false,
-		      className : 'dt-right edit-cell',
-		      title : '含税调整金额',
-		    }, {
-		      data : 'invoice_quantity',
-		      sortable : false,
-		      className : 'dt-right',
-		      title : '开票数量',
-		    }, {
-		      data : 'invoice_price',
-		      sortable : false,
-		      className : 'dt-right',
-		      title : '开票单价',
-		    }, {
-		      data : 'invoice_cost',
-		      sortable : false,
-		      className : 'dt-right',
-		      title : '开票金额',
-		    }, {
-		      data : 'po_code',
-		      sortable : false,
-		      title : '订单编号'
-		    }, {
-		      data : 'po_row_no',
-		      sortable : false,
-		      className : 'dt-center',
-		      title : '订单行号'
-		    }, {
-		      data : 'confirmed_memo',
+		      data : 'memo',
 		      sortable : false,
 		      defaultContent : '',
-		      title : '订单备注'
-		    }, {
-		      data : 'delivery_code',
-		      sortable : false,
-		      defaultContent : '',
-		      title : '送货单号'
-		    }, {
-		      data : 'delivery_row_no',
-		      defaultContent : '',
-		      className : 'dt-center',
-		      sortable : false,
-		      title : '送货单行号'
-		    }, {
-		      data : 'delivered_quantity',
-		      defaultContent : '',
-		      sortable : false,
-		      title : '送货单数量'
+		      title : '订单备注'		    
 		    } ],
 		    order : [ [ 0, "asc" ], [ 3, "asc" ] ],
 		    footerCallback : function(row, data, start, end, display) {
-			    App.footerCallback(this.api(), [ [ 9, "cost" ], [ 11, "cost" ], [ 12, "quantity" ], [ 13, "quantity" ], [ 15, "cost" ], [ 21, "cost" ] ]);
+			    //App.footerCallback(this.api(), [ [ 9, "cost" ], [ 11, "cost" ], [ 12, "quantity" ], [ 13, "quantity" ], [ 15, "cost" ], [ 21, "cost" ] ]);
 		    },
 		    drawCallback : function(settings) {
 			    var data_list = this.api().rows().data().toArray()
@@ -1061,40 +984,7 @@
 			    	$('#vendor').attr("readonly", false);
 			    	$('#company').attr("readonly", false);
 			    	$('#type').attr("readonly", false);
-			    }				    
-
-			    summary_data = {};
-			    var index = 1;
-			    $.each(this.api().rows().data().toArray(), function(key, item) {
-				    var key = item.inventory_code;
-				    if (!summary_data[key]) {
-					    summary_data[key] = {
-					      inventory_code : item.inventory_code,
-					      inventory_name : item.inventory_name,
-					      unitname : item.unitname,
-					      pi_quantity : item.pi_quantity,
-					      tax_rate : item.tax_rate,
-					      specs : item.specs,
-					      tax_price: item.tax_price,
-					      tax_cost : item.tax_cost,
-					      adjust_tax_cost : item.adjust_tax_cost,
-					      invoice_cost : item.invoice_cost,
-					      invoice_quantity : item.invoice_quantity,
-					      invoice_price : item.invoice_price,
-					      row_no : index++
-					    }
-				    } else {
-					    summary_data[key].pi_quantity += App.floatVal(item.pi_quantity);
-					    summary_data[key].invoice_price += App.floatVal(item.invoice_price);
-					    summary_data[key].tax_cost += App.floatVal(item.tax_cost);
-					    summary_data[key].adjust_tax_cost += App.floatVal(item.adjust_tax_cost);
-					    summary_data[key].invoice_price = App.priceNumber((summary_data[key].tax_cost + summary_data[key].adjust_tax_cost) / summary_data[key].invoice_quantity);
-					    summary_data[key].tax_price = App.priceNumber(summary_data[key].tax_cost / summary_data[key].pi_quantity);
-				    }
-			    });
-
-			    summary_data = Object.values(summary_data);
-			    reloadSummaryTable();
+			    }			    
 		    }
 		  };
 
@@ -1112,6 +1002,7 @@
 		  var footertr = $("<tr></tr>").appendTo(footer);
 
 		  //Add footer cells
+		  /*
 		  for (var i = 0; i < 14; i++) {
 			  if (i == 0) {
 				  $("<th colspan='9' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
@@ -1119,7 +1010,7 @@
 				  $("<th></th>").appendTo(footertr);
 			  }
 		  }
-
+*/
 		  table = $('#detail_table').DataTable(table_options);
 
 		  if (canEdit()) {
@@ -1191,37 +1082,23 @@
 
 		    var new_state = $('#state').val();
 		    var action = $('#action').val();
-		    var invoice_state = $('#invoice_state').val();
+		    
 		    var confirmMessage = "";
 		    
-		    if (action == "invoice") {
-		    	if (invoice_state == 1) {
-				    confirmMessage = "确认开票";
-			    } else if (invoice_state == 2) {
-				    confirmMessage = "审批通过";
-			    } else if (invoice_state == 3) {
-				    confirmMessage = "审批退回";
-			    } else if (invoice_state == 4) {
-				    confirmMessage = "传递ERP";
-			    } else if (invoice_state == 5) {
-				    confirmMessage = "审批撤消";
-			    }
-		    } else {
-		    	if (new_state == 1) {
-				    confirmMessage = "保存";
-			    } else if (new_state == 2) {
-				    confirmMessage = "提交";
-			    } else if (new_state == 3) {
-				    confirmMessage = "审核";
-			    } else if (new_state == 4) {
-				    confirmMessage = "发布";
-			    } else if (new_state == 5) {
-				    confirmMessage = "撤回";
-			    } else if (new_state == 6) {
-				    confirmMessage = "确认";
-			    } else if (new_state == 7) {
-				    confirmMessage = "退回";
-			    }
+		    if (new_state == 1) {
+			    confirmMessage = "保存";
+		    } else if (new_state == 2) {
+			    confirmMessage = "提交";
+		    } else if (new_state == 3) {
+			    confirmMessage = "审核";
+		    } else if (new_state == 4) {
+			    confirmMessage = "发布";
+		    } else if (new_state == 5) {
+			    confirmMessage = "撤回";
+		    } else if (new_state == 6) {
+			    confirmMessage = "确认";
+		    } else if (new_state == 7) {
+			    confirmMessage = "退回";
 		    }
 		    
 
@@ -1348,36 +1225,6 @@
 
 	  $("#deny").click(function() {
 		  $('#state').val(7);
-		  $("#form").submit();
-	  });
-	  
-	  $("#invoice_make").click(function() {
-	  	$('#action').val("invoice");
-		  $('#invoice_state').val(1);
-		  $("#form").submit();
-	  });
-	  
-	  $("#invoice_approve").click(function() {
-	  	$('#action').val("invoice");
-	  	$('#invoice_state').val(2);
-		  $("#form").submit();
-	  });
-	  
-	  $("#invoice_deny").click(function() {
-	  	$('#action').val("invoice");
-	  	$('#invoice_state').val(3);
-		  $("#form").submit();
-	  });
-	  
-	  $("#invoice_upload").click(function() {
-	  	$('#action').val("invoice");
-	  	$('#invoice_state').val(4);
-		  $("#form").submit();
-	  });
-	  
-	  $("#invoice_upload_cancel").click(function() {
-	  	$('#action').val("invoice");
-	  	$('#invoice_state').val(5);
 		  $("#form").submit();
 	  });
 	  

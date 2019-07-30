@@ -61,6 +61,24 @@ public class Constants {
 
 	public final static String KEY_DEFAULT_UNIT_LIST = "my_unit_list";
 
+	public final static int CONTRACT_STATE_NEW = 1; //新建
+	public final static int CONTRACT_STATE_SUBMIT = 2; //提交
+	public final static int CONTRACT_STATE_REVIEW = 3; //审核
+	public final static int CONTRACT_STATE_STOP = 4; //终止
+	
+	public final static int CONTRACT_TYPE_YES = 1;
+	public final static int CONTRACT_TYPE_NO = 2;
+	
+	public final static int CONTRACT_KIND_CAIGOU = 1;
+	public final static int CONTRACT_KIND_JIAGONG = 2;
+	public final static int CONTRACT_KIND_ZULIN = 3;
+	public final static int CONTRACT_KIND_WEIBAO = 4;
+	
+	public final static int CONTRACT_PRICE_TYPE_FLOATING = 1;
+	public final static int CONTRACT_PRICE_TYPE_FIXED = 2;
+	
+	public final static int CONTRACT_QUANTITY_TYPE_NO = 1;
+	public final static int CONTRACT_QUANTITY_TYPE_YES = 2;
 
 	public final static String PATH_UPLOADS_SHIP = "ship";
 	public final static String PATH_UPLOADS_NOTICE = "notice";
