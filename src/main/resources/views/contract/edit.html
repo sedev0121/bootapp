@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+	<div class="container" layout:fragment="content">
+		<ul class="breadcrumb">
+			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+			<li><a th:href="@{/contract}" class="active">合同管理</a></li>
+			<li class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建合同':'合同详细'"></li>
+		</ul>
+		<div class="btn-group-bar">
+			<div class="text-right">
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1}" id="save"><i class="fa fa-save"></i> 保存</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${!#strings.contains(#request.requestURI,'add') and main.state <= 2}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==2}" id="review"><i class="fa fa-arrow-up"></i> 审核</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==4}" id="confirm"><i class="fa fa-check-square"></i> 终止</a>
+				<a class="btn btn-default" th:href="@{/contract}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<form id="form" th:action="@{/statement/update}" method="post" enctype="multipart/form-data">
+					<input type="hidden" id="action" name="action"/>
+					<div class="row">
+						<div class="col-lg-2 col-md-2">
+							<label for="code">合同编号: </label> 
+							<input type="text" id="code" name="code" th:value="${main.code}" class="form-control" readonly />
+						</div>
+						<div class="col-lg-4 col-md-4">
+							<label for="code">合同名称: </label> 
+							<input type="text" class="form-control"/>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="makedate">签订日期: </label> 
+							<input type="text" name="date" id="date" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" class="form-control">
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="makedate">合同开始时间: </label> 
+							<input type="text" name="start_date" id="start_date" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" class="form-control">
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="makedate">合同结束时间: </label> 
+							<input type="text" name="end_date" id="end_date" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" class="form-control">
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="type">合同类型:</label> 
+							<select id="type" name="type" class="form-control">								
+							</select>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="vendor">合同性质:</label> 
+							<select id="class" name="class" class="form-control">
+							</select>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="quantity_type">数量控制: </label> 
+							<select name="quantity_type" id="quantity_type" class="form-control"></select>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="price_type">价格类型: </label> 
+							<select name="price_type" id="price_type" class="form-control"></select>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="task">基材基准价格: </label> 
+							<input type="text" th:value="${main.taskCode}" class="form-control">
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="task">基材阶梯浮动幅度: </label> 
+							<input type="text" th:value="${main.taskCode}" class="form-control">
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="company">业务实体: </label> 
+							<select name="company" id="company" class="form-control">
+								<option th:if="${main.company != null}" th:value="${main.company?.id}" th:text="${main.company?.name}" selected="selected"></option>
+							</select>							
+						</div>
+						<div class="col-lg-4 col-md-4">
+							<label for="vendor">供应商:</label> 
+							<select id="vendor" name="vendor" class="form-control">
+								<option th:if="${main.vendor != null}" th:value="${main.vendor?.code}" th:text="${main.vendor?.name}" selected="selected"></option>
+							</select>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="tax_cost">付款方式: </label> 
+							<input type="number" id="adjust_tax_cost" name="adjustCostSum" th:value="${main.adjustCostSum}" class="form-control" />
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="code">项目编码: </label> 
+							<input type="text" class="form-control"/>
+						</div>						
+						<div class="col-lg-2 col-md-2">
+							<label for="tax_cost">税率: </label> 
+							<input type="number" id="tax_cost" name="taxCostSum" th:value="${main.taxCostSum}" class="form-control"/>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="code">币别: </label> 
+							<input type="text" class="form-control" value="CYN" readonly/>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="maker">创建人:</label> 
+							<input type="text" th:value="${main.maker?.realname}" class="form-control" readonly>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label>创建日期: </label> 
+							<input type="text" th:value="${#dates.format(main.makeDate, 'yyyy-MM-dd')}" class="form-control" readonly>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="state">状态:</label> 
+							<select name="state" id="state" class="form-control" readonly>
+							</select>
+						</div>
+					</div>
+					<div class="row margin-top-10">
+						<div class="col-lg-12">
+							<div class="tab-style-1" id="tabs">
+								<ul class="nav nav-tabs">
+									<li class="active"><a data-toggle="tab" href="#tab-1">商品价格</a></li>
+									<li><a data-toggle="tab" href="#tab-2">基材浮动区间价格</a></li>
+									<li><a data-toggle="tab" href="#tab-3">基材浮动区间价格明细</a></li>
+									<li><a data-toggle="tab" href="#tab-4">附件</a></li>
+									<li><a data-toggle="tab" href="#tab-5">操作日志</a></li>
+								</ul>
+								<div class="tab-content">
+									<div id="tab-1" class="tab-pane row-fluid fade in active">
+										<table id="detail_table" class="table table-striped table-bordered nowrap table-hover" style="width: 100%">
+										</table>
+									</div>
+									<div id="tab-2" class="tab-pane row-fluid fade in ">
+										<table id="summary_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+											<tfoot>
+												<tr>
+													<th colspan="5" class="dt-center">合计</th>
+													<th></th>
+													<th colspan="2"></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+									<div id="tab-3" class="tab-pane row-fluid fade in">
+										<table id="invoice_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
+									</div>
+									<div id="tab-4" class="tab-pane row-fluid fade in">
+										<table id="attach_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
+									</div>
+									<div id="tab-5" class="tab-pane row-fluid fade in">
+										<div class="row edit-history">
+											<a class="btn btn-primary save-history" id="show_modal_btn"><i class="fa fa-plus"></i> 添加说明</a>
+										</div>
+										<table id="history_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+				<div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">添加说明</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<form id="history_form" th:action="@{/operation_history/update}" method="post">
+									<input type="hidden" name="action" value=" 添加说明" />
+									<div class="row">
+										<div class="col-md-12">
+											<textarea name="content" placeholder="请输入说明" id="history_content" class="history-content" rows="5"></textarea>
+										</div>
+									</div>
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+								<button type="button" class="btn btn-primary" id="save_history">保存</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="import_dialog" role="dialog" aria-hidden="true">
+					<div class="modal-dialog" role="document" style="width: 1000px;">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">选择要对账的物料</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body form-horizontal">
+								<div class="search-content">
+									<div class="search-cell width-10">
+										<label for="search_date">入库日期: </label> <input type="text" id="search_date" value="" class="form-control" />
+									</div>
+									<div class="search-cell width-10">
+										<label for="search_code">出入库单号：</label> <input type="text" id="search_code" class="form-control">
+									</div>
+									<div class="search-cell width-10">
+										<label for="search_inventory">物料编码/名称：</label> <input type="text" id="search_inventory" class="form-control">
+									</div>
+									<div style="vertical-align: bottom" class="search-cell width-15">
+										<button class="btn btn-default" id="btn_search">
+											<i class="fa fa-search"></i> 查询
+										</button>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-lg-12 table-responsive">
+										<table id="import_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+								<button type="button" class="btn btn-primary" id="btn_import">添加</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+</body>
+</html>
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
+	is_vendor = 1;
+</script>
+
+<script th:inline="javascript">
+	var editor, invoice_editor, attach_editor, table_options, table, import_table, history_table, summary_table, summary_data, invoice_table, attach_table;
+  var qty_sum, money_sum;
+  var invoice_code_seperator = "; ";
+  /*[+
+   var sync_url = [[@{/sync/purchasein/vendor/}]];
+   var detail_url = [[@{|/statement/${main.code}/details|}]];
+   var attach_list_url = [[@{|/statement/${main.code}/attaches|}]];
+   var edit_url = [[@{/statement/}]];
+   var import_url = [[@{/purchasein/select}]];
+   var del_url = [[@{|/statement/${main.code}/delete|}]];
+   var vendor_search_url = [[@{/vendor/search}]];
+   var state = [[${main.state}]];
+   var invoice_state = [[${main.invoiceState}]];
+   var invoice_code = [[${main.invoiceCode}]];
+   var type = [[${main.type}]];
+   var invoice_type = [[${main.invoiceType}]];
+   var history_url = [[@{|/operation_history/list/statement/${main.code}}|]];
+   var company_search_url = [[@{/company/search}]];
+   var download_url = [[@{|/statement/${main.code}/download|}]];
+   +]*/
+
+  $(document).ready(function() {
+
+  	$("#company").select2(App.getSelect2Options(company_search_url));
+	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
+
+	  $("#state").select2({
+	    data : App.getStatementStateData(),
+	    minimumResultsForSearch : -1
+	  });
+	  
+	  $("#type").select2({
+	    data : App.getContractTypeData(),
+	    minimumResultsForSearch : -1
+	  });
+
+	  $("#class").select2({
+	    data : App.getContractClassData(),
+	    minimumResultsForSearch : -1
+	  });
+	  
+	  $("#price_type").select2({
+	    data : App.getContractPriceData(),
+	    minimumResultsForSearch : -1
+	  });
+	  
+	  $("#quantity_type").select2({
+	    data : App.getContractQuantityData(),
+	    minimumResultsForSearch : -1
+	  });
+	  
+	  
+  	function canEditInvoice() {
+  		if (state == 6 && (invoice_state == 0 && is_vendor || invoice_state > 0 && invoice_state < 4 && !is_vendor)) {
+  			return true;
+  		}	else {
+  			return false;
+  		}
+  	}
+  	
+  	function canEdit() {
+  		if (state == 1) {
+  			return true;
+  		}	else {
+  			return false;
+  		}
+  	}
+  	
+  	function updateInvoiceData() {
+  		if (invoice_table) {
+  			var table_data = invoice_table.rows().data().toArray();
+  		  var invoice_codes = [];
+  		  $.each(table_data, function(key, item) {
+  		  	if (item.invoice_code) {
+  		  		invoice_codes.push(item.invoice_code);	
+  		  	}  		  	
+  		  })
+  		  
+  		  $('#invoice_code').val(invoice_codes.join(invoice_code_seperator));	
+  		}  		
+  	}
+  	
+	  if (!canEdit()) {
+		  $('input').attr("readonly", true);
+		  $('select').attr("readonly", true);
+	  }
+	  
+	  $('#import_dialog').on('shown.bs.modal', function() {
+		  load_import_table();
+	  });
+	  
+	  $('#history_dialog').on('shown.bs.modal', function() {
+		  $('#history_content').focus();
+	  });
+
+	  invoice_editor = new $.fn.dataTable.Editor({
+	    table : "#invoice_table",
+	    idSrc : "row_no",
+	    fields : [ {
+	      attr : {
+		      type : "text",
+	      },
+	      id : "invoice_code",
+	      name : "invoice_code"	    
+	    } ],
+	    i18n : {
+		    remove : {
+		      button : "删除行",
+		      title : "删除行",
+		      submit : "是",
+		      confirm : {
+		        _ : "确定要删除%d行数据吗?",
+		        1 : "确定要删除吗?"
+		      }
+		    },
+	    }
+	  }).on('postRemove', function(e, json, ids) {
+	  	var table_data = invoice_table.rows().data().toArray();
+		  var id = 1;
+		  $.each(table_data, function(key, item) {
+			  item.row_no = id++;
+		  })
+		  invoice_table.rows().invalidate();
+	  }).on('submitSuccess', function(e, data, action) {
+		  //updateInvoiceData();
+	  });
+	  
+	  var invoice_table_data = [];
+	  
+	  if (invoice_code) {
+	  	var code_list = invoice_code.split(invoice_code_seperator);
+	  	for(var i=0; i<code_list.length; i++) {
+	  		invoice_table_data.push({
+	  				row_no: i+1,
+	  				invoice_code: code_list[i]
+	  		});
+	  	}
+	  }
+	  
+	  invoice_table = $('#invoice_table').DataTable({
+	    serverSide : false,
+	    processing : false,
+	    ajax : false,
+	    select : (canEditInvoice()?{
+		    style : 'multi',
+		    selector: 'td:first-child',
+	    }:false),
+	    data : invoice_table_data,
+	    columns : [ {
+	      data : null,
+	      defaultContent : '',
+	      orderable : false,
+	      visible : canEditInvoice(),
+	      title : '选择',
+	      className : 'select-checkbox',
+	    }, {
+	      data : 'row_no',
+	      className : 'dt-center',
+	      width : '30px', 
+	      title : '行号',
+	    }, {
+	      data : 'invoice_code',
+	      className : 'edit-cell',
+	      title : '发票号',
+	    } ],
+	    buttons : canEditInvoice()?[ {
+	    	text : "添加行",
+	      action : function(e, dt, node, config) {
+		      var new_row = {		        
+	      		row_no : invoice_table.rows().data().toArray().length + 1,
+		        invoice_code : ''
+		      };
+
+		      invoice_table.row.add(new_row);		      
+		      invoice_table.draw();
+	      }
+	    }, {
+	      extend : "remove",
+	      editor : invoice_editor
+	    } ]:false,
+	    drawCallback : function(settings) {
+	    	updateInvoiceData();
+	    }
+	  });
+
+	  if (canEditInvoice()) {
+		  invoice_table.on('click', 'tbody td.edit-cell', function(e) {
+			  invoice_editor.inline(this, {
+			    submit : 'allIfChanged',
+			    submitOnBlur : true
+			  });
+		  });
+		  $('#invoice_type').attr("readonly", false);		  
+	  }
+	  
+	  if (state == 6) {
+	  	$('#invoice_info').collapse();
+	  }
+	  
+	  attach_editor = new $.fn.dataTable.Editor({
+	    table : "#attach_table",
+	    idSrc : "row_no",
+	    i18n : {
+		    remove : {
+		      button : "删除行",
+		      title : "删除行",
+		      submit : "是",
+		      confirm : {
+		        _ : "确定要删除%d行数据吗?",
+		        1 : "确定要删除吗?"
+		      }
+		    },
+	    }
+	  }).on('postRemove', function(e, json, ids) {
+	  	var table_data = attach_table.rows().data().toArray();
+		  var id = 1;
+		  $.each(table_data, function(key, item) {
+			  item.row_no = id++;
+		  })
+		  attach_table.rows().invalidate();
+	  });
+	  
+	  attach_table = $('#attach_table').DataTable({
+	    serverSide : false,
+	    processing : false,
+	    ajax : {
+	      url : attach_list_url,
+	      dataSrc : function(json) {
+		      return json;
+	      },
+      },
+	    select : canEditInvoice()?{
+		    style : 'multi',
+		    selector: 'td:first-child',
+	    }:false,	    
+	    columns : [ {
+	      data : null,
+	      defaultContent : '',
+	      orderable : false,
+	      visible : canEditInvoice(),
+	      title : '选择',
+	      className : 'select-checkbox',
+	    }, {
+	      data : 'row_no',
+	      className : 'dt-center',
+	      title : '行号',
+	      width : '30px' 
+	    }, {
+	      data : 'date',
+	      title : '日期',
+	      className : 'dt-center',
+	      render : $.fn.date_renderer,
+	      width : '100px'
+	    }, {
+	      data : 'original_name',
+	      title : '附件',
+	      render: function (data, display, record) {
+	      	var url = download_url + "/" + record.row_no;
+	      	var html = data;
+	      	if (data) {
+	      		html = '<a href="' + url + '">' + data + '</a>';	
+	      	} else {
+	      		html = '<input type="file" name="attach"/>';
+		      }
+
+		      return html;
+	      }
+	    } ],
+	    buttons : canEditInvoice()?[ {
+	      text : "添加行",
+	      action : function(e, dt, node, config) {
+		      var new_row = {
+		        row_no : attach_table.rows().data().toArray().length + 1,
+		        date : new Date().toISOString().slice(0, 10)
+		      };
+		      attach_table.row.add(new_row);
+		      attach_table.draw();
+	      }
+	    }, {
+	      extend : "remove",
+	      editor : attach_editor
+	    } ]:false,
+	  });
+
+	  $('#show_modal_btn').click(function() {
+		  $('#history_dialog').modal('show');
+	  });
+
+	  loadNormalTable();
+	  
+	  function reloadSummaryTable() {
+		  if (summary_table) {
+			  summary_table.destroy();
+			  $('#summary_table').empty();
+
+			  var footer = $("<tfoot></tfoot>").appendTo("#summary_table");
+			  var footertr = $("<tr></tr>").appendTo(footer);
+
+			  //Add footer cells
+			  for (var i = 0; i < 13; i++) {
+				  if (i == 0) {
+					  $("<th colspan='5' class='dt-center'>合计</th>").appendTo(footertr);
+				  } else if (i >= 5) {
+					  $("<th></th>").appendTo(footertr);
+				  }
+			  }
+		  }
+
+		  summary_table = $('#summary_table').DataTable({
+		    serverSide : false,
+		    processing : false,
+		    ajax : false,
+		    data : summary_data,		    
+		    columns : [ {
+		      data : 'row_no',
+		      className : 'dt-center',
+		      title : '行号',
+		    }, {
+		      data : 'inventory_code',
+		      title : '货品代码',
+		    }, {
+		      data : 'inventory_name',
+		      title : '货品名称',
+		    }, {
+		      data : 'unitname',
+		      className : 'dt-center',
+		      title : '单位',
+		    }, {
+		      data : 'specs',
+		      className : 'dt-center',
+		      title : '规格型号',
+		    }, {
+		      data : 'pi_quantity',
+		      className : 'dt-right',
+		      title : '接收数量',
+		    }, {
+		      data : 'tax_rate',
+		      className : 'dt-right',
+		      title : '税率',
+		    }, {
+		      data : 'tax_price',
+		      className : 'dt-right',
+		      title : '含税单价',
+		    }, {
+		      data : 'tax_cost',
+		      className : 'dt-right',
+		      title : '含税金额',
+		    }, {
+		      data : 'adjust_tax_cost',
+		      className : 'dt-right',
+		      title : '含税调整金额',
+		    }, {
+		      data : 'invoice_quantity',
+		      className : 'dt-right',
+		      title : '开票数量',
+		    }, {
+		      data : 'invoice_price',
+		      className : 'dt-right',
+		      title : '开票单价',
+		    }, {
+		      data : 'invoice_cost',
+		      className : 'dt-right',
+		      title : '开票金额',
+		    } ],
+		    footerCallback : function(row, data, start, end, display) {
+			    App.footerCallback(this.api(), [ [ 5, "quantity" ], [ 8, "quantity" ], [ 9, "quantity" ], [ 10, "quantity" ], [ 12, "quantity" ] ]);
+		    },
+		  });
+	  }
+
+	  function load_import_table() {
+
+		  $('#search_code').val('');
+		  $('#search_date').val('');
+		  $('#search_inventory').val('');
+
+		  if (import_table == undefined) {
+
+			  import_table = $('#import_table').DataTable({
+			    ordering : true,
+			    select : {
+				    style : 'multi'
+			    },
+			    ajax : {
+			      url : import_url,
+			      data : function(data) {
+				      var filter = {
+				        order : data.columns[data.order[0].column].data,
+				        dir : data.order[0].dir,
+				        rows_per_page : data.length,
+				        page_index : data.start / data.length + 1,
+				        vendor : $('#vendor').val(),
+				        company : $('#company').val(),
+				        statement_date : $('#date').val(),
+				        inventory : $('#search_inventory').val(),
+				        code : $('#search_code').val(),
+				        type : ($('#type').val() == 1 ? '普通采购' : '委外加工'),
+				        date : $('#search_date').val()
+				      }
+				      return filter;
+			      },
+			      dataSrc : function(json) {
+				      json.recordsTotal = json.totalElements;
+				      json.recordsFiltered = json.totalElements;
+				      return json.content;
+			      },
+			    },
+			    columns : [ {
+			      data : null,
+			      title : '选择',
+			      defaultContent : ' ',
+			      orderable : false,
+			      className : 'select-checkbox',
+			    }, {
+			      data : 'code',
+			      title : '入库单号'
+			    }, {
+			      data : 'date',
+			      render : $.fn.date_renderer,
+			      className : 'dt-center',
+			      title : '入库日期'
+			    }, {
+			      data : 'company_name',
+			      title : '业务实体'
+			    }, {
+			      data : 'store_name',
+			      title : '库房'
+			    }, {
+			      data : 'inventory_code',
+			      title : '货品代码'
+			    }, {
+			      data : 'inventory_name',
+			      title : '货品名称'
+			    }, {
+			      data : 'specs',
+			      title : '规格型号',
+			    }, {
+			      data : 'unitname',
+			      className : 'dt-center',
+			      title : '单位',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      title : '入库数量',
+			    }, {
+			      data : 'price',
+			      className : 'dt-right',
+			      title : '单价',
+			    }, {
+			      data : 'tax_price',
+			      className : 'dt-right',
+			      title : '含税单价',
+			    }, {
+			      data : 'cost',
+			      className : 'dt-right',
+			      title : '金额',
+			    }, {
+			      data : 'tax_cost',
+			      className : 'dt-right',
+			      title : '含税金额',
+			    }, {
+			      data : 'state',
+			      className : 'dt-center',
+			      title : '摘要',
+			      render : App.getPurchaseInStateOfId,
+			    } ],
+			    order : [ [ 1, "asc" ] ],
+			  });
+		  }
+		  $('#btn_search').trigger('click');
+
+	  }
+
+	  $("#search_date").datepicker({
+		  onSelect : function(dateText) {
+			  import_table.draw();
+		  }
+	  });
+
+	  $('#search_inventory, #search_code, #search_date').keyup(function(e) {
+		  if (e.keyCode == 13)
+			  import_table.draw();
+	  });
+
+	  
+
+	  $('#save_history').click(function() {
+		  if (!$('#history_content').val()) {
+			  App.showErrorDialog("日志内容不能为空！");
+			  return;
+		  }
+
+		  $("#history_form").ajaxSubmit({
+		    data : {
+		      target_type : "statement",
+		      target_id : $('#code').val(),
+		    },
+		    beforeSend : function() {
+			    App.blockUI();
+		    },
+		    complete : function() {
+			    App.unblockUI();
+		    },
+		    success : function(res, status, xhr, form) {
+			    if (res.success == 1) {
+				    $('#history_content').val('');
+				    history_table.ajax.reload();
+				    $('#history_dialog').modal('hide');
+			    } else {
+				    App.showErrorDialog(res.errmsg);
+			    }
+		    },
+		    error : function(res, status, xhr, form) {
+			    App.showErrorDialog("操作失败", "请稍后重试");
+		    }
+		  });
+	  });
+
+	  history_table = $('#history_table').DataTable({
+	    serverSide : false,
+	    processing : false,
+	    ajax : {
+	      url : history_url,
+	      dataSrc : function(json) {
+		      return json;
+	      },
+	    },
+	    order : [ [ 0, 'desc' ] ],
+	    columns : [ {
+	      data : 'create_date',
+	      title : '日期',
+	      width : '150px',
+	      className : 'dt-center',
+	      render : $.fn.time_renderer,
+	    }, {
+	      data : 'action',
+	      title : '动作',
+	      width : '100px',
+	      className : 'dt-center',
+	    }, {
+	      data : 'account.realname',
+	      title : '操作人',
+	      width : '150px',
+	      className : 'dt-center',
+	    }, {
+	      data : 'content',
+	      title : '说明',
+	    } ],
+	  });
+
+	  $('#tabs a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+		  // FYP-table is id of datatable
+		  if (table) {
+			  table.columns.adjust().fixedColumns().relayout();
+		  }
+
+		  if (summary_table) {
+			  summary_table.columns.adjust().fixedColumns().relayout();
+		  }
+
+		  if (invoice_table) {
+			  invoice_table.columns.adjust();
+		  }
+
+		  if (attach_table) {
+			  attach_table.columns.adjust();
+		  }
+
+		  if (history_table) {
+			  history_table.columns.adjust();
+		  }
+
+	  });
+
+	  function updateData() {
+		  var cost = 0, tax = 0, tax_cost = 0, adjust_tax_cost = 0;
+		  var result = [];
+		  var rowDatas = table.data();
+		  var index = 1;
+		  $.each(rowDatas, function(key, item) {
+		  	cost += item.cost * 1;
+		  	tax_cost += item.tax_cost * 1;
+		  	adjust_tax_cost += item.adjust_tax_cost * 1;		  	
+		  				  
+		  	item.row_no = index++;
+			  item.invoice_quantity = item.pi_quantity;
+		  	item.invoice_cost = item.tax_cost * 1 + item.adjust_tax_cost * 1;
+			  item.invoice_price = App.priceNumber(item.invoice_cost/item.invoice_quantity);
+
+		  });		  
+
+		  tax = App.costNumber(tax_cost - cost);
+		  
+		  $('#cost').val(cost);
+		  $('#tax_cost').val(tax_cost);
+		  $('#tax').val(tax);
+		  $('#adjust_tax_cost').val(adjust_tax_cost);
+		  
+		  table.rows().invalidate().draw();
+	  }
+	  
+	  function calcRowAdjustTaxCost() {
+	  	var adjustTaxCostSum = $('#adjust_tax_cost').val();
+	  	
+		  var taxCostSum = 0;
+		  var rowDatas = table.data();
+		  
+		  $.each(rowDatas, function(key, item) {
+		  	taxCostSum += item.tax_cost * 1;
+		  });	
+		  
+		  var tempSum = 0;
+		  for(var i=0; i<rowDatas.length; i++) {
+		  	var item = rowDatas[i];
+		  	if (i == rowDatas.length -1) {
+		  		item.adjust_tax_cost = App.costNumber(adjustTaxCostSum - tempSum);
+		  	} else {
+		  		var temp = App.costNumber(adjustTaxCostSum * item.tax_cost/taxCostSum);
+		  		tempSum += parseFloat(temp);
+		  		item.adjust_tax_cost = temp;
+		  	}
+		  }	  
+
+		  updateData();
+		  
+		  table.rows().invalidate().draw();
+	  }
+
+	  function loadNormalTable() {
+		  editor = new $.fn.dataTable.Editor({
+		    table : "#detail_table",
+		    idSrc : "pi_detail_id",
+		    fields : [ {
+		      attr : {
+			      type : "number"
+		      },
+		      id : "adjust_tax_cost",
+		      name : "adjust_tax_cost"
+		    }, {
+		      id : "memo",
+		      name : "memo"
+		    } ],
+		    i18n : {
+			    remove : {
+			      button : "删除行",
+			      title : "删除行",
+			      submit : "是",
+			      confirm : {
+			        _ : "确定要删除%d行数据吗?",
+			        1 : "确定要删除吗?"
+			      }
+			    },
+		    }
+		  }).on('submitSuccess', function(e, data, action) {
+		  	updateData();
+		  });
+
+		  table_options = {
+		    serverSide : false,
+		    processing : false,
+		    destroy : true,
+		    ordering : false,
+		    select : canEdit()?{
+			    style : 'multi'
+		    }:false,
+		    fixedColumns : {
+			    leftColumns : 4,
+		    },
+		    buttons : canEdit()?[ {
+		      text : "选择要对账的物料",
+		      action : function(e, dt, node, config) {
+
+			      if (!$("#vendor").val()) {
+				      $('#vendor').focus();
+				      App.showErrorDialog("请选择供应商！");
+				      return false;
+			      }
+			      
+			      if (!$("#company").val()) {
+				      $('#company').focus();
+				      App.showErrorDialog("请选择业务实体！");
+				      return false;
+			      }
+
+			      $('#import_dialog').modal('show');
+
+		      }
+		    }, {
+		      extend : "remove",
+		      editor : editor		    
+		    } ]:false,
+		    ajax : {
+		      url : detail_url,
+		      dataSrc : function(json) {
+		      	$.each(json, function(key, item) {
+		  			  item.invoice_quantity = item.pi_quantity;
+		  		  	item.invoice_cost = item.tax_cost * 1 + item.adjust_tax_cost * 1;
+		  			  item.invoice_price = App.priceNumber(item.invoice_cost/item.invoice_quantity);
+		  		  });	
+			      return json;
+		      },
+		    },
+		    columns : [ {
+		      data : null,
+		      title : '选择',
+		      defaultContent : ' ',
+		      visible: canEdit(),
+		      orderable : false,
+		      className : 'select-checkbox',
+		    }, {
+		      data : 'row_no',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '行号'
+		    }, {
+		      data : 'pi_code',
+		      sortable : false,
+		      title : '接收单号',
+		    }, {
+		      data : 'pi_date',
+		      render : $.fn.date_renderer,
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '接收日期',
+		    }, {
+		      data : 'inventory_code',
+		      sortable : false,
+		      title : '货品代码',
+		    }, {
+		      data : 'inventory_name',
+		      title : '货品名称',
+		      sortable : false,
+		    }, {
+		      data : 'specs',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '规格型号',
+		    }, {
+		      data : 'unitname',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '单位',
+		    }, {
+		      data : 'tax_rate',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '税率',
+		    }, {
+		      data : 'pi_quantity',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '接收数量',
+		    }, {
+		      data : 'tax_price',
+		      sortable : false,
+		      className : 'dt-right',
+		      title : '含税单价',
+		    }, {
+		      data : 'tax_cost',
+		      sortable : false,
+		      className : 'dt-right',
+		      title : '含税金额',
+		    }, {
+		      data : 'adjust_tax_cost',
+		      sortable : false,
+		      className : 'dt-right edit-cell',
+		      title : '含税调整金额',
+		    }, {
+		      data : 'invoice_quantity',
+		      sortable : false,
+		      className : 'dt-right',
+		      title : '开票数量',
+		    }, {
+		      data : 'invoice_price',
+		      sortable : false,
+		      className : 'dt-right',
+		      title : '开票单价',
+		    }, {
+		      data : 'invoice_cost',
+		      sortable : false,
+		      className : 'dt-right',
+		      title : '开票金额',
+		    }, {
+		      data : 'po_code',
+		      sortable : false,
+		      title : '订单编号'
+		    }, {
+		      data : 'po_row_no',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '订单行号'
+		    }, {
+		      data : 'confirmed_memo',
+		      sortable : false,
+		      defaultContent : '',
+		      title : '订单备注'
+		    }, {
+		      data : 'delivery_code',
+		      sortable : false,
+		      defaultContent : '',
+		      title : '送货单号'
+		    }, {
+		      data : 'delivery_row_no',
+		      defaultContent : '',
+		      className : 'dt-center',
+		      sortable : false,
+		      title : '送货单行号'
+		    }, {
+		      data : 'delivered_quantity',
+		      defaultContent : '',
+		      sortable : false,
+		      title : '送货单数量'
+		    } ],
+		    order : [ [ 0, "asc" ], [ 3, "asc" ] ],
+		    footerCallback : function(row, data, start, end, display) {
+			    App.footerCallback(this.api(), [ [ 9, "cost" ], [ 11, "cost" ], [ 12, "quantity" ], [ 13, "quantity" ], [ 15, "cost" ], [ 21, "cost" ] ]);
+		    },
+		    drawCallback : function(settings) {
+			    var data_list = this.api().rows().data().toArray()
+			    if (data_list.length > 0) {
+			    	$('#vendor').attr("readonly", true);
+			    	$('#company').attr("readonly", true);
+			    	$('#type').attr("readonly", true);
+			    } else {
+			    	$('#vendor').attr("readonly", false);
+			    	$('#company').attr("readonly", false);
+			    	$('#type').attr("readonly", false);
+			    }				    
+
+			    summary_data = {};
+			    var index = 1;
+			    $.each(this.api().rows().data().toArray(), function(key, item) {
+				    var key = item.inventory_code;
+				    if (!summary_data[key]) {
+					    summary_data[key] = {
+					      inventory_code : item.inventory_code,
+					      inventory_name : item.inventory_name,
+					      unitname : item.unitname,
+					      pi_quantity : item.pi_quantity,
+					      tax_rate : item.tax_rate,
+					      specs : item.specs,
+					      tax_price: item.tax_price,
+					      tax_cost : item.tax_cost,
+					      adjust_tax_cost : item.adjust_tax_cost,
+					      invoice_cost : item.invoice_cost,
+					      invoice_quantity : item.invoice_quantity,
+					      invoice_price : item.invoice_price,
+					      row_no : index++
+					    }
+				    } else {
+					    summary_data[key].pi_quantity += App.floatVal(item.pi_quantity);
+					    summary_data[key].invoice_price += App.floatVal(item.invoice_price);
+					    summary_data[key].tax_cost += App.floatVal(item.tax_cost);
+					    summary_data[key].adjust_tax_cost += App.floatVal(item.adjust_tax_cost);
+					    summary_data[key].invoice_price = App.priceNumber((summary_data[key].tax_cost + summary_data[key].adjust_tax_cost) / summary_data[key].invoice_quantity);
+					    summary_data[key].tax_price = App.priceNumber(summary_data[key].tax_cost / summary_data[key].pi_quantity);
+				    }
+			    });
+
+			    summary_data = Object.values(summary_data);
+			    reloadSummaryTable();
+		    }
+		  };
+
+		  if (!canEdit()) {
+			  table_options.select = false;
+			  table_options.buttons = [];
+		  }
+
+		  if (table) {
+			  table.clear().destroy();
+			  $('#detail_table').empty();
+		  }
+
+		  var footer = $("<tfoot></tfoot>").appendTo("#detail_table");
+		  var footertr = $("<tr></tr>").appendTo(footer);
+
+		  //Add footer cells
+		  for (var i = 0; i < 14; i++) {
+			  if (i == 0) {
+				  $("<th colspan='9' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
+			  } else {
+				  $("<th></th>").appendTo(footertr);
+			  }
+		  }
+
+		  table = $('#detail_table').DataTable(table_options);
+
+		  if (canEdit()) {
+			  table.on('click', 'tbody td.edit-cell', function(e) {
+				  editor.inline(this, {
+				    submit : 'allIfChanged',
+				    submitOnBlur : true
+				  });
+			  });
+		  }
+	  }
+
+	  
+	  var is_cancel = false;
+
+	  $("#form").validate({
+	    // define validation rules
+	    rules : {
+	      vendor : {
+		      required : true
+	      },
+	      company : {
+		      required : true
+	      },
+	      tax_rate : {
+		      required : true,
+	      },
+	      invoice_code : {
+		      required : state==6
+	      },
+	      invoice_type : {
+	      	required : state==6
+	      },
+	    },
+
+	    //display error alert on form submit  
+	    invalidHandler : function(event, validator) {
+		    App.showErrorDialog("操作失败", "请输入正确的值");
+		    validator.focusInvalid();
+	    },
+
+	    submitHandler : function(form) {
+		    
+		    var attaches = attach_table.rows().data().toArray();
+		    var postAttachIds = [];
+		    $.each(attaches, function(key, item) {
+		    	if (item.id)
+		    		postAttachIds.push(item.id);
+		    });
+		    
+		    var details = table.rows().data().toArray();
+		    var post_table = [];
+		    $.each(details, function(key, item) {
+		    	var row = {
+		    			row_no: item.row_no,
+		    			pi_detail_id: item.pi_detail_id,
+		    			adjust_tax_cost: item.adjust_tax_cost
+		    	};
+		    	post_table.push(row);
+		    });
+		    
+		    var post_data = {
+		    		attachIds: postAttachIds.join(",")
+		    };
+		    
+		    if ($('#state').val() <= 3) {
+			    post_data.table = post_table;
+		    }
+
+		    var new_state = $('#state').val();
+		    var action = $('#action').val();
+		    var invoice_state = $('#invoice_state').val();
+		    var confirmMessage = "";
+		    
+		    if (action == "invoice") {
+		    	if (invoice_state == 1) {
+				    confirmMessage = "确认开票";
+			    } else if (invoice_state == 2) {
+				    confirmMessage = "审批通过";
+			    } else if (invoice_state == 3) {
+				    confirmMessage = "审批退回";
+			    } else if (invoice_state == 4) {
+				    confirmMessage = "传递ERP";
+			    } else if (invoice_state == 5) {
+				    confirmMessage = "审批撤消";
+			    }
+		    } else {
+		    	if (new_state == 1) {
+				    confirmMessage = "保存";
+			    } else if (new_state == 2) {
+				    confirmMessage = "提交";
+			    } else if (new_state == 3) {
+				    confirmMessage = "审核";
+			    } else if (new_state == 4) {
+				    confirmMessage = "发布";
+			    } else if (new_state == 5) {
+				    confirmMessage = "撤回";
+			    } else if (new_state == 6) {
+				    confirmMessage = "确认";
+			    } else if (new_state == 7) {
+				    confirmMessage = "退回";
+			    }
+		    }
+		    
+
+		    App.showInputConfirmDialog('确定要' + confirmMessage + '对账单吗?', function(submit_content) {
+			    post_data.content = submit_content;
+			    jQuery(form).ajaxSubmit({
+			      beforeSend : function() {
+				      App.blockUI();
+			      },
+			      complete : function() {
+				      App.unblockUI();
+			      },
+			      data : post_data,
+			      success : function(res, status, xhr, form) {
+				      if (res.success == 1) {
+					      App.showSuccessDialog("操作成功", function() {
+						      window.location.href = edit_url + res.data.code + "/edit";
+					      });
+				      } else {
+					      App.showErrorDialog("操作失败", res.errmsg);
+				      }
+			      },
+			      error : function(res, status, xhr, form) {
+				      App.showErrorDialog("操作失败", "请输入正确的值");
+			      }
+			    });
+		    });
+
+	    }
+	  });
+
+	  $("#btn_search").click(function() {
+		  import_table.draw();
+	  });
+
+	  $('#btn_import').click(function() {
+		  $('#import_dialog').modal('hide');//modal_1 is the id 1
+		  var selected_data = import_table.rows('.selected').data().toArray();
+		  var exist_data = table.rows().data().toArray();
+		  $.each(selected_data, function(key, item) {
+			  var available = true;
+			  for (i = 0; i < exist_data.length; i++) {
+				  exist_row = exist_data[i];
+				  if (exist_row.id == item.id) {
+					  available = false;
+					  break;
+				  }
+			  }
+			  
+			  if (available) {
+			  	item.pi_code = item.code;
+			  	item.pi_detail_id = item.id;
+			  	item.pi_date = item.date;
+			  	item.pi_quantity = item.quantity;
+			  	item.invoice_quantity = item.quantity;
+			  	item.invoice_cost = item.tax_cost;
+			  	item.adjust_tax_cost = 0;
+			  	item.invoice_price = App.costNumber(item.invoice_cost/item.invoice_quantity);
+			  	
+				  table.row.add(item);
+			  }
+		  })
+
+		  updateData();		  
+
+	  });
+
+	  $('#vendor, #code, #inventory, #date').keyup(function(e) {
+		  if (e.keyCode == 13)
+			  import_table.draw();
+	  });
+
+	  function checkTable() {
+		  var available = true;
+
+		  if (!available) {
+			  App.showErrorDialog("操作失败", "请在表里的【" + empty_column + "】列输入有效值！");
+		  }
+		  return available;
+	  }
+
+	  $("#save").click(function() {
+		  editor.submit();
+		  if (!checkTable()) {
+			  return;
+		  }
+		  $('#state').val(1);
+		  $("#form").submit();
+	  });
+
+	  $("#submit").click(function() {
+		  editor.submit();
+		  if (!checkTable()) {
+			  return;
+		  }
+		  var data = table.rows().data().toArray();
+		  if (data.length == 0) {
+			  App.showErrorDialog("操作失败", "没有要提交的货品");
+			  return;
+		  }
+		  $('#state').val(2);
+		  $("#form").submit();
+	  });
+
+	  $("#review").click(function() {
+		  $('#state').val(3);
+		  $("#form").submit();
+	  });
+	  
+	  $("#deploy").click(function() {
+		  $('#state').val(4);
+		  $("#form").submit();
+	  });
+
+	  $("#cancel").click(function() {
+		  $('#state').val(5);
+		  $("#form").submit();
+	  });
+	  
+	  $("#confirm").click(function() {
+		  $('#state').val(6);
+		  $("#form").submit();
+	  });
+
+	  $("#deny").click(function() {
+		  $('#state').val(7);
+		  $("#form").submit();
+	  });
+	  
+	  $("#invoice_make").click(function() {
+	  	$('#action').val("invoice");
+		  $('#invoice_state').val(1);
+		  $("#form").submit();
+	  });
+	  
+	  $("#invoice_approve").click(function() {
+	  	$('#action').val("invoice");
+	  	$('#invoice_state').val(2);
+		  $("#form").submit();
+	  });
+	  
+	  $("#invoice_deny").click(function() {
+	  	$('#action').val("invoice");
+	  	$('#invoice_state').val(3);
+		  $("#form").submit();
+	  });
+	  
+	  $("#invoice_upload").click(function() {
+	  	$('#action').val("invoice");
+	  	$('#invoice_state').val(4);
+		  $("#form").submit();
+	  });
+	  
+	  $("#invoice_upload_cancel").click(function() {
+	  	$('#action').val("invoice");
+	  	$('#invoice_state').val(5);
+		  $("#form").submit();
+	  });
+	  
+	  $("#delete").click(function() {
+		  App.showConfirmDialog('确定要删除吗?', function() {
+			  $.get(del_url, function(data, status) {
+				  App.showSuccessDialog("操作成功", function() {
+					  window.location.href = edit_url;
+				  });
+			  });
+		  });
+	  });
+
+	  $("#del_attach").click(function() {
+		  App.showConfirmDialog('确定要删除吗?', function() {
+			  var del_url = edit_url + $("#code").val() + "/deleteattach";
+			  $.get(del_url, function(data, status) {
+				  App.showSuccessDialog("操作成功", function() {
+					  window.location.reload(true);
+				  });
+			  });
+		  });
+	  });
+
+	  $("#adjust_tax_cost").change(function() {
+	  	calcRowAdjustTaxCost();
+	  });
+	  
+	  $("#print").click(function() {
+	  	var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
+	  	if (window.location.host.startsWith("192.")) {
+	  		url = "http://192.168.30.204:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
+	  	}	  	
+	  	var win = window.open(url, '_blank');
+	    win.focus();
+	  });
+	  
+	  $('#export_detail').click(function() {
+	  	var file_name = $('#code').val() + "_明细信息.csv";
+	  	App.exportCSVFromDatatable(table, file_name);
+	  });
+	  
+	  $('#export_summary').click(function() {
+	  	var file_name = $('#code').val() + "_汇总信息.csv";
+	  	App.exportCSVFromDatatable(summary_table, file_name);
+	  });
+  });
+</script>

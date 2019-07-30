@@ -8,6 +8,12 @@ function extractLast( term ) {
 var special_regex = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
 var App = function() {
+	var contract_type = [{id:1, text:'框架合同'}, {id:2, text:'非框架合同'}];
+	var contract_class = [{id:1, text:'采购合同'}, {id:2, text:'加工合同'}, {id:3, text:'租赁合同'}, {id:4, text:'维保合同'}];
+	var contract_price_type = [{id:1, text:'基材浮动区间价格'}, {id:2, text:'固定价格'}];
+	var contract_quantity_type = [{id:1, text:'不控制'}, {id:2, text:'严格控制'}];
+	var contract_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"通过"}, {id:6, text:"审核"}, {id:7, text:"归档"}];
+	
   var inquery_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"通过"}, {id:6, text:"审核"}, {id:7, text:"归档"}];
   var inquery_type = [{id:1, text:'常规报价'}, {id:2, text:'区间报价'}, {id:3, text:'新品报价'}];
   var inquery_provide_type = [{id:1, text:'采购'}, {id:2, text:'委外'}];
@@ -305,6 +311,21 @@ var App = function() {
     }, 
     getInqueryStateData: function() {
       return inquery_state_data;
+    },
+    getContractStateData: function() {
+      return contract_state_data;
+    },
+    getContractTypeData: function() {
+      return contract_type;
+    },
+    getContractClassData: function() {
+      return contract_class;
+    },
+    getContractPriceData: function() {
+      return contract_price_type;
+    },
+    getContractQuantityData: function() {
+      return contract_quantity_type;
     },
     getDeliveryStateData: function() {
       return delivery_state_data;
