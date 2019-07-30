@@ -161,6 +161,7 @@ public class StatementController extends CommonController {
 		String stateStr = requestParams.getOrDefault("state", "0");
 		String typeStr = requestParams.getOrDefault("type", "0");
 		String code = requestParams.getOrDefault("code", "");
+		String companyIdStr = requestParams.getOrDefault("company", "-1");
 		String start_date = requestParams.getOrDefault("start_date", null);
 		String end_date = requestParams.getOrDefault("end_date", null);
 
@@ -222,6 +223,12 @@ public class StatementController extends CommonController {
 			params.put("code", code.trim());
 		}
 
+		Long companyId = Long.valueOf(companyIdStr);
+		if (companyId >= 0) {
+			bodyQuery += " and com.id=:company";
+			params.put("company", companyId);
+		}
+		
 		if (state > 0) {
 			bodyQuery += " and a.state=:state";
 			params.put("state", state);
@@ -239,6 +246,11 @@ public class StatementController extends CommonController {
 		if (endDate != null) {
 			bodyQuery += " and a.make_date<:endDate";
 			params.put("endDate", endDate);
+		}
+		
+		if (!vendorStr.trim().isEmpty()) {
+			bodyQuery += " and (b.code like CONCAT('%',:vendor, '%') or b.name like CONCAT('%',:vendor, '%'))";
+			params.put("vendor", vendorStr);
 		}
 
 		countQuery += bodyQuery;

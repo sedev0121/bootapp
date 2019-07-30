@@ -21,8 +21,11 @@
 				<label for="end_date">　</label> <input type="text" id="end_date" value="" class="form-control datepicker" placeholder=""/>
 			</div>
 			<div class="search-cell width-10">
-				<label for="company">业务实体:</label> <input type="text" id="company" class="form-control" placeholder="业务实体：">
-			</div>
+        <label for="company">业务实体：</label>
+        <select name="company" id="company" class="form-control">
+        	<option value="-1" text="　" selected="selected"></option>
+        </select>
+      </div>
 			<div class="search-cell width-10" id="vendor_div">
 				<label for="vendor">供应商编码/名称：</label> <input type="text" id="vendor" name="vendor" class="form-control" placeholder="供应商编码/名称：">
 			</div>
@@ -83,6 +86,7 @@
    var edit_url = [[@{/statement/}]];
    var bluk_review_url = [[@{/statement/bulk_review}]];
    var bluk_deploy_url = [[@{/statement/bulk_deploy}]];
+   var company_search_url = [[@{/company/search}]];
    var log_url = [[@{/operation_history/list/statement/}]];
    +]*/
    
@@ -92,6 +96,7 @@
 		  $('#vendor_div').addClass('hidden');
 	  }
 
+	  $("#company").select2(App.getSelect2OptionsWithAll(company_search_url));
 	  $("#state").select2({
 	    data : App.getStatementStateDataWithAll(),
 	    minimumResultsForSearch : -1
@@ -121,6 +126,7 @@
 		        vendor : $('#vendor').val(),
 		        state : $('#state').val(),
 		        type : $('#type').val(),
+		        company : $('#company').val(),
 		        code : $('#code').val(),
 		        start_date : $('#start_date').val(),
 		        end_date : $('#end_date').val()
@@ -286,7 +292,7 @@
 		  table.draw();
 	  });
 
-	  $('#state, #type').change(function() {
+	  $('#state, #company').change(function() {
 		  table.draw();
 	  });
 
