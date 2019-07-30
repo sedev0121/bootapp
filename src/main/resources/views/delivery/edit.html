@@ -518,8 +518,18 @@ is_readonly = 0;
 		    $('input.editor-valid', row).prop('checked', data.ivalid == 1);
 	    },
 	    drawCallback: function( settings ) {
+	    	var tableData = this.api().rows().data().toArray();
+	    	if (tableData.length > 0) {
+	    		$('#company').attr("readonly", true);
+	    		$('#store').attr("readonly", true);
+	    		$('#type').attr("readonly", true);
+	    	} else {
+	    		$('#company').attr("readonly", false);
+	    		$('#store').attr("readonly", false);
+	    		$('#type').attr("readonly", false);
+	    	}
 	    	summary_data = {};	    	
-		  	$.each(this.api().rows().data().toArray(), function(key, item) {
+		  	$.each(tableData, function(key, item) {
 		  		var key = item.purchaseOrderDetail.inventory.code;
 		  		if (!summary_data[key]) {
 		  			summary_data[key] = {
