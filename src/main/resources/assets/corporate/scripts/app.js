@@ -234,6 +234,9 @@ var App = function() {
     priceNumber : function (i) {
       return App.formatNumber(i, 6);
     },
+    floatingPriceNumber : function (i) {
+      return App.formatNumber(i, 2);
+    },
     costNumber : function (i) {
     	var result = App.formatNumber(i, 2);
     	if (result == 0 || result == "0" || result == "") {

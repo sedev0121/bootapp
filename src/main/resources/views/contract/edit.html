@@ -60,11 +60,11 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="task">基材基准价格: </label> 
-							<input type="number" name="base_price" th:value="${main.basePrice}" class="form-control">
+							<input type="number" name="base_price" id="base_price" th:value="${main.basePrice}" class="form-control">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="task">基材阶梯浮动幅度: </label> 
-							<input type="number" name="floating_price" th:value="${main.floatingPrice}" class="form-control">
+							<input type="number" name="floating_price" id="floating_price" th:value="${main.floatingPrice}" class="form-control">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="company">业务实体: </label> 
@@ -116,41 +116,24 @@
 							<div class="tab-style-1" id="tabs">
 								<ul class="nav nav-tabs">
 									<li class="active"><a data-toggle="tab" href="#tab-1">商品价格</a></li>
-									<li><a data-toggle="tab" href="#tab-2">基材浮动区间价格</a></li>
-									<li><a data-toggle="tab" href="#tab-3">基材浮动区间价格明细</a></li>
-									<li><a data-toggle="tab" href="#tab-4">附件</a></li>
-									<li><a data-toggle="tab" href="#tab-5">操作日志</a></li>
+									<li><a data-toggle="tab" href="#tab-2">基材浮动区间价格明细</a></li>
+									<li><a data-toggle="tab" href="#tab-3">附件</a></li>
+									<li><a data-toggle="tab" href="#tab-4">操作日志</a></li>
 								</ul>
 								<div class="tab-content">
 									<div id="tab-1" class="tab-pane row-fluid fade in active">
 										<table id="detail_table" class="table table-striped table-bordered nowrap table-hover" style="width: 100%">
 										</table>
 									</div>
-									<div id="tab-2" class="tab-pane row-fluid fade in ">
-										<table id="summary_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-											<tfoot>
-												<tr>
-													<th colspan="5" class="dt-center">合计</th>
-													<th></th>
-													<th colspan="2"></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-												</tr>
-											</tfoot>
+									<div id="tab-2" class="tab-pane row-fluid fade in">
+										<table id="floating_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
 										</table>
 									</div>
 									<div id="tab-3" class="tab-pane row-fluid fade in">
-										<table id="invoice_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-										</table>
-									</div>
-									<div id="tab-4" class="tab-pane row-fluid fade in">
 										<table id="attach_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
 										</table>
 									</div>
-									<div id="tab-5" class="tab-pane row-fluid fade in">
+									<div id="tab-4" class="tab-pane row-fluid fade in">
 										<div class="row edit-history">
 											<a class="btn btn-primary save-history" id="show_modal_btn"><i class="fa fa-plus"></i> 添加说明</a>
 										</div>
@@ -197,7 +180,7 @@
 </script>
 
 <script th:inline="javascript">
-	var editor, invoice_editor, attach_editor, table_options, table, import_table, history_table, summary_table, summary_data, invoice_table, attach_table;
+	var editor, invoice_editor, attach_editor, table_options, table, import_table, history_table, floating_table, attach_table;
   var qty_sum, money_sum;
   var invoice_code_seperator = "; ";
   /*[+
@@ -220,6 +203,8 @@
 
   $(document).ready(function() {
 
+  	var rangeLength = 10;
+  	
   	$(".datepicker").datepicker();
   	
   	$("#company").select2(App.getSelect2Options(company_search_url));
@@ -269,59 +254,6 @@
 	  });
 
 	  
-	  
-	  var invoice_table_data = [];
-	  invoice_editor = new $.fn.dataTable.Editor({
-	    table : "#invoice_table",
-	    idSrc : "row_no",
-	    fields : [ {
-	      attr : {
-		      type : "text",
-	      },
-	      id : "invoice_code",
-	      name : "invoice_code"	    
-	    } ],
-	    i18n : {
-		    remove : {
-		      button : "删除行",
-		      title : "删除行",
-		      submit : "是",
-		      confirm : {
-		        _ : "确定要删除%d行数据吗?",
-		        1 : "确定要删除吗?"
-		      }
-		    },
-	    }
-	  }).on('postRemove', function(e, json, ids) {
-	  	var table_data = invoice_table.rows().data().toArray();
-		  var id = 1;
-		  $.each(table_data, function(key, item) {
-			  item.row_no = id++;
-		  })
-		  invoice_table.rows().invalidate();
-	  }).on('submitSuccess', function(e, data, action) {
-		  
-	  });
-	  
-	  invoice_table = $('#invoice_table').DataTable({
-	    serverSide : false,
-	    processing : false,
-	    ajax : false,
-	    data : invoice_table_data,
-	    columns : [ {
-	      data : 'row_no',
-	      className : 'dt-center',
-	      width : '30px', 
-	      title : '行号',
-	    }, {
-	      data : 'invoice_code',
-	      className : 'edit-cell',
-	      title : '发票号',
-	    } ],
-	    drawCallback : function(settings) {
-	    	
-	    }
-	  });
 
 	  attach_editor = new $.fn.dataTable.Editor({
 	    table : "#attach_table",
@@ -414,85 +346,6 @@
 
 	  loadNormalTable();
 	  
-	  function reloadSummaryTable() {
-		  if (summary_table) {
-			  summary_table.destroy();
-			  $('#summary_table').empty();
-
-			  var footer = $("<tfoot></tfoot>").appendTo("#summary_table");
-			  var footertr = $("<tr></tr>").appendTo(footer);
-
-			  //Add footer cells
-			  for (var i = 0; i < 13; i++) {
-				  if (i == 0) {
-					  $("<th colspan='5' class='dt-center'>合计</th>").appendTo(footertr);
-				  } else if (i >= 5) {
-					  $("<th></th>").appendTo(footertr);
-				  }
-			  }
-		  }
-
-		  summary_table = $('#summary_table').DataTable({
-		    serverSide : false,
-		    processing : false,
-		    ajax : false,
-		    data : summary_data,		    
-		    columns : [ {
-		      data : 'row_no',
-		      className : 'dt-center',
-		      title : '行号',
-		    }, {
-		      data : 'inventory_code',
-		      title : '货品代码',
-		    }, {
-		      data : 'inventory_name',
-		      title : '货品名称',
-		    }, {
-		      data : 'unitname',
-		      className : 'dt-center',
-		      title : '单位',
-		    }, {
-		      data : 'specs',
-		      className : 'dt-center',
-		      title : '规格型号',
-		    }, {
-		      data : 'pi_quantity',
-		      className : 'dt-right',
-		      title : '接收数量',
-		    }, {
-		      data : 'tax_rate',
-		      className : 'dt-right',
-		      title : '税率',
-		    }, {
-		      data : 'tax_price',
-		      className : 'dt-right',
-		      title : '含税单价',
-		    }, {
-		      data : 'tax_cost',
-		      className : 'dt-right',
-		      title : '含税金额',
-		    }, {
-		      data : 'adjust_tax_cost',
-		      className : 'dt-right',
-		      title : '含税调整金额',
-		    }, {
-		      data : 'invoice_quantity',
-		      className : 'dt-right',
-		      title : '开票数量',
-		    }, {
-		      data : 'invoice_price',
-		      className : 'dt-right',
-		      title : '开票单价',
-		    }, {
-		      data : 'invoice_cost',
-		      className : 'dt-right',
-		      title : '开票金额',
-		    } ],
-		    footerCallback : function(row, data, start, end, display) {
-			    App.footerCallback(this.api(), [ [ 5, "quantity" ], [ 8, "quantity" ], [ 9, "quantity" ], [ 10, "quantity" ], [ 12, "quantity" ] ]);
-		    },
-		  });
-	  }
 
 	  $('#save_history').click(function() {
 		  if (!$('#history_content').val()) {
@@ -559,17 +412,15 @@
 	  });
 
 	  $('#tabs a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+	  	var href = $(this).attr("href");
+	  	
 		  // FYP-table is id of datatable
 		  if (table) {
 			  table.columns.adjust().fixedColumns().relayout();
 		  }
 
-		  if (summary_table) {
-			  summary_table.columns.adjust().fixedColumns().relayout();
-		  }
-
-		  if (invoice_table) {
-			  invoice_table.columns.adjust();
+		  if (href == "#tab-2") {
+		  	loadFloatingTable();
 		  }
 
 		  if (attach_table) {
@@ -609,33 +460,171 @@
 		  table.rows().invalidate().draw();
 	  }
 	  
-	  function calcRowAdjustTaxCost() {
-	  	var adjustTaxCostSum = $('#adjust_tax_cost').val();
+	  function getFloatingTableData() {
+		  var titleList = [];
+  		var rowDatas = [];
+  		var startWeight = $("#base_price").val();
+  		var floatingRange = $("#floating_price").val();
+  		
+  		if (!startWeight) {
+  			startWeight = 0;
+  		} else {
+  			startWeight = parseFloat(startWeight);
+  		}
+  		
+  		if (!floatingRange) {
+  			floatingRange = 0;
+  		} else {
+  			floatingRange = parseFloat(floatingRange);
+  		}
+  		
+  		
+  		for(var i=0; i<rangeLength; i++) {
+  			var start = App.floatingPriceNumber(startWeight + floatingRange * i);
+  			var end = App.floatingPriceNumber(startWeight + floatingRange * (i + 1) - 0.01);
+  			var item = {
+  					key: "range_" + i,
+  					title: start + "-" + end
+  			}	
+  			titleList.push(item);
+  		}
+  		
+	  	if (table) {
+	  		rowDatas = table.data();
+			  for(var i=0; i<rowDatas.length; i++) {
+			  	var item = rowDatas[i];
+			  	item.tax_cost = App.costNumber(item.tax_price * item.quantity);
+			  	for (var j=0; j<rangeLength; j++) {
+			  		var titleItem = titleList[j];
+			  		var key = titleItem.key;
+			  		item[key] = App.floatingPriceNumber(item.tax_price + item.floating_price * j);
+			  	}
+			  }
+	  	}
 	  	
-		  var taxCostSum = 0;
-		  var rowDatas = table.data();
-		  
-		  $.each(rowDatas, function(key, item) {
-		  	taxCostSum += item.tax_cost * 1;
-		  });	
-		  
-		  var tempSum = 0;
-		  for(var i=0; i<rowDatas.length; i++) {
-		  	var item = rowDatas[i];
-		  	if (i == rowDatas.length -1) {
-		  		item.adjust_tax_cost = App.costNumber(adjustTaxCostSum - tempSum);
-		  	} else {
-		  		var temp = App.costNumber(adjustTaxCostSum * item.tax_cost/taxCostSum);
-		  		tempSum += parseFloat(temp);
-		  		item.adjust_tax_cost = temp;
-		  	}
-		  }	  
-
-		  updateData();
-		  
-		  table.rows().invalidate().draw();
+		  return {
+		  	title: titleList,
+		  	data: rowDatas
+		  }		  
 	  }
 
+	  function loadFloatingTable() {
+	  	
+		  var floating_table_data = getFloatingTableData();
+		  var titleList = floating_table_data.title;
+		  var data = floating_table_data.data;
+		  var floating_table_options = {
+		    serverSide : false,
+		    processing : false,
+		    ajax : false,
+		    fixedColumns : {
+			    leftColumns : 5,
+		    },
+		    data : floating_table_data.data,
+		    columns : [ {
+		      data : 'row_no',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '行号'
+		    }, {
+		      data : 'inventory.code',
+		      sortable : false,
+		      title : '货品代码',
+		    }, {
+		      data : 'inventory.name',
+		      title : '货品名称',
+		      sortable : false,
+		    }, {
+		      data : 'inventory.specs',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '规格型号',
+		    }, {
+		      data : 'inventory.main_measure',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '单位',
+		    }, {
+		      data : 'quantity',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '数量',
+		    }, {
+		      data : null,
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '税率',
+		      render: function() {
+		      	return $("#tax_rate").val();
+		      }
+		    }, {
+		      data : 'tax_price',
+		      sortable : false,
+		      className : 'dt-right',
+		      title : '基准含税单价',
+		    }, {
+		      data : 'tax_cost',
+		      sortable : false,
+		      className : 'dt-right',
+		      title : '含税金额',
+		    }, {
+		      data : 'floating_direction',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '浮动方向',
+		    }, {
+		      data : 'floating_price',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '阶梯浮动幅度'		    
+		    } ],
+		    footerCallback : function(row, data, start, end, display) {
+		    	var sumColumns = [];
+		    	sumColumns.push([ 5, "quantity" ]);
+		    	sumColumns.push([ 8, "cost" ]);
+		    	for(var i=0; i<rangeLength; i++) {
+		    		sumColumns.push([ 11 + i, "cost" ]);
+		    	}
+			    App.footerCallback(this.api(), sumColumns);
+		    },
+		  };		  
+		  
+		  for (var i=0; i<titleList.length; i++) {
+		  	var title = titleList[i];
+		  	var column = {
+	  			data : title.key,
+		      sortable : false,
+		      className: 'dt-center',
+		      title : title.title	
+		  	}
+		  	
+		  	floating_table_options.columns.push(column);
+		  }
+		  
+	  	if (floating_table) {
+		  	floating_table.clear().destroy();
+			  $('#floating_table').empty();
+		  }
+	  	
+	  	
+		  var footer = $("<tfoot></tfoot>").appendTo("#floating_table");
+		  var footertr = $("<tr></tr>").appendTo(footer);
+
+		  //Add footer cells
+		  var totalColumnCount = floating_table_options.columns.length;
+		  var fixedColumnCount = floating_table_options.fixedColumns.leftColumns;
+		  
+		  for (var i = 0; i < totalColumnCount - fixedColumnCount + 1; i++) {
+			  if (i == 0) {
+				  $("<th colspan='" + fixedColumnCount + "' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
+			  } else {
+				  $("<th></th>").appendTo(footertr);
+			  }
+		  }		  
+		  
+		  floating_table = $('#floating_table').DataTable(floating_table_options);
+	  }
+	  
 	  function loadNormalTable() {
 		  editor = new $.fn.dataTable.Editor({
 		    table : "#detail_table",
@@ -740,6 +729,15 @@
 		      className : 'dt-right',
 		      title : '含税金额',
 		    }, {
+		      data : 'floating_direction',
+		      sortable : false,
+		      className : 'dt-right',
+		      title : '浮动方向',
+		    }, {
+		      data : 'floating_price',
+		      sortable : false,
+		      title : '阶梯浮动幅度'		 
+		    }, {
 		      data : 'memo',
 		      sortable : false,
 		      defaultContent : '',
@@ -750,6 +748,7 @@
 			    App.footerCallback(this.api(), [ [ 5, "quantity" ], [ 8, "cost" ] ]);
 		    },
 		    drawCallback : function(settings) {
+		    	
 		    }
 		  };
 
@@ -762,7 +761,7 @@
 		  var footertr = $("<tr></tr>").appendTo(footer);
 
 		  //Add footer cells
-		  for (var i = 0; i < 6; i++) {
+		  for (var i = 0; i < 8; i++) {
 			  if (i == 0) {
 				  $("<th colspan='5' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
 			  } else {
@@ -815,6 +814,8 @@
 		    			inventory_code: item.inventory.code,
 		    			quantity: item.quantity,
 		    			tax_price: item.tax_price,
+		    			floating_direction: item.floating_direction,
+		    			floating_price: item.floating_price,
 		    			memo: item.memo
 		    	};
 		    	post_table.push(row);
@@ -968,9 +969,5 @@
 	  	App.exportCSVFromDatatable(table, file_name);
 	  });
 	  
-	  $('#export_summary').click(function() {
-	  	var file_name = $('#code').val() + "_汇总信息.csv";
-	  	App.exportCSVFromDatatable(summary_table, file_name);
-	  });
   });
 </script>

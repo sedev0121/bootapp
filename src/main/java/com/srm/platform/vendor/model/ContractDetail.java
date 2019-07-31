@@ -23,6 +23,9 @@ public class ContractDetail {
 	@JsonProperty("row_no")
 	private Integer rowNo;
 
+	@JsonProperty("floating_direction")
+	private Integer floatingDirection;
+	
 	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "inventory_code", referencedColumnName = "code")
 	private Inventory inventory;
@@ -31,6 +34,9 @@ public class ContractDetail {
 
 	@JsonProperty("tax_price")
 	private Double taxPrice;
+	
+	@JsonProperty("floating_price")
+	private Double floatingPrice;
 
 	private String memo;
 
@@ -48,6 +54,22 @@ public class ContractDetail {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Double getFloatingPrice() {
+		return floatingPrice;
+	}
+
+	public void setFloatingPrice(Double floatingPrice) {
+		this.floatingPrice = floatingPrice;
+	}
+
+	public Integer getFloatingDirection() {
+		return floatingDirection;
+	}
+
+	public void setFloatingDirection(Integer floatingDirection) {
+		this.floatingDirection = floatingDirection;
 	}
 
 	public Integer getRowNo() {

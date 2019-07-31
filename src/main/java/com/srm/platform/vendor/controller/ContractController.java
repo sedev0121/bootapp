@@ -353,12 +353,16 @@ public class ContractController extends CommonController {
 						String inventoryCode = row.get("inventory_code");
 						String quantityStr = row.get("quantity");
 						String taxPriceStr = row.get("tax_price");
+						String floatingDirectionStr = row.get("floating_direction");
+						String floatingPriceStr = row.get("floating_price");
 						String memo = row.get("memo");						
 
 						detail.setInventory(inventoryRepository.findOneByCode(inventoryCode));
 						detail.setMemo(memo);					
 						detail.setQuantity(Double.parseDouble(quantityStr));
 						detail.setTaxPrice(Double.parseDouble(taxPriceStr));
+						detail.setFloatingDirection(Integer.parseInt(floatingDirectionStr));
+						detail.setFloatingPrice(Double.parseDouble(floatingPriceStr));
 						
 					}catch(Exception e) {
 						logger.error(e.getMessage());
