@@ -238,7 +238,21 @@
  	
 	  $('#price_type, #tax_rate, #base_price, #floating_price').change(function() {
 	  	loadNormalTable();
+	  	showFloatingTab();
 	  });	
+	  
+	  function showFloatingTab() {
+	  	if ($('#price_type').val() == 2) {
+	  		$('[href="#tab-2"]').closest('li').hide();
+	  		if ($('[href="#tab-2"]').closest('li').hasClass("active")) {
+	  			$('[href="#tab-1"]').closest('a').click();
+	  		}
+	  	} else {
+	  		$('[href="#tab-2"]').closest('li').show();	  		
+	  	}
+	  }
+	  
+	  showFloatingTab();
 	  
   	function canEdit() {
   		if (state == 1) {
@@ -531,20 +545,20 @@
 		      className : 'dt-center',
 		      title : '行号'
 		    }, {
-		      data : 'inventory.code',
+		      data : 'code',
 		      sortable : false,
 		      title : '货品代码',
 		    }, {
-		      data : 'inventory.name',
+		      data : 'name',
 		      title : '货品名称',
 		      sortable : false,
 		    }, {
-		      data : 'inventory.specs',
+		      data : 'specs',
 		      sortable : false,
 		      className : 'dt-center',
 		      title : '规格型号',
 		    }, {
-		      data : 'inventory.main_measure',
+		      data : 'main_measure',
 		      sortable : false,
 		      className : 'dt-center',
 		      title : '单位',
@@ -670,7 +684,7 @@
 		    buttons : canEdit()?[ {
 		      text : "导出EXCEL模板",
 		      action : function(e, dt, node, config) {
-						alert("导出EXCEL数据");
+		      	export_csv();
 		      }
 		    }, {
 		    	text : "导入EXCEL数据",
@@ -693,20 +707,20 @@
 		      className : 'dt-center',
 		      title : '行号'
 		    }, {
-		      data : 'inventory.code',
+		      data : 'code',
 		      sortable : false,
 		      title : '货品代码',
 		    }, {
-		      data : 'inventory.name',
+		      data : 'name',
 		      title : '货品名称',
 		      sortable : false,
 		    }, {
-		      data : 'inventory.specs',
+		      data : 'specs',
 		      sortable : false,
 		      className : 'dt-center',
 		      title : '规格型号',
 		    }, {
-		      data : 'inventory.main_measure',
+		      data : 'main_measure',
 		      sortable : false,
 		      className : 'dt-center',
 		      title : '单位',
@@ -819,7 +833,7 @@
 		    $.each(details, function(key, item) {
 		    	var row = {
 		    			row_no: item.row_no,
-		    			inventory_code: item.inventory.code,
+		    			inventory_code: item.code,
 		    			quantity: item.quantity,
 		    			tax_price: item.tax_price,
 		    			floating_direction: item.floating_direction,
@@ -972,10 +986,10 @@
 	    win.focus();
 	  });
 	  
-	  $('#export_detail').click(function() {
-	  	var file_name = $('#code').val() + "_明细信息.csv";
+	  function export_csv() {
+	  	var file_name = "模板.csv";
 	  	App.exportCSVFromDatatable(table, file_name);
-	  });
+	  };
 	  
   });
 </script>

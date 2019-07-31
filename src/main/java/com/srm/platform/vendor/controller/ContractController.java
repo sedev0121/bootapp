@@ -47,6 +47,7 @@ import com.srm.platform.vendor.model.ContractDetail;
 import com.srm.platform.vendor.model.ContractMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.ContractSaveForm;
+import com.srm.platform.vendor.searchitem.ContractDetailItem;
 import com.srm.platform.vendor.searchitem.ContractSearchResult;
 import com.srm.platform.vendor.u8api.RestApiResponse;
 import com.srm.platform.vendor.utility.AccountPermission;
@@ -246,8 +247,8 @@ public class ContractController extends CommonController {
 	}
 
 	@RequestMapping(value = "/{code}/details", produces = "application/json")
-	public @ResponseBody List<ContractDetail> details_ajax(@PathVariable("code") String code) {
-		List<ContractDetail> list = contractDetailRepository.findDetailsByCode(code);
+	public @ResponseBody List<ContractDetailItem> details_ajax(@PathVariable("code") String code) {
+		List<ContractDetailItem> list = contractDetailRepository.searchDetailsByCode(code);
 
 		return list;
 	}
