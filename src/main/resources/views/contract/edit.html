@@ -572,6 +572,7 @@
 		      sortable : false,
 		      className : 'dt-center',
 		      title : '浮动方向',
+		      render: App.getFloatingDirectionOfId
 		    }, {
 		      data : 'floating_price',
 		      sortable : false,
@@ -731,16 +732,17 @@
 		    }, {
 		      data : 'floating_direction',
 		      sortable : false,
-		      className : 'dt-right',
+		      className : 'dt-center',
 		      title : '浮动方向',
+		      render: App.getFloatingDirectionOfId
 		    }, {
 		      data : 'floating_price',
 		      sortable : false,
+		      className : 'dt-center',
 		      title : '阶梯浮动幅度'		 
 		    }, {
 		      data : 'memo',
 		      sortable : false,
-		      defaultContent : '',
 		      title : '订单备注'		    
 		    } ],
 		    order : [ [ 0, "asc" ] ],
