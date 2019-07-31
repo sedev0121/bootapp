@@ -236,6 +236,10 @@
 	  }).select2("val", quantity_type.toString());
 	  
  	
+	  $('#price_type, #tax_rate, #base_price, #floating_price').change(function() {
+	  	loadNormalTable();
+	  });	
+	  
   	function canEdit() {
   		if (state == 1) {
   			return true;
@@ -723,7 +727,7 @@
 		      data : 'tax_price',
 		      sortable : false,
 		      className : 'dt-right',
-		      title : '含税单价',
+		      title : $('#price_type').val()==2?'含税单价':'基准含税单价',
 		    }, {
 		      data : 'tax_cost',
 		      sortable : false,
@@ -733,12 +737,14 @@
 		      data : 'floating_direction',
 		      sortable : false,
 		      className : 'dt-center',
+		      visible: $('#price_type').val()==1,
 		      title : '浮动方向',
 		      render: App.getFloatingDirectionOfId
 		    }, {
 		      data : 'floating_price',
 		      sortable : false,
 		      className : 'dt-center',
+		      visible: $('#price_type').val()==1,
 		      title : '阶梯浮动幅度'		 
 		    }, {
 		      data : 'memo',
@@ -750,7 +756,7 @@
 			    App.footerCallback(this.api(), [ [ 5, "quantity" ], [ 8, "cost" ] ]);
 		    },
 		    drawCallback : function(settings) {
-		    	
+		    	loadFloatingTable();
 		    }
 		  };
 
