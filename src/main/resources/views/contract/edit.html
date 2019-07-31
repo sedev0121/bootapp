@@ -108,9 +108,7 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="state">状态:</label> 
-							<select name="state" id="state" class="form-control" readonly>
-								<option th:value="${main.state}" selected="selected"></option>
-							</select>
+							<select name="state" id="state" class="form-control" readonly></select>
 						</div>
 					</div>
 					<div class="row margin-top-10">
@@ -264,7 +262,7 @@
 	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
 
 	  $("#state").select2({
-	    data : App.getStatementStateData(),
+	    data : App.getContractStateData(),
 	    minimumResultsForSearch : -1
 	  }).select2("val", state.toString());
 	  
@@ -288,15 +286,7 @@
 	    minimumResultsForSearch : -1
 	  }).select2("val", quantity_type.toString());
 	  
-	  
-  	function canEditInvoice() {
-  		if (state == 6 ) {
-  			return true;
-  		}	else {
-  			return false;
-  		}
-  	}
-  	
+ 	
   	function canEdit() {
   		if (state == 1) {
   			return true;
@@ -357,19 +347,8 @@
 	    serverSide : false,
 	    processing : false,
 	    ajax : false,
-	    select : (canEditInvoice()?{
-		    style : 'multi',
-		    selector: 'td:first-child',
-	    }:false),
 	    data : invoice_table_data,
 	    columns : [ {
-	      data : null,
-	      defaultContent : '',
-	      orderable : false,
-	      visible : canEditInvoice(),
-	      title : '选择',
-	      className : 'select-checkbox',
-	    }, {
 	      data : 'row_no',
 	      className : 'dt-center',
 	      width : '30px', 
@@ -379,40 +358,11 @@
 	      className : 'edit-cell',
 	      title : '发票号',
 	    } ],
-	    buttons : canEditInvoice()?[ {
-	    	text : "添加行",
-	      action : function(e, dt, node, config) {
-		      var new_row = {		        
-	      		row_no : invoice_table.rows().data().toArray().length + 1,
-		        invoice_code : ''
-		      };
-
-		      invoice_table.row.add(new_row);		      
-		      invoice_table.draw();
-	      }
-	    }, {
-	      extend : "remove",
-	      editor : invoice_editor
-	    } ]:false,
 	    drawCallback : function(settings) {
 	    	
 	    }
 	  });
 
-	  if (canEditInvoice()) {
-		  invoice_table.on('click', 'tbody td.edit-cell', function(e) {
-			  invoice_editor.inline(this, {
-			    submit : 'allIfChanged',
-			    submitOnBlur : true
-			  });
-		  });
-		  $('#invoice_type').attr("readonly", false);		  
-	  }
-	  
-	  if (state == 6) {
-	  	$('#invoice_info').collapse();
-	  }
-	  
 	  attach_editor = new $.fn.dataTable.Editor({
 	    table : "#attach_table",
 	    idSrc : "row_no",
@@ -445,7 +395,7 @@
 		      return json;
 	      },
       },
-	    select : canEditInvoice()?{
+	    select : canEdit()?{
 		    style : 'multi',
 		    selector: 'td:first-child',
 	    }:false,	    
@@ -453,7 +403,7 @@
 	      data : null,
 	      defaultContent : '',
 	      orderable : false,
-	      visible : canEditInvoice(),
+	      visible : canEdit(),
 	      title : '选择',
 	      className : 'select-checkbox',
 	    }, {
@@ -482,7 +432,7 @@
 		      return html;
 	      }
 	    } ],
-	    buttons : canEditInvoice()?[ {
+	    buttons : canEdit()?[ {
 	      text : "添加行",
 	      action : function(e, dt, node, config) {
 		      var new_row = {
@@ -972,7 +922,7 @@
 		    } ],
 		    order : [ [ 0, "asc" ], [ 3, "asc" ] ],
 		    footerCallback : function(row, data, start, end, display) {
-			    //App.footerCallback(this.api(), [ [ 9, "cost" ], [ 11, "cost" ], [ 12, "quantity" ], [ 13, "quantity" ], [ 15, "cost" ], [ 21, "cost" ] ]);
+			    App.footerCallback(this.api(), [ [ 6, "quantity" ], [ 9, "cost" ] ]);
 		    },
 		    drawCallback : function(settings) {
 			    var data_list = this.api().rows().data().toArray()
@@ -1002,15 +952,13 @@
 		  var footertr = $("<tr></tr>").appendTo(footer);
 
 		  //Add footer cells
-		  /*
-		  for (var i = 0; i < 14; i++) {
+		  for (var i = 0; i < 6; i++) {
 			  if (i == 0) {
-				  $("<th colspan='9' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
+				  $("<th colspan='6' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
 			  } else {
 				  $("<th></th>").appendTo(footertr);
 			  }
 		  }
-*/
 		  table = $('#detail_table').DataTable(table_options);
 
 		  if (canEdit()) {
