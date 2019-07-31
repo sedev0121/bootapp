@@ -1,31 +1,32 @@
 package com.srm.platform.vendor.saveform;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.srm.platform.vendor.utility.Utils;
-
 public class ContractSaveForm {
 
 	private String code;
-	private String vendor;
-	private String invoice_code;
-	private String remark;
 	private String date;
+	private String name;
+	private String project_no;
+	private Double base_price;
+	private Double floating_price;
+	private String memo;
+	private String pay_mode;
+	
+	private Integer type;	
 	private Integer state;
+	private Integer kind;
+	private Integer price_type;	
+	private Integer quantity_type;
+	
 	private Long company;
-	private Integer type;
-	private Integer invoice_state;
-	private Integer invoice_type;
-	private Double costSum;
-	private Double taxCostSum;
-	private Double taxSum;
-	private Double adjustCostSum;
-
+	private String vendor;
 	private Float tax_rate;
+	private String start_date;
+	private String end_date;
 
 	private List<MultipartFile> attach;
 
@@ -34,23 +35,13 @@ public class ContractSaveForm {
 	private List<Long> attachIds;
 
 	private String content;
-	
-	private String action;
-	
-	public String getAction() {
-		return action;
+
+	public String getCode() {
+		return code;
 	}
 
-	public void setAction(String action) {
-		this.action = action;
-	}
-
-	public List<Long> getAttachIds() {
-		return attachIds;
-	}
-
-	public void setAttachIds(List<Long> attachIds) {
-		this.attachIds = attachIds;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getDate() {
@@ -61,68 +52,52 @@ public class ContractSaveForm {
 		this.date = date;
 	}
 
-	public Double getCostSum() {
-		return costSum;
+	public String getName() {
+		return name;
 	}
 
-	public void setCostSum(Double costSum) {
-		this.costSum = costSum;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public Double getTaxCostSum() {
-		return taxCostSum;
+	public String getProject_no() {
+		return project_no;
 	}
 
-	public void setTaxCostSum(Double taxCostSum) {
-		this.taxCostSum = taxCostSum;
+	public void setProject_no(String project_no) {
+		this.project_no = project_no;
 	}
 
-	public Double getTaxSum() {
-		return taxSum;
+	public Double getBase_price() {
+		return base_price;
 	}
 
-	public void setTaxSum(Double taxSum) {
-		this.taxSum = taxSum;
+	public void setBase_price(Double base_price) {
+		this.base_price = base_price;
 	}
 
-	public Double getAdjustCostSum() {
-		return adjustCostSum;
+	public Double getFloating_price() {
+		return floating_price;
 	}
 
-	public void setAdjustCostSum(Double adjustCostSum) {
-		this.adjustCostSum = adjustCostSum;
+	public void setFloating_price(Double floating_price) {
+		this.floating_price = floating_price;
 	}
 
-	public String getCode() {
-		return code;
+	public String getMemo() {
+		return memo;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setMemo(String memo) {
+		this.memo = memo;
 	}
 
-	public Integer getInvoice_state() {
-		return invoice_state;
+	public String getPay_mode() {
+		return pay_mode;
 	}
 
-	public void setInvoice_state(Integer invoice_state) {
-		this.invoice_state = invoice_state;
-	}
-
-	public Integer getInvoice_type() {
-		return invoice_type;
-	}
-
-	public void setInvoice_type(Integer invoice_type) {
-		this.invoice_type = invoice_type;
-	}
-
-	public List<MultipartFile> getAttach() {
-		return attach;
-	}
-
-	public void setAttach(List<MultipartFile> attach) {
-		this.attach = attach;
+	public void setPay_mode(String pay_mode) {
+		this.pay_mode = pay_mode;
 	}
 
 	public Integer getType() {
@@ -131,6 +106,46 @@ public class ContractSaveForm {
 
 	public void setType(Integer type) {
 		this.type = type;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
+	public Integer getKind() {
+		return kind;
+	}
+
+	public void setKind(Integer kind) {
+		this.kind = kind;
+	}
+
+	public Integer getPrice_type() {
+		return price_type;
+	}
+
+	public void setPrice_type(Integer price_type) {
+		this.price_type = price_type;
+	}
+
+	public Integer getQuantity_type() {
+		return quantity_type;
+	}
+
+	public void setQuantity_type(Integer quantity_type) {
+		this.quantity_type = quantity_type;
+	}
+
+	public Long getCompany() {
+		return company;
+	}
+
+	public void setCompany(Long company) {
+		this.company = company;
 	}
 
 	public String getVendor() {
@@ -149,28 +164,28 @@ public class ContractSaveForm {
 		this.tax_rate = tax_rate;
 	}
 
-	public String getInvoice_code() {
-		return invoice_code;
+	public String getStart_date() {
+		return start_date;
 	}
 
-	public void setInvoice_code(String invoice_code) {
-		this.invoice_code = invoice_code;
+	public void setStart_date(String start_date) {
+		this.start_date = start_date;
 	}
 
-	public String getRemark() {
-		return remark;
+	public String getEnd_date() {
+		return end_date;
 	}
 
-	public void setRemark(String remark) {
-		this.remark = remark;
+	public void setEnd_date(String end_date) {
+		this.end_date = end_date;
 	}
 
-	public Integer getState() {
-		return state;
+	public List<MultipartFile> getAttach() {
+		return attach;
 	}
 
-	public void setState(Integer state) {
-		this.state = state;
+	public void setAttach(List<MultipartFile> attach) {
+		this.attach = attach;
 	}
 
 	public List<Map<String, String>> getTable() {
@@ -181,6 +196,14 @@ public class ContractSaveForm {
 		this.table = table;
 	}
 
+	public List<Long> getAttachIds() {
+		return attachIds;
+	}
+
+	public void setAttachIds(List<Long> attachIds) {
+		this.attachIds = attachIds;
+	}
+
 	public String getContent() {
 		return content;
 	}
@@ -188,16 +211,6 @@ public class ContractSaveForm {
 	public void setContent(String content) {
 		this.content = content;
 	}
-
-	public Long getCompany() {
-		return company;
-	}
-
-	public void setCompany(Long company) {
-		this.company = company;
-	}
-
-	public boolean isInvoiceAction() {
-		return "invoice".equalsIgnoreCase(action);
-	}
+	
+	
 }

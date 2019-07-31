@@ -42,6 +42,7 @@ import com.srm.platform.vendor.model.AttachFile;
 import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.Master;
 import com.srm.platform.vendor.model.PurchaseInDetail;
+import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.ContractDetail;
 import com.srm.platform.vendor.model.ContractMain;
 import com.srm.platform.vendor.model.Vendor;
@@ -271,105 +272,131 @@ public class ContractController extends CommonController {
 
 		main.setState(form.getState());
 		
-		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
+		if (form.getState() <= Constants.CONTRACT_STATE_SUBMIT) {
 			main.setDate(Utils.parseDate(form.getDate()));
-			main.setMakeDate(new Date());
-			main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
-			main.setMaker(this.getLoginAccount());
+			main.setName(form.getName());
+			main.setProjectNo(form.getProject_no());
+			main.setBasePrice(form.getBase_price());
+			main.setFloatingPrice(form.getFloating_price());
+			main.setMemo(form.getMemo());
+			main.setPayMode(form.getPay_mode());
 			main.setType(form.getType());
-			main.setTaxRate(form.getTax_rate());
+			main.setKind(form.getKind());
+			main.setPriceType(form.getPrice_type());
+			main.setQuantityType(form.getQuantity_type());
 			main.setCompany(companyRepository.findOneById(form.getCompany()));
-		} else if (form.getState() == Constants.STATEMENT_STATE_REVIEW) {
+			main.setVendor(vendorRepository.findOneByCode(form.getVendor()));
+			main.setTaxRate(form.getTax_rate());
+			
+			main.setMakeDate(new Date());
+			main.setMaker(this.getLoginAccount());
+			main.setStartDate(Utils.parseDate(form.getStart_date()));
+			main.setEndDate(Utils.parseDate(form.getEnd_date()));
+			
+			List<Long> attachIdList = form.getAttachIds();
+			for(Long attachId : attachIdList) {
+				logger.info("ID=" + attachId);
+			}
+			
+			List<AttachFile> oldAttachList = attachFileRepository.findAllByTypeCode(Constants.ATTACH_TYPE_STATEMENT, main.getCode());
+			List<AttachFile> newAttachList = new ArrayList<AttachFile>();
+			if (attachIdList == null) {
+				attachFileRepository.deleteAll(oldAttachList);
+			} else {
+				for(AttachFile attach : oldAttachList) {
+					if (!attachIdList.contains(attach.getId())) {
+						deleteAttach(Constants.PATH_UPLOADS_STATEMENT + File.separator + attach.getFilename());
+						attachFileRepository.delete(attach);
+					} else {
+						newAttachList.add(attach);
+					}
+				}
+			}
+			
+			int index = 1;
+			for(AttachFile attach : newAttachList) {
+				attach.setRowNo(index++);
+				attachFileRepository.save(attach);
+			}
+			
+			List<MultipartFile> attachList = form.getAttach();
+			if (attachList != null) {
+				for(MultipartFile attach : attachList) {
+					if (attach != null) {
+						String origianlFileName = attach.getOriginalFilename();
+						File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_STATEMENT);
+
+						String savedFileName = null;
+						if (file != null) {
+							savedFileName = file.getName();
+						}
+						
+						AttachFile attachFile = new AttachFile();
+						attachFile.setType(Constants.ATTACH_TYPE_STATEMENT);
+						attachFile.setCode(main.getCode());
+						attachFile.setFilename(savedFileName);
+						attachFile.setOriginalName(origianlFileName);
+						attachFile.setRowNo(index++);
+						attachFileRepository.save(attachFile);
+					}
+				}
+			}
+			
+			contractDetailRepository.deleteInBatch(contractDetailRepository.findDetailsByCode(main.getCode()));
+			if (form.getTable() != null) {
+				int i = 1;
+				for (Map<String, String> row : form.getTable()) {
+					ContractDetail detail = new ContractDetail();
+					detail.setCode(main.getCode());
+					detail.setRowNo(i++);
+					try {
+						String inventoryCode = row.get("inventory_code");
+						String quantityStr = row.get("quantity");
+						String taxPriceStr = row.get("tax_price");
+						String memo = row.get("memo");						
+
+						detail.setInventory(inventoryRepository.findOneByCode(inventoryCode));
+						detail.setMemo(memo);					
+						detail.setQuantity(Double.parseDouble(quantityStr));
+						detail.setTaxPrice(Double.parseDouble(taxPriceStr));
+						
+					}catch(Exception e) {
+						logger.error(e.getMessage());
+					}					
+					
+					detail = contractDetailRepository.save(detail);
+				}
+			}
 		}
 		
 		String action = null;
 		List<Account> toList = new ArrayList<>();
 		
 		switch (form.getState()) {
-		case Constants.STATEMENT_STATE_NEW:
+		case Constants.CONTRACT_STATE_NEW:
 			toList.add(main.getMaker());
 			action = "保存";
 			break;
-		case Constants.STATEMENT_STATE_SUBMIT:
+		case Constants.CONTRACT_STATE_SUBMIT:
 			toList.add(main.getMaker());
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			action = "提交";
 			break;
-		case Constants.STATEMENT_STATE_REVIEW:
+		case Constants.CONTRACT_STATE_REVIEW:
 			toList.add(main.getMaker());
+			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
 			action = "审核";
 			break;
-		case Constants.STATEMENT_STATE_DEPLOY:
+		case Constants.CONTRACT_STATE_STOP:
 			toList.add(main.getMaker());
 			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			action = "发布";
-			break;
-		case Constants.STATEMENT_STATE_CANCEL:
-			toList.add(main.getMaker());
-			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			action = "撤回";
-			break;
-		case Constants.STATEMENT_STATE_CONFIRM:
-			toList.add(main.getMaker());
-			action = "确认";
-			break;
-		case Constants.STATEMENT_STATE_DENY:
-			toList.add(main.getMaker());
-			action = "退回";
+			action = "终止";
 			break;
 		}		
 		
-		List<Long> attachIdList = form.getAttachIds();
-		for(Long attachId : attachIdList) {
-			logger.info("ID=" + attachId);
-		}
-		
-		List<AttachFile> oldAttachList = attachFileRepository.findAllByTypeCode(Constants.ATTACH_TYPE_STATEMENT, main.getCode());
-		List<AttachFile> newAttachList = new ArrayList<AttachFile>();
-		if (attachIdList == null) {
-			attachFileRepository.deleteAll(oldAttachList);
-		} else {
-			for(AttachFile attach : oldAttachList) {
-				if (!attachIdList.contains(attach.getId())) {
-					deleteAttach(Constants.PATH_UPLOADS_STATEMENT + File.separator + attach.getFilename());
-					attachFileRepository.delete(attach);
-				} else {
-					newAttachList.add(attach);
-				}
-			}
-		}
-		
-		int index = 1;
-		for(AttachFile attach : newAttachList) {
-			attach.setRowNo(index++);
-			attachFileRepository.save(attach);
-		}
-		
-		List<MultipartFile> attachList = form.getAttach();
-		if (attachList != null) {
-			for(MultipartFile attach : attachList) {
-				if (attach != null) {
-					String origianlFileName = attach.getOriginalFilename();
-					File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_STATEMENT);
-
-					String savedFileName = null;
-					if (file != null) {
-						savedFileName = file.getName();
-					}
-					
-					AttachFile attachFile = new AttachFile();
-					attachFile.setType(Constants.ATTACH_TYPE_STATEMENT);
-					attachFile.setCode(main.getCode());
-					attachFile.setFilename(savedFileName);
-					attachFile.setOriginalName(origianlFileName);
-					attachFile.setRowNo(index++);
-					attachFileRepository.save(attachFile);
-				}
-			}
-		}
-		
 
 		if (action != null) {
-			String title = String.format("对账单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(),
+			String title = String.format("合同【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(),
 					this.getLoginAccount().getRealname(), action);
 
 			this.sendmessage(title, toList, String.format("/contract/%s/read", main.getCode()));

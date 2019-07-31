@@ -32,15 +32,15 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="makedate">签订日期: </label> 
-							<input type="text" name="date" id="date" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" class="form-control">
+							<input type="text" name="date" id="date" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" class="form-control datepicker">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="makedate">合同开始时间: </label> 
-							<input type="text" name="start_date" th:value="${#dates.format(main.startDate, 'yyyy-MM-dd')}" class="form-control">
+							<input type="text" name="start_date" th:value="${#dates.format(main.startDate, 'yyyy-MM-dd')}" class="form-control datepicker">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="makedate">合同结束时间: </label> 
-							<input type="text" name="end_date" th:value="${#dates.format(main.endDate, 'yyyy-MM-dd')}" class="form-control">
+							<input type="text" name="end_date" th:value="${#dates.format(main.endDate, 'yyyy-MM-dd')}" class="form-control datepicker">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="type">合同类型:</label> 
@@ -60,11 +60,11 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="task">基材基准价格: </label> 
-							<input type="text" th:value="${main.basePrice}" class="form-control">
+							<input type="number" name="base_price" th:value="${main.basePrice}" class="form-control">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="task">基材阶梯浮动幅度: </label> 
-							<input type="text" th:value="${main.floatingPrice}" class="form-control">
+							<input type="number" name="floating_price" th:value="${main.floatingPrice}" class="form-control">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="company">业务实体: </label> 
@@ -186,44 +186,6 @@
 						</div>
 					</div>
 				</div>
-				<div class="modal fade" id="import_dialog" role="dialog" aria-hidden="true">
-					<div class="modal-dialog" role="document" style="width: 1000px;">
-						<div class="modal-content">
-							<div class="modal-header">
-								<h5 class="modal-title" id="exampleModalLabel">选择要对账的物料</h5>
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
-							</div>
-							<div class="modal-body form-horizontal">
-								<div class="search-content">
-									<div class="search-cell width-10">
-										<label for="search_date">入库日期: </label> <input type="text" id="search_date" value="" class="form-control" />
-									</div>
-									<div class="search-cell width-10">
-										<label for="search_code">出入库单号：</label> <input type="text" id="search_code" class="form-control">
-									</div>
-									<div class="search-cell width-10">
-										<label for="search_inventory">物料编码/名称：</label> <input type="text" id="search_inventory" class="form-control">
-									</div>
-									<div style="vertical-align: bottom" class="search-cell width-15">
-										<button class="btn btn-default" id="btn_search">
-											<i class="fa fa-search"></i> 查询
-										</button>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-lg-12 table-responsive">
-										<table id="import_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-										</table>
-									</div>
-								</div>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-								<button type="button" class="btn btn-primary" id="btn_import">添加</button>
-							</div>
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -258,6 +220,8 @@
 
   $(document).ready(function() {
 
+  	$(".datepicker").datepicker();
+  	
   	$("#company").select2(App.getSelect2Options(company_search_url));
 	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
 
@@ -299,10 +263,6 @@
 		  $('input').attr("readonly", true);
 		  $('select').attr("readonly", true);
 	  }
-	  
-	  $('#import_dialog').on('shown.bs.modal', function() {
-		  load_import_table();
-	  });
 	  
 	  $('#history_dialog').on('shown.bs.modal', function() {
 		  $('#history_content').focus();
@@ -534,122 +494,6 @@
 		  });
 	  }
 
-	  function load_import_table() {
-
-		  $('#search_code').val('');
-		  $('#search_date').val('');
-		  $('#search_inventory').val('');
-
-		  if (import_table == undefined) {
-
-			  import_table = $('#import_table').DataTable({
-			    ordering : true,
-			    select : {
-				    style : 'multi'
-			    },
-			    ajax : {
-			      url : import_url,
-			      data : function(data) {
-				      var filter = {
-				        order : data.columns[data.order[0].column].data,
-				        dir : data.order[0].dir,
-				        rows_per_page : data.length,
-				        page_index : data.start / data.length + 1,
-				        vendor : $('#vendor').val(),
-				        company : $('#company').val(),
-				        statement_date : $('#date').val(),
-				        inventory : $('#search_inventory').val(),
-				        code : $('#search_code').val(),
-				        type : ($('#type').val() == 1 ? '普通采购' : '委外加工'),
-				        date : $('#search_date').val()
-				      }
-				      return filter;
-			      },
-			      dataSrc : function(json) {
-				      json.recordsTotal = json.totalElements;
-				      json.recordsFiltered = json.totalElements;
-				      return json.content;
-			      },
-			    },
-			    columns : [ {
-			      data : null,
-			      title : '选择',
-			      defaultContent : ' ',
-			      orderable : false,
-			      className : 'select-checkbox',
-			    }, {
-			      data : 'code',
-			      title : '入库单号'
-			    }, {
-			      data : 'date',
-			      render : $.fn.date_renderer,
-			      className : 'dt-center',
-			      title : '入库日期'
-			    }, {
-			      data : 'company_name',
-			      title : '业务实体'
-			    }, {
-			      data : 'store_name',
-			      title : '库房'
-			    }, {
-			      data : 'inventory_code',
-			      title : '货品代码'
-			    }, {
-			      data : 'inventory_name',
-			      title : '货品名称'
-			    }, {
-			      data : 'specs',
-			      title : '规格型号',
-			    }, {
-			      data : 'unitname',
-			      className : 'dt-center',
-			      title : '单位',
-			    }, {
-			      data : 'quantity',
-			      className : 'dt-right',
-			      title : '入库数量',
-			    }, {
-			      data : 'price',
-			      className : 'dt-right',
-			      title : '单价',
-			    }, {
-			      data : 'tax_price',
-			      className : 'dt-right',
-			      title : '含税单价',
-			    }, {
-			      data : 'cost',
-			      className : 'dt-right',
-			      title : '金额',
-			    }, {
-			      data : 'tax_cost',
-			      className : 'dt-right',
-			      title : '含税金额',
-			    }, {
-			      data : 'state',
-			      className : 'dt-center',
-			      title : '摘要',
-			      render : App.getPurchaseInStateOfId,
-			    } ],
-			    order : [ [ 1, "asc" ] ],
-			  });
-		  }
-		  $('#btn_search').trigger('click');
-
-	  }
-
-	  $("#search_date").datepicker({
-		  onSelect : function(dateText) {
-			  import_table.draw();
-		  }
-	  });
-
-	  $('#search_inventory, #search_code, #search_date').keyup(function(e) {
-		  if (e.keyCode == 13)
-			  import_table.draw();
-	  });
-
-	  
-
 	  $('#save_history').click(function() {
 		  if (!$('#history_content').val()) {
 			  App.showErrorDialog("日志内容不能为空！");
@@ -830,27 +674,15 @@
 			    style : 'multi'
 		    }:false,
 		    buttons : canEdit()?[ {
-		      text : "选择要对账的物料",
+		      text : "导出EXCEL模板",
 		      action : function(e, dt, node, config) {
-
-			      if (!$("#vendor").val()) {
-				      $('#vendor').focus();
-				      App.showErrorDialog("请选择供应商！");
-				      return false;
-			      }
-			      
-			      if (!$("#company").val()) {
-				      $('#company').focus();
-				      App.showErrorDialog("请选择业务实体！");
-				      return false;
-			      }
-
-			      $('#import_dialog').modal('show');
-
+						alert("导出EXCEL数据");
 		      }
 		    }, {
-		      extend : "remove",
-		      editor : editor		    
+		    	text : "导入EXCEL数据",
+		      action : function(e, dt, node, config) {
+		      	alert("导入EXCEL数据");
+		      }
 		    } ]:false,
 		    ajax : {
 		      url : detail_url,
@@ -862,13 +694,6 @@
 		      },
 		    },
 		    columns : [ {
-		      data : null,
-		      title : '选择',
-		      defaultContent : ' ',
-		      visible: canEdit(),
-		      orderable : false,
-		      className : 'select-checkbox',
-		    }, {
 		      data : 'row_no',
 		      sortable : false,
 		      className : 'dt-center',
@@ -920,28 +745,13 @@
 		      defaultContent : '',
 		      title : '订单备注'		    
 		    } ],
-		    order : [ [ 0, "asc" ], [ 3, "asc" ] ],
+		    order : [ [ 0, "asc" ] ],
 		    footerCallback : function(row, data, start, end, display) {
-			    App.footerCallback(this.api(), [ [ 6, "quantity" ], [ 9, "cost" ] ]);
+			    App.footerCallback(this.api(), [ [ 5, "quantity" ], [ 8, "cost" ] ]);
 		    },
 		    drawCallback : function(settings) {
-			    var data_list = this.api().rows().data().toArray()
-			    if (data_list.length > 0) {
-			    	$('#vendor').attr("readonly", true);
-			    	$('#company').attr("readonly", true);
-			    	$('#type').attr("readonly", true);
-			    } else {
-			    	$('#vendor').attr("readonly", false);
-			    	$('#company').attr("readonly", false);
-			    	$('#type').attr("readonly", false);
-			    }			    
 		    }
 		  };
-
-		  if (!canEdit()) {
-			  table_options.select = false;
-			  table_options.buttons = [];
-		  }
 
 		  if (table) {
 			  table.clear().destroy();
@@ -954,25 +764,13 @@
 		  //Add footer cells
 		  for (var i = 0; i < 6; i++) {
 			  if (i == 0) {
-				  $("<th colspan='6' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
+				  $("<th colspan='5' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
 			  } else {
 				  $("<th></th>").appendTo(footertr);
 			  }
 		  }
 		  table = $('#detail_table').DataTable(table_options);
-
-		  if (canEdit()) {
-			  table.on('click', 'tbody td.edit-cell', function(e) {
-				  editor.inline(this, {
-				    submit : 'allIfChanged',
-				    submitOnBlur : true
-				  });
-			  });
-		  }
 	  }
-
-	  
-	  var is_cancel = false;
 
 	  $("#form").validate({
 	    // define validation rules
@@ -1014,8 +812,10 @@
 		    $.each(details, function(key, item) {
 		    	var row = {
 		    			row_no: item.row_no,
-		    			pi_detail_id: item.pi_detail_id,
-		    			adjust_tax_cost: item.adjust_tax_cost
+		    			inventory_code: item.inventory.code,
+		    			quantity: item.quantity,
+		    			tax_price: item.tax_price,
+		    			memo: item.memo
 		    	};
 		    	post_table.push(row);
 		    });
@@ -1070,47 +870,6 @@
 		    });
 
 	    }
-	  });
-
-	  $("#btn_search").click(function() {
-		  import_table.draw();
-	  });
-
-	  $('#btn_import').click(function() {
-		  $('#import_dialog').modal('hide');//modal_1 is the id 1
-		  var selected_data = import_table.rows('.selected').data().toArray();
-		  var exist_data = table.rows().data().toArray();
-		  $.each(selected_data, function(key, item) {
-			  var available = true;
-			  for (i = 0; i < exist_data.length; i++) {
-				  exist_row = exist_data[i];
-				  if (exist_row.id == item.id) {
-					  available = false;
-					  break;
-				  }
-			  }
-			  
-			  if (available) {
-			  	item.pi_code = item.code;
-			  	item.pi_detail_id = item.id;
-			  	item.pi_date = item.date;
-			  	item.pi_quantity = item.quantity;
-			  	item.invoice_quantity = item.quantity;
-			  	item.invoice_cost = item.tax_cost;
-			  	item.adjust_tax_cost = 0;
-			  	item.invoice_price = App.costNumber(item.invoice_cost/item.invoice_quantity);
-			  	
-				  table.row.add(item);
-			  }
-		  })
-
-		  updateData();		  
-
-	  });
-
-	  $('#vendor, #code, #inventory, #date').keyup(function(e) {
-		  if (e.keyCode == 13)
-			  import_table.draw();
 	  });
 
 	  function checkTable() {
