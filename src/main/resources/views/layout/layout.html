@@ -77,7 +77,7 @@
 					<li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/box')} ? active : ''">
 						<a th:href="@{/box}">箱码管理</a>
 					</li>
-					<li sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('出货看板-查看列表')" th:classappend="${#strings.startsWith(#request.requestURI,'/ship')} ? active : ''" ><a th:href="@{/ship}">出货看板</a></li>
+					<!-- li sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('出货看板-查看列表')" th:classappend="${#strings.startsWith(#request.requestURI,'/ship')} ? active : ''" ><a th:href="@{/ship}">出货看板</a></li-->
 					<li class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/task')} or ${#strings.startsWith(#request.requestURI,'/purchasein')} or ${#strings.startsWith(#request.requestURI,'/statement')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">对账单管理 </a>
 						<ul class="dropdown-menu">
 							<li><a sec:authorize="hasRole('ROLE_BUYER')" th:href="@{/task}">账单任务</a></li>

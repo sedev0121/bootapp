@@ -287,3 +287,113 @@ INSERT INTO `function_action` VALUES (27, 8, 18); /*对账单 传递ERP */
 /* 2019-07-29 */
 INSERT INTO `function` VALUES (9, '出货看板');
 INSERT INTO `function_action` VALUES (30, 9, 1); /*出货看板 查看列表*/
+
+DROP TABLE IF EXISTS `task`;
+CREATE TABLE `task`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `make_id` int(11) NULL DEFAULT NULL,
+  `make_date` datetime(0) NULL DEFAULT NULL,
+  `statement_date` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+DROP TABLE IF EXISTS `task_log`;
+CREATE TABLE `task_log`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NULL DEFAULT NULL,
+  `vendor_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `state` int(1) NULL DEFAULT NULL,
+  `failed_reason` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `create_date` datetime(0) NULL DEFAULT NULL,
+  `statement_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+DROP TABLE IF EXISTS `attach_file`;
+CREATE TABLE `attach_file`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `row_no` int(11) NULL DEFAULT NULL,
+  `filename` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `original_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `date` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+DROP TABLE IF EXISTS `purchase_in_main`;
+CREATE TABLE `purchase_in_main`  (
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `bredvouch` int(1) NULL DEFAULT NULL,
+  `vendor_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `company_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `store_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `date` datetime(0) NULL DEFAULT NULL,
+  `verify_date` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`code`) USING BTREE
+) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+DROP TABLE IF EXISTS `purchase_in_detail`;
+CREATE TABLE `purchase_in_detail`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `row_no` int(11) NOT NULL,
+  `inventory_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `quantity` double(20, 4) NULL DEFAULT NULL,
+  `price` double NULL DEFAULT NULL,
+  `cost` double(20, 2) NULL DEFAULT NULL,
+  `tax` double(20, 2) NULL DEFAULT NULL,
+  `tax_price` double NULL DEFAULT NULL,
+  `tax_rate` double(20, 2) NULL DEFAULT NULL,
+  `tax_cost` double NULL DEFAULT NULL,
+  `state` int(1) NOT NULL DEFAULT 0,
+  `auto_id` int(20) NULL DEFAULT NULL,
+  `po_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `po_row_no` int(20) NULL DEFAULT NULL,
+  `delivery_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `delivery_row_no` int(11) NULL DEFAULT NULL,
+  `sync_date` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = MyISAM AUTO_INCREMENT = 62 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+DROP TABLE IF EXISTS `contract_main`;
+CREATE TABLE `contract_main`  (
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `date` datetime(0) NOT NULL,
+  `start_date` datetime(0) NOT NULL,
+  `end_date` datetime(0) NOT NULL,
+  `type` int(1) NOT NULL DEFAULT 1,
+  `kind` int(1) NOT NULL,
+  `company_id` int(255) NULL DEFAULT NULL,
+  `vendor_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `state` int(1) NOT NULL,
+  `tax_rate` float(16, 0) NOT NULL DEFAULT 17,
+  `project_no` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `quantity_type` int(1) NOT NULL,
+  `price_type` int(1) NOT NULL,
+  `base_price` double(16, 2) NULL DEFAULT NULL,
+  `floating_price` double(16, 2) NULL DEFAULT NULL,
+  `pay_mode` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `memo` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `make_id` int(11) NULL DEFAULT NULL,
+  `make_date` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`code`) USING BTREE
+) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+DROP TABLE IF EXISTS `contract_detail`;
+CREATE TABLE `contract_detail`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `row_no` int(11) NOT NULL,
+  `inventory_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `quantity` double(16, 4) NULL DEFAULT NULL,
+  `tax_price` double(16, 4) NULL DEFAULT NULL,
+  `memo` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `floating_direction` int(1) NULL DEFAULT NULL,
+  `floating_price` double(16, 4) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = MyISAM AUTO_INCREMENT = 30 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
