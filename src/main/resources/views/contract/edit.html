@@ -199,6 +199,7 @@
    var history_url = [[@{|/operation_history/list/contract/${main.code}}|]];
    var company_search_url = [[@{/company/search}]];
    var download_url = [[@{|/contract/${main.code}/download|}]];
+   var inventory_check_url = [[@{/inventory/check}]];
    +]*/
 
   $(document).ready(function() {
@@ -547,7 +548,7 @@
 		    }, {
 		      data : 'quantity',
 		      sortable : false,
-		      className : 'dt-center',
+		      className : 'dt-right',
 		      title : '数量',
 		    }, {
 		      data : null,
@@ -716,7 +717,7 @@
 		    }, {
 		      data : 'quantity',
 		      sortable : false,
-		      className : 'dt-center edit-cell',
+		      className : 'dt-right edit-cell',
 		      title : '数量',
 		    }, {
 		      data : null,
@@ -992,6 +993,21 @@
 	  	App.exportCSVFromDatatable(table, file_name);
 	  };
 	  
+	  function checkImportInventoryCodes(inventoryCodeList, callback) {	  	
+	  	$.ajax({
+      	url: inventory_check_url,
+      	type : "post",
+		    data : {
+		    	_csrf: $("#form input[name='_csrf']").val(),
+		    	codeList: inventoryCodeList.join(","),
+		    }
+		  }).done(function(resp) {
+		  	callback(resp);
+		  }).fail(function() {
+		  	callback(null);
+		  });
+	  }
+	  
 	  function import_csv() {
 	  	import_csv_as_text(function(fileContent) {
       	console.log(fileContent);
@@ -999,29 +1015,71 @@
 				var rowNo = rowDatas.length + 1;
 				
 				var lines = fileContent.split("\n");
+				var newRowList = [];
+				var codeList = [];
 				for(var i=1;i<lines.length; i++) {
 					var line = lines[i];
 					var columns = line.split(",");
 					if (columns.length == 4) {
 						var item = {
-								row_no: rowNo++,
 								code: columns[0],
-								name: '',
-								specs: '',
-								main_measure: '',
 								quantity: columns[1],
 								tax_price: columns[2],
 								memo: columns[3],
-								tax_cost: 0,
 								floating_direction: 1,
-								floating_price: 12
+								floating_price: 0
 						}
-						table.row.add(item);	
-					}
-					
-				}			  	  
 
-			  table.rows().invalidate().draw();
+						item.tax_cost = App.costNumber(item.quantity * item.tax_price);
+						
+						if (codeList.includes(item.code)) {
+							App.showErrorDialog("操作失败", "存货代码(" + item.code + ")重复");
+	  					return;
+						}
+						newRowList.push(item);
+						codeList = newRowList.map(item => item.code);
+					}
+				}
+				
+				checkImportInventoryCodes(codeList, function(inventories) {
+					if (inventories && inventories.length == newRowList.length) {
+						table.clear();
+						var rowDatas = table.rows().data().toArray();
+						var rowNo = rowDatas.length + 1;
+						
+						for(var i=0; i<newRowList.length; i++){
+							var item = newRowList[i];
+							item.row_no = rowNo++;
+							for(var j=0; j<inventories.length; j++){
+								var inventory = inventories[j];
+								if (inventory.code == item.code) {
+									item = {...item, ...inventory };
+									break;
+								}
+							}
+							
+							table.row.add(item);	
+					  }
+						
+					  table.rows().invalidate().draw();
+					  
+					  App.showSuccessDialog("操作成功");
+					} else {
+						var codeList = [];
+						if (inventories) {
+							codeList = inventories.map(item => item.code);
+						}
+						
+						for(var i=0; i<newRowList.length; i++){
+							var item = newRowList[i];
+							if (!codeList.includes(item.code)) {
+								App.showErrorDialog("操作失败", "存货代码(" + item.code + ")不存在");
+								return;
+							}
+					  }						
+					}
+				});
+				
 			  
 	  	});
 	  };
