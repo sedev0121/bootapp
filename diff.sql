@@ -397,3 +397,53 @@ CREATE TABLE `contract_detail`  (
   `floating_price` double(16, 4) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = MyISAM AUTO_INCREMENT = 30 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+DROP TABLE IF EXISTS `statement_main`;
+CREATE TABLE `statement_main`  (
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `date` datetime(0) NULL DEFAULT NULL,
+  `type` int(1) NOT NULL DEFAULT 1 COMMENT '1:采购对账, 2:委外对账',
+  `company_id` int(255) NULL DEFAULT NULL,
+  `vendor_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `state` int(1) NULL DEFAULT NULL,
+  `tax_rate` float(16, 0) NOT NULL DEFAULT 17,
+  `make_id` int(11) NULL DEFAULT NULL,
+  `make_date` datetime(0) NULL DEFAULT NULL,
+  `review_id` int(11) NULL DEFAULT NULL,
+  `review_date` datetime(0) NULL DEFAULT NULL,
+  `deploy_id` int(11) NULL DEFAULT NULL,
+  `deploy_date` datetime(0) NULL DEFAULT NULL,
+  `cancel_id` int(11) NULL DEFAULT NULL,
+  `cancel_date` datetime(0) NULL DEFAULT NULL,
+  `confirm_id` int(11) NULL DEFAULT NULL,
+  `confirm_date` datetime(0) NULL DEFAULT NULL,
+  `invoice_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '0个字节 (04113256；04113257；04113258；04113259)',
+  `invoice_state` int(1) NULL DEFAULT NULL COMMENT '发票状态(已开发票/发票已退回/发票已审核/已传递ERP)',
+  `invoice_type` int(1) NULL DEFAULT 1 COMMENT '发票类型(专用发票/普通发票）',
+  `invoice_make_id` int(11) NULL DEFAULT NULL,
+  `invoice_make_date` datetime(0) NULL DEFAULT NULL,
+  `erp_invoice_make_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `erp_invoice_make_date` datetime(0) NULL DEFAULT NULL,
+  `invoice_confirm_id` int(11) NULL DEFAULT NULL,
+  `invoice_confirm_date` datetime(0) NULL DEFAULT NULL,
+  `invoice_cancel_id` int(11) NULL DEFAULT NULL,
+  `invoice_cancel_date` datetime(0) NULL DEFAULT NULL,
+  `task_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `cost_sum` double(16, 2) NULL DEFAULT NULL,
+  `tax_cost_sum` double(16, 2) NULL DEFAULT NULL,
+  `adjust_cost_sum` double(16, 2) NULL DEFAULT NULL,
+  `tax_sum` double(16, 2) NULL DEFAULT NULL,
+  PRIMARY KEY (`code`) USING BTREE
+) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+DROP TABLE IF EXISTS `statement_detail`;
+CREATE TABLE `statement_detail`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `row_no` int(11) NULL DEFAULT NULL,
+  `pi_detail_id` int(11) NULL DEFAULT NULL,
+  `adjust_tax_cost` double(16, 2) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = MyISAM AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
