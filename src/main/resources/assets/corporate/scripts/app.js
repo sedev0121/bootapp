@@ -5,6 +5,28 @@ function extractLast( term ) {
   return split( term ).pop();
 }
 
+function import_csv_as_text(callback) {
+	$("#import_file").click();
+	$("#import_file").off().change(function(evt) {
+		var reader = new FileReader();
+		reader.onload = function(evt) {
+			if(evt.target.readyState != 2) return;
+      if(evt.target.error) {
+          alert('Error while reading file');
+          return;
+      }
+
+      var filecontent = evt.target.result;
+      $("#import_file").val(null);
+      if (callback) {
+      	callback(filecontent);
+      }
+    };
+
+  	reader.readAsText(evt.target.files[0]);
+	});
+};
+
 var special_regex = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
 var App = function() {
@@ -56,8 +78,8 @@ var App = function() {
   
 
   function escapeComma(str) {
-  	console.log(str);
-  	str = str + ' ';
+  	
+  	str = str + '';
   	str = str.replace(/null/g, '');
   	str = str.replace(/undefined/g, '');
     if (str && str.indexOf(',') > -1) {
@@ -68,7 +90,7 @@ var App = function() {
   }
   
   function isExportIgnoreCell(column_setting) {
-    if (column_setting.className == 'select-checkbox' || column_setting.className == 'ignore-export') {
+    if (column_setting.className && (column_setting.className == 'select-checkbox' || column_setting.className.indexOf('ignore-export')>-1) || column_setting.visible === false) {
         return true;
     } else {
         return false;
@@ -682,7 +704,6 @@ var App = function() {
           	cell_value = escapeComma(row_data[[column_setting.data]]);
           }
           
-          console.log(cell_value);
           if (!cell_value || cell_value == undefined || cell_value == null || cell_value == 'undefined' || cell_value == 'null') {
           	cell_value = '';
           }

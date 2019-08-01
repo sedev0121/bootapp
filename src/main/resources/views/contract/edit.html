@@ -237,7 +237,7 @@
 	  
  	
 	  $('#price_type, #tax_rate, #base_price, #floating_price').change(function() {
-	  	loadNormalTable();
+	  	table.rows().invalidate().draw();
 	  	showFloatingTab();
 	  });	
 	  
@@ -677,7 +677,7 @@
 		    }, {
 		    	text : "导入EXCEL数据",
 		      action : function(e, dt, node, config) {
-		      	alert("导入EXCEL数据");
+		      	import_csv();
 		      }
 		    } ]:false,
 		    ajax : {
@@ -692,7 +692,7 @@
 		    columns : [ {
 		      data : 'row_no',
 		      sortable : false,
-		      className : 'dt-center',
+		      className : 'dt-center ignore-export',
 		      title : '行号'
 		    }, {
 		      data : 'code',
@@ -701,16 +701,17 @@
 		    }, {
 		      data : 'name',
 		      title : '货品名称',
+		      className : 'ignore-export',
 		      sortable : false,
 		    }, {
 		      data : 'specs',
 		      sortable : false,
-		      className : 'dt-center',
+		      className : 'dt-center ignore-export',
 		      title : '规格型号',
 		    }, {
 		      data : 'main_measure',
 		      sortable : false,
-		      className : 'dt-center',
+		      className : 'dt-center ignore-export',
 		      title : '单位',
 		    }, {
 		      data : 'quantity',
@@ -720,7 +721,7 @@
 		    }, {
 		      data : null,
 		      sortable : false,
-		      className : 'dt-center',
+		      className : 'dt-center ignore-export',
 		      title : '税率',
 		      render: function() {
 		      	return $("#tax_rate").val();
@@ -733,19 +734,21 @@
 		    }, {
 		      data : 'tax_cost',
 		      sortable : false,
-		      className : 'dt-right',
+		      className : 'dt-right ignore-export',
 		      title : '含税金额',
 		    }, {
 		      data : 'floating_direction',
 		      sortable : false,
-		      className : 'dt-center edit-cell',
+		      className : 'dt-center edit-cell ignore-export',
 		      visible: $('#price_type').val()==1,
 		      title : '浮动方向',
-		      render: App.getFloatingDirectionOfId
+		      render: function (data, display, record) {
+		      	return App.getFloatingDirectionOfId(record.floating_direction);
+		      }		      
 		    }, {
 		      data : 'floating_price',
 		      sortable : false,
-		      className : 'dt-center',
+		      className : 'dt-center ignore-export',
 		      visible: $('#price_type').val()==1,
 		      title : '阶梯浮动幅度'		 
 		    }, {
@@ -987,6 +990,40 @@
 	  function export_csv() {
 	  	var file_name = "模板.csv";
 	  	App.exportCSVFromDatatable(table, file_name);
+	  };
+	  
+	  function import_csv() {
+	  	import_csv_as_text(function(fileContent) {
+      	console.log(fileContent);
+				var rowDatas = table.rows().data().toArray();
+				var rowNo = rowDatas.length + 1;
+				
+				var lines = fileContent.split("\n");
+				for(var i=1;i<lines.length; i++) {
+					var line = lines[i];
+					var columns = line.split(",");
+					if (columns.length == 4) {
+						var item = {
+								row_no: rowNo++,
+								code: columns[0],
+								name: '',
+								specs: '',
+								main_measure: '',
+								quantity: columns[1],
+								tax_price: columns[2],
+								memo: columns[3],
+								tax_cost: 0,
+								floating_direction: 1,
+								floating_price: 12
+						}
+						table.row.add(item);	
+					}
+					
+				}			  	  
+
+			  table.rows().invalidate().draw();
+			  
+	  	});
 	  };
 	  
   });
