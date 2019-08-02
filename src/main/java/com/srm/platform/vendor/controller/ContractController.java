@@ -183,6 +183,7 @@ public class ContractController extends CommonController {
 			bodyQuery += " and (a.state=" + Constants.STATEMENT_STATE_DEPLOY + " or a.state >=" + Constants.STATEMENT_STATE_CONFIRM + ")";
 
 		} else {
+			/* TODO: permission
 			String subWhere = " 1=0 ";
 			
 			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
@@ -199,6 +200,7 @@ public class ContractController extends CommonController {
 			}
 
 			bodyQuery += " and (" + subWhere + ") ";
+			*/
 		}
 
 		if (!code.trim().isEmpty()) {
@@ -446,7 +448,8 @@ public class ContractController extends CommonController {
 		List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
 		List<String> allowedVendorCodeList = accountPermission.getVendorList();
 
-		boolean isValid = false;
+		//TODO: permission
+		boolean isValid = true;
 
 		if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0) && main.getCompany() != null
 				&& allowedCompanyIdList.contains(main.getCompany().getId())) {

@@ -70,6 +70,7 @@
 							<label for="company">业务实体: </label> 
 							<select name="company" id="company" class="form-control">
 								<option th:if="${main.company != null}" th:value="${main.company?.id}" th:text="${main.company?.name}" selected="selected"></option>
+								<option th:if="${main.company == null}" value="-1" text=" " selected="selected"></option>
 							</select>							
 						</div>
 						<div class="col-lg-4 col-md-4">
@@ -208,7 +209,7 @@
   	
   	$(".datepicker").datepicker();
   	
-  	$("#company").select2(App.getSelect2Options(company_search_url));
+  	$("#company").select2(App.getSelect2OptionsWithAll(company_search_url));
 	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
 
 	  $("#state").select2({
@@ -248,8 +249,12 @@
 	  		if ($('[href="#tab-2"]').closest('li').hasClass("active")) {
 	  			$('[href="#tab-1"]').closest('a').click();
 	  		}
+	  		$('#base_price').attr("readonly", true);
+	  		$('#floating_price').attr("readonly", true);
 	  	} else {
-	  		$('[href="#tab-2"]').closest('li').show();	  		
+	  		$('[href="#tab-2"]').closest('li').show();	 
+	  		$('#base_price').attr("readonly", false);
+	  		$('#floating_price').attr("readonly", false);
 	  	}
 	  }
 	  
@@ -825,10 +830,19 @@
 	  $("#form").validate({
 	    // define validation rules
 	    rules : {
-	      vendor : {
+	    	name : {
 		      required : true
 	      },
-	      company : {
+	      date : {
+		      required : true
+	      },
+	      start_date : {
+		      required : true
+	      },
+	      end_date : {
+		      required : true
+	      },
+	      vendor : {
 		      required : true
 	      },
 	      tax_rate : {
