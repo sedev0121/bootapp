@@ -13,7 +13,7 @@
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${!#strings.contains(#request.requestURI,'add') and main.state <= 2}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
 				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_BUYER')" th:if="${main.state==2}" id="review"><i class="fa fa-arrow-up"></i> 审核</a> 
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==4}" id="confirm"><i class="fa fa-check-square"></i> 终止</a>
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.state==3}" id="stop"><i class="fa fa-check-square"></i> 终止</a>
 				<a class="btn btn-default" th:href="@{/contract}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -890,7 +890,7 @@
 		    		attachIds: postAttachIds.join(",")
 		    };
 		    
-		    if ($('#state').val() <= 3) {
+		    if ($('#state').val() <= 2) {
 			    post_data.table = post_table;
 		    }
 
@@ -975,23 +975,8 @@
 		  $("#form").submit();
 	  });
 	  
-	  $("#deploy").click(function() {
+	  $("#stop").click(function() {
 		  $('#state').val(4);
-		  $("#form").submit();
-	  });
-
-	  $("#cancel").click(function() {
-		  $('#state').val(5);
-		  $("#form").submit();
-	  });
-	  
-	  $("#confirm").click(function() {
-		  $('#state').val(6);
-		  $("#form").submit();
-	  });
-
-	  $("#deny").click(function() {
-		  $('#state').val(7);
 		  $("#form").submit();
 	  });
 	  
@@ -1003,21 +988,6 @@
 				  });
 			  });
 		  });
-	  });
-
-	  $("#del_attach").click(function() {
-		  App.showConfirmDialog('确定要删除吗?', function() {
-			  var del_url = edit_url + $("#code").val() + "/deleteattach";
-			  $.get(del_url, function(data, status) {
-				  App.showSuccessDialog("操作成功", function() {
-					  window.location.reload(true);
-				  });
-			  });
-		  });
-	  });
-
-	  $("#adjust_tax_cost").change(function() {
-	  	calcRowAdjustTaxCost();
 	  });
 	  
 	  $("#print").click(function() {
