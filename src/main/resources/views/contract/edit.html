@@ -644,6 +644,21 @@
 		      id : "tax_price",
 		      name : "tax_price"
 		    }, {
+		    	type:  "select",
+		      options: [
+		      	{ label: "向上浮动", value: "1" },
+		      	{ label: "向下浮动", value: "2" },
+		      	{ label: "上下浮动", value: "3" },
+	      	],
+		      id : "floating_direction",
+		      name : "floating_direction"
+		    }, {
+		      attr : {
+			      type : "number"
+		      },
+		      id : "floating_price",
+		      name : "floating_price"
+		    }, {
 		      id : "memo",
 		      name : "memo"
 		    } ],
@@ -658,6 +673,18 @@
 			      }
 			    },
 		    }
+		  }).on('preOpen', function(e, data, action) {	  	
+			  var currentFieldName = e.currentTarget.s.includeFields[0];
+			  if (currentFieldName == "floating_direction") {
+			  	var modifier = editor.modifier();
+			  	$(modifier).addClass("selecting");	
+			  }
+		  }).on('close', function(e) {
+		  	var currentFieldName = e.currentTarget.s.includeFields[0];
+			  if (currentFieldName == "floating_direction") {
+			  	var modifier = editor.modifier();
+			  	$(modifier).removeClass("selecting");	
+			  }
 		  }).on('submitSuccess', function(e, data, action) {
 		  	updateData();
 		  });
@@ -749,7 +776,7 @@
 		    }, {
 		      data : 'floating_price',
 		      sortable : false,
-		      className : 'dt-center ignore-export',
+		      className : 'dt-right edit-cell ignore-export',
 		      visible: $('#price_type').val()==1,
 		      title : '阶梯浮动幅度'		 
 		    }, {

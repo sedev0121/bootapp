@@ -531,6 +531,46 @@ public class StatementController extends CommonController {
 
 	private Map<String, Object> createU8InvoicePostData(StatementMain main) {
 		Map<String, Object> postParams = new HashMap<>();
+		postParams.put("cPBVBillType", main.getInvoiceType()==1?"01":"02"); //发票类型，01:专用发票02:普通发票
+		postParams.put("cPTCode", main.getType()==1?"01":"02"); //采购类型编码，01:采购 02:委外
+		postParams.put("dPBVDate", Utils.formatDateTime(main.getInvoiceMakeDate())); //开票日期
+		postParams.put("cVenCode", main.getVendor().getCode()); //供应商编码
+		postParams.put("cUnitCode", ""); //代垫供应商编码
+		postParams.put("cDepCode", ""); //部门编码
+		postParams.put("cPersonCode", ""); //业务员
+		postParams.put("iPBVTaxRate", main.getTaxRate().toString()); //表头税率，填个默认值就行
+		postParams.put("cPBVMaker", main.getMaker().getRealname()); //制单人
+		postParams.put("cPBVCode", main.getInvoiceCode()); //发票号
+		postParams.put("cVenBank", ""); //银行名称
+		postParams.put("cVenAccount", ""); //银行卡号
+		postParams.put("cVenPerson", ""); //联系人
+		
+		List<StatementDetailItem> list = statementDetailRepository.findDetailsByCode(main.getCode());
+		List<Map<String, String>> listParams = new ArrayList<Map<String, String>>();
+		for(StatementDetailItem detail : list) {
+			Map<String, String> row = new HashMap<>();
+			row.put("RdsId", detail.getPi_auto_id()); //外购入库单行ID
+			row.put("cInvCode", detail.getInventory_code()); //存货编码
+			row.put("dInDate", detail.getPi_date()); //入库时间
+			row.put("iPBVQuantity", detail.getPi_quantity()); //开票数量
+			row.put("iOriCost", ""); //原币单价
+			row.put("iOriMoney", ""); //原币金额
+			row.put("iOriTaxPrice", ""); //原币税额
+			row.put("iOriSum", ""); //原币价税合计
+			row.put("iCost", ""); //本币单价
+			row.put("iMoney", ""); //本币金额
+			row.put("iTaxPrice", ""); //本币税额
+			row.put("iSum", ""); //本币价税合计
+			row.put("iOriTaxCost", ""); //原币含税单价
+			row.put("iTaxRate", detail.getTax_rate()); //税率
+			row.put("ivouchrowno", detail.getRow_no().toString()); //行号
+			row.put("cbMemo", detail.getConfirmed_memo()); //行备注
+			
+			listParams.add(row);
+		}
+		
+		postParams.put("list", listParams);
+		
 		return postParams;
 	}
 

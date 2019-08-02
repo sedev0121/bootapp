@@ -111,7 +111,24 @@ public class RestApiClient {
 	}
 	
 	public RestApiResponse postConfirmForPurchaseIn(List<String> codes) {
-		return postForConfirm("SRM_rdrecord01", codes);
+		
+		if (Constants.TEST) {
+			return null;
+		}
+		
+		String url = appProperties.getData_url();
+
+		Map<String, Object> postData = new HashMap<>();
+
+		Map<String, Object> content = new HashMap<>();
+		content.put("AutoIDs", codes);
+
+		postData.put("classname", "SRM_rdrecord01");
+		postData.put("method", "feedback");
+		postData.put("content", content);
+
+		return post(url, postData, null, true);
+		
 	}
 	
 	public RestApiResponse postForArrivalVouch(Map<String, Object> content) {
@@ -129,19 +146,14 @@ public class RestApiClient {
 	
 	public RestApiResponse postForU8Iinvoice(Map<String, Object> content) {
 		
-//		String url = appProperties.getData_url();
-//
-//		Map<String, Object> postData = new HashMap<>();
-//		postData.put("classname", "SRM_ArrivalVouch");
-//		postData.put("method", "createArrivalVouch");
-//		postData.put("content", content);
-//
-//		return post(url, postData, null, true);
-		
-		RestApiResponse response = new RestApiResponse();
-		response.setStatus("ok");
-		
-		return response;
+		String url = appProperties.getData_url();
+
+		Map<String, Object> postData = new HashMap<>();
+		postData.put("classname", "SRM_PurBillVouch");
+		postData.put("method", "createPurBillVouch");
+		postData.put("content", content);
+
+		return post(url, postData, null, true);
 	}
 	
 	public RestApiResponse getBoxMsg(Map<String, String> content) {
@@ -178,7 +190,7 @@ public class RestApiClient {
 		Map<String, Object> postData = new HashMap<>();
 
 		Map<String, Object> content = new HashMap<>();
-		content.put("AutoIDs", codes);
+		content.put("codes", codes);
 
 		postData.put("classname", classname);
 		postData.put("method", "feedback");

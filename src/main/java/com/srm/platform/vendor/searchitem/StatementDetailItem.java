@@ -13,6 +13,7 @@ public interface StatementDetailItem {
 	String getPi_code();
 	String getPi_date();
 	String getPi_quantity();
+	String getPi_auto_id();
 	String getTax_rate();
 	String getPrice();
 	String getCost();

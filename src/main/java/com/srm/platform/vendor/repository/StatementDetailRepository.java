@@ -21,7 +21,7 @@ public interface StatementDetailRepository extends JpaRepository<StatementDetail
 	@Query(value = "SELECT * FROM statement_detail WHERE code= :code order by row_no", nativeQuery = true)
 	List<StatementDetail> findByCode(String code);
 
-	@Query(value = "select a.*, c.code pi_code, d.date pi_date, e.code inventory_code, e.name inventory_name, e.specs, e.main_measure unitname, "
+	@Query(value = "select a.*, c.code pi_code, c.auto_id pi_auto_id, d.date pi_date, e.code inventory_code, e.name inventory_name, e.specs, e.main_measure unitname, "
 			+ "c.tax_rate, c.quantity pi_quantity, c.price, c.cost, c.tax_price, c.tax_cost, po.code po_code, po.row_no po_row_no, po.confirmed_memo confirmed_memo, "
 			+ "delivery.code delivery_code, delivery.row_no delivery_row_no, delivery.delivered_quantity "
 			+ "from statement_detail a left join statement_main b on a.code=b.code "
