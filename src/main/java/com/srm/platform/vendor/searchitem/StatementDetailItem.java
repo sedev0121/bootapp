@@ -15,6 +15,7 @@ public interface StatementDetailItem {
 	String getPi_quantity();
 	String getPi_auto_id();
 	String getTax_rate();
+	String getTax();
 	String getPrice();
 	String getCost();
 	String getTax_price();
