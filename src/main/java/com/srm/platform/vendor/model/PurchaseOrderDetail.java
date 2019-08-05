@@ -122,8 +122,20 @@ public class PurchaseOrderDetail {
 	@JsonProperty("price_from")
 	private Integer priceFrom = Constants.PURCHASE_ORDER_PRICE_FROM_EMPTY;
 	
+	@JsonProperty("contract_count")
+	@NotFound(action = NotFoundAction.IGNORE)
+	private Integer contractCount = 0;
+	
 	public PurchaseOrderDetail() {
 
+	}
+
+	public Integer getContractCount() {
+		return contractCount;
+	}
+
+	public void setContractCount(Integer contractCount) {
+		this.contractCount = contractCount;
 	}
 
 	public Integer getPriceFrom() {

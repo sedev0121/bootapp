@@ -592,26 +592,28 @@
 		  var data = basic_table.rows().data().toArray();
 		  var small_data = [];
 
-		  if (state == 10) {
-			  data = basic_table.rows('.selected').data().toArray();
+		  var confirmMessage = "";
+		  if (state == 1) {
+		  	confirmMessage = "确定要发布订单吗?";
+		  	$.each(data, function(key, item) {
+				  if (item.contract_count && item.contract_count > 0 && item.price_from == 0) {
+				  	confirmMessage = "未进行协议采购取价,\n是否继续发布?";
+				  }
+			  });
+		  } else if (state == 2) {
+		  	confirmMessage = "确定要确认订单吗?";
+		  } else if (state == 3) {
+		  	confirmMessage = "确定要关闭订单吗?";
+		  } else if (state == 10) {
+		  	confirmMessage = "确定要行关闭吗?";
+		  	data = basic_table.rows('.selected').data().toArray();
 			  if (data.length == 0) {
 				  App.showErrorDialog("操作失败", "请选择至少一行数据！");
 				  return;
 			  }
 		  }
-
-		  var confirmMessage = "";
-		  if (state == 1) {
-		  	confirmMessage = "发布订单";
-		  } else if (state == 2) {
-		  	confirmMessage = "确认订单";
-		  } else if (state == 3) {
-		  	confirmMessage = "关闭订单";
-		  } else if (state == 10) {
-		  	confirmMessage = "行关闭";
-		  }
 		  
-		  App.showInputConfirmDialog('确定要' + confirmMessage + '吗?', function(submit_content) {
+		  App.showInputConfirmDialog(confirmMessage, function(submit_content) {
 		  	$.each(data, function(key, item) {
 				  small_data.push({
 				    id : item.id,

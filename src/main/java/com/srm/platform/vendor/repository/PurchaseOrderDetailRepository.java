@@ -20,8 +20,11 @@ public interface PurchaseOrderDetailRepository extends JpaRepository<PurchaseOrd
 	PurchaseOrderDetail findOneByOrigianId(String code, String originalId);
 	
 	@Query(value = "select * from purchase_order_detail where code= :code order by row_no", nativeQuery = true)
-	List<PurchaseOrderDetail> findDetailsByCode(String code);
+	List<PurchaseOrderDetail> findDetailsByCode2(String code);
 
+	@Query(value = "select a.*, b.contract_count from purchase_order_detail a left join (select inventory_code, count(*) contract_count from contract_detail a left join contract_main b on a.code=b.code where b.state=3 GROUP BY inventory_code) b on a.inventory_code=b.inventory_code where code= :code order by row_no", nativeQuery = true)
+	List<PurchaseOrderDetail> findDetailsByCode(String code);
+	
 	@Query(value = "select * from purchase_order_detail where code= :code and row_no=:rowno limit 1", nativeQuery = true)
 	PurchaseOrderDetail findOneByCodeAndRowno(String code, String rowno);
 	
