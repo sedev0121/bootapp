@@ -537,8 +537,8 @@ public class StatementController extends CommonController {
 		postParams.put("dPBVDate", Utils.formatDateTime(main.getInvoiceMakeDate())); //开票日期
 		postParams.put("cVenCode", vendor.getCode()); //供应商编码
 		postParams.put("cUnitCode", vendor.getCode()); //代垫供应商编码
-		postParams.put("cDepCode", ""); //部门编码
-		postParams.put("cPersonCode", ""); //业务员
+		postParams.put("cDepCode", "02"); //部门编码
+		postParams.put("cPersonCode", this.getLoginAccount().getId().toString()); //业务员
 		postParams.put("iPBVTaxRate", main.getTaxRate().toString()); //表头税率，填个默认值就行
 		postParams.put("cPBVMaker", main.getMaker().getRealname()); //制单人
 		postParams.put("cPBVCode", main.getInvoiceCode()); //发票号
