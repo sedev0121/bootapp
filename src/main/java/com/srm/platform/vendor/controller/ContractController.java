@@ -42,6 +42,7 @@ import com.srm.platform.vendor.model.AttachFile;
 import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.Master;
 import com.srm.platform.vendor.model.PurchaseInDetail;
+import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.ContractDetail;
 import com.srm.platform.vendor.model.ContractMain;
@@ -49,6 +50,7 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.ContractSaveForm;
 import com.srm.platform.vendor.searchitem.ContractDetailItem;
 import com.srm.platform.vendor.searchitem.ContractSearchResult;
+import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.u8api.RestApiResponse;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
@@ -245,6 +247,14 @@ public class ContractController extends CommonController {
 		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
 
 		return new PageImpl<ContractSearchResult>(list, request, totalCount.longValue());
+
+	}
+	
+	@RequestMapping(value = "/search/{code}", produces = "application/json")
+	public @ResponseBody Page<SearchItem> search(@PathVariable("code") String orderCode, @RequestParam(value = "q") String search) {
+		
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
+		return contractMainRepository.findAllOfPurchaseOrder(orderCode, search, request);
 
 	}
 

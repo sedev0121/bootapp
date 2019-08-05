@@ -30,7 +30,7 @@ function import_csv_as_text(callback) {
 var special_regex = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
 var App = function() {
-	var price_from_data = [{id:0, text:'123 '}, {id:1, text:'合同'}];
+	var price_from_data = [{id:0, text:' '}, {id:1, text:'合同'}];
 	var floating_direction = [{id:1, text:'向上浮动'}, {id:2, text:'向下浮动'}, {id:3, text:'上下浮动'}];
 	var contract_type = [{id:1, text:'框架合同'}, {id:2, text:'非框架合同'}];
 	var contract_kind = [{id:1, text:'采购合同'}, {id:2, text:'加工合同'}, {id:3, text:'租赁合同'}, {id:4, text:'维保合同'}];

@@ -133,6 +133,7 @@
 									<textarea name="content" placeholder="请输入说明" id="history_content" class="history-content" rows="5"></textarea>
 								</div>
 							</div>
+						</form>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
@@ -140,6 +141,40 @@
 					</div>
 				</div>
 			</div>
+		</div>
+		<div class="modal fade" id="negotiate_dialog" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" role="document" style="width: 1000px;">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">协议采购</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6">
+								<label>合同编号： </label> <select id="contract_list" class="form-control">
+									<option th:if="${main.store != null}" th:value="${main.store?.id}" th:text="${main.store?.name}" selected="selected"></option>
+								</select>
+							</div>
+							<div class="col-md-2">
+								<label>基材价格： </label> <input type="number" class="form-control" />
+							</div>
+							<div class="col-md-3">
+								<label> </label>
+								<div>
+									<button class="btn btn-primary" id="btn_search">合同取价计算</button>
+									<button class="btn btn-default" id="btn_search" data-dismiss="modal">退出</button>
+								</div>
+							</div>
+						</div>
+						<div class="row" style="margin-top: 10px;">
+							<div class="col-lg-12">
+								<table id="negotiate_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
 		</div>
 	</div>
 </body>
@@ -157,6 +192,7 @@
    var store_url = [[@{/store/search/}]] + [[${main.company.id}]];
    var submit_url = [[@{/purchaseorder/update}]];
    var state = [[${main.srmstate}]];
+   var contract_search_url = [[@{|/contract/search/${main.code}|}]];
    +]*/
 
   var editor;
@@ -190,7 +226,9 @@
 	  	$("#store_set").val(store_data[0].is_set);
 	  });
 	  
-	  var basic_table, history_table;
+	  $("#contract_list").select2(App.getSelect2Options(contract_search_url));
+	  
+	  var basic_table, history_table, negotiate_table;
 
 	  $('#save_history').click(function() {
 	  	if (!$('#history_content').val()) {
@@ -520,6 +558,97 @@
 	      title : '说明',
 	    } ],
 	  });
+	  
+	  $('#negotiate_dialog').on('shown.bs.modal', function() {
+	  	negotiate_table = $('#negotiate_table').DataTable({
+		    serverSide : false,
+		    processing : false,
+		    ajax : {
+		      url : detail_url,
+		      dataSrc : function(json) {
+			      return json;
+		      },
+		    },
+		    fixedColumns : {
+			    leftColumns : 6,
+		    },
+		    columns : [ {
+		      data : 'row_no',
+		      className : 'dt-center',
+		      title : '行号',
+		    }, {
+		      data : 'inventory.code',
+		      title : '货品代码',
+		      render : function(data, display, record) {
+			      if (!record.inventory) {
+				      data = '';
+			      }
+			      return record.inventory.code;
+		      },
+		    }, {
+		      data : 'inventory_name',
+		      title : '货品名称',
+		    }, {
+		      data : null,
+		      defaultContent : '',
+		      title : '规格型号',
+		      render: function (data, display, record) {
+		        if (record.inventory) {
+		        	return record.inventory.specs;
+		        } else {
+		        	return "";
+		        }
+		      },
+		    }, {
+		      data : 'unit_name',
+		      className : 'dt-center',
+		      title : '单位',
+		    }, {
+		      data : 'quantity',
+		      className : 'dt-right',
+		      title : '订单数量',
+		    }, {
+		      data : 'price',
+		      className : 'dt-right',
+		      title : '未税单价',
+		      render: App.costNumber,
+		    }, {
+		      data : 'tax_rate',
+		      className : 'dt-right',
+		      title : '税率'
+		    }, {
+		      data : 'tax_price',
+		      className : 'dt-right',
+		      title : '含税单价',
+		      render: App.costNumber,
+		    }, {
+		      data : 'money',
+		      className : 'dt-right',
+		      title : '未税金额',
+		      render: App.costNumber,
+		    }, {
+		      data : 'tax',
+		      className : 'dt-right',
+		      title : '税额',
+		      render: App.costNumber,
+		    }, {
+		      data : 'sum',
+		      className : 'dt-right',
+		      title : '含税金额',
+		      render: App.costNumber,
+		    } ],
+		    rowCallback: function (row, data) {
+	        if (data.close_date) {
+	            $(row).addClass('closed');
+	        }
+	    	},
+		    footerCallback : function(row, data, start, end, display) {
+			    App.footerCallback(this.api(), [ [ 2, "quantity" ], [ 6, "quantity" ], [ 7, "quantity" ], [ 8, "cost" ] ]);
+		    },
+		  });
+	  })
+	  
+
 
 	  $('.detail-tabs a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
 		  if (history_table) {
@@ -699,7 +828,7 @@
 	  });
 	  
 	  $("#negotiate").click(function() {
-	  	alert("negotiate");
+	  	$('#negotiate_dialog').modal('show');
 	  });
 	  
   });
