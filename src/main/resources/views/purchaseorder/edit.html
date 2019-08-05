@@ -192,13 +192,15 @@
    var store_url = [[@{/store/search/}]] + [[${main.company.id}]];
    var submit_url = [[@{/purchaseorder/update}]];
    var state = [[${main.srmstate}]];
-   var contract_search_url = [[@{|/contract/search/${main.code}|}]];
+   var contract_search_url = [[@{|/contract/search/${main.code}|}]];   
+   var contract_details_url = [[@{/contract/search_details}]];
    +]*/
 
   var editor;
 
   $(document).ready(function() {
-
+  	var basic_table, history_table, negotiate_table;
+  	
 	  var footer = $("<tfoot></tfoot>").appendTo("#basic_info");
 	  var footertr = $("<tr></tr>").appendTo(footer);
 	  var columnCount = 37;
@@ -227,8 +229,11 @@
 	  });
 	  
 	  $("#contract_list").select2(App.getSelect2Options(contract_search_url));
+	  $('#contract_list').change(function() {
+	  	negotiate_table.rows().invalidate().draw();
+	  });	  
 	  
-	  var basic_table, history_table, negotiate_table;
+	  
 
 	  $('#save_history').click(function() {
 	  	if (!$('#history_content').val()) {
@@ -560,93 +565,114 @@
 	  });
 	  
 	  $('#negotiate_dialog').on('shown.bs.modal', function() {
-	  	negotiate_table = $('#negotiate_table').DataTable({
-		    serverSide : false,
-		    processing : false,
-		    ajax : {
-		      url : detail_url,
-		      dataSrc : function(json) {
-			      return json;
-		      },
-		    },
-		    fixedColumns : {
-			    leftColumns : 6,
-		    },
-		    columns : [ {
-		      data : 'row_no',
-		      className : 'dt-center',
-		      title : '行号',
-		    }, {
-		      data : 'inventory.code',
-		      title : '货品代码',
-		      render : function(data, display, record) {
-			      if (!record.inventory) {
-				      data = '';
-			      }
-			      return record.inventory.code;
-		      },
-		    }, {
-		      data : 'inventory_name',
-		      title : '货品名称',
-		    }, {
-		      data : null,
-		      defaultContent : '',
-		      title : '规格型号',
-		      render: function (data, display, record) {
-		        if (record.inventory) {
-		        	return record.inventory.specs;
-		        } else {
-		        	return "";
-		        }
-		      },
-		    }, {
-		      data : 'unit_name',
-		      className : 'dt-center',
-		      title : '单位',
-		    }, {
-		      data : 'quantity',
-		      className : 'dt-right',
-		      title : '订单数量',
-		    }, {
-		      data : 'price',
-		      className : 'dt-right',
-		      title : '未税单价',
-		      render: App.costNumber,
-		    }, {
-		      data : 'tax_rate',
-		      className : 'dt-right',
-		      title : '税率'
-		    }, {
-		      data : 'tax_price',
-		      className : 'dt-right',
-		      title : '含税单价',
-		      render: App.costNumber,
-		    }, {
-		      data : 'money',
-		      className : 'dt-right',
-		      title : '未税金额',
-		      render: App.costNumber,
-		    }, {
-		      data : 'tax',
-		      className : 'dt-right',
-		      title : '税额',
-		      render: App.costNumber,
-		    }, {
-		      data : 'sum',
-		      className : 'dt-right',
-		      title : '含税金额',
-		      render: App.costNumber,
-		    } ],
-		    rowCallback: function (row, data) {
-	        if (data.close_date) {
-	            $(row).addClass('closed');
-	        }
-	    	},
-		    footerCallback : function(row, data, start, end, display) {
-			    App.footerCallback(this.api(), [ [ 2, "quantity" ], [ 6, "quantity" ], [ 7, "quantity" ], [ 8, "cost" ] ]);
-		    },
-		  });
-	  })
+	  	if (!negotiate_table) {
+	  	  var footer = $("<tfoot></tfoot>").appendTo("#negotiate_table");
+	  	  var footertr = $("<tr></tr>").appendTo(footer);
+	  	  var columnCount = 12;
+
+
+	  	  //Add footer cells
+	  	  var mergeColumnCount = 5;
+	  	  for (var i = 0; i < columnCount - mergeColumnCount + 1; i++) {
+	  		  if (i == 0) {
+	  			  $("<th colspan='" + mergeColumnCount + "' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
+	  		  } else {
+	  			  $("<th></th>").appendTo(footertr);
+	  		  }
+	  	  }
+	  	  
+	  		negotiate_table = $('#negotiate_table').DataTable({
+	  			ajax : {
+	  	      url : contract_details_url,
+	  	      data : function(data) {
+	  		      var filter = {
+	  		        order : data.columns[data.order[0].column].data,
+	  		        dir : data.order[0].dir,
+	  		        rows_per_page : data.length,
+	  		        page_index : data.start / data.length + 1,
+	  		        code: $("#contract_list").val(),
+	  		      }
+	  		      return filter;
+	  	      },
+	  	      dataSrc : function(json) {
+	  	      	$.each(json.content, function(key, item) {
+	  	      		item.price = 0;
+	  	      		item.tax_rate = 17;
+	  	      		item.tax_cost = 0;
+	  	      		item.cost = 0;
+	  	      		item.tax = 0;	  	      		
+	  	      	});
+	  		      json.recordsTotal = json.totalElements;
+	  		      json.recordsFiltered = json.totalElements;
+	  		      return json.content;
+	  	      },
+	  	    },
+	  	    ordering : true,
+	  	    order : [ [ 0, "asc" ] ],
+			    columns : [ {
+			      data : 'row_no',
+			      className : 'dt-center',
+			      title : '行号',
+			    }, {
+			      data : 'code',
+			      title : '货品代码',
+			    }, {
+			      data : 'name',
+			      title : '货品名称',
+			    }, {
+			      data : 'specs',
+			      title : '规格型号',
+			    }, {
+			      data : 'main_measure',
+			      className : 'dt-center',
+			      title : '单位',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      orderable: false,
+			      title : '订单数量',
+			    }, {
+			      data : 'price',
+			      className : 'dt-right',
+			      orderable: false,
+			      title : '未税单价',
+			      render: App.costNumber,
+			    }, {
+			      data : 'tax_rate',
+			      className : 'dt-right',
+			      orderable: false,
+			      title : '税率'
+			    }, {
+			      data : 'tax_price',
+			      className : 'dt-right',
+			      orderable: false,
+			      title : '含税单价',
+			      render: App.costNumber,
+			    }, {
+			      data : 'cost',
+			      className : 'dt-right',
+			      orderable: false,
+			      title : '未税金额',
+			      render: App.costNumber,
+			    }, {
+			      data : 'tax',
+			      className : 'dt-right',
+			      orderable: false,
+			      title : '税额',
+			      render: App.costNumber,
+			    }, {
+			      data : 'tax_cost',
+			      className : 'dt-right',
+			      orderable: false,
+			      title : '含税金额',
+			      render: App.costNumber,
+			    } ],
+			    footerCallback : function(row, data, start, end, display) {
+				    App.footerCallback(this.api(), [ [ 6, "quantity" ], [ 7, "quantity" ], [ 10, "quantity" ], [ 11, "cost" ] ]);
+			    },
+			  });
+	  	}	  	
+	  });
 	  
 
 

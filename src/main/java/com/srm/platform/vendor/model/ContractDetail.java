@@ -1,17 +1,41 @@
 package com.srm.platform.vendor.model;
 
+import java.util.Date;
+
 import javax.persistence.CascadeType;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.srm.platform.vendor.searchitem.ContractDetailSearchResult;
+import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 
 @Entity
+
+
+@SqlResultSetMapping(name = "ContractDetailSearchResult", classes = {
+	@ConstructorResult(targetClass = ContractDetailSearchResult.class, columns = {
+		@ColumnResult(name = "id", type = Long.class), 
+		@ColumnResult(name = "row_no", type = Integer.class), 
+		@ColumnResult(name = "code", type = String.class),
+		@ColumnResult(name = "name", type = String.class),
+		@ColumnResult(name = "specs", type = String.class),
+		@ColumnResult(name = "main_measure", type = String.class),
+		@ColumnResult(name = "quantity", type = Double.class),
+		@ColumnResult(name = "tax_price", type = Double.class),
+		@ColumnResult(name = "memo", type = String.class),
+		@ColumnResult(name = "floating_direction", type = Integer.class),
+		@ColumnResult(name = "floating_price", type = Double.class), 
+	}) 
+})
 @Table(name = "contract_detail")
 public class ContractDetail {
 	@Id

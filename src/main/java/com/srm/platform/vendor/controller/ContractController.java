@@ -49,6 +49,7 @@ import com.srm.platform.vendor.model.ContractMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.ContractSaveForm;
 import com.srm.platform.vendor.searchitem.ContractDetailItem;
+import com.srm.platform.vendor.searchitem.ContractDetailSearchResult;
 import com.srm.platform.vendor.searchitem.ContractSearchResult;
 import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.u8api.RestApiResponse;
@@ -257,13 +258,56 @@ public class ContractController extends CommonController {
 		return contractMainRepository.findAllOfPurchaseOrder(orderCode, search, request);
 
 	}
-
+	
 	@RequestMapping(value = "/{code}/details", produces = "application/json")
 	public @ResponseBody List<ContractDetailItem> details_ajax(@PathVariable("code") String code) {
 		List<ContractDetailItem> list = contractDetailRepository.searchDetailsByCode(code);
 
 		return list;
 	}
+	
+	@RequestMapping(value = "/search_details", produces = "application/json")
+	public @ResponseBody Page<ContractDetailSearchResult> detailsOfContract(@RequestParam Map<String, String> requestParams) {
+		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
+		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
+		String order = requestParams.getOrDefault("order", "row_no");
+		String dir = requestParams.getOrDefault("dir", "asc");
+		String code = requestParams.get("code");
+
+		page_index--;
+		PageRequest request = PageRequest.of(page_index, rows_per_page,
+				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
+
+		String selectQuery = "SELECT a.id, a.row_no, b.code, b.name, b.specs, b.main_measure, a.quantity, a.tax_price, a.floating_direction, a.floating_price, a.memo ";
+		String countQuery = "select count(*) ";
+		String orderBy = " order by " + order + " " + dir;
+
+		String bodyQuery = "FROM contract_detail a left join inventory b on a.inventory_code=b.code WHERE a.code= :code ";
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("code", code.trim());
+
+		countQuery += bodyQuery;
+		Query q = em.createNativeQuery(countQuery);
+
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		BigInteger totalCount = (BigInteger) q.getSingleResult();
+
+		selectQuery += bodyQuery + orderBy;
+		q = em.createNativeQuery(selectQuery, "ContractDetailSearchResult");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			q.setParameter(entry.getKey(), entry.getValue());
+		}
+
+		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
+
+		return new PageImpl<ContractDetailSearchResult>(list, request, totalCount.longValue());
+
+	}
+	
 	
 	@RequestMapping(value = "/{code}/attaches", produces = "application/json")
 	public @ResponseBody List<AttachFile> listAttaches(@PathVariable("code") String code) {
