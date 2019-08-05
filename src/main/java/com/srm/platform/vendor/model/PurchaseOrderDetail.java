@@ -111,8 +111,31 @@ public class PurchaseOrderDetail {
 	@JsonProperty(value = "confirmed_date")
 	private Date confirmedDate;
 
+	
+	@JsonProperty("contract_code")
+	private String contractCode;
+	
+	@JsonProperty("base_price")
+	private Double basePrice;
+	
 	public PurchaseOrderDetail() {
 
+	}
+
+	public String getContractCode() {
+		return contractCode;
+	}
+
+	public void setContractCode(String contractCode) {
+		this.contractCode = contractCode;
+	}
+
+	public Double getBasePrice() {
+		return basePrice;
+	}
+
+	public void setBasePrice(Double basePrice) {
+		this.basePrice = basePrice;
 	}
 
 	public Inventory getInventory() {

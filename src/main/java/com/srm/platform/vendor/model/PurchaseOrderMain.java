@@ -46,6 +46,8 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 		@ColumnResult(name = "currency", type = String.class),
 		@ColumnResult(name = "closedate", type = Date.class),
 		@ColumnResult(name = "orderdate", type = Date.class),
+		@ColumnResult(name = "contract_code", type = String.class),
+		@ColumnResult(name = "base_price", type = Double.class),
 	}) 
 })
 
@@ -95,6 +97,11 @@ public class PurchaseOrderMain {
 	private String department;
 	private String person;
 	
+	@JsonProperty("contract_code")
+	private String contractCode;
+	
+	@JsonProperty("base_price")
+	private Double basePrice;
 
 	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "company_id", referencedColumnName = "id")
@@ -116,6 +123,22 @@ public class PurchaseOrderMain {
 
 	public PurchaseOrderMain() {
 
+	}
+
+	public String getContractCode() {
+		return contractCode;
+	}
+
+	public void setContractCode(String contractCode) {
+		this.contractCode = contractCode;
+	}
+
+	public Double getBasePrice() {
+		return basePrice;
+	}
+
+	public void setBasePrice(Double basePrice) {
+		this.basePrice = basePrice;
 	}
 
 	public String getCode() {

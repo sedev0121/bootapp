@@ -447,3 +447,11 @@ CREATE TABLE `statement_detail`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = MyISAM AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
+
+
+/* 2019-08-05 */
+alter table purchase_order_main add column contract_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table purchase_order_main add column base_price double(16, 2) NULL DEFAULT NULL;
+
+alter table purchase_order_detail add column contract_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table purchase_order_detail add column base_price double(16, 2) NULL DEFAULT NULL;
