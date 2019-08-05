@@ -10,10 +10,12 @@
 		<div class="btn-group-bar">
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
 				<a class="btn btn-primary" id="deploy" th:if="${(main.srmstate==0 && canDeploy)}"><i class="fa fa-share"></i> 发布</a> 
+				<a class="btn btn-warning" id="negotiate" th:if="${(main.srmstate==0 && canDeploy)}"><i class="fa fa-comments"></i> 协议采购</a>
 				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
 				<a class="btn btn-danger" id="close" th:if="${main.srmstate>=1 && main.srmstate!=3 && canClose}"><i class="fa fa-remove"></i> 订单关闭</a>
 				<a class="btn btn-primary" id="close_row" th:if="${(main.srmstate>=1 && main.srmstate<3 && canCloseRow)}"><i class="fa fa-undo"></i> 行关闭</a> 
 				<a class="btn btn-primary" id="export"><i class="fa fa-print"></i> 导出明细</a>
+				<a class="btn btn-primary" id="print"><i class="fa fa-print"></i> 打印</a>
 				<a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -21,16 +23,30 @@
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-md-2">
-						<label>订单编号： </label> <input type="text" id="code" class="form-control" th:value="${main.code}" readonly />
+						<label>订单编号： </label> 
+						<input type="text" id="code" class="form-control" th:value="${main.code}" readonly />
 					</div>
 					<div class="col-md-2">
-						<label>订单日期： </label> <input type="text" class="form-control" th:value="${#dates.format(main.orderdate, 'yyyy-MM-dd')}" readonly />
+						<label>订单日期： </label> 
+						<input type="text" class="form-control" th:value="${#dates.format(main.orderdate, 'yyyy-MM-dd')}" readonly />
 					</div>
 					<div class="col-md-2">
-						<label>采购类型： </label> <input type="text" class="form-control" th:value="${main.purchaseTypeName}" readonly />
+						<label>采购类型： </label> 
+						<input type="text" class="form-control" th:value="${main.purchaseTypeName}" readonly />
 					</div>
 					<div class="col-md-2">
-						<label for="state">订单状态：</label> <select name="state" id="state" class="form-control" readonly>
+						<label for="state">订单状态：</label> 
+						<select name="state" id="state" class="form-control" readonly>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label for="state">合同编号：</label> 
+						<input type="text" class="form-control" id="contract_code" name="contract_code" th:value="${main.contractCode}" readonly />
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label for="state">基材价格：</label> 
+						<input type="text" class="form-control" id="base_price" name="base_price" th:value="${main.basePrice}" readonly />
 						</select>
 					</div>
 				</div>
@@ -85,32 +101,7 @@
 								</ul>
 								<div class="tab-content">
 									<div id="tab-1" class="tab-pane row-fluid fade in active">
-										<table id="basic_info" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-											<tfoot>
-												<tr>
-													<th colspan="6" class="dt-center">合计</th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th colspan="3"></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th colspan="3"></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th colspan="5"></th>
-												</tr>
-											</tfoot>
+										<table id="basic_info" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">											
 										</table>
 									</div>
 									<div id="tab-2" class="tab-pane row-fluid fade in">
@@ -172,6 +163,21 @@
 
   $(document).ready(function() {
 
+	  var footer = $("<tfoot></tfoot>").appendTo("#basic_info");
+	  var footertr = $("<tr></tr>").appendTo(footer);
+	  var columnCount = 37;
+
+
+	  //Add footer cells
+	  var mergeColumnCount = 6;
+	  for (var i = 0; i < columnCount - mergeColumnCount + 1; i++) {
+		  if (i == 0) {
+			  $("<th colspan='" + mergeColumnCount + "' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
+		  } else {
+			  $("<th></th>").appendTo(footertr);
+		  }
+	  }
+	  
 	  Layout.initUniform();
 	  $("#state").select2({
 	    data : App.getPurchaseOrderStateData(),
@@ -365,6 +371,20 @@
 	      title : '含税单价',
 	      render: App.costNumber,
 	    }, {
+	      data : 'price_from',
+	      className : 'dt-center',
+	      title : '价格来源',
+	      render: function (data, display, record) {
+	        return App.getPriceFromOfId(record.price_from);
+	      },
+	    }, {
+	      data : 'contract_code',
+	      title : '合同编号',
+	    }, {
+	      data : 'base_price',
+	      className : 'dt-right',
+	      title : '基材价格',
+	    }, {
 	      data : 'money',
 	      className : 'dt-right',
 	      title : '未税金额',
@@ -466,6 +486,7 @@
 		    App.footerCallback(this.api(), [ [ 6, "quantity" ], [ 10, "quantity" ], [ 11, "quantity" ], [ 15, "cost" ], [ 16, "cost" ], [ 17, "cost" ], [ 21, "quantity" ], [ 22, "quantity" ], [ 23, "quantity" ], [ 24, "quantity" ], [ 25, "quantity" ], [ 28, "cost" ] ]);
 	    },
 	  });
+
 
 	  
 	  history_table = $('#history_table').DataTable({
@@ -665,5 +686,19 @@
 	  	var file_name = $('#code').val() + "_订单明细.csv";
 	  	App.exportCSVFromDatatable(basic_table, file_name);
 	  });
+	  
+	  $("#print").click(function() {
+	  	var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
+	  	if (window.location.host.startsWith("192.")) {
+	  		url = "http://192.168.30.204:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
+	  	}	  	
+	  	var win = window.open(url, '_blank');
+	    win.focus();
+	  });
+	  
+	  $("#negotiate").click(function() {
+	  	alert("negotiate");
+	  });
+	  
   });
 </script>

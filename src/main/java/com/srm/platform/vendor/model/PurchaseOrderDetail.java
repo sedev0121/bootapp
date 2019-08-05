@@ -16,6 +16,7 @@ import org.hibernate.annotations.NotFoundAction;
 import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.srm.platform.vendor.utility.Constants;
 
 @Entity
 
@@ -118,8 +119,19 @@ public class PurchaseOrderDetail {
 	@JsonProperty("base_price")
 	private Double basePrice;
 	
+	@JsonProperty("price_from")
+	private Integer priceFrom = Constants.PURCHASE_ORDER_PRICE_FROM_EMPTY;
+	
 	public PurchaseOrderDetail() {
 
+	}
+
+	public Integer getPriceFrom() {
+		return priceFrom;
+	}
+
+	public void setPriceFrom(Integer priceFrom) {
+		this.priceFrom = priceFrom;
 	}
 
 	public String getContractCode() {

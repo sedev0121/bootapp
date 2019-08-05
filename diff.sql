@@ -453,5 +453,6 @@ CREATE TABLE `statement_detail`  (
 alter table purchase_order_main add column contract_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 alter table purchase_order_main add column base_price double(16, 2) NULL DEFAULT NULL;
 
+alter table purchase_order_detail add column price_from int(1) NOT NULL DEFAULT 0;
 alter table purchase_order_detail add column contract_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 alter table purchase_order_detail add column base_price double(16, 2) NULL DEFAULT NULL;
