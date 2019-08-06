@@ -456,3 +456,6 @@ alter table purchase_order_main add column base_price double(16, 2) NULL DEFAULT
 alter table purchase_order_detail add column price_from int(1) NOT NULL DEFAULT 0;
 alter table purchase_order_detail add column contract_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 alter table purchase_order_detail add column base_price double(16, 2) NULL DEFAULT NULL;
+
+/* 2019-08-06 */
+alter table statement_main modify column tax_rate int(2) NOT NULL DEFAULT 16;

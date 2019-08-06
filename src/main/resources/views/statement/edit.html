@@ -935,7 +935,7 @@
 			    style : 'multi'
 		    }:false,
 		    fixedColumns : {
-			    leftColumns : 4,
+			    leftColumns : 7,
 		    },
 		    buttons : canEdit()?[ {
 		      text : "选择要对账的物料",
@@ -1147,9 +1147,9 @@
 		  var footertr = $("<tr></tr>").appendTo(footer);
 
 		  //Add footer cells
-		  for (var i = 0; i < 14; i++) {
+		  for (var i = 0; i < 16; i++) {
 			  if (i == 0) {
-				  $("<th colspan='9' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
+				  $("<th colspan='7' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
 			  } else {
 				  $("<th></th>").appendTo(footertr);
 			  }
@@ -1181,6 +1181,9 @@
 	      },
 	      tax_rate : {
 		      required : true,
+		      digits: true,
+		      max: 17,
+		      min: 0,
 	      },
 	      invoice_code : {
 		      required : state==6

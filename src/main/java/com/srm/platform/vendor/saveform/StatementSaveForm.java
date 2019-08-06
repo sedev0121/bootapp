@@ -25,7 +25,7 @@ public class StatementSaveForm {
 	private Double taxSum;
 	private Double adjustCostSum;
 
-	private Float tax_rate;
+	private Integer tax_rate;
 
 	private List<MultipartFile> attach;
 
@@ -141,11 +141,11 @@ public class StatementSaveForm {
 		this.vendor = vendor;
 	}
 
-	public Float getTax_rate() {
+	public Integer getTax_rate() {
 		return tax_rate;
 	}
 
-	public void setTax_rate(Float tax_rate) {
+	public void setTax_rate(Integer tax_rate) {
 		this.tax_rate = tax_rate;
 	}
 
