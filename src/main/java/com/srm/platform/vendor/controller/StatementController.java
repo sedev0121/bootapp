@@ -720,6 +720,7 @@ public class StatementController extends CommonController {
 			list = filteredList;
 		}
 
+		filteredList = new ArrayList<StatementMain>();
 		List<String> allowedVendorCodeList = accountPermission.getVendorList();
 		if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
 			for (StatementMain item : list) {
