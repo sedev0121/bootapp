@@ -272,7 +272,8 @@ public class ContractController extends CommonController {
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
 		String order = requestParams.getOrDefault("order", "row_no");
 		String dir = requestParams.getOrDefault("dir", "asc");
-		String code = requestParams.get("code");
+		String contractCode = requestParams.get("contract_code");
+		String orderCode = requestParams.get("order_code");
 
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
@@ -282,10 +283,11 @@ public class ContractController extends CommonController {
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM contract_detail a left join inventory b on a.inventory_code=b.code WHERE a.code= :code ";
+		String bodyQuery = "FROM contract_detail a left join inventory b on a.inventory_code=b.code WHERE a.code= :contractCode and a.inventory_code in (select inventory_code from purchase_order_detail where code=:orderCode)";
 
 		Map<String, Object> params = new HashMap<>();
-		params.put("code", code.trim());
+		params.put("contractCode", contractCode);
+		params.put("orderCode", orderCode);
 
 		countQuery += bodyQuery;
 		Query q = em.createNativeQuery(countQuery);
