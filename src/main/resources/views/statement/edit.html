@@ -300,6 +300,23 @@
 
   $(document).ready(function() {
 
+  	$("#tax_rate").change(function() {
+  		var rowDatas = table.data();
+		  
+		  $.each(rowDatas, function(key, item) {
+		  	item.tax_rate = $("#tax_rate").val();
+		  });	
+		  
+		  table.rows().invalidate().draw();
+		  rowDatas = summary_table.data();
+		  
+		  $.each(rowDatas, function(key, item) {
+		  	item.tax_rate = $("#tax_rate").val();
+		  });	
+		  
+		  summary_table.rows().invalidate().draw();
+  	});
+  	
   	function canEditInvoice() {
   		if (state == 6 && (invoice_state == 0 && is_vendor || invoice_state > 0 && invoice_state < 4 && !is_vendor)) {
   			return true;
@@ -1107,15 +1124,15 @@
 					      inventory_code : item.inventory_code,
 					      inventory_name : item.inventory_name,
 					      unitname : item.unitname,
-					      pi_quantity : item.pi_quantity,
+					      pi_quantity : item.pi_quantity * 1,
 					      tax_rate : item.tax_rate,
 					      specs : item.specs,
-					      tax_price: item.tax_price,
-					      tax_cost : item.tax_cost,
-					      adjust_tax_cost : item.adjust_tax_cost,
-					      invoice_cost : item.invoice_cost,
-					      invoice_quantity : item.invoice_quantity,
-					      invoice_price : item.invoice_price,
+					      tax_price: item.tax_price * 1,
+					      tax_cost : item.tax_cost * 1,
+					      adjust_tax_cost : item.adjust_tax_cost * 1,
+					      invoice_cost : item.invoice_cost * 1,
+					      invoice_quantity : item.invoice_quantity * 1,
+					      invoice_price : item.invoice_price * 1,
 					      row_no : index++
 					    }
 				    } else {
@@ -1123,7 +1140,7 @@
 					    summary_data[key].invoice_price += App.floatVal(item.invoice_price);
 					    summary_data[key].tax_cost += App.floatVal(item.tax_cost);
 					    summary_data[key].adjust_tax_cost += App.floatVal(item.adjust_tax_cost);
-					    summary_data[key].invoice_price = App.priceNumber((summary_data[key].tax_cost + summary_data[key].adjust_tax_cost) / summary_data[key].invoice_quantity);
+					    summary_data[key].invoice_price = App.priceNumber((summary_data[key].tax_cost * 1 + summary_data[key].adjust_tax_cost) / summary_data[key].invoice_quantity);
 					    summary_data[key].tax_price = App.priceNumber(summary_data[key].tax_cost / summary_data[key].pi_quantity);
 				    }
 			    });

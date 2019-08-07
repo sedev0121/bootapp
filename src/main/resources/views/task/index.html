@@ -243,6 +243,13 @@
 		      title : '成功/失败',
 		      width : '150px',
 		      className : 'dt-center',
+		      render: function(data) {
+		      	var result = "成功";
+		      	if (data != 1)
+		      		result = "失败";
+		      	
+		      	return result;
+		      }
 		    }, {
 		      data : 'failed_reason',
 		      title : '失败原因',

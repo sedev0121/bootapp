@@ -234,10 +234,11 @@ var App = function() {
 		  	return boxCount;
 		  }
 		},
-    formatNumber : function (i, length) {
-      //var x = Math.pow(10, Number(length) + 1);      
-      //return (Number(App.intVal(i)) + (1 / x)).toFixed(length);
-      
+    formatNumber : function (i, length) {      
+    	if (isNaN(i) || i == Infinity) {
+    		return '';
+    	}
+    	
       var num = App.intVal(i);      
       return parseFloat((+(Math.round(+(num + 'e' + length)) + 'e' + -length)).toFixed(length));
       
