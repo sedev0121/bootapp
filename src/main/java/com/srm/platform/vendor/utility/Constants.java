@@ -131,7 +131,7 @@ public class Constants {
 	
 	public final static String DEFAULT_SECOND_PASSWORD = "123";
 	
-	public final static String VERSION = "srm_v32_20190801";
+	public final static String VERSION = "srm_v32_20190807";
 	
 	public final static String DEFAULT_STATEMENT_DATE = "25";
 	public final static String DEFAULT_STATEMENT_TIME = "09:00";
