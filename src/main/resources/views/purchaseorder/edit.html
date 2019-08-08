@@ -193,7 +193,7 @@
    var submit_url = [[@{/purchaseorder/update}]];
    var state = [[${main.srmstate}]];
    var contract_search_url = [[@{|/contract/search/${main.code}|}]];   
-   var contract_details_url = [[@{/contract/search_details}]];
+   var contract_details_url = [[@{|/contract/search_order_details/${main.code}/|}]];
    +]*/
 
   var editor;
@@ -230,7 +230,8 @@
 	  
 	  $("#contract_list").select2(App.getSelect2Options(contract_search_url));
 	  $('#contract_list').change(function() {
-	  	negotiate_table.rows().invalidate().draw();
+	  	negotiate_table.ajax.url(contract_details_url + $("#contract_list").val());
+	  	negotiate_table.ajax.reload();
 	  });	  
 	  
 	  
@@ -582,30 +583,21 @@
 	  	  }
 	  	  
 	  		negotiate_table = $('#negotiate_table').DataTable({
+	  			serverSide : false,
+			    processing : false,
+			    destroy : true,
+			    ordering : false,
 	  			ajax : {
-	  	      url : contract_details_url,
-	  	      data : function(data) {
-	  		      var filter = {
-	  		        order : data.columns[data.order[0].column].data,
-	  		        dir : data.order[0].dir,
-	  		        rows_per_page : data.length,
-	  		        page_index : data.start / data.length + 1,
-	  		        contract_code: $("#contract_list").val(),
-	  		        order_code: $("#code").val(),
-	  		      }
-	  		      return filter;
-	  	      },
+	  	      url : contract_details_url + $("#contract_list").val(),
 	  	      dataSrc : function(json) {
-	  	      	$.each(json.content, function(key, item) {
-	  	      		item.price = 0;
-	  	      		item.tax_rate = 17;
-	  	      		item.tax_cost = 0;
-	  	      		item.cost = 0;
-	  	      		item.tax = 0;	  	      		
+	  	      	$.each(json, function(key, item) {
+	  	      		item.tax_price = item.contract_tax_price;
+	  	      		item.price = App.priceNumber(item.tax_price * 100 / (100 + parseFloat(item.tax_rate)));
+	  	      		item.tax_cost = App.costNumber(item.tax_price * item.quantity);
+	  	      		item.cost = App.costNumber(item.price * item.quantity);
+	  	      		item.tax = App.costNumber(item.tax_cost - item.cost);	  	      		
 	  	      	});
-	  		      json.recordsTotal = json.totalElements;
-	  		      json.recordsFiltered = json.totalElements;
-	  		      return json.content;
+	  		      return json;
 	  	      },
 	  	    },
 	  	    ordering : true,
@@ -637,7 +629,7 @@
 			      className : 'dt-right',
 			      orderable: false,
 			      title : '未税单价',
-			      render: App.costNumber,
+			      render: App.priceNumber,
 			    }, {
 			      data : 'tax_rate',
 			      className : 'dt-right',
@@ -648,7 +640,7 @@
 			      className : 'dt-right',
 			      orderable: false,
 			      title : '含税单价',
-			      render: App.costNumber,
+			      render: App.priceNumber,
 			    }, {
 			      data : 'cost',
 			      className : 'dt-right',
@@ -669,7 +661,7 @@
 			      render: App.costNumber,
 			    } ],
 			    footerCallback : function(row, data, start, end, display) {
-				    App.footerCallback(this.api(), [ [ 6, "quantity" ], [ 7, "quantity" ], [ 10, "quantity" ], [ 11, "cost" ] ]);
+				    App.footerCallback(this.api(), [ [ 5, "quantity" ], [ 9, "cost" ], [ 10, "cost" ], [ 11, "cost" ] ]);
 			    },
 			  });
 	  	}	  	

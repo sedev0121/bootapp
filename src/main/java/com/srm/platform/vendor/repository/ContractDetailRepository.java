@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.ContractDetail;
 import com.srm.platform.vendor.searchitem.ContractDetailItem;
+import com.srm.platform.vendor.searchitem.ContractOrderDetailItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
@@ -21,4 +22,6 @@ public interface ContractDetailRepository extends JpaRepository<ContractDetail, 
 	@Query(value = "SELECT * FROM contract_detail WHERE code= :code order by row_no", nativeQuery = true)
 	List<ContractDetail> findDetailsByCode(String code);
 
+	@Query(value = "select a.row_no, c.code, c.name, c.specs, c.main_measure, a.quantity, a.tax_rate, b.tax_price contract_tax_price, b.floating_price contract_floating_price from purchase_order_detail a left join contract_detail b on a.inventory_code=b.inventory_code left join inventory c on a.inventory_code=c.code where a.code=?1 and b.code=?2", nativeQuery = true)
+	List<ContractOrderDetailItem> searchOrderDetailsByCode(String orderCode, String contractCode);
 }
