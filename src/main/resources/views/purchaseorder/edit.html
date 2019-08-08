@@ -157,7 +157,7 @@
 								</select>
 							</div>
 							<div class="col-md-2">
-								<label>基材价格： </label> <input type="number" class="form-control" />
+								<label>基材价格： </label> <input type="number" id="contract_base_price" class="form-control" />
 							</div>
 							<div class="col-md-3">
 								<label> </label>
@@ -196,7 +196,7 @@
    var contract_details_url = [[@{|/contract/search_order_details/${main.code}/|}]];
    +]*/
 
-  var editor;
+  var editor, selectedContractData;
 
   $(document).ready(function() {
   	var basic_table, history_table, negotiate_table;
@@ -230,11 +230,31 @@
 	  
 	  $("#contract_list").select2(App.getSelect2Options(contract_search_url));
 	  $('#contract_list').change(function() {
+	  	selectedContractData = $('#contract_list').select2('data');
+	  	selectedContractData = selectedContractData[0];
+	  	
+	  	if (selectedContractData.price_type == 1) {
+	  		$("#contract_base_price").attr("readonly", false);
+	  	} else {
+	  		$("#contract_base_price").attr("readonly", true);
+	  	}
 	  	negotiate_table.ajax.url(contract_details_url + $("#contract_list").val());
 	  	negotiate_table.ajax.reload();
 	  });	  
 	  
-	  
+	  funtion updateFloatingPrice() {
+	  	
+	  }
+	  $("#contract_base_price").change(function() {
+	  	if (selectedContractData.price_type == 1) {
+	  		var exist_data = negotiate_table.rows().data().toArray();
+	 		 
+	  		for (i = 0; i < exist_data.length; i++) {
+		  		
+		  	}
+			  	
+	  	}
+	  });
 
 	  $('#save_history').click(function() {
 	  	if (!$('#history_content').val()) {
@@ -591,11 +611,21 @@
 	  	      url : contract_details_url + $("#contract_list").val(),
 	  	      dataSrc : function(json) {
 	  	      	$.each(json, function(key, item) {
-	  	      		item.tax_price = item.contract_tax_price;
-	  	      		item.price = App.priceNumber(item.tax_price * 100 / (100 + parseFloat(item.tax_rate)));
-	  	      		item.tax_cost = App.costNumber(item.tax_price * item.quantity);
-	  	      		item.cost = App.costNumber(item.price * item.quantity);
-	  	      		item.tax = App.costNumber(item.tax_cost - item.cost);	  	      		
+	  	      		if (selectedContractData) {
+	  	      			if (selectedContractData.price_type == 1) {
+	  	      				item.tax_price = item.contract_tax_price;
+	  	  	      		item.price = App.priceNumber(item.tax_price * 100 / (100 + parseFloat(item.tax_rate)));
+	  	  	      		item.tax_cost = App.costNumber(item.tax_price * item.quantity);
+	  	  	      		item.cost = App.costNumber(item.price * item.quantity);
+	  	  	      		item.tax = App.costNumber(item.tax_cost - item.cost);		
+	  	      			} else {
+	  	      				item.tax_price = item.contract_tax_price;
+	  	  	      		item.price = App.priceNumber(item.tax_price * 100 / (100 + parseFloat(item.tax_rate)));
+	  	  	      		item.tax_cost = App.costNumber(item.tax_price * item.quantity);
+	  	  	      		item.cost = App.costNumber(item.price * item.quantity);
+	  	  	      		item.tax = App.costNumber(item.tax_cost - item.cost);
+	  	      			}
+	  	      		}	  	      			  	      		
 	  	      	});
 	  		      return json;
 	  	      },

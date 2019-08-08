@@ -42,6 +42,7 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.ContractSaveForm;
 import com.srm.platform.vendor.searchitem.ContractDetailItem;
 import com.srm.platform.vendor.searchitem.ContractOrderDetailItem;
+import com.srm.platform.vendor.searchitem.ContractSearchItem;
 import com.srm.platform.vendor.searchitem.ContractSearchResult;
 import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.utility.AccountPermission;
@@ -241,7 +242,7 @@ public class ContractController extends CommonController {
 	}
 	
 	@RequestMapping(value = "/search/{code}", produces = "application/json")
-	public @ResponseBody Page<SearchItem> search(@PathVariable("code") String orderCode, @RequestParam(value = "q") String search) {
+	public @ResponseBody Page<ContractSearchItem> search(@PathVariable("code") String orderCode, @RequestParam(value = "q") String search) {
 		
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
 		return contractMainRepository.findAllOfPurchaseOrder(orderCode, search, request);
