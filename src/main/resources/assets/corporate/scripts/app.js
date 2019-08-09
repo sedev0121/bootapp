@@ -433,6 +433,9 @@ var App = function() {
     getNoticeStateDataWithAll: function() {
       return [{id:-1, text:"　"}, ...notice_state_data];
     },
+    getInvoiceStateDataWithAll: function() {
+      return [{id:-1, text:"　"}, ...invoice_state_data];
+    },
     getStatementTypeDataWithAll: function() {
       return [{id:-1, text:"　"}, ...statement_type_data];
     },

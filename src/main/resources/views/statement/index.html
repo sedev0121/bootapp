@@ -36,6 +36,10 @@
 				<label for="state">状态:</label> <select name="state" id="state" class="form-control">
 				</select>
 			</div>
+			<div class="search-cell width-10">
+				<label for="invoice_state">发票状态:</label> <select name="invoice_state" id="invoice_state" class="form-control">
+				</select>
+			</div>
 			<!-- <div class="search-cell width-10">
 				<label for="type">对账类型:</label> <select name="type" id="type" class="form-control">
 				</select>
@@ -102,6 +106,11 @@
 	    minimumResultsForSearch : -1
 	  });
 
+	  $("#invoice_state").select2({
+	    data : App.getInvoiceStateDataWithAll(),
+	    minimumResultsForSearch : -1
+	  });
+	  
 	  $("#type").select2({
 	    data : App.getStatementTypeDataWithAll(),
 	    minimumResultsForSearch : -1
@@ -125,6 +134,7 @@
 		        page_index : data.start / data.length + 1,
 		        vendor : $('#vendor').val(),
 		        state : $('#state').val(),
+		        invoice_state : $('#invoice_state').val(),
 		        type : $('#type').val(),
 		        company : $('#company').val(),
 		        code : $('#code').val(),
@@ -292,7 +302,7 @@
 		  table.draw();
 	  });
 
-	  $('#state, #company').change(function() {
+	  $('#state, #company, #invoice_state').change(function() {
 		  table.draw();
 	  });
 

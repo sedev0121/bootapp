@@ -159,6 +159,7 @@ public class StatementController extends CommonController {
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String vendorStr = requestParams.getOrDefault("vendor", "");
 		String stateStr = requestParams.getOrDefault("state", "0");
+		String invoiceStateStr = requestParams.getOrDefault("invoice_state", "0");
 		String typeStr = requestParams.getOrDefault("type", "0");
 		String code = requestParams.getOrDefault("code", "");
 		String companyIdStr = requestParams.getOrDefault("company", "-1");
@@ -166,6 +167,7 @@ public class StatementController extends CommonController {
 		String end_date = requestParams.getOrDefault("end_date", null);
 
 		Integer state = Integer.parseInt(stateStr);
+		Integer invoiceState = Integer.parseInt(invoiceStateStr);
 		Integer type = Integer.parseInt(typeStr);
 		Date startDate = Utils.parseDate(start_date);
 		Date endDate = Utils.getNextDate(end_date);
@@ -234,6 +236,11 @@ public class StatementController extends CommonController {
 			params.put("state", state);
 		}
 
+		if (invoiceState > -1) {
+			bodyQuery += " and a.invoice_state=:invoiceState";
+			params.put("invoiceState", invoiceState);
+		}
+		
 		if (type > 0) {
 			bodyQuery += " and a.type=:type";
 			params.put("type", type);
@@ -461,7 +468,7 @@ public class StatementController extends CommonController {
 				action = "传递ERP";
 				break;	
 			case Constants.INVOICE_STATE_CANCEL_UPLOAD:
-				main.setInvoiceState(Constants.INVOICE_STATE_DONE);
+				main.setInvoiceState(Constants.INVOICE_STATE_CANCEL_UPLOAD);
 				toList.add(main.getMaker());
 				action = "审批撤消";
 				break;	
