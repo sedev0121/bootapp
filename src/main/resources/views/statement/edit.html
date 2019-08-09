@@ -34,6 +34,7 @@
 			<div class="panel-body">
 				<form id="form" th:action="@{/statement/update}" method="post" enctype="multipart/form-data">
 					<input type="hidden" id="action" name="action"/>
+					<input type="hidden" id="save_state"/>
 					<div class="row">
 						<div class="col-lg-2 col-md-2">
 							<label for="code">对账单号: </label> 
@@ -81,7 +82,7 @@
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="state">状态:</label> 
-							<select name="state" id="state" class="form-control" readonly>
+							<select id="state" class="form-control" readonly>
 							</select>
 						</div>
 						<div class="col-lg-2 col-md-2">
@@ -1223,11 +1224,12 @@
 		    		attachIds: postAttachIds.join(",")
 		    };
 		    
-		    if ($('#state').val() <= 3) {
+		    if ($('#save_state').val() <= 3) {
 			    post_data.table = post_table;
 		    }
 
-		    var new_state = $('#state').val();
+		    var new_state = $('#save_state').val();
+		    post_data.state = new_state;
 		    var action = $('#action').val();
 		    var invoice_state = $('#invoice_state').val();
 		    var confirmMessage = "";
@@ -1333,20 +1335,28 @@
 	  });
 
 	  function checkTable() {
-		  var available = true;
-
-		  if (!available) {
-			  App.showErrorDialog("操作失败", "请在表里的【" + empty_column + "】列输入有效值！");
+	  	var exist_data = table.rows().data().toArray();
+	  	
+		  if (exist_data.length == 0) {
+			  App.showErrorDialog("操作失败", "没有要提交的货品");
+			  return;
 		  }
-		  return available;
+		  
+	  	for (i = 0; i < exist_data.length; i++) {
+			  var exist_row = exist_data[i];
+
+			  if (!exist_row.invoice_cost) {
+				  App.showErrorDialog("操作失败", exist_row.inventory_name + "(" + exist_row.inventory_code + ")" + "的开票金额为空。");
+				  return false;
+			  }
+		  }
+		  
+		  return true;
 	  }
 
 	  $("#save").click(function() {
 		  editor.submit();
-		  if (!checkTable()) {
-			  return;
-		  }
-		  $('#state').val(1);
+		  $('#save_state').val(1);
 		  $("#form").submit();
 	  });
 
@@ -1354,38 +1364,33 @@
 		  editor.submit();
 		  if (!checkTable()) {
 			  return;
-		  }
-		  var data = table.rows().data().toArray();
-		  if (data.length == 0) {
-			  App.showErrorDialog("操作失败", "没有要提交的货品");
-			  return;
-		  }
-		  $('#state').val(2);
+		  }		  
+		  $('#save_state').val(2);
 		  $("#form").submit();
 	  });
 
 	  $("#review").click(function() {
-		  $('#state').val(3);
+		  $('#save_state').val(3);
 		  $("#form").submit();
 	  });
 	  
 	  $("#deploy").click(function() {
-		  $('#state').val(4);
+		  $('#save_state').val(4);
 		  $("#form").submit();
 	  });
 
 	  $("#cancel").click(function() {
-		  $('#state').val(5);
+		  $('#save_state').val(5);
 		  $("#form").submit();
 	  });
 	  
 	  $("#confirm").click(function() {
-		  $('#state').val(6);
+		  $('#save_state').val(6);
 		  $("#form").submit();
 	  });
 
 	  $("#deny").click(function() {
-		  $('#state').val(7);
+		  $('#save_state').val(7);
 		  $("#form").submit();
 	  });
 	  
