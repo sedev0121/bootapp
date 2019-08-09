@@ -365,8 +365,18 @@
 		      }
 		    },
 	    }
+	  }).on('preSubmit', function(e, data, action) {
+	  	var keys = Object.keys(data.data);
+  		for (var i = 0; i < keys.length; i++) {
+			  item = data.data[keys[i]];
+			  var pattern = /^\d+-?\d+$/g;
+			  if (!pattern.test(item.invoice_code)) {
+			  	this.error( 'invoice_code', '只允许数字或-，-最多只能出现一次' );
+				  return false;
+			  }
+		  }
 	  }).on('postRemove', function(e, json, ids) {
-	  	var table_data = invoice_table.rows().data().toArray();
+		  var table_data = invoice_table.rows().data().toArray();
 		  var id = 1;
 		  $.each(table_data, function(key, item) {
 			  item.row_no = id++;
@@ -375,27 +385,27 @@
 	  }).on('submitSuccess', function(e, data, action) {
 		  //updateInvoiceData();
 	  });
-	  
+
 	  var invoice_table_data = [];
-	  
+
 	  if (invoice_code) {
-	  	var code_list = invoice_code.split(invoice_code_seperator);
-	  	for(var i=0; i<code_list.length; i++) {
-	  		invoice_table_data.push({
-	  				row_no: i+1,
-	  				invoice_code: code_list[i]
-	  		});
-	  	}
+		  var code_list = invoice_code.split(invoice_code_seperator);
+		  for (var i = 0; i < code_list.length; i++) {
+			  invoice_table_data.push({
+			    row_no : i + 1,
+			    invoice_code : code_list[i]
+			  });
+		  }
 	  }
-	  
+
 	  invoice_table = $('#invoice_table').DataTable({
 	    serverSide : false,
 	    processing : false,
 	    ajax : false,
-	    select : (canEditInvoice()?{
-		    style : 'multi',
-		    selector: 'td:first-child',
-	    }:false),
+	    select : (canEditInvoice() ? {
+	      style : 'multi',
+	      selector : 'td:first-child',
+	    } : false),
 	    data : invoice_table_data,
 	    columns : [ {
 	      data : null,
@@ -407,30 +417,30 @@
 	    }, {
 	      data : 'row_no',
 	      className : 'dt-center',
-	      width : '30px', 
+	      width : '30px',
 	      title : '行号',
 	    }, {
 	      data : 'invoice_code',
 	      className : 'edit-cell',
 	      title : '发票号',
 	    } ],
-	    buttons : canEditInvoice()?[ {
-	    	text : "添加行",
+	    buttons : canEditInvoice() ? [ {
+	      text : "添加行",
 	      action : function(e, dt, node, config) {
-		      var new_row = {		        
-	      		row_no : invoice_table.rows().data().toArray().length + 1,
+		      var new_row = {
+		        row_no : invoice_table.rows().data().toArray().length + 1,
 		        invoice_code : ''
 		      };
 
-		      invoice_table.row.add(new_row);		      
+		      invoice_table.row.add(new_row);
 		      invoice_table.draw();
 	      }
 	    }, {
 	      extend : "remove",
 	      editor : invoice_editor
-	    } ]:false,
+	    } ] : false,
 	    drawCallback : function(settings) {
-	    	updateInvoiceData();
+		    updateInvoiceData();
 	    }
 	  });
 
@@ -441,13 +451,13 @@
 			    submitOnBlur : true
 			  });
 		  });
-		  $('#invoice_type').attr("readonly", false);		  
+		  $('#invoice_type').attr("readonly", false);
 	  }
-	  
+
 	  if (state == 6) {
-	  	$('#invoice_info').collapse();
+		  $('#invoice_info').collapse();
 	  }
-	  
+
 	  attach_editor = new $.fn.dataTable.Editor({
 	    table : "#attach_table",
 	    idSrc : "row_no",
@@ -463,14 +473,14 @@
 		    },
 	    }
 	  }).on('postRemove', function(e, json, ids) {
-	  	var table_data = attach_table.rows().data().toArray();
+		  var table_data = attach_table.rows().data().toArray();
 		  var id = 1;
 		  $.each(table_data, function(key, item) {
 			  item.row_no = id++;
 		  })
 		  attach_table.rows().invalidate();
 	  });
-	  
+
 	  attach_table = $('#attach_table').DataTable({
 	    serverSide : false,
 	    processing : false,
@@ -479,11 +489,11 @@
 	      dataSrc : function(json) {
 		      return json;
 	      },
-      },
-	    select : canEditInvoice()?{
-		    style : 'multi',
-		    selector: 'td:first-child',
-	    }:false,	    
+	    },
+	    select : canEditInvoice() ? {
+	      style : 'multi',
+	      selector : 'td:first-child',
+	    } : false,
 	    columns : [ {
 	      data : null,
 	      defaultContent : '',
@@ -495,7 +505,7 @@
 	      data : 'row_no',
 	      className : 'dt-center',
 	      title : '行号',
-	      width : '30px' 
+	      width : '30px'
 	    }, {
 	      data : 'date',
 	      title : '日期',
@@ -505,19 +515,19 @@
 	    }, {
 	      data : 'original_name',
 	      title : '附件',
-	      render: function (data, display, record) {
-	      	var url = download_url + "/" + record.row_no;
-	      	var html = data;
-	      	if (data) {
-	      		html = '<a href="' + url + '">' + data + '</a>';	
-	      	} else {
-	      		html = '<input type="file" name="attach"/>';
+	      render : function(data, display, record) {
+		      var url = download_url + "/" + record.row_no;
+		      var html = data;
+		      if (data) {
+			      html = '<a href="' + url + '">' + data + '</a>';
+		      } else {
+			      html = '<input type="file" name="attach"/>';
 		      }
 
 		      return html;
 	      }
 	    } ],
-	    buttons : canEditInvoice()?[ {
+	    buttons : canEditInvoice() ? [ {
 	      text : "添加行",
 	      action : function(e, dt, node, config) {
 		      var new_row = {
@@ -530,7 +540,7 @@
 	    }, {
 	      extend : "remove",
 	      editor : attach_editor
-	    } ]:false,
+	    } ] : false,
 	  });
 
 	  $('#show_modal_btn').click(function() {
@@ -538,7 +548,7 @@
 	  });
 
 	  loadNormalTable();
-	  
+
 	  function reloadSummaryTable() {
 		  if (summary_table) {
 			  summary_table.destroy();
@@ -561,7 +571,7 @@
 		    serverSide : false,
 		    processing : false,
 		    ajax : false,
-		    data : summary_data,		    
+		    data : summary_data,
 		    columns : [ {
 		      data : 'row_no',
 		      className : 'dt-center',
@@ -747,7 +757,7 @@
 	    data : App.getStatementStateData(),
 	    minimumResultsForSearch : -1
 	  }).select2("val", state.toString());
-	  
+
 	  $("#type").select2({
 	    data : App.getStatementTypeData(),
 	    minimumResultsForSearch : -1
@@ -762,7 +772,7 @@
 	    data : App.getInvoiceStateData(),
 	    minimumResultsForSearch : -1
 	  }).select2("val", invoice_state.toString());
-	  
+
 	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
 
 	  $('#save_history').click(function() {
@@ -859,51 +869,51 @@
 		  var rowDatas = table.data();
 		  var index = 1;
 		  $.each(rowDatas, function(key, item) {
-		  	cost += item.cost * 1;
-		  	tax_cost += item.tax_cost * 1;
-		  	adjust_tax_cost += item.adjust_tax_cost * 1;		  	
-		  				  
-		  	item.row_no = index++;
-			  item.invoice_quantity = item.pi_quantity;
-		  	item.invoice_cost = item.tax_cost * 1 + item.adjust_tax_cost * 1;
-			  item.invoice_price = App.priceNumber(item.invoice_cost/item.invoice_quantity);
+			  cost += item.cost * 1;
+			  tax_cost += item.tax_cost * 1;
+			  adjust_tax_cost += item.adjust_tax_cost * 1;
 
-		  });		  
+			  item.row_no = index++;
+			  item.invoice_quantity = item.pi_quantity;
+			  item.invoice_cost = item.tax_cost * 1 + item.adjust_tax_cost * 1;
+			  item.invoice_price = App.priceNumber(item.invoice_cost / item.invoice_quantity);
+
+		  });
 
 		  tax = App.costNumber(tax_cost - cost);
-		  
+
 		  $('#cost').val(cost);
 		  $('#tax_cost').val(tax_cost);
 		  $('#tax').val(tax);
 		  $('#adjust_tax_cost').val(adjust_tax_cost);
-		  
+
 		  table.rows().invalidate().draw();
 	  }
-	  
+
 	  function calcRowAdjustTaxCost() {
-	  	var adjustTaxCostSum = $('#adjust_tax_cost').val();
-	  	
+		  var adjustTaxCostSum = $('#adjust_tax_cost').val();
+
 		  var taxCostSum = 0;
 		  var rowDatas = table.data();
-		  
+
 		  $.each(rowDatas, function(key, item) {
-		  	taxCostSum += item.tax_cost * 1;
-		  });	
-		  
+			  taxCostSum += item.tax_cost * 1;
+		  });
+
 		  var tempSum = 0;
-		  for(var i=0; i<rowDatas.length; i++) {
-		  	var item = rowDatas[i];
-		  	if (i == rowDatas.length -1) {
-		  		item.adjust_tax_cost = App.costNumber(adjustTaxCostSum - tempSum);
-		  	} else {
-		  		var temp = App.costNumber(adjustTaxCostSum * item.tax_cost/taxCostSum);
-		  		tempSum += parseFloat(temp);
-		  		item.adjust_tax_cost = temp;
-		  	}
-		  }	  
+		  for (var i = 0; i < rowDatas.length; i++) {
+			  var item = rowDatas[i];
+			  if (i == rowDatas.length - 1) {
+				  item.adjust_tax_cost = App.costNumber(adjustTaxCostSum - tempSum);
+			  } else {
+				  var temp = App.costNumber(adjustTaxCostSum * item.tax_cost / taxCostSum);
+				  tempSum += parseFloat(temp);
+				  item.adjust_tax_cost = temp;
+			  }
+		  }
 
 		  updateData();
-		  
+
 		  table.rows().invalidate().draw();
 	  }
 
@@ -933,7 +943,7 @@
 			    },
 		    }
 		  }).on('submitSuccess', function(e, data, action) {
-		  	updateData();
+			  updateData();
 		  });
 
 		  table_options = {
@@ -941,13 +951,13 @@
 		    processing : false,
 		    destroy : true,
 		    ordering : false,
-		    select : canEdit()?{
+		    select : canEdit() ? {
 			    style : 'multi'
-		    }:false,
+		    } : false,
 		    fixedColumns : {
 			    leftColumns : 7,
 		    },
-		    buttons : canEdit()?[ {
+		    buttons : canEdit() ? [ {
 		      text : "选择要对账的物料",
 		      action : function(e, dt, node, config) {
 
@@ -956,7 +966,7 @@
 				      App.showErrorDialog("请选择供应商！");
 				      return false;
 			      }
-			      
+
 			      if (!$("#company").val()) {
 				      $('#company').focus();
 				      App.showErrorDialog("请选择业务实体！");
@@ -968,16 +978,16 @@
 		      }
 		    }, {
 		      extend : "remove",
-		      editor : editor		    
-		    } ]:false,
+		      editor : editor
+		    } ] : false,
 		    ajax : {
 		      url : detail_url,
 		      dataSrc : function(json) {
-		      	$.each(json, function(key, item) {
-		  			  item.invoice_quantity = item.pi_quantity;
-		  		  	item.invoice_cost = item.tax_cost * 1 + item.adjust_tax_cost * 1;
-		  			  item.invoice_price = App.priceNumber(item.invoice_cost/item.invoice_quantity);
-		  		  });	
+			      $.each(json, function(key, item) {
+				      item.invoice_quantity = item.pi_quantity;
+				      item.invoice_cost = item.tax_cost * 1 + item.adjust_tax_cost * 1;
+				      item.invoice_price = App.priceNumber(item.invoice_cost / item.invoice_quantity);
+			      });
 			      return json;
 		      },
 		    },
@@ -985,7 +995,7 @@
 		      data : null,
 		      title : '选择',
 		      defaultContent : ' ',
-		      visible: canEdit(),
+		      visible : canEdit(),
 		      orderable : false,
 		      className : 'select-checkbox',
 		    }, {
@@ -1104,14 +1114,14 @@
 		    drawCallback : function(settings) {
 			    var data_list = this.api().rows().data().toArray()
 			    if (data_list.length > 0) {
-			    	$('#vendor').attr("readonly", true);
-			    	$('#company').attr("readonly", true);
-			    	$('#type').attr("readonly", true);
+				    $('#vendor').attr("readonly", true);
+				    $('#company').attr("readonly", true);
+				    $('#type').attr("readonly", true);
 			    } else {
-			    	$('#vendor').attr("readonly", false);
-			    	$('#company').attr("readonly", false);
-			    	$('#type').attr("readonly", false);
-			    }				    
+				    $('#vendor').attr("readonly", false);
+				    $('#company').attr("readonly", false);
+				    $('#type').attr("readonly", false);
+			    }
 
 			    summary_data = {};
 			    var index = 1;
@@ -1125,7 +1135,7 @@
 					      pi_quantity : item.pi_quantity * 1,
 					      tax_rate : item.tax_rate,
 					      specs : item.specs,
-					      tax_price: item.tax_price * 1,
+					      tax_price : item.tax_price * 1,
 					      tax_cost : item.tax_cost * 1,
 					      adjust_tax_cost : item.adjust_tax_cost * 1,
 					      invoice_cost : item.invoice_cost * 1,
@@ -1182,7 +1192,6 @@
 		  }
 	  }
 
-	  
 	  var is_cancel = false;
 
 	  $("#form").validate({
@@ -1195,16 +1204,16 @@
 		      required : true
 	      },
 	      tax_rate : {
-		      required : true,
-		      digits: true,
-		      max: 17,
-		      min: 0,
+	        required : true,
+	        digits : true,
+	        max : 17,
+	        min : 0,
 	      },
 	      invoice_code : {
-		      required : state==6
+		      required : state == 6
 	      },
 	      invoice_type : {
-	      	required : state==6
+		      required : state == 6
 	      },
 	    },
 
@@ -1215,29 +1224,29 @@
 	    },
 
 	    submitHandler : function(form) {
-		    
+
 		    var attaches = attach_table.rows().data().toArray();
 		    var postAttachIds = [];
 		    $.each(attaches, function(key, item) {
-		    	if (item.id)
-		    		postAttachIds.push(item.id);
+			    if (item.id)
+				    postAttachIds.push(item.id);
 		    });
-		    
+
 		    var details = table.rows().data().toArray();
 		    var post_table = [];
 		    $.each(details, function(key, item) {
-		    	var row = {
-		    			row_no: item.row_no,
-		    			pi_detail_id: item.pi_detail_id,
-		    			adjust_tax_cost: item.adjust_tax_cost
-		    	};
-		    	post_table.push(row);
+			    var row = {
+			      row_no : item.row_no,
+			      pi_detail_id : item.pi_detail_id,
+			      adjust_tax_cost : item.adjust_tax_cost
+			    };
+			    post_table.push(row);
 		    });
-		    
+
 		    var post_data = {
-		    		attachIds: postAttachIds.join(",")
+			    attachIds : postAttachIds.join(",")
 		    };
-		    
+
 		    if ($('#save_state').val() <= 3) {
 			    post_data.table = post_table;
 		    }
@@ -1247,10 +1256,11 @@
 		    var action = $('#action').val();
 		    var invoice_state = $('#invoice_state').val();
 		    var confirmMessage = "";
-		    
+
 		    if (action == "invoice") {
-		    	post_data.state = $('#state').val();;
-		    	if (invoice_state == 1) {
+			    post_data.state = $('#state').val();
+			    ;
+			    if (invoice_state == 1) {
 				    confirmMessage = "确认开票";
 			    } else if (invoice_state == 2) {
 				    confirmMessage = "审批通过";
@@ -1262,7 +1272,7 @@
 				    confirmMessage = "审批撤消";
 			    }
 		    } else {
-		    	if (new_state == 1) {
+			    if (new_state == 1) {
 				    confirmMessage = "保存";
 			    } else if (new_state == 2) {
 				    confirmMessage = "提交";
@@ -1278,7 +1288,6 @@
 				    confirmMessage = "退回";
 			    }
 		    }
-		    
 
 		    App.showInputConfirmDialog('确定要' + confirmMessage + '对账单吗?', function(submit_content) {
 			    post_data.content = submit_content;
@@ -1325,22 +1334,22 @@
 					  break;
 				  }
 			  }
-			  
+
 			  if (available) {
-			  	item.pi_code = item.code;
-			  	item.pi_detail_id = item.id;
-			  	item.pi_date = item.date;
-			  	item.pi_quantity = item.quantity;
-			  	item.invoice_quantity = item.quantity;
-			  	item.invoice_cost = item.tax_cost;
-			  	item.adjust_tax_cost = 0;
-			  	item.invoice_price = App.costNumber(item.invoice_cost/item.invoice_quantity);
-			  	
+				  item.pi_code = item.code;
+				  item.pi_detail_id = item.id;
+				  item.pi_date = item.date;
+				  item.pi_quantity = item.quantity;
+				  item.invoice_quantity = item.quantity;
+				  item.invoice_cost = item.tax_cost;
+				  item.adjust_tax_cost = 0;
+				  item.invoice_price = App.costNumber(item.invoice_cost / item.invoice_quantity);
+
 				  table.row.add(item);
 			  }
 		  })
 
-		  updateData();		  
+		  updateData();
 
 	  });
 
@@ -1350,14 +1359,14 @@
 	  });
 
 	  function checkTable() {
-	  	var exist_data = table.rows().data().toArray();
-	  	
+		  var exist_data = table.rows().data().toArray();
+
 		  if (exist_data.length == 0) {
 			  App.showErrorDialog("操作失败", "没有要提交的货品");
 			  return;
 		  }
-		  
-	  	for (i = 0; i < exist_data.length; i++) {
+
+		  for (i = 0; i < exist_data.length; i++) {
 			  var exist_row = exist_data[i];
 
 			  if (!exist_row.invoice_cost) {
@@ -1365,7 +1374,7 @@
 				  return false;
 			  }
 		  }
-		  
+
 		  return true;
 	  }
 
@@ -1379,7 +1388,7 @@
 		  editor.submit();
 		  if (!checkTable()) {
 			  return;
-		  }		  
+		  }
 		  $('#save_state').val(2);
 		  $("#form").submit();
 	  });
@@ -1388,7 +1397,7 @@
 		  $('#save_state').val(3);
 		  $("#form").submit();
 	  });
-	  
+
 	  $("#deploy").click(function() {
 		  $('#save_state').val(4);
 		  $("#form").submit();
@@ -1398,7 +1407,7 @@
 		  $('#save_state').val(5);
 		  $("#form").submit();
 	  });
-	  
+
 	  $("#confirm").click(function() {
 		  $('#save_state').val(6);
 		  $("#form").submit();
@@ -1408,37 +1417,37 @@
 		  $('#save_state').val(7);
 		  $("#form").submit();
 	  });
-	  
+
 	  $("#invoice_make").click(function() {
-	  	$('#action').val("invoice");
+		  $('#action').val("invoice");
 		  $('#invoice_state').val(1);
 		  $("#form").submit();
 	  });
-	  
+
 	  $("#invoice_approve").click(function() {
-	  	$('#action').val("invoice");
-	  	$('#invoice_state').val(2);
+		  $('#action').val("invoice");
+		  $('#invoice_state').val(2);
 		  $("#form").submit();
 	  });
-	  
+
 	  $("#invoice_deny").click(function() {
-	  	$('#action').val("invoice");
-	  	$('#invoice_state').val(3);
+		  $('#action').val("invoice");
+		  $('#invoice_state').val(3);
 		  $("#form").submit();
 	  });
-	  
+
 	  $("#invoice_upload").click(function() {
-	  	$('#action').val("invoice");
-	  	$('#invoice_state').val(4);
+		  $('#action').val("invoice");
+		  $('#invoice_state').val(4);
 		  $("#form").submit();
 	  });
-	  
+
 	  $("#invoice_upload_cancel").click(function() {
-	  	$('#action').val("invoice");
-	  	$('#invoice_state').val(5);
+		  $('#action').val("invoice");
+		  $('#invoice_state').val(5);
 		  $("#form").submit();
 	  });
-	  
+
 	  $("#delete").click(function() {
 		  App.showConfirmDialog('确定要删除吗?', function() {
 			  $.get(del_url, function(data, status) {
@@ -1461,26 +1470,26 @@
 	  });
 
 	  $("#adjust_tax_cost").change(function() {
-	  	calcRowAdjustTaxCost();
+		  calcRowAdjustTaxCost();
 	  });
-	  
+
 	  $("#print").click(function() {
-	  	var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
-	  	if (window.location.host.startsWith("192.")) {
-	  		url = "http://192.168.30.204:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
-	  	}	  	
-	  	var win = window.open(url, '_blank');
-	    win.focus();
+		  var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
+		  if (window.location.host.startsWith("192.")) {
+			  url = "http://192.168.30.204:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
+		  }
+		  var win = window.open(url, '_blank');
+		  win.focus();
 	  });
-	  
+
 	  $('#export_detail').click(function() {
-	  	var file_name = $('#code').val() + "_明细信息.csv";
-	  	App.exportCSVFromDatatable(table, file_name);
+		  var file_name = $('#code').val() + "_明细信息.csv";
+		  App.exportCSVFromDatatable(table, file_name);
 	  });
-	  
+
 	  $('#export_summary').click(function() {
-	  	var file_name = $('#code').val() + "_汇总信息.csv";
-	  	App.exportCSVFromDatatable(summary_table, file_name);
+		  var file_name = $('#code').val() + "_汇总信息.csv";
+		  App.exportCSVFromDatatable(summary_table, file_name);
 	  });
   });
 </script>
