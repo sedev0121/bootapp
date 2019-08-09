@@ -14,6 +14,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.searchitem.InquerySearchResult;
 import com.srm.platform.vendor.utility.Utils;
 
@@ -84,7 +87,7 @@ public class VenPriceAdjustMain {
 	private String attachFileName;
 	private String attachOriginalName;
 
-	public VenPriceAdjustMain() {
+	public VenPriceAdjustMain(AccountRepository accountRepository) {
 
 		this.ccode = Utils.generateId();
 		this.isupplytype = 1;
@@ -97,10 +100,16 @@ public class VenPriceAdjustMain {
 		cal.setTime(this.dstartdate);
 		cal.add(Calendar.MONTH, 1);
 		this.denddate = cal.getTime();
+		this.maker = accountRepository
+				.findOneByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 		this.reviewer = new Account();
 		this.verifier = new Account();
 		this.publisher = new Account();
 		this.vendor = this.maker.getVendor();
+
+	}
+
+	public VenPriceAdjustMain() {
 
 	}
 

@@ -952,7 +952,7 @@ public class ApiController {
 		main.setType(statementType);
 		main.setTaskCode(task.getCode());
 		main.setMakeDate(new Date());
-		main.setState(Constants.STATEMENT_STATE_SUBMIT);
+		main.setState(Constants.STATEMENT_STATE_NEW);
 		main.setMaker(task.getMaker());
 		main = statementMainRepository.save(main);
 		return main;

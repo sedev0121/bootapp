@@ -299,23 +299,6 @@
    +]*/
 
   $(document).ready(function() {
-
-  	$("#tax_rate").change(function() {
-  		var rowDatas = table.data();
-		  
-		  $.each(rowDatas, function(key, item) {
-		  	item.tax_rate = $("#tax_rate").val();
-		  });	
-		  
-		  table.rows().invalidate().draw();
-		  rowDatas = summary_table.data();
-		  
-		  $.each(rowDatas, function(key, item) {
-		  	item.tax_rate = $("#tax_rate").val();
-		  });	
-		  
-		  summary_table.rows().invalidate().draw();
-  	});
   	
   	function canEditInvoice() {
   		if (state == 6 && (invoice_state == 0 && is_vendor || invoice_state > 0 && invoice_state < 4 && !is_vendor)) {

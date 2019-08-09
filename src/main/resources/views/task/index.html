@@ -66,7 +66,7 @@
 									对账时间：每月	<input type="number" maxlength="2" max="31" min="1" class="auto-setting" name="statement_date" id="statement_date"/>日（例如：每月25日，表示对账取单截至到本月25日，即小于等于该日期的所有未对账单据都包括，要考虑2月份的情况）	
 								</div>
 								<div class="col-lg-12 col-md-12 content">
-									自动运行时间：每月<input type="number" maxlength="2" max="31" min="1" class="auto-setting" name="start_date" id="auto_start_date"/>日<input type="text" name="start_time" id="auto_start_time"/>
+									自动运行时间：每月<input type="number" maxlength="2" max="31" min="1" class="auto-setting" name="start_date" id="auto_start_date"/>日<input type="text" maxlength="2" max="23" min="0" class="auto-setting" name="start_hour" id="auto_start_hour"/>点<input type="text" maxlength="2" max="59" min="0" class="auto-setting" name="start_min" id="auto_start_min"/>分
 								</div>
 							</div>
 						</form>
@@ -117,10 +117,6 @@
 			  table.draw();
 		  }
 	  });
-  	
-  	$("#statement_date").mask("00");
-  	$("#auto_start_date").mask("00");
-  	$("#auto_start_time").mask("00:00");
   	
 	  var table = $('#example').DataTable({
 	    ordering : true,
@@ -286,7 +282,10 @@
 	        required : true,
 	        compateDate: true,
 	      },
-	      start_time : {
+	      start_hour : {
+	        required : true,
+	      },
+	      start_min : {
 	        required : true,
 	      },
 	    },
@@ -353,14 +352,17 @@
 		$("#auto_task_btn").click(function() {
 			  $('#statement_date').val("");
 			  $('#auto_start_date').val("");
-			  $('#auto_start_time').val("");
+			  $('#auto_start_hour').val("");
+			  $('#auto_start_min').val("");
 	
 			  $.ajax({
 			    url : auto_setting_url,
 			    success : function(data, res) {
 				    $('#statement_date').val(data.data.statement_date);
 				    $('#auto_start_date').val(data.data.start_date);
-				    $('#auto_start_time').val(data.data.start_time);
+				    var temp = data.data.start_time.split(":");
+				    $('#auto_start_hour').val(temp[0]);
+				    $('#auto_start_min').val(temp[1]);
 			    }
 			  });
 			  $('#auto_setting_dialog').modal('show');

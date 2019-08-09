@@ -21,7 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -52,6 +51,7 @@ import com.srm.platform.vendor.searchitem.InquerySearchResult;
 import com.srm.platform.vendor.searchitem.VenPriceDetailItem;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
+
 import com.srm.platform.vendor.utility.U8InvoicePostData;
 import com.srm.platform.vendor.utility.U8InvoicePostEntry;
 import com.srm.platform.vendor.utility.UploadFileHelper;
@@ -62,6 +62,15 @@ import com.srm.platform.vendor.utility.Utils;
 //@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('询价管理-查看列表')")
 public class InqueryController extends CommonController {
 
+	@Autowired
+	private VendorRepository vendorRepository;
+
+	@Autowired
+	private InventoryRepository inventoryRepository;
+
+	@Autowired
+	private AccountRepository accountRepository;
+
 	// 查询列表
 	@GetMapping({ "", "/" })
 	public String index() {
@@ -70,11 +79,9 @@ public class InqueryController extends CommonController {
 
 	// 新建
 //	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
-	@GetMapping({ "/add/{orderCode}" })
-	public String add(@PathVariable("orderCode") String orderCode, Model model) {
-		VenPriceAdjustMain main = new VenPriceAdjustMain();
-		main.setMaker(getLoginAccount());
-
+	@GetMapping({ "/add" })
+	public String add(Model model) {
+		VenPriceAdjustMain main = new VenPriceAdjustMain(accountRepository);
 		model.addAttribute("main", main);
 		return "inquery/edit";
 	}
@@ -106,23 +113,23 @@ public class InqueryController extends CommonController {
 		return list;
 	}
 
-//	@GetMapping("/{ccode}/deleteattach")
+	@GetMapping("/{ccode}/deleteattach")
 //	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
-//	public @ResponseBody Boolean deleteAttach(@PathVariable("ccode") String ccode) {
-//		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
-//
-//		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_INQUERY) + File.separator
-//				+ main.getAttachFileName());
-//		if (attach.exists())
-//			attach.delete();
-//		main.setAttachFileName(null);
-//		main.setAttachOriginalName(null);
-//		venPriceAdjustMainRepository.save(main);
-//		return true;
-//	}
+	public @ResponseBody Boolean deleteAttachFile(@PathVariable("ccode") String ccode) {
+		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
+
+		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_INQUERY) + File.separator
+				+ main.getAttachFileName());
+		if (attach.exists())
+			attach.delete();
+		main.setAttachFileName(null);
+		main.setAttachOriginalName(null);
+		venPriceAdjustMainRepository.save(main);
+		return true;
+	}
 
 	// 删除API
-	@PreAuthorize("hasAuthority('询价管理-删除') or hasRole('ROLE_VENDOR')")
+//	@PreAuthorize("hasAuthority('询价管理-删除') or hasRole('ROLE_VENDOR')")
 	@GetMapping("/{ccode}/delete")
 	@Transactional
 	public @ResponseBody Boolean delete_ajax(@PathVariable("ccode") String ccode) {
@@ -199,10 +206,10 @@ public class InqueryController extends CommonController {
 //				return new PageImpl<InquerySearchResult>(new ArrayList(), request, 0);
 //			}
 //			params.put("vendorList", vendorList);
-//			if (!vendorStr.trim().isEmpty()) {
-//				bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";
-//				params.put("vendor", vendorStr.trim());
-//			}
+			if (!vendorStr.trim().isEmpty()) {
+				bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";
+				params.put("vendor", vendorStr.trim());
+			}
 			params.put("createType", Constants.CREATE_TYPE_BUYER);
 		}
 

@@ -238,7 +238,8 @@ public class TaskController extends CommonController {
 
 		String statementDate = requestParams.getOrDefault("statement_date", null);
 		String startDate = requestParams.getOrDefault("start_date", null);
-		String startTime = requestParams.getOrDefault("start_time", null);
+		String startHour = requestParams.getOrDefault("start_hour", null);
+		String startMin = requestParams.getOrDefault("start_min", null);
 
 		//对账时间
 		Master master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
@@ -264,7 +265,7 @@ public class TaskController extends CommonController {
 			master = new Master();	
 			master.setItemKey(Constants.KEY_AUTO_TASK_START_TIME);
 		}		
-		master.setItemValue(startTime);
+		master.setItemValue(startHour + ":" + startMin);
 		masterRepository.save(master);
 
 		GenericJsonResponse<String> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, "ok");
