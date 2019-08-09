@@ -75,7 +75,7 @@ var store_search_url = [[@{/store/search/}]];
     $("#state").select2({
       data : App.getPurchaseInStateDataWithAll(),
       minimumResultsForSearch : -1
-    });
+    }).select2("val", "0");
     
     $("#company").select2(App.getSelect2OptionsWithAll(company_search_url));
     $("#store").select2();
