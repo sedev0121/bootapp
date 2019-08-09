@@ -592,14 +592,17 @@
 		      data : 'tax_price',
 		      className : 'dt-right',
 		      title : '含税单价',
+		      render : App.priceNumber,
 		    }, {
 		      data : 'tax_cost',
 		      className : 'dt-right',
 		      title : '含税金额',
+		      render : App.costNumber,
 		    }, {
 		      data : 'adjust_tax_cost',
 		      className : 'dt-right',
 		      title : '含税调整金额',
+		      render : App.costNumber,
 		    }, {
 		      data : 'invoice_quantity',
 		      className : 'dt-right',
@@ -608,13 +611,15 @@
 		      data : 'invoice_price',
 		      className : 'dt-right',
 		      title : '开票单价',
+		      render : App.priceNumber,
 		    }, {
 		      data : 'invoice_cost',
 		      className : 'dt-right',
 		      title : '开票金额',
+		      render : App.costNumber,
 		    } ],
 		    footerCallback : function(row, data, start, end, display) {
-			    App.footerCallback(this.api(), [ [ 5, "quantity" ], [ 8, "quantity" ], [ 9, "quantity" ], [ 10, "quantity" ], [ 12, "quantity" ] ]);
+			    App.footerCallback(this.api(), [ [ 5, "quantity" ], [ 8, "cost" ], [ 9, "cost" ], [ 10, "quantity" ], [ 12, "cost" ] ]);
 		    },
 		  });
 	  }
@@ -697,18 +702,22 @@
 			      data : 'price',
 			      className : 'dt-right',
 			      title : '单价',
+			      render : App.priceNumber,
 			    }, {
 			      data : 'tax_price',
 			      className : 'dt-right',
 			      title : '含税单价',
+			      render : App.priceNumber,
 			    }, {
 			      data : 'cost',
 			      className : 'dt-right',
 			      title : '金额',
+			      render : App.costNumber,
 			    }, {
 			      data : 'tax_cost',
 			      className : 'dt-right',
 			      title : '含税金额',
+			      render : App.costNumber,
 			    }, {
 			      data : 'state',
 			      className : 'dt-center',
@@ -1027,16 +1036,19 @@
 		      sortable : false,
 		      className : 'dt-right',
 		      title : '含税单价',
+		      render : App.priceNumber,
 		    }, {
 		      data : 'tax_cost',
 		      sortable : false,
 		      className : 'dt-right',
 		      title : '含税金额',
+		      render : App.costNumber,
 		    }, {
 		      data : 'adjust_tax_cost',
 		      sortable : false,
 		      className : 'dt-right edit-cell',
 		      title : '含税调整金额',
+		      render : App.costNumber,
 		    }, {
 		      data : 'invoice_quantity',
 		      sortable : false,
@@ -1047,11 +1059,13 @@
 		      sortable : false,
 		      className : 'dt-right',
 		      title : '开票单价',
+		      render : App.priceNumber,
 		    }, {
 		      data : 'invoice_cost',
 		      sortable : false,
 		      className : 'dt-right',
 		      title : '开票金额',
+		      render : App.costNumber,
 		    }, {
 		      data : 'po_code',
 		      sortable : false,
@@ -1085,7 +1099,7 @@
 		    } ],
 		    order : [ [ 0, "asc" ], [ 3, "asc" ] ],
 		    footerCallback : function(row, data, start, end, display) {
-			    App.footerCallback(this.api(), [ [ 9, "cost" ], [ 11, "cost" ], [ 12, "quantity" ], [ 13, "quantity" ], [ 15, "cost" ], [ 21, "cost" ] ]);
+			    App.footerCallback(this.api(), [ [ 9, "quantity" ], [ 11, "cost" ], [ 12, "cost" ], [ 13, "quantity" ], [ 15, "cost" ], [ 21, "quantity" ] ]);
 		    },
 		    drawCallback : function(settings) {
 			    var data_list = this.api().rows().data().toArray()
