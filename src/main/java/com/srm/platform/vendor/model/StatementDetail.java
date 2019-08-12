@@ -27,12 +27,23 @@ public class StatementDetail {
 	@JsonProperty("adjust_tax_cost")
 	private Double adjustTaxCost;
 
+	@Column(name = "tax_rate")
+	private Integer taxRate = 16;
+	
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Integer getTaxRate() {
+		return taxRate;
+	}
+
+	public void setTaxRate(Integer taxRate) {
+		this.taxRate = taxRate;
 	}
 
 	public String getCode() {

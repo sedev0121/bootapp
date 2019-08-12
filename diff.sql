@@ -459,3 +459,7 @@ alter table purchase_order_detail add column base_price double(16, 2) NULL DEFAU
 
 /* 2019-08-06 */
 alter table statement_main modify column tax_rate int(2) NOT NULL DEFAULT 16;
+
+
+/* 2019-08-012 */
+alter table statement_detail add column tax_rate int(2) NOT NULL DEFAULT 16;

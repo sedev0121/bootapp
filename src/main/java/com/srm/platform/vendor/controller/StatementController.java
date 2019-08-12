@@ -389,6 +389,11 @@ public class StatementController extends CommonController {
 				main.setInvoiceCode(form.getInvoice_code());
 				main.setInvoiceCanceler(this.getLoginAccount());
 				main.setInvoiceCancelDate(new Date());
+			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCEL_UPLOAD) {
+				main.setInvoiceType(form.getInvoice_type());
+				main.setInvoiceCode(form.getInvoice_code());
+//				main.setInvoiceCanceler(this.getLoginAccount());
+//				main.setInvoiceCancelDate(new Date());
 			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
 				GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
 				if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
@@ -507,7 +512,14 @@ public class StatementController extends CommonController {
 						
 					}
 					
+					try {
+						detail.setTaxRate(Integer.parseInt(row.get("tax_rate")));
+					}catch(Exception e) {
+						
+					}
+					
 					detail.setRowNo(i++);
+					
 					detail = statementDetailRepository.save(detail);
 				}
 			}
