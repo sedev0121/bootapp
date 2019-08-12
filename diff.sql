@@ -476,3 +476,6 @@ INSERT INTO `function_action` VALUES (32, 10, 19);
 INSERT INTO `function_action` VALUES (33, 10, 20); 
 INSERT INTO `function_action` VALUES (34, 10, 21); 
 INSERT INTO `function_action` VALUES (35, 10, 22); 
+
+alter table venpriceadjust_main DROP column attach_original_name;
+alter table venpriceadjust_main DROP column attach_file_name;

@@ -251,9 +251,8 @@ public class InqueryController extends CommonController {
 
 		
 		
-		if ((venPriceAdjustMain.getIverifystate() == null
-				|| venPriceAdjustMain.getIverifystate() == Constants.STATE_NEW)
-				&& form.getState() <= Constants.STATE_CONFIRM) {
+		if ((venPriceAdjustMain.getIverifystate() == null || venPriceAdjustMain.getIverifystate() == Constants.STATE_CANCEL
+				|| venPriceAdjustMain.getIverifystate() == Constants.STATE_NEW) && form.getState() <= Constants.STATE_CONFIRM) {
 			venPriceAdjustMain.setType(form.getType());
 			venPriceAdjustMain.setIsupplytype(form.getProvide_type());
 			venPriceAdjustMain.setItaxrate(form.getTax_rate());
@@ -356,7 +355,7 @@ public class InqueryController extends CommonController {
 			action = "保存";
 			break;
 		case Constants.STATE_SUBMIT:
-			action = "提交";
+			action = "发布";
 			if (venPriceAdjustMain.getCreatetype() == Constants.CREATE_TYPE_VENDOR) {
 				toList.addAll(accountRepository.findAllBuyersByVendorCode(venPriceAdjustMain.getVendor().getCode()));
 				type = "报价单";

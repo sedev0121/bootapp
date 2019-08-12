@@ -38,7 +38,7 @@ var App = function() {
 	var contract_quantity_type = [{id:1, text:'不控制'}, {id:2, text:'严格控制'}];
 	var contract_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"已审核"}, {id:4, text:"已终止"}];
 	
-  var inquery_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"通过"}, {id:6, text:"审核"}, {id:7, text:"归档"}];
+  var inquery_state_data = [{id:1, text:"新建"}, {id:2, text:"发布"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"通过"}, {id:6, text:"审核"}, {id:7, text:"归档"}];
   var inquery_type = [{id:1, text:'常规报价'}, {id:2, text:'区间报价'}, {id:3, text:'新品报价'}];
   var inquery_provide_type = [{id:1, text:'采购'}, {id:2, text:'委外'}];
   var purchase_order_state_data = [{id:0, text:'审核'}, {id:1, text:'发布'}, {id:2, text:'确认'}, {id:3, text:'关闭'}];

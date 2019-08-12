@@ -12,9 +12,15 @@
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right">
-				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a> <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-share"></i> 提交</a> <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')"
-					th:if="${!#strings.contains(#request.requestURI,'add') && (main.iverifystate==1  || main.iverifystate==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a> <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a> <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a> <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')"
-					th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a> <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" th:if="${main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a> <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-归档')" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a> <a class="btn btn-default" th:href="@{/inquery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-share"></i> 发布</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${!#strings.contains(#request.requestURI,'add') && (main.iverifystate==1  || main.iverifystate==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" 	th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" th:if="${main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-归档')" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a> 
+				<a class="btn btn-default" th:href="@{/inquery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
 		<div class="panel panel-default">
@@ -113,8 +119,8 @@
 					</div>
 				</form>
 			</div>
-	</div>
-	<div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		</div>
+		<div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
