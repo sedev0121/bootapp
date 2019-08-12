@@ -461,5 +461,18 @@ alter table purchase_order_detail add column base_price double(16, 2) NULL DEFAU
 alter table statement_main modify column tax_rate int(2) NOT NULL DEFAULT 16;
 
 
-/* 2019-08-012 */
+/* 2019-08-12 */
 alter table statement_detail add column tax_rate int(2) NOT NULL DEFAULT 16;
+
+
+/* 2019-08-13 */
+INSERT INTO `function` VALUES (10, '询价管理');
+INSERT INTO `action` VALUES (19, '新建/发布');
+INSERT INTO `action` VALUES (20, '通过/拒绝');
+INSERT INTO `action` VALUES (21, '审核/退回');
+INSERT INTO `action` VALUES (22, '归档');
+INSERT INTO `function_action` VALUES (31, 10, 1); 
+INSERT INTO `function_action` VALUES (32, 10, 19); 
+INSERT INTO `function_action` VALUES (33, 10, 20); 
+INSERT INTO `function_action` VALUES (34, 10, 21); 
+INSERT INTO `function_action` VALUES (35, 10, 22); 

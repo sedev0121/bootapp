@@ -27,7 +27,7 @@ import com.srm.platform.vendor.utility.AccountPermission;
 @Controller
 @RequestMapping(path = "/inventoryclass")
 @PreAuthorize("hasAuthority('基础资料-查看列表')")
-public class InevntoryClassController extends CommonController {
+public class InventoryClassController extends CommonController {
 
 	// 查询列表
 	@GetMapping({ "", "/" })

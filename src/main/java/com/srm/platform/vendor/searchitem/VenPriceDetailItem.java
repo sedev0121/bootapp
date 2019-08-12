@@ -10,7 +10,7 @@ public interface VenPriceDetailItem {
 
 	String getSpecs();
 
-	String getPuunit_name();
+	String getMain_measure();
 
 	Float getFminquantity();
 

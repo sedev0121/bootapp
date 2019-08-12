@@ -96,7 +96,7 @@ public class VendorController extends CommonController {
 	@RequestMapping(value = "/search", produces = "application/json")
 	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
-		return vendorRepository.findVendorNotCreatAccount(search, request);
+		return vendorRepository.findCreatedVendors(search, request);
 	}
 
 }

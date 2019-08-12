@@ -50,7 +50,6 @@ public class InventoryController extends CommonController {
 		return "inventory/edit";
 	}
 
-	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	@RequestMapping(value = "/list", produces = "application/json")
 	public @ResponseBody Page<Inventory> list_ajax(@RequestParam Map<String, String> requestParams) {
 		
@@ -77,11 +76,11 @@ public class InventoryController extends CommonController {
 			result = inventoryRepository.findBySearchTerm(inventory, inventoryClass, request);
 		} else {
 			result = inventoryRepository.findBySearchTerm(inventory, inventoryClass, boxClass, request);	
-		}
-		
+		}		
 
 		return result;
 	}
+	
 	
 	@Transactional
 	@PreAuthorize("hasAuthority('基础资料-查看列表')")

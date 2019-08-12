@@ -18,12 +18,8 @@ public interface VendorRepository extends JpaRepository<Vendor, Long> {
 	@Query(value = "SELECT a.*, c.state FROM vendor a left join account c on a.code=c.username WHERE (a.code LIKE %?1% or a.name LIKE %?1%) and c.username is null", countQuery = "SELECT count(*) FROM vendor a WHERE a.code LIKE %?1% or a.name LIKE %?1% ", nativeQuery = true)
 	Page<VendorSearchItem> findBySearchTerm(String search, Pageable pageable);
 
-	@Query(value = "SELECT code, name FROM vendor WHERE "
-			+ "abbrname LIKE %?1% or name LIKE %?1%", countQuery = "SELECT count(*) FROM vendor WHERE abbrname LIKE %?1% or name LIKE %?1%", nativeQuery = true)
-	Page<SearchItem> findForSelect(String search, Pageable pageable);
-
-	@Query(value = "SELECT code, name FROM vendor WHERE (abbrname LIKE %?1% or name LIKE %?1%)", countQuery = "SELECT count(*) FROM vendor WHERE (abbrname LIKE %?1% or name LIKE %?1%)", nativeQuery = true)
-	Page<SearchItem> findVendorNotCreatAccount(String search, Pageable pageable);
+	@Query(value = "SELECT code, name FROM vendor WHERE (abbrname LIKE %?1% or code LIKE %?1% or name LIKE %?1%) and code in (select vendor_code from account where vendor_code is not null)", countQuery = "SELECT count(*) FROM vendor WHERE (abbrname LIKE %?1% or code LIKE %?1% or name LIKE %?1%) and code in (select vendor_code from account where vendor_code is not null)", nativeQuery = true)
+	Page<SearchItem> findCreatedVendors(String search, Pageable pageable);
 	
 	Vendor findOneByCode(String code);
 
@@ -33,6 +29,4 @@ public interface VendorRepository extends JpaRepository<Vendor, Long> {
 	@Query(value = "SELECT a.*, '' unitname, c.stop_date FROM vendor a left join account c on a.code=c.vendor_code where a.code in ?1", nativeQuery = true)
 	List<VendorSearchItem> findVendorsByCodeList(String[] codeList);
 
-	@Query(value = "SELECT max(timestamp) max_timestamp FROM vendor", nativeQuery = true)
-	String findMaxTimestamp();
 }

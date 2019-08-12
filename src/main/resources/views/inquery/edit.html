@@ -7,7 +7,6 @@
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li>价格管理</li>
       <li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/inquery}" class="active">询价管理</a></li>
       <li sec:authorize="hasRole('ROLE_BUYER')" class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建询价单':'询价单详细'">询价单</li>
       <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/inquery}" class="active">报价管理</a></li>
@@ -17,7 +16,7 @@
         <div class="text-right">
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a>
           <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-share"></i> 提交</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-删除')" th:if="${!#strings.contains(#request.requestURI,'add') && (main.iverifystate==1  || main.iverifystate==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
+          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${!#strings.contains(#request.requestURI,'add') && (main.iverifystate==1  || main.iverifystate==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
           <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
           <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a>
           <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
@@ -480,7 +479,7 @@ is_readonly = 0;
     var table_options = {
         serverSide:false,
         processing:false,
-        select: (state == 1 && !is_readonly)?{style: 'multi'}:false,
+        select: (state == 1 && !is_readonly)?{style: 'multi', selector : 'td:first-child'}:false,
         buttons: [
           { 
             text: "添加物料", 
@@ -519,6 +518,12 @@ is_readonly = 0;
         },
 
         columns : [ {
+  	      data : null,
+  	      defaultContent : '',
+  	      orderable : false,
+  	      title : '选择',
+  	      className : 'select-checkbox',
+  	    }, {
           data : 'rowno',
           className: 'dt-center',
           title : '行号',
@@ -532,7 +537,7 @@ is_readonly = 0;
           data : 'specs',
           title : '规格型号',
         }, {
-          data : 'puunit_name',
+          data : 'main_measure',
           className: 'dt-center',
           title : '单位',
         }, {
@@ -672,7 +677,8 @@ is_readonly = 0;
       if (import_table == undefined) {
         import_table = $('#import_table').DataTable({
           ordering : true,
-          select: {style: 'os'},
+          order : [ [ 1, "asc" ] ],
+          select: {style: 'multi'},
           ajax : {
             url : /*[[@{/inventory/list}]]*/'',
             data : function(data) {
@@ -681,7 +687,7 @@ is_readonly = 0;
                 page_index : data.start / data.length + 1,
                 order : data.columns[data.order[0].column].data,
                 dir : data.order[0].dir,
-                search : $('#search_inventory').val()
+                inventory : $('#search_inventory').val()
               }
               return filter;
             },
@@ -693,6 +699,12 @@ is_readonly = 0;
           },
 
           columns : [ {
+    	      data : null,
+    	      defaultContent : '',
+    	      orderable : false,
+    	      title : '选择',
+    	      className : 'select-checkbox',
+    	    }, {
             data : 'code',
             title : '物料编码',
           }, {
@@ -780,7 +792,7 @@ is_readonly = 0;
           
           temp.ivalid = 0;
           temp.name = item.name;
-          temp.puunit_name = item.main_measure.name;
+          temp.main_measure = item.main_measure;
           temp.specs = item.specs;
   
           table.row.add(temp);  
