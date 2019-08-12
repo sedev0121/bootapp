@@ -84,6 +84,7 @@ public class StatementController extends CommonController {
 	@GetMapping({ "", "/" })
 	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('对账单管理-查看列表') or hasRole('ROLE_VENDOR')")
 	public String index() {
+		checkSecondPassword();
 		return "statement/index";
 	}
 
@@ -114,6 +115,7 @@ public class StatementController extends CommonController {
 		if (main == null)
 			show404();
 
+		checkSecondPassword();
 		checkPermission(main, LIST_FUNCTION_ACTION_ID);
 		
 		model.addAttribute("main", main);
@@ -751,6 +753,16 @@ public class StatementController extends CommonController {
 			if (purchaseInDetail != null) {
 				purchaseInDetail.setState(state);
 				purchaseInDetailRepository.save(purchaseInDetail);
+			}
+		}
+	}
+	
+	
+	private void checkSecondPassword() {
+		if (this.isVendor()) {
+			Integer secondPassword = (Integer)httpSession.getAttribute("second_password");
+			if ( secondPassword == null || secondPassword != 1) {
+				show403();
 			}
 		}
 	}
