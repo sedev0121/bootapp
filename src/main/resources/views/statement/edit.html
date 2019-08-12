@@ -251,6 +251,10 @@
 										<button class="btn btn-default" id="btn_search">
 											<i class="fa fa-search"></i> 查询
 										</button>
+										<div class="select-all-div">
+											<input type="checkbox" class="select-all">
+	                		<label class="small active margin-right-10">全选 </label>
+										</div>
 									</div>
 								</div>
 								<div class="row">
@@ -300,7 +304,7 @@
    +]*/
 
   $(document).ready(function() {
-  	
+  	Layout.initUniform();
   	$("#tax_rate").change(function() {
   		var rowDatas = table.data();
 		  
@@ -661,6 +665,14 @@
 		  });
 	  }
 
+	  $(".select-all").on( "click", function(e) {
+	  	if ($(this).is( ":checked" )) {
+	  		import_table.rows(  ).select();        
+	    } else {
+	    	import_table.rows(  ).deselect(); 
+	    }
+	  });
+	  
 	  function load_import_table() {
 
 		  $('#search_code').val('');
@@ -674,6 +686,7 @@
 			    select : {
 				    style : 'multi'
 			    },
+			    lengthChange: true,
 			    ajax : {
 			      url : import_url,
 			      data : function(data) {
