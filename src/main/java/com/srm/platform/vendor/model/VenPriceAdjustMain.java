@@ -84,9 +84,6 @@ public class VenPriceAdjustMain {
 
 	Date dpublishdate;
 	
-	private String attachFileName;
-	private String attachOriginalName;
-
 	public VenPriceAdjustMain(AccountRepository accountRepository) {
 
 		this.ccode = Utils.generateId();
@@ -119,23 +116,6 @@ public class VenPriceAdjustMain {
 
 	public void setCcode(String ccode) {
 		this.ccode = ccode;
-	}
-
-	
-	public String getAttachFileName() {
-		return attachFileName;
-	}
-
-	public void setAttachFileName(String attachFileName) {
-		this.attachFileName = attachFileName;
-	}
-
-	public String getAttachOriginalName() {
-		return attachOriginalName;
-	}
-
-	public void setAttachOriginalName(String attachOriginalName) {
-		this.attachOriginalName = attachOriginalName;
 	}
 
 	public Integer getCreatetype() {

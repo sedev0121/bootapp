@@ -533,16 +533,6 @@ public class DeliveryController extends CommonController {
 		return String.format("B%010d%02d%02d", deliveryID, inventoryIndex, index + 1);
 	}
 
-	@GetMapping("/{ccode}/download")
-	public ResponseEntity<Resource> download(@PathVariable("ccode") String ccode) {
-		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
-		if (main == null)
-			show404();
-
-		return download(Constants.PATH_UPLOADS_INQUERY + File.separator + main.getAttachFileName(),
-				main.getAttachOriginalName());
-	}
-
 	private void checkPermission(DeliveryMain main, Long functionActionId) {
 		if (this.isVendor()) {
 			if (!main.getVendor().getCode().equals(this.getLoginAccount().getVendor().getCode())) {

@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.srm.platform.vendor.utility.Utils;
 
 public class VenPriceSaveForm {
@@ -21,6 +23,9 @@ public class VenPriceSaveForm {
 	
 	private Date make_date;
 	private List<Map<String, String>> table;
+	
+	private List<MultipartFile> attach;
+	private List<Long> attachIds;
 
 	public String getCcode() {
 		return ccode;
@@ -28,6 +33,22 @@ public class VenPriceSaveForm {
 
 	public void setCcode(String ccode) {
 		this.ccode = ccode;
+	}
+
+	public List<Long> getAttachIds() {
+		return attachIds;
+	}
+
+	public void setAttachIds(List<Long> attachIds) {
+		this.attachIds = attachIds;
+	}
+
+	public List<MultipartFile> getAttach() {
+		return attach;
+	}
+
+	public void setAttach(List<MultipartFile> attach) {
+		this.attach = attach;
 	}
 
 	public String getContent() {

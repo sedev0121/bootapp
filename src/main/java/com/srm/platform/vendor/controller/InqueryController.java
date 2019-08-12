@@ -1,7 +1,6 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -11,16 +10,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Query;
-import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -32,29 +28,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.AttachFile;
-import com.srm.platform.vendor.model.Notice;
-import com.srm.platform.vendor.model.PurchaseInDetail;
-import com.srm.platform.vendor.model.StatementDetail;
-import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.InventoryRepository;
-import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.saveform.VenPriceSaveForm;
 import com.srm.platform.vendor.searchitem.InquerySearchResult;
 import com.srm.platform.vendor.searchitem.VenPriceDetailItem;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
-
-import com.srm.platform.vendor.utility.U8InvoicePostData;
-import com.srm.platform.vendor.utility.U8InvoicePostEntry;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
@@ -110,23 +93,6 @@ public class InqueryController extends CommonController {
 		return list;
 	}
 
-	@GetMapping("/{ccode}/deleteattach")
-//	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
-	public @ResponseBody Boolean deleteAttachFile(@PathVariable("ccode") String ccode) {
-		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
-
-		File attach = new File(UploadFileHelper.getUploadDir(Constants.PATH_UPLOADS_INQUERY) + File.separator
-				+ main.getAttachFileName());
-		if (attach.exists())
-			attach.delete();
-		main.setAttachFileName(null);
-		main.setAttachOriginalName(null);
-		venPriceAdjustMainRepository.save(main);
-		return true;
-	}
-
-	// 删除API
-//	@PreAuthorize("hasAuthority('询价管理-删除') or hasRole('ROLE_VENDOR')")
 	@GetMapping("/{ccode}/delete")
 	@Transactional
 	public @ResponseBody Boolean delete_ajax(@PathVariable("ccode") String ccode) {
@@ -260,7 +226,7 @@ public class InqueryController extends CommonController {
 	
 	@GetMapping("/{code}/download/{rowNo}")
 	public ResponseEntity<Resource> download(@PathVariable("code") String code, @PathVariable("rowNo") Integer rowNo) {
-		AttachFile attach = this.attachFileRepository.findOneByTypeCodeAndRowNo(Constants.ATTACH_TYPE_STATEMENT, code, rowNo);
+		AttachFile attach = this.attachFileRepository.findOneByTypeCodeAndRowNo(Constants.ATTACH_TYPE_INQUERY, code, rowNo);
 		if (attach == null) {
 			show404();
 		}
@@ -271,19 +237,10 @@ public class InqueryController extends CommonController {
 	// 更新API
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody GenericJsonResponse<VenPriceAdjustMain> update_ajax(VenPriceSaveForm form,
-			@RequestParam(value = "attach", required = false) MultipartFile attach, Principal principal) {
+	public @ResponseBody GenericJsonResponse<VenPriceAdjustMain> update_ajax(VenPriceSaveForm form, Principal principal) {
 
-		String origianlFileName = null;
-		String savedFileName = null;
-		if (attach != null) {
-			origianlFileName = attach.getOriginalFilename();
-			File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_INQUERY);
-
-			if (file != null)
-				savedFileName = file.getName();
-		}
-
+		
+		
 		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(form.getCcode());
 
 		if (venPriceAdjustMain == null) {
@@ -292,6 +249,8 @@ public class InqueryController extends CommonController {
 			venPriceAdjustMain.setCcode(form.getCcode());
 		}
 
+		
+		
 		if ((venPriceAdjustMain.getIverifystate() == null
 				|| venPriceAdjustMain.getIverifystate() == Constants.STATE_NEW)
 				&& form.getState() <= Constants.STATE_CONFIRM) {
@@ -305,9 +264,53 @@ public class InqueryController extends CommonController {
 			venPriceAdjustMain.setVendor(vendorRepository.findOneByCode(form.getVendor()));
 			venPriceAdjustMain.setMaker(accountRepository.findOneById(form.getMaker()));
 
-			if (savedFileName != null) {
-				venPriceAdjustMain.setAttachFileName(savedFileName);
-				venPriceAdjustMain.setAttachOriginalName(origianlFileName);
+			List<Long> attachIdList = form.getAttachIds();
+			for(Long attachId : attachIdList) {
+				logger.info("ID=" + attachId);
+			}
+			
+			List<AttachFile> oldAttachList = attachFileRepository.findAllByTypeCode(Constants.ATTACH_TYPE_INQUERY, venPriceAdjustMain.getCcode());
+			List<AttachFile> newAttachList = new ArrayList<AttachFile>();
+			if (attachIdList == null) {
+				attachFileRepository.deleteAll(oldAttachList);
+			} else {
+				for(AttachFile attach : oldAttachList) {
+					if (!attachIdList.contains(attach.getId())) {
+						deleteAttach(Constants.PATH_UPLOADS_INQUERY + File.separator + attach.getFilename());
+						attachFileRepository.delete(attach);
+					} else {
+						newAttachList.add(attach);
+					}
+				}
+			}
+			
+			int index = 1;
+			for(AttachFile attach : newAttachList) {
+				attach.setRowNo(index++);
+				attachFileRepository.save(attach);
+			}
+			
+			List<MultipartFile> attachList = form.getAttach();
+			if (attachList != null) {
+				for(MultipartFile attach : attachList) {
+					if (attach != null) {
+						String origianlFileName = attach.getOriginalFilename();
+						File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_INQUERY);
+
+						String savedFileName = null;
+						if (file != null) {
+							savedFileName = file.getName();
+						}
+						
+						AttachFile attachFile = new AttachFile();
+						attachFile.setType(Constants.ATTACH_TYPE_INQUERY);
+						attachFile.setCode(venPriceAdjustMain.getCcode());
+						attachFile.setFilename(savedFileName);
+						attachFile.setOriginalName(origianlFileName);
+						attachFile.setRowNo(index++);
+						attachFileRepository.save(attachFile);
+					}
+				}
 			}
 		}
 
@@ -442,16 +445,6 @@ public class InqueryController extends CommonController {
 		}
 
 		return jsonResponse;
-	}
-
-	@GetMapping("/{ccode}/download")
-	public ResponseEntity<Resource> download(@PathVariable("ccode") String ccode) {
-		VenPriceAdjustMain main = venPriceAdjustMainRepository.findOneByCcode(ccode);
-		if (main == null)
-			show404();
-
-		return download(Constants.PATH_UPLOADS_INQUERY + File.separator + main.getAttachFileName(),
-				main.getAttachOriginalName());
 	}
 
 }

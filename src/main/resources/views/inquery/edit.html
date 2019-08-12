@@ -2,132 +2,88 @@
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}">
 <body>
-  <div class="container" layout:fragment="content">
-    <ul class="breadcrumb">
-      <li>
-        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
-      </li>
-      <li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/inquery}" class="active">询价管理</a></li>
-      <li sec:authorize="hasRole('ROLE_BUYER')" class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建询价单':'询价单详细'">询价单</li>
-      <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/inquery}" class="active">报价管理</a></li>
-      <li sec:authorize="hasRole('ROLE_VENDOR')" class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建报价单':'报价单详细'">询价单</li>
-    </ul>       
-    <div class="btn-group-bar">
-        <div class="text-right">
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-share"></i> 提交</a>
-          <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${!#strings.contains(#request.requestURI,'add') && (main.iverifystate==1  || main.iverifystate==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" th:if="${main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-归档')" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a>
-          <a class="btn btn-default" th:href="@{/inquery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
-        </div>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-body"> 
-        <form id="form" th:action="@{/inquery/update}" method="post" enctype="multipart/form-data">
-            <div class="row">
-                <div class="col-lg-3 col-md-3">
-                  <label for="code">单号: </label>
-                  <input type="text" id="ccode" name="ccode" th:value="${main.ccode}" class="form-control" readonly />
-                </div>
-                <div class="col-lg-3 col-md-3">
-                  <label for="vendor">供应商:</label>
-                  <select id="vendor" name="vendor" class="form-control">
-                    <option th:if="${main.vendor != null}" th:value="${main.vendor.code}" th:text="${main.vendor.name}" selected="selected">NEC（日电）有限公司</option>
-                  </select>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                  <label for="tax_rate">税率:</label>
-                  <input type="number" id="tax_rate" th:value="${main.itaxrate}" name="tax_rate" class="form-control">
-                </div>
-                
-                <div class="col-lg-3 col-md-3">
-                  <label for="state">状态:</label>
-                  <select name="state" id="state" class="form-control" readonly>
-                  </select>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                  <label for="end_date">生效日期:</label>
-                  <input type="text" name="start_date" id="start_date" th:value="${#dates.format(main.dstartdate, 'yyyy-MM-dd')}" class="form-control datepicker">
-                </div>
-                <div class="col-lg-3 col-md-3">
-                  <label for="end_date">有效日期:</label>
-                  <input type="text" name="end_date" id="end_date" th:value="${#dates.format(main.denddate, 'yyyy-MM-dd')}" class="form-control datepicker">
-                </div>        
-                <div class="col-lg-3 col-md-3">
-                  <label for="type">报价类型:</label>
-                  <select name="type" id="type" class="form-control">
-                  </select>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                  <label for="provide_type">供应类型:</label>
-                  <select name="provide_type" id="provide_type" class="form-control">
-                  </select>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                  <label for="maker_id">制单人:</label>
-                  <select name="maker" id="maker" class="form-control select2" readonly>
-                    <option th:value="${main.maker.id}" th:text="${main.maker.realname}" selected="selected"></option>
-                  </select>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                  <label for="make_date">单据日期: </label>
-                  <input type="text" name="make_date" id="make_date" th:value="${#dates.format(main.dmakedate, 'yyyy-MM-dd')}" class="form-control" readonly>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                  <label>确认人:</label>
-                  <select class="form-control select2" readonly>
-                    <option th:value="${main.reviewer?.id}" th:text="${main.reviewer?.realname}" selected="selected"></option>
-                  </select>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                  <label>确认日期: </label>
-                  <input type="text" th:value="${#dates.format(main.dreviewdate, 'yyyy-MM-dd')}" class="form-control" readonly>
-                </div>
-        
-                <div class="col-lg-3 col-md-3">
-                  <label>审核人:</label>                      
-                  <select class="form-control select2" readonly>
-                    <option th:value="${main.verifier?.id}" th:text="${main.verifier?.realname}" selected="selected"></option>
-                  </select>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                  <label>审核日期:</label>
-                  <input type="text" th:value="${#dates.format(main.dverifydate, 'yyyy-MM-dd')}" class="form-control" readonly>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                  <label>归档人:</label>
-                  <select class="form-control select2" readonly>
-                    <option th:value="${main.publisher?.id}" th:text="${main.publisher?.realname}" selected="selected"></option>
-                  </select>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                  <label>归档日期:</label>
-                  <input type="text" th:value="${#dates.format(main.dpublishdate, 'yyyy-MM-dd')}" class="form-control" readonly>
-                </div>
-                <div class="col-lg-6 col-md-6 form-group margin-top-10" id="file_select" th:if="${(main.iverifystate==1 or main.iverifystate==4) and main.attachFileName == null}">
-		            <div class="input-group input-file" name="attach">
-		              <span class="input-group-btn">
-		                <button class="btn btn-success btn-file btn-choose" type="button">选择附件</button>
-		              </span>
-		              <input type="text" class="form-control" placeholder='请选择附件' />
-		              <span class="input-group-btn">
-		                 <button class="btn btn-warning btn-file btn-reset" type="button">重置</button>
-		              </span>
-		            </div>
-		        </div>
-		        <div class="col-lg-6 col-md-6 form-group margin-top-10" id="file_show" th:if="!${(main.iverifystate==1 or main.iverifystate==4) and main.attachFileName == null}">
-		            <div>
-		              <b> 附件：</b><a th:href="@{|/inquery/${main.ccode}/download|}" th:if="${main.attachFileName}" th:text="${main.attachOriginalName}"></a>
-		              <span th:if="!${main.attachFileName}">---</span>              
-		              <a class="btn btn-danger" id="del_attach" th:if="${main.maker?.id==session.account_id and (main.iverifystate==1  || main.iverifystate==4)}">删除附件</a>
-		            </div>
-		        </div>
-            </div>
-            	<div class="row margin-top-10">
+	<div class="container" layout:fragment="content">
+		<ul class="breadcrumb">
+			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+			<li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/inquery}" class="active">询价管理</a></li>
+			<li sec:authorize="hasRole('ROLE_BUYER')" class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建询价单':'询价单详细'">询价单</li>
+			<li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/inquery}" class="active">报价管理</a></li>
+			<li sec:authorize="hasRole('ROLE_VENDOR')" class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建报价单':'报价单详细'">询价单</li>
+		</ul>
+		<div class="btn-group-bar">
+			<div class="text-right">
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a> <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-share"></i> 提交</a> <a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')"
+					th:if="${!#strings.contains(#request.requestURI,'add') && (main.iverifystate==1  || main.iverifystate==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a> <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a> <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a> <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')"
+					th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a> <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" th:if="${main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a> <a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-归档')" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a> <a class="btn btn-default" th:href="@{/inquery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<form id="form" th:action="@{/inquery/update}" method="post" enctype="multipart/form-data">
+					<div class="row">
+						<div class="col-lg-3 col-md-3">
+							<label for="code">单号: </label> <input type="text" id="ccode" name="ccode" th:value="${main.ccode}" class="form-control" readonly />
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label for="vendor">供应商:</label> <select id="vendor" name="vendor" class="form-control">
+								<option th:if="${main.vendor != null}" th:value="${main.vendor.code}" th:text="${main.vendor.name}" selected="selected">NEC（日电）有限公司</option>
+							</select>
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label for="tax_rate">税率:</label> <input type="number" id="tax_rate" th:value="${main.itaxrate}" name="tax_rate" class="form-control">
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label for="state">状态:</label> <select name="state" id="state" class="form-control" readonly>
+							</select>
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label for="end_date">生效日期:</label> <input type="text" name="start_date" id="start_date" th:value="${#dates.format(main.dstartdate, 'yyyy-MM-dd')}" class="form-control datepicker">
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label for="end_date">有效日期:</label> <input type="text" name="end_date" id="end_date" th:value="${#dates.format(main.denddate, 'yyyy-MM-dd')}" class="form-control datepicker">
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label for="type">报价类型:</label> <select name="type" id="type" class="form-control">
+							</select>
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label for="provide_type">供应类型:</label> <select name="provide_type" id="provide_type" class="form-control">
+							</select>
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label for="maker_id">制单人:</label> <select name="maker" id="maker" class="form-control select2" readonly>
+								<option th:value="${main.maker.id}" th:text="${main.maker.realname}" selected="selected"></option>
+							</select>
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label for="make_date">单据日期: </label> <input type="text" name="make_date" id="make_date" th:value="${#dates.format(main.dmakedate, 'yyyy-MM-dd')}" class="form-control" readonly>
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label>确认人:</label> <select class="form-control select2" readonly>
+								<option th:value="${main.reviewer?.id}" th:text="${main.reviewer?.realname}" selected="selected"></option>
+							</select>
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label>确认日期: </label> <input type="text" th:value="${#dates.format(main.dreviewdate, 'yyyy-MM-dd')}" class="form-control" readonly>
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label>审核人:</label> <select class="form-control select2" readonly>
+								<option th:value="${main.verifier?.id}" th:text="${main.verifier?.realname}" selected="selected"></option>
+							</select>
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label>审核日期:</label> <input type="text" th:value="${#dates.format(main.dverifydate, 'yyyy-MM-dd')}" class="form-control" readonly>
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label>归档人:</label> <select class="form-control select2" readonly>
+								<option th:value="${main.publisher?.id}" th:text="${main.publisher?.realname}" selected="selected"></option>
+							</select>
+						</div>
+						<div class="col-lg-3 col-md-3">
+							<label>归档日期:</label> <input type="text" th:value="${#dates.format(main.dpublishdate, 'yyyy-MM-dd')}" class="form-control" readonly>
+						</div>
+					</div>
+					<div class="row margin-top-10">
 						<div class="col-lg-12">
 							<div class="tab-style-1" id="tabs">
 								<ul class="nav nav-tabs">
@@ -137,8 +93,8 @@
 								</ul>
 								<div class="tab-content">
 									<div id="tab-1" class="tab-pane row-fluid fade in active">
-										<table id="example" name="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
-                  	</table>
+										<table id="example" name="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
 									</div>
 									<div id="tab-2" class="tab-pane row-fluid fade in">
 										<table id="attach_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
@@ -155,10 +111,10 @@
 							</div>
 						</div>
 					</div>
-        </form>
-    </div>
-    </div>
-		<div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				</form>
+			</div>
+	</div>
+	<div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -233,7 +189,6 @@
   var detail_url = [[@{|/inquery/${main.ccode}/details|}]];
   var inventory_search_url = [[@{/inventory/select}]];
   var edit_url = [[@{/inquery/}]];
-  var hasAttach = [[${main.attachFileName != null}]];
   var del_url = [[@{|/inquery/${main.ccode}/delete|}]];
   var download_url = [[@{|/inquery/${main.ccode}/download|}]];
   +]*/
@@ -511,14 +466,6 @@
 		  $('select').attr("readonly", true);
 		  $("#start_date").datepicker("option", "disabled", true);
 		  $("#end_date").datepicker("option", "disabled", true);
-	  } else {
-		  if (hasAttach) {
-			  $('#file_select').hide();
-			  $('#file_show').show();
-		  } else {
-			  $('#file_select').show();
-			  $('#file_show').hide();
-		  }
 	  }
 
 	  if (is_vendor)
@@ -1155,6 +1102,13 @@
 			    confirmMessage = "归档";
 		    }
 
+		    var attaches = attach_table.rows().data().toArray();
+		    var postAttachIds = [];
+		    $.each(attaches, function(key, item) {
+			    if (item.id)
+				    postAttachIds.push(item.id);
+		    });
+		    
 		    App.showInputConfirmDialog('确定要' + confirmMessage + '吗?', function(submit_content) {
 			    var data = table.rows().data().toArray();
 			    jQuery(form).ajaxSubmit({
@@ -1166,6 +1120,7 @@
 			      },
 			      data : {
 			        content : submit_content,
+			        attachIds : postAttachIds.join(","),
 			        table : data
 			      },
 			      success : function(res, status, xhr, form) {
