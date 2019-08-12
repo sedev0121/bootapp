@@ -558,7 +558,7 @@
 			  var footertr = $("<tr></tr>").appendTo(footer);
 
 			  //Add footer cells
-			  for (var i = 0; i < 13; i++) {
+			  for (var i = 0; i < 15; i++) {
 				  if (i == 0) {
 					  $("<th colspan='5' class='dt-center'>合计</th>").appendTo(footertr);
 				  } else if (i >= 5) {
@@ -599,6 +599,16 @@
 		      className : 'dt-right',
 		      title : '税率',
 		    }, {
+		      data : 'cost',
+		      className : 'dt-right',
+		      title : '未税金额',
+		      render : App.costNumber,
+		    }, {
+		      data : 'tax',
+		      className : 'dt-right',
+		      title : '税额',
+		      render : App.costNumber,
+		    }, {
 		      data : 'tax_price',
 		      className : 'dt-right',
 		      title : '含税单价',
@@ -629,7 +639,7 @@
 		      render : App.costNumber,
 		    } ],
 		    footerCallback : function(row, data, start, end, display) {
-			    App.footerCallback(this.api(), [ [ 5, "quantity" ], [ 8, "cost" ], [ 9, "cost" ], [ 10, "quantity" ], [ 12, "cost" ] ]);
+			    App.footerCallback(this.api(), [ [ 5, "quantity" ], [ 7, "cost" ], [ 8, "cost" ], [ 10, "cost" ], [ 11, "cost" ], [ 12, "quantity" ], [ 14, "cost" ] ]);
 		    },
 		  });
 	  }
@@ -1042,6 +1052,18 @@
 		      className : 'dt-center',
 		      title : '接收数量',
 		    }, {
+		      data : 'cost',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '未税金额',
+		      render : App.costNumber,
+		    }, {
+		      data : 'tax',
+		      sortable : false,
+		      className : 'dt-center',
+		      title : '税额',
+		      render : App.costNumber,
+		    }, {
 		      data : 'tax_price',
 		      sortable : false,
 		      className : 'dt-right',
@@ -1109,7 +1131,7 @@
 		    } ],
 		    order : [ [ 0, "asc" ], [ 3, "asc" ] ],
 		    footerCallback : function(row, data, start, end, display) {
-			    App.footerCallback(this.api(), [ [ 9, "quantity" ], [ 11, "cost" ], [ 12, "cost" ], [ 13, "quantity" ], [ 15, "cost" ], [ 21, "quantity" ] ]);
+			    App.footerCallback(this.api(), [ [ 9, "quantity" ], [ 10, "cost" ], [ 11, "cost" ], [ 13, "cost" ], [ 14, "cost" ], [ 15, "quantity" ], [ 17, "cost" ], [ 23, "quantity" ] ]);
 		    },
 		    drawCallback : function(settings) {
 			    var data_list = this.api().rows().data().toArray()
@@ -1137,6 +1159,8 @@
 					      specs : item.specs,
 					      tax_price : item.tax_price * 1,
 					      tax_cost : item.tax_cost * 1,
+					      tax : item.tax * 1,
+					      cost : item.cost * 1,
 					      adjust_tax_cost : item.adjust_tax_cost * 1,
 					      invoice_cost : item.invoice_cost * 1,
 					      invoice_quantity : item.invoice_quantity * 1,
@@ -1147,6 +1171,8 @@
 					    summary_data[key].pi_quantity += App.floatVal(item.pi_quantity);
 					    summary_data[key].invoice_price += App.floatVal(item.invoice_price);
 					    summary_data[key].tax_cost += App.floatVal(item.tax_cost);
+					    summary_data[key].tax += App.floatVal(item.tax);
+					    summary_data[key].cost += App.floatVal(item.cost);
 					    summary_data[key].adjust_tax_cost += App.floatVal(item.adjust_tax_cost);
 					    summary_data[key].invoice_price = App.priceNumber((summary_data[key].tax_cost * 1 + summary_data[key].adjust_tax_cost) / summary_data[key].invoice_quantity);
 					    summary_data[key].tax_price = App.priceNumber(summary_data[key].tax_cost / summary_data[key].pi_quantity);
@@ -1172,7 +1198,7 @@
 		  var footertr = $("<tr></tr>").appendTo(footer);
 
 		  //Add footer cells
-		  for (var i = 0; i < 16; i++) {
+		  for (var i = 0; i < 18; i++) {
 			  if (i == 0) {
 				  $("<th colspan='7' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
 			  } else {

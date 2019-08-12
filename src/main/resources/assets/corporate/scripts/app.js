@@ -707,7 +707,7 @@ var App = function() {
           if (column_setting.data == "row_no" || column_setting.render == $.fn.rowno_renderer) {
           	cell_value = row_index + 1;
           } else if (column_setting.render) {
-          	cell_value = escapeComma(column_setting.render(null, null, row_data));
+          	cell_value = escapeComma(column_setting.render(row_data[[column_setting.data]], null, row_data));
           } else {
           	cell_value = escapeComma(row_data[[column_setting.data]]);
           }
