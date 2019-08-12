@@ -3,6 +3,7 @@ package com.srm.platform.vendor.utility;
 public class Constants {
 
 	public final static String ATTACH_TYPE_STATEMENT = "statement";
+	public final static String ATTACH_TYPE_INQUERY = "inquery";
 	
 	
 	public final static int STATE_NEW = 1;

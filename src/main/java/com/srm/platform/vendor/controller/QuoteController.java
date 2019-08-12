@@ -49,13 +49,12 @@ import com.srm.platform.vendor.utility.Utils;
 @RequestMapping(path = "/quote")
 @PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('报价管理-查看列表')")
 public class QuoteController extends CommonController {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@PersistenceContext
-	private EntityManager em;
-
-
-
+	@Override
+	protected String getOperationHistoryType() {
+		return "inquery";
+	};
+	
 	// 查询列表
 	@GetMapping({ "", "/" })
 	public String index() {
@@ -251,7 +250,8 @@ public class QuoteController extends CommonController {
 		String title = String.format("询价单【%s】已由【%s】%s，请及时查阅和处理！", venPriceAdjustMain.getCcode(), account.getRealname(),
 				action);
 		this.sendmessage(title, toList, String.format("/inquery/%s/read", venPriceAdjustMain.getCcode()));
-
+		this.addOpertionHistory(venPriceAdjustMain.getCcode(), action, form.getContent());
+		
 		if (state == Constants.STATE_PASS || state == Constants.STATE_CONFIRM || state == Constants.STATE_CANCEL) {
 			if (form.getTable() != null) {
 				for (Map<String, String> row : form.getTable()) {

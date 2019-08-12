@@ -6,7 +6,6 @@
         <li>
           <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
         </li>
-        <li>价格管理</li>
         <li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/quote}" class="active">报价管理</a></li>
         <li sec:authorize="hasRole('ROLE_BUYER')" class="active">报价单详细</li>
         <li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/quote}" class="active">询价管理</a></li>
@@ -405,7 +404,25 @@ is_readonly = 0;
       },
 
       submitHandler: function (form) {
-        var data = table.rows().data().toArray();
+      	var state = $('#state').val();
+      	if (state == 1) {
+			    confirmMessage = "保存";
+		    } else if (state == 2) {
+			    confirmMessage = "提交";
+		    } else if (state == 3) {
+			    confirmMessage = "确认";
+		    } else if (state == 4) {
+			    confirmMessage = "退回";
+		    } else if (state == 5) {
+			    confirmMessage = "通过";
+		    } else if (state == 6) {
+			    confirmMessage = "审核";
+		    } else if (state == 7) {
+			    confirmMessage = "归档";
+		    }
+      	
+      	App.showInputConfirmDialog('确定要' + confirmMessage + '吗?', function(submit_content) {
+      		var data = table.rows().data().toArray();
           jQuery(form).ajaxSubmit({
             beforeSend: function(){
               App.blockUI();
@@ -413,7 +430,10 @@ is_readonly = 0;
             complete: function(){
               App.unblockUI();
             }, 
-            data: {table:data},
+            data: {
+            	content: submit_content,
+            	table:data
+            },
             success: function(res, status, xhr, form) {
               if (res.success == 1){
                 App.showSuccessDialog("操作成功", function(){
@@ -427,6 +447,8 @@ is_readonly = 0;
               App.showErrorDialog("操作失败", "请输入正确的值");
             }
           });
+      	});
+        
       }
     }); 
     

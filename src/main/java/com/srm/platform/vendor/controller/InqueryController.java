@@ -36,6 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
+import com.srm.platform.vendor.model.AttachFile;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.StatementDetail;
@@ -62,15 +63,11 @@ import com.srm.platform.vendor.utility.Utils;
 //@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('询价管理-查看列表')")
 public class InqueryController extends CommonController {
 
-	@Autowired
-	private VendorRepository vendorRepository;
-
-	@Autowired
-	private InventoryRepository inventoryRepository;
-
-	@Autowired
-	private AccountRepository accountRepository;
-
+	@Override
+	protected String getOperationHistoryType() {
+		return "inquery";
+	};
+	
 	// 查询列表
 	@GetMapping({ "", "/" })
 	public String index() {
@@ -78,7 +75,7 @@ public class InqueryController extends CommonController {
 	}
 
 	// 新建
-//	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
+//	@PreAuthorize("hasAuthority('询价管理-新建/提交') or hasRole('ROLE_VENDOR')")
 	@GetMapping({ "/add" })
 	public String add(Model model) {
 		VenPriceAdjustMain main = new VenPriceAdjustMain(accountRepository);
@@ -253,6 +250,24 @@ public class InqueryController extends CommonController {
 
 	}
 
+	
+	@RequestMapping(value = "/{code}/attaches", produces = "application/json")
+	public @ResponseBody List<AttachFile> listAttaches(@PathVariable("code") String code) {
+		List<AttachFile> list = attachFileRepository.findAllByTypeCode(Constants.ATTACH_TYPE_INQUERY, code);
+
+		return list;
+	}
+	
+	@GetMapping("/{code}/download/{rowNo}")
+	public ResponseEntity<Resource> download(@PathVariable("code") String code, @PathVariable("rowNo") Integer rowNo) {
+		AttachFile attach = this.attachFileRepository.findOneByTypeCodeAndRowNo(Constants.ATTACH_TYPE_STATEMENT, code, rowNo);
+		if (attach == null) {
+			show404();
+		}
+		return download(Constants.PATH_UPLOADS_INQUERY + File.separator + attach.getFilename(),
+				attach.getOriginalName());
+	}
+	
 	// 更新API
 	@Transactional
 	@PostMapping("/update")
@@ -333,6 +348,10 @@ public class InqueryController extends CommonController {
 		String url = String.format("/inquery/%s/read", venPriceAdjustMain.getCcode());
 
 		switch (form.getState()) {
+		case Constants.STATE_NEW:
+			toList.add(venPriceAdjustMain.getMaker());
+			action = "保存";
+			break;
 		case Constants.STATE_SUBMIT:
 			action = "提交";
 			if (venPriceAdjustMain.getCreatetype() == Constants.CREATE_TYPE_VENDOR) {
@@ -368,7 +387,8 @@ public class InqueryController extends CommonController {
 		String title = String.format("%s【%s】已由【%s】%s，请及时查阅和处理！", type, venPriceAdjustMain.getCcode(),
 				account.getRealname(), action);
 		this.sendmessage(title, toList, url);
-
+		this.addOpertionHistory(venPriceAdjustMain.getCcode(), action, form.getContent());
+		
 		if (form.getState() <= Constants.STATE_PASS && form.getTable() != null) {
 			venPriceAdjustDetailRepository
 					.deleteInBatch(venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode()));

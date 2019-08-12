@@ -61,7 +61,6 @@ import com.srm.platform.vendor.utility.Utils;
 @Controller
 @RequestMapping(path = "/statement")
 public class StatementController extends CommonController {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private static Long LIST_FUNCTION_ACTION_ID = 21L;
 	private static Long NEW_FUNCTION_ACTION_ID = 22L;

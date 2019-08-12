@@ -17,7 +17,8 @@ public class VenPriceSaveForm {
 	private Integer type;
 	private Integer provide_type;
 	private Long maker;
-
+	private String content;
+	
 	private Date make_date;
 	private List<Map<String, String>> table;
 
@@ -27,6 +28,14 @@ public class VenPriceSaveForm {
 
 	public void setCcode(String ccode) {
 		this.ccode = ccode;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 	public String getVendor() {
