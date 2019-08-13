@@ -83,7 +83,9 @@ public class StatementController extends CommonController {
 	@GetMapping({ "", "/" })
 	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('对账单管理-查看列表') or hasRole('ROLE_VENDOR')")
 	public String index() {
-		checkSecondPassword();
+		if (!checkSecondPassword()) {
+			return "second_password";
+		}
 		return "statement/index";
 	}
 
@@ -114,7 +116,10 @@ public class StatementController extends CommonController {
 		if (main == null)
 			show404();
 
-		checkSecondPassword();
+		if (!checkSecondPassword()) {
+			return "second_password";
+		}
+		
 		checkPermission(main, LIST_FUNCTION_ACTION_ID);
 		
 		model.addAttribute("main", main);
@@ -373,38 +378,6 @@ public class StatementController extends CommonController {
 				break;
 			}			
 		} else {
-			if (form.getInvoice_state() == Constants.INVOICE_STATE_DONE) {
-				main.setInvoiceType(form.getInvoice_type());
-				main.setInvoiceCode(form.getInvoice_code());
-				main.setInvoiceMaker(this.getLoginAccount());
-				main.setInvoiceMakeDate(new Date());
-			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CONFIRMED) {
-				main.setInvoiceType(form.getInvoice_type());
-				main.setInvoiceCode(form.getInvoice_code());
-				main.setInvoiceConfirmer(this.getLoginAccount());
-				main.setInvoiceConfirmDate(new Date());
-			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCELED) {
-				main.setInvoiceType(form.getInvoice_type());
-				main.setInvoiceCode(form.getInvoice_code());
-				main.setInvoiceCanceler(this.getLoginAccount());
-				main.setInvoiceCancelDate(new Date());
-			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCEL_UPLOAD) {
-				main.setInvoiceType(form.getInvoice_type());
-				main.setInvoiceCode(form.getInvoice_code());
-//				main.setInvoiceCanceler(this.getLoginAccount());
-//				main.setInvoiceCancelDate(new Date());
-			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
-				GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
-				if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
-					main.setInvoiceType(form.getInvoice_type());
-					main.setInvoiceCode(form.getInvoice_code());				
-					main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
-					main.setErpInvoiceMakeDate(new Date());
-				} else {
-					return u8Response;
-				}
-			}
-			
 			List<Long> attachIdList = form.getAttachIds();
 			for(Long attachId : attachIdList) {
 				logger.info("ID=" + attachId);
@@ -456,6 +429,31 @@ public class StatementController extends CommonController {
 			
 			main.setInvoiceState(form.getInvoice_state());
 			
+			if (form.getInvoice_state() == Constants.INVOICE_STATE_DONE) {
+				main.setInvoiceType(form.getInvoice_type());
+				main.setInvoiceCode(form.getInvoice_code());
+				main.setInvoiceMaker(this.getLoginAccount());
+				main.setInvoiceMakeDate(new Date());
+			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CONFIRMED) {
+				main.setInvoiceType(form.getInvoice_type());
+				main.setInvoiceCode(form.getInvoice_code());
+				main.setInvoiceConfirmer(this.getLoginAccount());
+				main.setInvoiceConfirmDate(new Date());
+			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCELED) {
+				main.setInvoiceType(form.getInvoice_type());
+				main.setInvoiceCode(form.getInvoice_code());
+				main.setInvoiceCanceler(this.getLoginAccount());
+				main.setInvoiceCancelDate(new Date());
+			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCEL_UPLOAD) {
+				main.setInvoiceType(form.getInvoice_type());
+				main.setInvoiceCode(form.getInvoice_code());
+//				main.setInvoiceCanceler(this.getLoginAccount());
+//				main.setInvoiceCancelDate(new Date());
+			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
+				main.setInvoiceType(form.getInvoice_type());
+				main.setInvoiceCode(form.getInvoice_code());
+			}
+			
 			switch (form.getInvoice_state()) {
 			case Constants.INVOICE_STATE_DONE:
 				toList.add(main.getMaker());
@@ -474,7 +472,7 @@ public class StatementController extends CommonController {
 				action = "传递ERP";
 				break;	
 			case Constants.INVOICE_STATE_CANCEL_UPLOAD:
-				main.setInvoiceState(Constants.INVOICE_STATE_CANCEL_UPLOAD);
+				main.setInvoiceState(Constants.INVOICE_STATE_CONFIRMED);
 				toList.add(main.getMaker());
 				action = "审批撤消";
 				break;	
@@ -530,7 +528,21 @@ public class StatementController extends CommonController {
 		} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCEL_UPLOAD) {
 			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START);
 		}
-
+		
+		if (form.isInvoiceAction() && form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
+			GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
+			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
+				main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
+				main.setErpInvoiceMakeDate(new Date());				
+				main = statementMainRepository.save(main);
+			} else {
+				main.setInvoiceState(Constants.INVOICE_STATE_CONFIRMED);
+				main = statementMainRepository.save(main);
+				return u8Response;
+			}
+		}
+		 
+	
 		return jsonResponse;
 	}
 
@@ -574,16 +586,19 @@ public class StatementController extends CommonController {
 			row.put("cInvCode", detail.getInventory_code()); //存货编码
 			row.put("dInDate", detail.getPi_date()); //入库时间
 			row.put("iPBVQuantity", detail.getPi_quantity()); //开票数量
-			row.put("iOriCost", detail.getPrice()); //原币单价
-			row.put("iCost", detail.getPrice()); //本币单价
-			row.put("iOriMoney", detail.getCost()); //原币金额
-			row.put("iMoney", detail.getCost()); //本币金额
-			row.put("iOriTaxPrice", detail.getTax()); //原币税额
-			row.put("iTaxPrice", detail.getTax()); //本币税额
-			row.put("iOriSum", detail.getTax_cost()); //原币价税合计
-			row.put("iSum", detail.getTax_cost()); //本币价税合计
-			
+
+			row.put("iOriCost", detail.getPrice()); //原币单价 
 			row.put("iOriTaxCost", detail.getTax_price()); //原币含税单价
+			row.put("iOriMoney", detail.getCost()); //原币金额
+			row.put("iOriTaxPrice", detail.getTax()); //原币税额
+			row.put("iOriSum", detail.getTax_cost()); //原币价税合计
+			
+			row.put("iCost", detail.getPrice()); //本币单价
+			row.put("iMoney", detail.getCost()); //本币金额
+			row.put("iTaxPrice", detail.getTax()); //本币税额
+			row.put("iSum", detail.getTax_cost()); //本币价税合计
+
+			
 			row.put("iTaxRate", detail.getTax_rate()); //税率
 			row.put("ivouchrowno", detail.getRow_no().toString()); //行号
 			row.put("cbMemo", detail.getConfirmed_memo()); //行备注
@@ -769,12 +784,14 @@ public class StatementController extends CommonController {
 	}
 	
 	
-	private void checkSecondPassword() {
+	private boolean checkSecondPassword() {
 		if (this.isVendor()) {
 			Integer secondPassword = (Integer)httpSession.getAttribute("second_password");
 			if ( secondPassword == null || secondPassword != 1) {
-				show403();
+				return false;
 			}
 		}
+		
+		return true;
 	}
 }
