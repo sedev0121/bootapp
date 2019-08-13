@@ -1,7 +1,6 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,8 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,11 +32,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.AttachFile;
-import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.Master;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.StatementDetail;
@@ -47,14 +42,11 @@ import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.StatementSaveForm;
 import com.srm.platform.vendor.searchitem.StatementDetailItem;
-import com.srm.platform.vendor.searchitem.StatementPendingItem;
 import com.srm.platform.vendor.searchitem.StatementSearchResult;
 import com.srm.platform.vendor.u8api.RestApiResponse;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
-import com.srm.platform.vendor.utility.U8InvoicePostData;
-import com.srm.platform.vendor.utility.U8InvoicePostEntry;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
 
@@ -379,10 +371,7 @@ public class StatementController extends CommonController {
 			}			
 		} else {
 			List<Long> attachIdList = form.getAttachIds();
-			for(Long attachId : attachIdList) {
-				logger.info("ID=" + attachId);
-			}
-			
+						
 			List<AttachFile> oldAttachList = attachFileRepository.findAllByTypeCode(Constants.ATTACH_TYPE_STATEMENT, main.getCode());
 			List<AttachFile> newAttachList = new ArrayList<AttachFile>();
 			if (attachIdList == null) {
@@ -742,7 +731,7 @@ public class StatementController extends CommonController {
 	}
 	
 	private List<StatementMain> filter(List<StatementMain> list) {
-		logger.info("start count=" + list.size());
+		
 		List<StatementMain> filteredList = new ArrayList<StatementMain>();
 		AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
 		List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
@@ -766,7 +755,7 @@ public class StatementController extends CommonController {
 			list = filteredList;
 		}
 		
-		logger.info("end count=" + list.size());
+		
 		return list;
 	}
 	
