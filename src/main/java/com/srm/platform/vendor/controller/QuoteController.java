@@ -47,7 +47,7 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/quote")
-@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('报价管理-查看列表')")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('询价管理-查看列表')")
 public class QuoteController extends CommonController {
 
 	@Override
@@ -151,7 +151,7 @@ public class QuoteController extends CommonController {
 //				bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";
 //				params.put("vendor", vendorStr.trim());
 //			}
-//			params.put("createType", Constants.CREATE_TYPE_VENDOR);
+			params.put("createType", Constants.CREATE_TYPE_VENDOR);
 		}
 
 		if (!inventory.trim().isEmpty()) {
@@ -237,17 +237,40 @@ public class QuoteController extends CommonController {
 		List<Account> toList = new ArrayList<>();
 
 		switch (form.getState()) {
+		case Constants.STATE_NEW:
+			toList.add(venPriceAdjustMain.getMaker());
+			action = "保存";
+			break;
+		case Constants.STATE_SUBMIT:
+			action = "发布";
+			if (venPriceAdjustMain.getCreatetype() == Constants.CREATE_TYPE_VENDOR) {
+				toList.addAll(accountRepository.findAllBuyersByVendorCode(venPriceAdjustMain.getVendor().getCode()));
+			} else {
+				toList.addAll(accountRepository.findAccountsByVendor(venPriceAdjustMain.getVendor().getCode()));
+			}
+			break;
 		case Constants.STATE_CONFIRM:
-		case Constants.STATE_PASS:
 			toList.add(venPriceAdjustMain.getMaker());
 			action = "确认";
+			break;
+		case Constants.STATE_PASS:
+			toList.add(venPriceAdjustMain.getMaker());
+			action = "通过";
+			break;
+		case Constants.STATE_VERIFY:
+			toList.add(venPriceAdjustMain.getMaker());
+			action = "审核";
+			break;
+		case Constants.STATE_PUBLISH:
+			toList.add(venPriceAdjustMain.getMaker());
+			action = "归档";
 			break;
 		case Constants.STATE_CANCEL:
 			toList.add(venPriceAdjustMain.getMaker());
 			action = "退回";
 			break;
 		}
-		String title = String.format("询价单【%s】已由【%s】%s，请及时查阅和处理！", venPriceAdjustMain.getCcode(), account.getRealname(),
+		String title = String.format("报价单【%s】已由【%s】%s，请及时查阅和处理！", venPriceAdjustMain.getCcode(), account.getRealname(),
 				action);
 		this.sendmessage(title, toList, String.format("/inquery/%s/read", venPriceAdjustMain.getCcode()));
 		this.addOpertionHistory(venPriceAdjustMain.getCcode(), action, form.getContent());

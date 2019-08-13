@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -43,7 +44,7 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/inquery")
-//@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('询价管理-查看列表')")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('询价管理-查看列表')")
 public class InqueryController extends CommonController {
 
 	@Override
@@ -58,7 +59,7 @@ public class InqueryController extends CommonController {
 	}
 
 	// 新建
-//	@PreAuthorize("hasAuthority('询价管理-新建/提交') or hasRole('ROLE_VENDOR')")
+	@PreAuthorize("hasAuthority('询价管理-新建/发布') or hasRole('ROLE_VENDOR')")
 	@GetMapping({ "/add" })
 	public String add(Model model) {
 		VenPriceAdjustMain main = new VenPriceAdjustMain(accountRepository);
