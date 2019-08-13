@@ -248,6 +248,18 @@ public class Utils {
 		return result;
 	}
 	
+	public static String costNumber(double value) {
+		return String.format("%.2f", value);
+	}
+	
+	public static String priceNumber(double value) {
+		return String.format("%.6f", value);
+	}
+	
+	public static String quantityNumber(double value) {
+		return String.format("%.2f", value);
+	}
+	
 	public static RestApiResponse postForArrivalVouch(DeliveryMain deliveryMain,List<DeliveryDetail> details, RestApiClient apiClient) {
 		
 		Map<String, Object> postData = new HashMap<>();

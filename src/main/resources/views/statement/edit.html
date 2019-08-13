@@ -313,7 +313,7 @@
 		  	item.tax_rate = $("#tax_rate").val();
 		  });	
 		  updateData();
-		  table.rows().invalidate().draw();
+		  
 		  rowDatas = summary_table.data();
 		  
 		  $.each(rowDatas, function(key, item) {
@@ -904,7 +904,7 @@
 
 	  });
 
-	  function updateData() {
+	  function updateData(needUpdateAdjustTaxCost = true) {
 		  var cost = 0, tax = 0, tax_cost = 0, adjust_tax_cost = 0;
 		  var result = [];
 		  var rowDatas = table.data();
@@ -927,10 +927,12 @@
 
 		  tax = App.costNumber(tax_cost - cost);
 
-		  $('#cost').val(cost);
-		  $('#tax_cost').val(tax_cost);
-		  $('#tax').val(tax);
-		  $('#adjust_tax_cost').val(adjust_tax_cost);
+		  $('#cost').val(App.costNumber(cost));
+		  $('#tax_cost').val(App.costNumber(tax_cost));
+		  $('#tax').val(App.costNumber(tax));
+		  if (needUpdateAdjustTaxCost) {
+		  	$('#adjust_tax_cost').val(App.costNumber(adjust_tax_cost));	
+		  }		  
 
 		  table.rows().invalidate().draw();
 	  }
@@ -957,9 +959,7 @@
 			  }
 		  }
 
-		  updateData();
-
-		  table.rows().invalidate().draw();
+		  updateData(false);
 	  }
 
 	  function loadNormalTable() {

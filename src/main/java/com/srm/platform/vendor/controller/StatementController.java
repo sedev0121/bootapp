@@ -576,16 +576,60 @@ public class StatementController extends CommonController {
 			row.put("dInDate", detail.getPi_date()); //入库时间
 			row.put("iPBVQuantity", detail.getPi_quantity()); //开票数量
 
-			row.put("iOriCost", detail.getPrice()); //原币单价 
-			row.put("iOriTaxCost", detail.getTax_price()); //原币含税单价
-			row.put("iOriMoney", detail.getCost()); //原币金额
-			row.put("iOriTaxPrice", detail.getTax()); //原币税额
-			row.put("iOriSum", detail.getTax_cost()); //原币价税合计
+			String taxPriceStr = detail.getTax_price();
+			String taxCostStr = detail.getTax_cost();
+			String taxRateStr = detail.getTax_rate();
+			String adjustTaxCostStr = detail.getAdjust_tax_cost();
+			String quantityStr = detail.getPi_quantity();
 			
-			row.put("iCost", detail.getPrice()); //本币单价
-			row.put("iMoney", detail.getCost()); //本币金额
-			row.put("iTaxPrice", detail.getTax()); //本币税额
-			row.put("iSum", detail.getTax_cost()); //本币价税合计
+			double quantity=0, taxPrice=0, taxCost=0, taxRate=0, adjustTaxCost=0, price=0, cost=0, tax=0, invoiceTaxPrice=0, invoiceTaxCost=0;
+			
+			try {
+				quantity = Double.parseDouble(quantityStr);
+			}catch(Exception e) {
+				
+			}
+			
+			try {
+				taxPrice = Double.parseDouble(taxPriceStr);
+			}catch(Exception e) {
+				
+			}
+			
+			try {
+				taxCost = Double.parseDouble(taxCostStr);
+			}catch(Exception e) {
+				
+			}
+			
+			try {
+				taxRate = Double.parseDouble(taxRateStr);
+			}catch(Exception e) {
+				
+			}
+			
+			try {
+				adjustTaxCost = Double.parseDouble(adjustTaxCostStr);
+			}catch(Exception e) {
+				
+			}
+			
+			invoiceTaxCost = taxCost + adjustTaxCost;
+			invoiceTaxPrice = invoiceTaxCost / quantity;
+			price = invoiceTaxPrice * 100 / (100 + taxRate);
+			cost = price * quantity;			
+			tax = invoiceTaxCost - cost;
+			
+			row.put("iOriCost", Utils.priceNumber(price)); //原币单价 
+			row.put("iOriTaxCost", Utils.priceNumber(invoiceTaxPrice)); //原币含税单价
+			row.put("iOriMoney", Utils.costNumber(cost)); //原币金额
+			row.put("iOriTaxPrice", Utils.costNumber(tax)); //原币税额
+			row.put("iOriSum", Utils.costNumber(invoiceTaxCost)); //原币价税合计
+			
+			row.put("iCost", Utils.priceNumber(price)); //本币单价
+			row.put("iMoney", Utils.costNumber(cost)); //本币金额
+			row.put("iTaxPrice", Utils.costNumber(tax)); //本币税额
+			row.put("iSum", Utils.costNumber(invoiceTaxCost)); //本币价税合计
 
 			
 			row.put("iTaxRate", detail.getTax_rate()); //税率
