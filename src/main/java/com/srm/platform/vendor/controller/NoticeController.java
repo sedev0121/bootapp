@@ -11,9 +11,6 @@ import java.util.Map;
 
 import javax.persistence.Query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -36,10 +33,6 @@ import org.thymeleaf.util.StringUtils;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
-import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.NoticeReadRepository;
-import com.srm.platform.vendor.repository.NoticeRepository;
-import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.NoticeReadSearchResult;
 import com.srm.platform.vendor.searchitem.NoticeSearchResult;
@@ -50,12 +43,8 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/notice")
-@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_VENDOR') or hasAuthority('公告通知-查看列表')")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('采购动态-查看列表')")
 public class NoticeController extends CommonController {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-
-
 
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
@@ -83,40 +72,20 @@ public class NoticeController extends CommonController {
 		case "create_name":
 			order = "b.realname";
 			break;
-		case "create_unitname":
-			order = "c.name";
-			break;
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT distinct a.*, b.realname create_name, '' create_unitname, d.realname verify_name, e.read_date read_date ";
+		String selectQuery = "SELECT distinct a.*, b.realname create_name, d.realname verify_name, e.read_date read_date ";
 		String countQuery = "select count(distinct a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id "
-				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id and e.to_account_id=:to_account where type=1 ";
+		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id and e.to_account_id=:to_account where type=1 ";
 
 		
 		Map<String, Object> params = new HashMap<>();
-
-		if (isVendor()) {
-			bodyQuery += " and e.to_account_id=:to_account and a.state=3";
-			params.put("to_account", this.getLoginAccount().getId());
-		} else {
-			if (this.hasAuthority("公告通知-发布")) {
-//				bodyQuery += " and ((a.create_unit in :unitList and a.state=2) or create_account=:create_account or (e.to_account_id=:to_account and a.state=3))";
-//				params.put("unitList", unitList);
-//				params.put("create_account", this.getLoginAccount().getId());
-//				params.put("to_account", this.getLoginAccount().getId());
-			} else {
-				bodyQuery += " and (create_account=:create_account or (e.to_account_id=:to_account and a.state=3))";
-				params.put("create_account", this.getLoginAccount().getId());
-				params.put("to_account", this.getLoginAccount().getId());
-			}
-		}
-
+		params.put("to_account", this.getLoginAccount().getId());
 		if (!search.trim().isEmpty()) {
 			bodyQuery += " and (a.title like CONCAT('%',:search, '%') or a.content like CONCAT('%',:search, '%')) ";
 			params.put("search", search.trim());
@@ -172,7 +141,7 @@ public class NoticeController extends CommonController {
 
 	// 新建
 	@GetMapping("/add")
-	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('公告通知-新建')")
+	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('采购动态-新建/修改')")
 	public String add(Model model) {
 		Notice notice = new Notice();
 		notice.setCreateAccount(this.getLoginAccount());
@@ -182,8 +151,7 @@ public class NoticeController extends CommonController {
 	}
 
 	// 删除
-	@GetMapping("/{id}/delete")
-	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('公告通知-新建')")
+	@GetMapping("/{id}/delete")	
 	public @ResponseBody Boolean delete(@PathVariable("id") Long id, Model model) {
 		Notice notice = noticeRepository.findOneById(id);
 		noticeRepository.delete(notice);
@@ -207,7 +175,6 @@ public class NoticeController extends CommonController {
 	// 用户修改
 	@Transactional
 	@PostMapping("/update")
-	@PreAuthorize("hasRole('ROLE_BUYER') and (hasAuthority('公告通知-新建') or hasAuthority('公告通知-发布'))")
 	public @ResponseBody Notice update_ajax(@RequestParam(value = "attach", required = false) MultipartFile attach,
 			@RequestParam Map<String, String> requestParams) {
 
@@ -249,59 +216,9 @@ public class NoticeController extends CommonController {
 			}
 
 			notice.setCreateAccount(this.getLoginAccount());
-			if (to_all_vendor != null) {
-				notice.setToAllVendor(1);
-				notice.setVendorCodeList(null);
-			} else {
-				notice.setToAllVendor(0);
-				if (vendor_list != null && !vendor_list.trim().isEmpty()) {
-					notice.setVendorCodeList(vendor_list);
-				} else {
-					notice.setVendorCodeList(null);
-				}
-			}
-			if (to_unit_account != null) {
-				notice.setToUnitAccount(1);				
-				if (account_list != null && !account_list.trim().isEmpty()) {
-					notice.setAccountIdList(account_list);
-				} else {
-					notice.setAccountIdList(null);
-				}
-			} else {
-				notice.setToUnitAccount(0);
-				notice.setAccountIdList(null);
-			}
-
 		} else {
 			notice.setVerifyAccount(this.getLoginAccount());
 			notice.setVerifyDate(new Date());
-
-			if (state == 3) {
-				List<Account> toAccountList = new ArrayList<>();
-				if (notice.getToAllVendor() == 1) {
-//					List<String> unitIdList = getAllUnitsOfId(notice.getUnit().getId());
-//
-//					toAccountList.addAll(accountRepository.findAllVendorsByUnitIdList(unitIdList));
-
-				} else {
-					if (notice.getVendorCodeList() != null && !notice.getVendorCodeList().isEmpty()) {
-						List<String> vendorCodeList = Arrays.asList(StringUtils.split(notice.getVendorCodeList(), ","));
-						toAccountList.addAll(accountRepository.findAccountsByVendorCodeList(vendorCodeList));
-					}
-				}
-
-				if (notice.getToUnitAccount() == 1) {
-					toAccountList.addAll(
-							accountRepository.findAllByIdList(convertListStrToLongList(notice.getAccountIdList())));
-				}
-
-				for (Account account : toAccountList) {
-					NoticeRead noticeRead = new NoticeRead();
-					noticeRead.setNotice(notice);
-					noticeRead.setAccount(account);
-					noticeReadRepository.save(noticeRead);
-				}
-			}
 		}
 
 		notice = noticeRepository.save(notice);
@@ -414,94 +331,9 @@ public class NoticeController extends CommonController {
 		return q.getResultList();
 
 	}
-	@GetMapping("/{id}/vendor/list")
-	public @ResponseBody List<VendorSearchItem> vendorList_ajax(@PathVariable("id") String noticeId) {
+	
 
-		if (noticeId == null || "null".equals(noticeId)) {
-			return new ArrayList<>();
-		}
-
-		Notice notice = noticeRepository.findOneById(Long.valueOf(noticeId));
-
-		String vendorCodeListStr = notice.getVendorCodeList();
-		String[] vendorList = null;
-		if (vendorCodeListStr !=null && !vendorCodeListStr.trim().isEmpty()) {
-			vendorList = StringUtils.split(vendorCodeListStr, ",");
-		}
-		
-		if (vendorList == null) {
-			return new ArrayList<>();
-		}
-		
-		return vendorRepository.findVendorsByCodeList(vendorList);
-
-	}
-
-	@GetMapping("/account/list")
-	public @ResponseBody Page<AccountSearchResult> accountListForSelect_ajax(
-			@RequestParam Map<String, String> requestParams) {
-		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
-		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
-		String order = requestParams.getOrDefault("order", "name");
-		String dir = requestParams.getOrDefault("dir", "asc");
-		String search = requestParams.getOrDefault("search", "");
-		String stateStr = requestParams.getOrDefault("state", "");
-		String role = requestParams.getOrDefault("role", "");
-
-		Integer state = Integer.parseInt(stateStr);
-
-		if (order.equals("vendorname"))
-			order = "v.name";
-		if (order.equals("unitname"))
-			order = "u.name";
-
-		page_index--;
-		PageRequest request = PageRequest.of(page_index, rows_per_page,
-				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-
-		String selectQuery = "SELECT t.*, '' unitname, v.name vendorname ";
-		String countQuery = "select count(*) ";
-		String orderBy = " order by " + order + " " + dir;
-
-		String bodyQuery = "FROM account t left join vendor v on t.vendor_code=v.code where role<>'ROLE_VENDOR' ";
-
-		Map<String, Object> params = new HashMap<>();
-
-		if (!search.trim().isEmpty()) {
-			bodyQuery += " and (t.username LIKE CONCAT('%',:search, '%') or t.realname LIKE CONCAT('%',:search, '%') or t.duty LIKE CONCAT('%',:search, '%') or t.email LIKE CONCAT('%',:search, '%')) ";
-			params.put("search", search.trim());
-		}
-
-		if (state >= 0) {
-			bodyQuery += " and state=:state";
-			params.put("state", state);
-		}
-
-		if (!role.trim().isEmpty()) {
-			bodyQuery += " and role=:role";
-			params.put("role", role);
-		}
-
-		countQuery += bodyQuery;
-		Query q = em.createNativeQuery(countQuery);
-
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			q.setParameter(entry.getKey(), entry.getValue());
-		}
-
-		BigInteger totalCount = (BigInteger) q.getSingleResult();
-
-		selectQuery += bodyQuery + orderBy;
-		q = em.createNativeQuery(selectQuery, "AccountSearchResult");
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			q.setParameter(entry.getKey(), entry.getValue());
-		}
-
-		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
-
-		return new PageImpl<AccountSearchResult>(list, request, totalCount.longValue());
-
-	}
+	
 
 	@GetMapping("/{id}/download")
 	public ResponseEntity<Resource> download(@PathVariable("id") Long id) {

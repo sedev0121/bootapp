@@ -25,12 +25,9 @@ import com.srm.platform.vendor.searchitem.NoticeSearchResult;
 				@ColumnResult(name = "content", type = String.class),
 				@ColumnResult(name = "create_date", type = Date.class),
 				@ColumnResult(name = "create_name", type = String.class),
-				@ColumnResult(name = "create_unitname", type = String.class),
 				@ColumnResult(name = "verify_date", type = Date.class),
 				@ColumnResult(name = "verify_name", type = String.class),
 				@ColumnResult(name = "state", type = Integer.class),
-				@ColumnResult(name = "to_all_vendor", type = Integer.class),
-				@ColumnResult(name = "to_unit_account", type = Integer.class),
 				@ColumnResult(name = "attach_file_name", type = String.class),
 				@ColumnResult(name = "read_date", type = Date.class),
 				@ColumnResult(name = "url", type = String.class)
@@ -59,11 +56,8 @@ public class Notice {
 
 	private Integer type;
 	private Integer state = 1;
-	private Integer toAllVendor = 1;
-	private Integer toUnitAccount = 1;
 	private String attachFileName;
 	private String attachOriginalName;
-	private String vendorCodeList;
 	private String accountIdList;
 	private String url;
 	
@@ -93,14 +87,6 @@ public class Notice {
 
 	public void setAccountIdList(String accountIdList) {
 		this.accountIdList = accountIdList;
-	}
-
-	public String getVendorCodeList() {
-		return vendorCodeList;
-	}
-
-	public void setVendorCodeList(String vendorCodeList) {
-		this.vendorCodeList = vendorCodeList;
 	}
 
 	public String getTitle() {
@@ -157,23 +143,7 @@ public class Notice {
 
 	public void setState(Integer state) {
 		this.state = state;
-	}
-
-	public Integer getToAllVendor() {
-		return toAllVendor;
-	}
-
-	public void setToAllVendor(Integer toAllVendor) {
-		this.toAllVendor = toAllVendor;
-	}
-
-	public Integer getToUnitAccount() {
-		return toUnitAccount;
-	}
-
-	public void setToUnitAccount(Integer toUnitAccount) {
-		this.toUnitAccount = toUnitAccount;
-	}
+	}	
 
 	public String getAttachFileName() {
 		return attachFileName;

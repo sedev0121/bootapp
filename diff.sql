@@ -479,3 +479,13 @@ INSERT INTO `function_action` VALUES (35, 10, 22);
 
 alter table venpriceadjust_main DROP column attach_original_name;
 alter table venpriceadjust_main DROP column attach_file_name;
+
+INSERT INTO `function` VALUES (11, '采购动态');
+INSERT INTO `function_action` VALUES (41, 11, 1); 
+INSERT INTO `function_action` VALUES (42, 11, 2); 
+INSERT INTO `function_action` VALUES (43, 11, 15); 
+
+DROP TABLE IF EXISTS `message`;
+alter table notice DROP column to_unit_account;
+alter table notice DROP column vendor_code_list;
+alter table notice DROP column to_all_vendor;
