@@ -464,6 +464,10 @@ alter table statement_main modify column tax_rate int(2) NOT NULL DEFAULT 16;
 /* 2019-08-12 */
 alter table statement_detail add column tax_rate int(2) NOT NULL DEFAULT 16;
 
+INSERT INTO `function` VALUES (11, '合同管理');
+INSERT INTO `function_action` VALUES (41, 11, 1); 
+INSERT INTO `function_action` VALUES (42, 11, 13);  
+
 
 /* 2019-08-13 */
 INSERT INTO `function` VALUES (10, '询价管理');
@@ -480,10 +484,10 @@ INSERT INTO `function_action` VALUES (35, 10, 22);
 alter table venpriceadjust_main DROP column attach_original_name;
 alter table venpriceadjust_main DROP column attach_file_name;
 
-INSERT INTO `function` VALUES (11, '采购动态');
-INSERT INTO `function_action` VALUES (41, 11, 1); 
-INSERT INTO `function_action` VALUES (42, 11, 2); 
-INSERT INTO `function_action` VALUES (43, 11, 15); 
+INSERT INTO `function` VALUES (12, '采购动态');
+INSERT INTO `function_action` VALUES (51, 12, 1); 
+INSERT INTO `function_action` VALUES (52, 12, 2); 
+INSERT INTO `function_action` VALUES (53, 12, 15); 
 
 DROP TABLE IF EXISTS `message`;
 alter table notice DROP column to_unit_account;

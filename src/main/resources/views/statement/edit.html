@@ -396,6 +396,17 @@
 			  	this.error( 'invoice_code', '只允许数字或-，-最多只能出现一次' );
 				  return false;
 			  }
+			  var key = keys[0];
+			  var editing_data = data.data[key];
+			  var table_data = invoice_table.rows().data().toArray();
+			  var id = 1;
+			  for (var i = 0; i < table_data.length; i++) {
+			  	var item = table_data[i];
+				  if (item.row_no != key && item.invoice_code == editing_data.invoice_code) {
+				  	this.error( 'invoice_code', '发票号不能重复' );
+					  return false;
+				  }
+			  }
 		  }
 	  }).on('postRemove', function(e, json, ids) {
 		  var table_data = invoice_table.rows().data().toArray();
