@@ -1,25 +1,35 @@
 package com.srm.platform.vendor.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Box;
+import com.srm.platform.vendor.model.Company;
 import com.srm.platform.vendor.model.DeliveryDetail;
 import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.Inventory;
+import com.srm.platform.vendor.model.Master;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.model.OperationHistory;
@@ -27,19 +37,32 @@ import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
+import com.srm.platform.vendor.model.Task;
+import com.srm.platform.vendor.model.TaskLog;
+import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.BoxRepository;
+import com.srm.platform.vendor.repository.CompanyRepository;
 import com.srm.platform.vendor.repository.DeliveryDetailRepository;
 import com.srm.platform.vendor.repository.DeliveryMainRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
+import com.srm.platform.vendor.repository.MasterRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.OperationHistoryRepository;
+import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
+import com.srm.platform.vendor.repository.TaskLogRepository;
+import com.srm.platform.vendor.repository.TaskRepository;
+import com.srm.platform.vendor.repository.VendorRepository;
+import com.srm.platform.vendor.searchitem.DimensionTargetItem;
+import com.srm.platform.vendor.searchitem.StatementPendingDetail;
+import com.srm.platform.vendor.searchitem.StatementPendingItem;
 import com.srm.platform.vendor.u8api.RestApiClient;
 import com.srm.platform.vendor.u8api.RestApiResponse;
+import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.Utils;
@@ -52,7 +75,8 @@ public class ApiController {
 	private static final String RESPONSE_SUCCESS = "1";
 	private static final String RESPONSE_FAIL = "2";
 	
-	private static final String IS_MES = "1";
+	@Autowired
+	public HttpSession httpSession;
 	
 	@Autowired
 	private RestApiClient apiClient;
@@ -90,31 +114,23 @@ public class ApiController {
 	@Autowired
 	private InventoryRepository inventoryRepository;
 	
-	@ResponseBody
-	@RequestMapping({ "/invoice" })
-	public Integer index(@RequestParam Map<String, String> requestParams) {
-		String reason = requestParams.getOrDefault("reason", null);
-		String invoice_num = requestParams.getOrDefault("invoice_num", null);
-
-		if (invoice_num == null) {
-			return 0;
-		}else {
-			StatementMain main = statementMainRepository.findOneByInvoiceCode(invoice_num);
-
-			if (main != null) {
-				main.setInvoiceCancelDate(new Date());
-				main.setInvoiceCancelReason(reason);
-				main.setState(Constants.STATEMENT_STATE_INVOICE_CANCEL);
-				statementMainRepository.save(main);
-				this.cancelPurchaseInState(main);
-				sendmessage(main);
-				return 1;
-			} else {
-				return 0;
-			}
-		}
-
-	}
+	@Autowired
+	public MasterRepository masterRepository;
+	
+	@Autowired
+	public TaskRepository taskRepository;
+	
+	@Autowired
+	public TaskLogRepository taskLogRepository;
+	
+	@Autowired
+	public VendorRepository vendorRepository;
+	
+	@Autowired
+	public CompanyRepository companyRepository;
+	
+	@Autowired
+	public PermissionGroupRepository permissionGroupRepository;
 	
 	private void addOpertionHistory(String targetId, String action, String content, String type, Account account) {
 		OperationHistory operationHistory = new OperationHistory();
@@ -127,18 +143,6 @@ public class ApiController {
 		operationHistory = operationHistoryRepository.save(operationHistory);
 	}
 	
-	private void cancelPurchaseInState(StatementMain main) {
-		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
-		for (StatementDetail detail : detailList) {
-			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
-					.findOneById(detail.getPurchaseInDetailId());
-
-			if (purchaseInDetail != null) {
-				purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);
-				purchaseInDetailRepository.save(purchaseInDetail);
-			}
-		}
-	}
 	private void sendmessage(StatementMain main) {
 		List<Account> toList = new ArrayList<>();
 		toList.add(main.getMaker());
@@ -192,35 +196,13 @@ public class ApiController {
 	}
 
 	@ResponseBody
-	@RequestMapping({ "/test" })
-	public GenericJsonResponse<Box> test() {
-		GenericJsonResponse<Box> jsonResponse;
-		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
-		
-		DeliveryMain deliveryMain = deliveryMainRepository.findOneByCode("20190528182947786989");
-		if (deliveryMain == null) {
-			jsonResponse.setErrmsg("找不到发货单");
-			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
-			return jsonResponse;
-		}
-		
-		RestApiResponse u8Response = postForArrivalVouch(deliveryMain);
-		
-		if (!u8Response.isSuccess()) {
-			jsonResponse.setErrmsg("Fail");
-			jsonResponse.setSuccess(GenericJsonResponse.FAILED);
-		}
-		
-		return jsonResponse;
-	}
-
-
-	
-	@ResponseBody
 	@RequestMapping({ "/pda" })
 	public Map<String, Object> pda(@RequestBody Map<String, Object> requestParams) {
 		String method = String.valueOf(requestParams.get("method"));
 		Object content = requestParams.get("content");
+		
+		logger.info("=========/api/pda============");
+		logger.info("<<< " + Utils.convertMapToJson(requestParams));
 		
 		Map<String, Object> response = null;
 		
@@ -248,6 +230,7 @@ public class ApiController {
 			response = this.cancelDHD(requestParams);
 		}
 		
+		logger.info(">>> " + Utils.convertMapToJson(response));
 		return response;
 	}
 	
@@ -850,5 +833,234 @@ public class ApiController {
 			return response;
 		}
 		
+	}
+	
+	@ResponseBody
+	@RequestMapping({ "/statement/all" })
+	public GenericJsonResponse<String> statement() {
+		if (!isAutoTaskStartTime()) {
+			return new GenericJsonResponse<>(GenericJsonResponse.FAILED, "没有到时间", null);
+		} else {
+			logger.info("========/statement/all ==========");
+			logger.info("自动运行对账单生成");
+			return statement(null, null);	
+		}
+		
+	}
+	
+	@ResponseBody
+	@RequestMapping({ "/statement/{date}" })
+	public GenericJsonResponse<String> statementForAccount(@PathVariable("date") String date) {
+		Account loginAccount = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null) {
+			loginAccount = accountRepository.findOneByUsername(authentication.getName());	
+		}	
+		
+		GenericJsonResponse<String> response = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);
+		if (loginAccount == null) {
+			response = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "没有权限", null);
+		} else {
+			response = statement(date, loginAccount);
+		}
+		return response;		
+	}
+	
+	private GenericJsonResponse<String> statement(String dateStr, Account loginAccount) {			
+		
+		String actionName = dateStr==null?"自动批量生成":"手动批量生成";
+		Date statementDate;
+		if (dateStr == null) {
+			Master master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
+			if (master == null) {
+				master = new Master();	
+				master.setItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
+				master.setItemValue(Constants.DEFAULT_STATEMENT_DATE);
+				masterRepository.save(master);
+			}
+			
+			statementDate = Utils.getStatementDate(master.getItemValue());	
+		} else {
+			statementDate = Utils.parseDate(dateStr);
+		}
+		
+		Date filterDate = Utils.getNextDate(statementDate);		
+		
+		List<StatementPendingItem> pendingDataList = this.statementDetailRepository.findAllPendingData(filterDate);
+		List<StatementPendingItem> filteredList = new ArrayList<StatementPendingItem>();
+		if (loginAccount != null) {
+			AccountPermission accountPermission = getPermissionScopeOfStatement(loginAccount.getId());	
+			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
+				for (StatementPendingItem item : pendingDataList) {
+					if (allowedCompanyIdList.contains(item.getCompany_id())) {
+						filteredList.add(item);
+					}
+				}
+				pendingDataList = filteredList;
+			}
+
+			List<String> allowedVendorCodeList = accountPermission.getVendorList();
+			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
+				filteredList = new ArrayList<StatementPendingItem>();
+				for (StatementPendingItem item : pendingDataList) {
+					if (allowedVendorCodeList.contains(item.getVendor_code())) {
+						filteredList.add(item);
+					}
+				}
+				pendingDataList = filteredList;
+			}
+		} else {
+			loginAccount = accountRepository.findOneByRole("ROLE_ADMIN");
+		}
+		
+		Task task = new Task();
+		task.setStatementDate(statementDate);
+		task.setMakeDate(new Date());
+		task.setMaker(loginAccount);
+		task = taskRepository.save(task);
+		
+		StatementMain main;
+		
+		for (StatementPendingItem item : pendingDataList) {
+			String vendorCode = item.getVendor_code();
+			String companyCode = item.getCompany_code();
+			String type = item.getType();
+			
+			main = generateStatementMain(statementDate, vendorCode, companyCode, type, task);
+			generateStatementDetails(main);
+			saveTaskLog(main, task);
+			saveOperationHistory(main, actionName);			
+		}
+		
+		GenericJsonResponse<String> response = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);	
+		
+		
+		return response;
+	}
+	
+	private StatementMain generateStatementMain(Date statementDate, String vendorCode, String companyCode, String type, Task task) {
+		StatementMain main = new StatementMain();		
+		
+		Integer statementType = "普通采购".equalsIgnoreCase(type)? Constants.STATEMENT_TYPE_BASIC : Constants.STATEMENT_TYPE_WEIWAI;
+		Vendor vendor = vendorRepository.findOneByCode(vendorCode);
+		Company company = companyRepository.findOneByCode(companyCode);
+		
+		main.setDate(statementDate);
+		main.setVendor(vendor);
+		main.setCompany(company);
+		main.setType(statementType);
+		main.setTaskCode(task.getCode());
+		main.setMakeDate(new Date());
+		main.setState(Constants.STATEMENT_STATE_NEW);
+		main.setMaker(task.getMaker());
+		main = statementMainRepository.save(main);
+		return main;
+	}
+	
+	private void generateStatementDetails(StatementMain main) {
+		String vendorCode = main.getVendor().getCode();
+		String companyCode = main.getCompany().getCode();
+		String type = main.getType() == 1 ? "普通采购":"委外加工";
+		Date filterDate = Utils.getNextDate(main.getDate());
+		
+		List<StatementPendingDetail> pendingDetailList = this.statementDetailRepository.findAllPendingDetail(vendorCode, companyCode, type, filterDate);
+		int index = 1;
+		double costSum = 0, taxCostSum = 0, taxSum = 0;
+		for (StatementPendingDetail detail : pendingDetailList) {
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getId());
+			if (purchaseInDetail.getState() != Constants.PURCHASE_IN_STATE_WAIT) {
+				this.logger.info(String.format("Details continue=> %s %s", detail.getId(), detail.getCode()));
+				continue;
+			}			
+			costSum += purchaseInDetail.getCost();
+			taxCostSum += purchaseInDetail.getTaxCost();
+			
+			purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);	
+			purchaseInDetailRepository.save(purchaseInDetail);
+			
+			StatementDetail statementDetail = new StatementDetail();
+			statementDetail.setCode(main.getCode());
+			statementDetail.setPiDetailId(detail.getId());
+			statementDetail.setRowNo(index++);
+			statementDetail.setAdjustTaxCost(0D);
+			statementDetailRepository.save(statementDetail);
+		}
+		
+		taxSum = taxCostSum - costSum;
+		
+		main.setCostSum(costSum);
+		main.setTaxCostSum(taxCostSum);
+		main.setTaxSum(taxSum);
+		main.setAdjustCostSum(0D);
+		main = statementMainRepository.save(main);
+	}
+	
+	private TaskLog saveTaskLog(StatementMain main, Task task) {
+		TaskLog taskLog = new TaskLog();
+		taskLog.setTask(task);
+		taskLog.setVendor(main.getVendor());
+		taskLog.setCreateDate(main.getMakeDate());
+		taskLog.setStatement(main);
+		taskLog.setState(1);
+		
+		taskLog = taskLogRepository.save(taskLog);
+		return taskLog;
+	}
+	
+	private void saveOperationHistory(StatementMain main, String actionName) {
+		OperationHistory operationHistory = new OperationHistory();
+		operationHistory.setTargetId(main.getCode());
+		operationHistory.setTargetType("statement");
+		operationHistory.setAction(actionName);
+		operationHistory.setAccount(main.getMaker());
+
+		operationHistory = operationHistoryRepository.save(operationHistory);
+	}
+	
+	private AccountPermission getPermissionScopeOfStatement(Long accountId) {
+		Long STATEMENT_LIST_FUNCTION_ACTION_ID = 21L;
+		
+		List<DimensionTargetItem> scopeList = permissionGroupRepository.findPermissionScopeOf(accountId, STATEMENT_LIST_FUNCTION_ACTION_ID);
+		AccountPermission accountPermission = new AccountPermission(accountId, STATEMENT_LIST_FUNCTION_ACTION_ID, scopeList);
+		return accountPermission;
+	}
+	
+
+	private boolean isAutoTaskStartTime() {
+		String dateStr, timeStr;
+		Master master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_START_DATE);
+		if (master == null) {
+			master = new Master();	
+			master.setItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
+			master.setItemValue(Constants.DEFAULT_STATEMENT_DATE);
+			masterRepository.save(master);
+		}
+		dateStr = master.getItemValue();
+		
+		master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_START_TIME);
+		if (master == null) {
+			master = new Master();	
+			master.setItemKey(Constants.KEY_AUTO_TASK_START_TIME);
+			master.setItemValue(Constants.DEFAULT_STATEMENT_TIME);
+			masterRepository.save(master);
+		}
+
+		timeStr = master.getItemValue();
+		
+		Date today = new Date();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+		String yearMonthStr = dateFormat.format(today);
+		String startDateStr = yearMonthStr + "-" + dateStr + " " + timeStr + ":00";
+		Date startDate = Utils.parseDateTime(startDateStr);
+		
+		String startTime = Utils.formatStatementDateTime(startDate);
+		String todayTime = Utils.formatStatementDateTime(today);
+		
+		if (startTime.equalsIgnoreCase(todayTime)) {
+			return true;
+		} else {
+			return false;
+		}		
 	}
 }

@@ -16,6 +16,7 @@ import org.hibernate.annotations.NotFoundAction;
 import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.srm.platform.vendor.utility.Constants;
 
 @Entity
 
@@ -61,14 +62,7 @@ public class PurchaseOrderDetail {
 
 	private Double money;
 	private Double sum;
-	@JsonProperty(value = "nat_price")
-	private Double natPrice;
-	@JsonProperty(value = "nat_tax_price")
-	private Double natTaxPrice;
-	@JsonProperty(value = "nat_money")
-	private Double natMoney;
-	@JsonProperty(value = "nat_sum")
-	private Double natSum;
+
 	@JsonProperty(value = "prepay_money")
 	private Double prepayMoney;
 	@JsonProperty(value = "arrive_date")
@@ -118,8 +112,43 @@ public class PurchaseOrderDetail {
 	@JsonProperty(value = "confirmed_date")
 	private Date confirmedDate;
 
+	
+	@JsonProperty("contract_code")
+	private String contractCode;
+	
+	@JsonProperty("base_price")
+	private Double basePrice;
+	
+	@JsonProperty("price_from")
+	private Integer priceFrom = Constants.PURCHASE_ORDER_PRICE_FROM_EMPTY;
+	
+	
 	public PurchaseOrderDetail() {
 
+	}
+
+	public Integer getPriceFrom() {
+		return priceFrom;
+	}
+
+	public void setPriceFrom(Integer priceFrom) {
+		this.priceFrom = priceFrom;
+	}
+
+	public String getContractCode() {
+		return contractCode;
+	}
+
+	public void setContractCode(String contractCode) {
+		this.contractCode = contractCode;
+	}
+
+	public Double getBasePrice() {
+		return basePrice;
+	}
+
+	public void setBasePrice(Double basePrice) {
+		this.basePrice = basePrice;
 	}
 
 	public Inventory getInventory() {
@@ -328,38 +357,6 @@ public class PurchaseOrderDetail {
 
 	public void setTaxPrice(Double taxPrice) {
 		this.taxPrice = taxPrice;
-	}
-
-	public Double getNatPrice() {
-		return natPrice;
-	}
-
-	public void setNatPrice(Double natPrice) {
-		this.natPrice = natPrice;
-	}
-
-	public Double getNatTaxPrice() {
-		return natTaxPrice;
-	}
-
-	public void setNatTaxPrice(Double natTaxPrice) {
-		this.natTaxPrice = natTaxPrice;
-	}
-
-	public Double getNatMoney() {
-		return natMoney;
-	}
-
-	public void setNatMoney(Double natMoney) {
-		this.natMoney = natMoney;
-	}
-
-	public Double getNatSum() {
-		return natSum;
-	}
-
-	public void setNatSum(Double natSum) {
-		this.natSum = natSum;
 	}
 
 	public Double getPrepayMoney() {

@@ -31,14 +31,6 @@ public class AccountController extends CommonController {
 		return true;
 	}
 
-	@ResponseBody
-	@RequestMapping(value = "/company/list", produces = "application/json")
-	public Page<SearchItem> company_list(@RequestParam(value = "q") String search) {
-		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
-		return companyRepository.findForSelect(request);
-
-	}
-
 	// 用户修改
 	@Transactional
 	@GetMapping("/checkuser")

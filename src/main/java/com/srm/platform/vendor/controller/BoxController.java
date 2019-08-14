@@ -36,7 +36,7 @@ import com.srm.platform.vendor.utility.Utils;
 // 供应商管理
 @Controller
 @RequestMapping(path = "/box")
-// @PreAuthorize("hasAuthority('供应商管理-查看列表')")
+
 @PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('箱码管理-查看列表')")
 public class BoxController extends CommonController {
 

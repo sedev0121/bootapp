@@ -35,19 +35,19 @@ import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.searchitem.InquerySearchResult;
 import com.srm.platform.vendor.searchitem.PurchaseInDetailItem;
 import com.srm.platform.vendor.searchitem.PurchaseInDetailResult;
+import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/purchasein")
-@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('出入库单据-查看列表')")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('订单管理-查看列表')")
 public class PurchaseInController extends CommonController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	private static Long LIST_FUNCTION_ACTION_ID = 14L;
+	
 	@PersistenceContext
 	private EntityManager em;
-
-
-
 
 	// 查询列表
 	@GetMapping({ "/", "" })
@@ -75,6 +75,8 @@ public class PurchaseInController extends CommonController {
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String vendor = requestParams.getOrDefault("vendor", "");
 		String code = requestParams.getOrDefault("code", "");
+		String companyIdStr = requestParams.getOrDefault("company", "-1");
+		String storeIdStr = requestParams.getOrDefault("store", "-1");
 		String inventory = requestParams.getOrDefault("inventory", "");
 		String start_date = requestParams.getOrDefault("start_date", null);
 		String end_date = requestParams.getOrDefault("end_date", null);
@@ -93,44 +95,51 @@ public class PurchaseInController extends CommonController {
 		case "vendorcode":
 			order = "v.code";
 			break;
-		case "inventorycode":
-			order = "c.code";
-			break;
-		case "inventoryname":
-			order = "c.name";
-			break;
 		case "specs":
 			order = "c.specs";
 			break;
 		case "unitname":
-			order = "m.name";
-			break;
-		case "mainmemo":
-			order = "b.memo";
+			order = "c.main_measure";
 			break;
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, m.name unitname, b.date, b.verify_date, c.name inventoryname,c.specs, v.name vendorname, v.code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
+		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
+				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, po.confirmed_memo confirmed_memo, dd.delivered_quantity ";
 		String countQuery = "select count(a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventory_code=c.code "
-				+ "left join measurement_unit m on c.main_measure=m.code left join vendor v on b.vendor_code=v.code  "
-				+ "where v.code in :vendorList ";
+		String bodyQuery = "from purchase_in_detail a "
+				+ "left join purchase_in_main b on a.code=b.code "
+				+ "left join inventory c on a.inventory_code=c.code "
+				+ "left join purchase_order_detail po on a.po_code=po.code and a.po_row_no=po.row_no "
+				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
+				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
+				+ "left join vendor v on b.vendor_code=v.code where 1=1 ";
 
 		Map<String, Object> params = new HashMap<>();
 
-//		List<String> vendorList = this.getVendorListOfUser();
-//		
-//		if (vendorList.size() == 0) {
-//			return new PageImpl<PurchaseInDetailResult>(new ArrayList(), request, 0);
-//		}
-//		
-//		params.put("vendorList", vendorList);
+		if (isVendor()) {
+			Vendor vendorObj = this.getLoginAccount().getVendor();
+			String vendorStr = vendor == null ? "0" : vendorObj.getCode();
+			bodyQuery += " and v.code= :vendor";
+			params.put("vendor", vendorStr);
 
+		} else {
+			String subWhere = " 1=0 ";
+			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			List<String> allowedVendorCodeList = accountPermission.getVendorList();
+			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
+				subWhere += " or v.code in :vendorList";
+				params.put("vendorList", allowedVendorCodeList);
+			}						
+			
+			bodyQuery += " and (" + subWhere + ") ";
+
+		}
+		
 		if (!inventory.trim().isEmpty()) {
 			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
 			params.put("inventory", inventory.trim());
@@ -161,7 +170,19 @@ public class PurchaseInController extends CommonController {
 			bodyQuery += " and a.state=:state";
 			params.put("state", state);
 		}
+		
 
+		Long companyId = Long.valueOf(companyIdStr);
+		if (companyId >= 0) {
+			bodyQuery += " and b.company_code=:company";
+			params.put("company", companyId);
+		}
+
+		Long storeId = Long.valueOf(storeIdStr);
+		if (storeId >= 0) {
+			bodyQuery += " and b.store_code=:store";
+			params.put("store", storeId);
+		}
 		countQuery += bodyQuery;
 		Query q = em.createNativeQuery(countQuery);
 
@@ -196,11 +217,14 @@ public class PurchaseInController extends CommonController {
 		String order = requestParams.getOrDefault("order", "code");
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String vendor = requestParams.getOrDefault("vendor", "");
+		String company = requestParams.getOrDefault("company", "");
 		String code = requestParams.getOrDefault("code", "");
 		String type = requestParams.getOrDefault("type", "普通采购");
+		String statementDateStr = requestParams.getOrDefault("statement_date", null);
 		String dateStr = requestParams.getOrDefault("date", null);
 		String inventory = requestParams.getOrDefault("inventory", "");
 
+		Date statementDate = Utils.getNextDate(statementDateStr);
 		Date date = Utils.parseDate(dateStr);
 
 		switch (order) {
@@ -220,26 +244,33 @@ public class PurchaseInController extends CommonController {
 			order = "c.specs";
 			break;
 		case "unitname":
-			order = "m.name";
+			order = "c.main_measure";
 			break;
 		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, m.name unitname, b.date, b.verify_date, c.name inventoryname,c.specs, null vendorname, vendor_code vendorcode, b.type, b.bredvouch, b.memo mainmemo ";
+		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
+				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, po.confirmed_memo confirmed_memo, dd.delivered_quantity ";
+		
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join inventory c on a.inventory_code=c.code "
-				+ "left join measurement_unit m on c.main_measure=m.code "
-				+ "where a.state=0 and type=:type and b.vendor_code=:vendor ";
+		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code "
+				+ "left join inventory c on a.inventory_code=c.code "
+				+ "left join purchase_order_detail po on a.po_code=po.code and a.po_row_no=po.row_no "
+				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
+				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
+				+ "left join vendor v on b.vendor_code=v.code where a.state=0 and type=:type and b.vendor_code=:vendor and com.id=:company and b.date<:statementDate ";
 
 		Map<String, Object> params = new HashMap<>();
 
 		params.put("vendor", vendor);
+		params.put("company", company);
 		params.put("type", type);
-
+		params.put("statementDate", statementDate);
+		
 		if (!inventory.trim().isEmpty()) {
 			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
 			params.put("inventory", inventory.trim());
@@ -249,7 +280,7 @@ public class PurchaseInController extends CommonController {
 			bodyQuery += " and a.code like CONCAT('%',:code, '%')";
 			params.put("code", code);
 		}
-
+		
 		if (date != null) {
 			bodyQuery += " and b.date=:date";
 			params.put("date", date);

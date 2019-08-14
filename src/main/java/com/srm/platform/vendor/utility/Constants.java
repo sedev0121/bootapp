@@ -2,6 +2,10 @@ package com.srm.platform.vendor.utility;
 
 public class Constants {
 
+	public final static String ATTACH_TYPE_STATEMENT = "statement";
+	public final static String ATTACH_TYPE_INQUERY = "inquery";
+	
+	
 	public final static int STATE_NEW = 1;
 	public final static int STATE_SUBMIT = 2;
 	public final static int STATE_CONFIRM = 3;
@@ -28,15 +32,26 @@ public class Constants {
 	public final static int PURCHASE_IN_STATE_WAIT = 0;
 	public final static int PURCHASE_IN_STATE_START = 1;
 	public final static int PURCHASE_IN_STATE_FINISH = 2;
+	
+	public final static int PURCHASE_ORDER_PRICE_FROM_EMPTY = 0;
+	public final static int PURCHASE_ORDER_PRICE_FROM_CONTRACT = 1;
 
-	public final static int STATEMENT_STATE_NEW = 1;
-	public final static int STATEMENT_STATE_SUBMIT = 2;
-	public final static int STATEMENT_STATE_REVIEW = 3;
-	public final static int STATEMENT_STATE_CANCEL = 4;
-	public final static int STATEMENT_STATE_CONFIRM = 5;
-	public final static int STATEMENT_STATE_INVOICE_PUBLISH = 6;
-	public final static int STATEMENT_STATE_INVOICE_CANCEL = 7;
-
+	public final static int STATEMENT_STATE_NEW = 1; //采购新建
+	public final static int STATEMENT_STATE_SUBMIT = 2; //采购提交
+	public final static int STATEMENT_STATE_REVIEW = 3; //采购审核
+	public final static int STATEMENT_STATE_DEPLOY = 4; //采购发布
+	public final static int STATEMENT_STATE_CANCEL = 5; //采购撤回
+	public final static int STATEMENT_STATE_CONFIRM = 6; //供应商确认
+	public final static int STATEMENT_STATE_DENY = 7; //供应商退回
+	public final static int STATEMENT_STATE_CANCEL_CONFIRM = 8; //供应商确认取消
+	
+	public final static int INVOICE_STATE_NONE = 0; //未开发票
+	public final static int INVOICE_STATE_DONE = 1; //供应商已开发票
+	public final static int INVOICE_STATE_CONFIRMED = 2; //采购发票已审核
+	public final static int INVOICE_STATE_CANCELED = 3; //采购发票已退回
+	public final static int INVOICE_STATE_UPLOAD_ERP = 4; //采购已传递ERP
+	public final static int INVOICE_STATE_CANCEL_UPLOAD = 5; //采购审批撤消
+	
 	public final static int NOTICE_TYPE_USER = 1;
 	public final static int NOTICE_TYPE_SYSTEM = 2;
 	public final static int NOTICE_TYPE_ALERT = 3;
@@ -46,21 +61,38 @@ public class Constants {
 	public final static int NOTICE_STATE_PUBLISH = 3;
 	public final static int NOTICE_STATE_CANCEL = 4;
 
-	public final static int STATEMENT_DETAIL_TYPE_BASIC = 1;
-	public final static int STATEMENT_DETAIL_TYPE_WEIWAI = 2;
+	public final static int STATEMENT_TYPE_BASIC = 1;
+	public final static int STATEMENT_TYPE_WEIWAI = 2;
 
 	public final static String KEY_DEFAULT_UNIT_LIST = "my_unit_list";
 
+	public final static int CONTRACT_STATE_NEW = 1; //新建
+	public final static int CONTRACT_STATE_SUBMIT = 2; //提交
+	public final static int CONTRACT_STATE_REVIEW = 3; //审核
+	public final static int CONTRACT_STATE_STOP = 4; //终止
+	
+	public final static int CONTRACT_TYPE_YES = 1;
+	public final static int CONTRACT_TYPE_NO = 2;
+	
+	public final static int CONTRACT_KIND_CAIGOU = 1;
+	public final static int CONTRACT_KIND_JIAGONG = 2;
+	public final static int CONTRACT_KIND_ZULIN = 3;
+	public final static int CONTRACT_KIND_WEIBAO = 4;
+	
+	public final static int CONTRACT_PRICE_TYPE_FLOATING = 1;
+	public final static int CONTRACT_PRICE_TYPE_FIXED = 2;
+	
+	public final static int CONTRACT_QUANTITY_TYPE_NO = 1;
+	public final static int CONTRACT_QUANTITY_TYPE_YES = 2;
 
 	public final static String PATH_UPLOADS_SHIP = "ship";
 	public final static String PATH_UPLOADS_NOTICE = "notice";
 	public final static String PATH_UPLOADS_STATEMENT = "statement";
 	public final static String PATH_UPLOADS_INQUERY = "inquery";
 	
-	public final static String KEY_SYNC_INVENTORY = "last_sync_inventory_date";
-	public final static String KEY_SYNC_PURCHASE_IN = "last_sync_purchase_in_date";
-	public final static String KEY_SYNC_VENDOR = "last_sync_vendor_date";
-	public final static String KEY_SYNC_PURCHASE_ORDER = "last_sync_purchase_order_date";
+	public final static String KEY_AUTO_TASK_STATEMENT_DATE = "auto_task_statement_date";
+	public final static String KEY_AUTO_TASK_START_DATE = "auto_task_start_date";
+	public final static String KEY_AUTO_TASK_START_TIME = "auto_task_start_time";
 	
 	public final static int PERMISSION_DIMENSION_COMPANY = 1;
 	public final static int PERMISSION_DIMENSION_ACCOUNT = 2;
@@ -93,12 +125,6 @@ public class Constants {
 	
 	public final static double DEFAULT_TAX_RATE = 13;
 	
-	public final static int NEGOTIATION_STATE_NEW = 1;
-	public final static int NEGOTIATION_STATE_SUBMIT = 2;
-	public final static int NEGOTIATION_STATE_CONFIRM = 3;
-	public final static int NEGOTIATION_STATE_CANCEL = 4;
-	public final static int NEGOTIATION_STATE_DONE = 5;
-	
 	public final static int BOX_TYPE_DELIVERY = 1;
 	public final static int BOX_TYPE_DIAOBO = 2;
 	
@@ -107,6 +133,9 @@ public class Constants {
 	
 	public final static String DEFAULT_SECOND_PASSWORD = "123";
 	
-	public final static String VERSION = "20190730-2";
+	public final static String VERSION = "srm_v32_20190807";
+	
+	public final static String DEFAULT_STATEMENT_DATE = "25";
+	public final static String DEFAULT_STATEMENT_TIME = "09:00";
 	
 }

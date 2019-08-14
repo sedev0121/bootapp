@@ -1,6 +1,9 @@
 package com.srm.platform.vendor.searchitem;
 
 import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PurchaseInDetailResult implements Serializable {
 
@@ -13,9 +16,10 @@ public class PurchaseInDetailResult implements Serializable {
 	String date;
 	String verify_date;
 
+	@JsonProperty("row_no")
 	Integer rowno;
 
-	String inventoryname;
+	String inventory_name;
 
 	String inventory_code;
 
@@ -37,13 +41,9 @@ public class PurchaseInDetailResult implements Serializable {
 
 	String tax_cost;
 
-	String memo;
+	@JsonProperty("confirmed_memo")
+	String confirmedMemo;
 
-	String nat_tax_price;
-
-	String material_quantity;
-
-	String material_tax_price;
 
 	String vendorcode;
 	String vendorname;
@@ -51,61 +51,140 @@ public class PurchaseInDetailResult implements Serializable {
 	String bredvouch;
 	String mainmemo;
 
+	@JsonProperty("po_code")
 	String poCode;
-	String natPrice;
-	String natTaxRate;
+	
+	@JsonProperty("po_row_no")
+	Integer poRowNo;
+	
+	@JsonProperty("delivery_code")
+	String deliveryCode;
+	
+	@JsonProperty("delivery_row_no")
+	Integer deliveryRowNo;
+	
+	@JsonProperty("delivered_quantity")
+	String deliveredQuantity;
 
+	@JsonProperty("company_name")
+	String companyName;
+	
+	@JsonProperty("store_name")
+	String storeName;
+	
+	@JsonProperty("sync_date")
+	Date syncDate;
+	
 	public PurchaseInDetailResult(String id, String code, String date, String verify_date,Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
-			String tax_price, String tax_rate, String tax_cost, String memo, String nat_tax_price,
-			String material_quantity, String material_tax_price, String vendorname, String vendorcode, String type,
-			String bredvouch, String mainmemo, String state, String poCode, String natPrice, String natTaxRate) {
+			String tax_price, String tax_rate, String tax_cost, String confirmedMemo, String vendorname, String vendorcode, String type,
+			String bredvouch, String state, String poCode, Integer poRowNo, String deliveryCode, Integer deliveryRowNo, 
+			String deliveredQuantity, String companyName, String storeName, Date syncDate) {
 
 		this.id = id;
 		this.code = code;
 		this.date = date;
 		this.verify_date = verify_date;
 		this.rowno = rowno;
-		this.inventoryname = inventoryname;
+		this.inventory_name = inventoryname;
 		this.inventory_code = inventorycode;
 		this.specs = specs;
 		this.unitname = unitname;
 		this.quantity = quantity;
 		this.price = price;
 		this.cost = cost;
-		this.memo = memo;
+		this.confirmedMemo = confirmedMemo;
 
 		this.tax_price = tax_price;
 		this.tax_cost = tax_cost;
 		this.tax_rate = tax_rate;
 
-		this.nat_tax_price = nat_tax_price;
-		this.material_quantity = material_quantity;
-		this.material_tax_price = material_tax_price;
-
 		this.vendorcode = vendorcode;
 		this.vendorname = vendorname;
 		this.type = type;
 		this.bredvouch = bredvouch;
-		this.mainmemo = mainmemo;
+		
 		this.state = state;
 
 		this.poCode = poCode;
-		this.natPrice = natPrice;
-		this.natTaxRate = natTaxRate;
+		this.poRowNo = poRowNo;
+		this.deliveryCode = deliveryCode;
+		this.deliveryRowNo = deliveryRowNo;
+		this.deliveredQuantity = deliveredQuantity;
+		
+		this.companyName = companyName;
+		this.storeName = storeName;
+		this.syncDate = syncDate;
+		
 	}
 
-	
-	
+	public Date getSyncDate() {
+		return syncDate;
+	}
+
+	public void setSyncDate(Date syncDate) {
+		this.syncDate = syncDate;
+	}
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
+	public String getStoreName() {
+		return storeName;
+	}
+
+	public void setStoreName(String storeName) {
+		this.storeName = storeName;
+	}
+
+	public String getDeliveredQuantity() {
+		return deliveredQuantity;
+	}
+
+	public void setConfirmedMemo(String confirmedMemo) {
+		this.confirmedMemo = confirmedMemo;
+	}
+
+	public Integer getPoRowNo() {
+		return poRowNo;
+	}
+
+	public void setPoRowNo(Integer poRowNo) {
+		this.poRowNo = poRowNo;
+	}
+
+	public String getDeliveryCode() {
+		return deliveryCode;
+	}
+
+	public void setDeliveryCode(String deliveryCode) {
+		this.deliveryCode = deliveryCode;
+	}
+
+	public Integer getDeliveryRowNo() {
+		return deliveryRowNo;
+	}
+
+	public void setDeliveryRowNo(Integer deliveryRowNo) {
+		this.deliveryRowNo = deliveryRowNo;
+	}
+
+	public void setDeliveredQuantity(String deliveredQuantity) {
+		this.deliveredQuantity = deliveredQuantity;
+	}
+
 	public String getVerify_date() {
 		return verify_date;
 	}
-
-
+	
 	public void setVerify_date(String verify_date) {
 		this.verify_date = verify_date;
 	}
-
 
 	public String getId() {
 		return id;
@@ -115,28 +194,8 @@ public class PurchaseInDetailResult implements Serializable {
 		this.id = id;
 	}
 
-	public String getPo_code() {
-		return poCode;
-	}
-
 	public void setPoCode(String poCode) {
 		this.poCode = poCode;
-	}
-
-	public String getNat_price() {
-		return natPrice;
-	}
-
-	public void setNatPrice(String natPrice) {
-		this.natPrice = natPrice;
-	}
-
-	public String getNat_tax_rate() {
-		return natTaxRate;
-	}
-
-	public void setNatTaxRate(String natTaxRate) {
-		this.natTaxRate = natTaxRate;
 	}
 
 	public String getPoCode() {
@@ -213,31 +272,7 @@ public class PurchaseInDetailResult implements Serializable {
 
 	public void setInventory_code(String inventory_code) {
 		this.inventory_code = inventory_code;
-	}
-
-	public String getNat_tax_price() {
-		return nat_tax_price;
-	}
-
-	public void setNat_tax_price(String nat_tax_price) {
-		this.nat_tax_price = nat_tax_price;
-	}
-
-	public String getMaterial_quantity() {
-		return material_quantity;
-	}
-
-	public void setMaterial_quantity(String material_quantity) {
-		this.material_quantity = material_quantity;
-	}
-
-	public String getMaterial_tax_price() {
-		return material_tax_price;
-	}
-
-	public void setMaterial_tax_price(String material_tax_price) {
-		this.material_tax_price = material_tax_price;
-	}
+	}	
 
 	public Integer getRowno() {
 		return rowno;
@@ -247,20 +282,12 @@ public class PurchaseInDetailResult implements Serializable {
 		this.rowno = rowno;
 	}
 
-	public String getInventoryname() {
-		return inventoryname;
+	public String getInventory_name() {
+		return inventory_name;
 	}
 
-	public void setInventoryname(String inventoryname) {
-		this.inventoryname = inventoryname;
-	}
-
-	public String getInventorycode() {
-		return inventory_code;
-	}
-
-	public void setInventorycode(String inventorycode) {
-		this.inventory_code = inventorycode;
+	public void setInventory_name(String inventoryname) {
+		this.inventory_name = inventoryname;
 	}
 
 	public String getSpecs() {
@@ -327,12 +354,12 @@ public class PurchaseInDetailResult implements Serializable {
 		this.tax_cost = tax_cost;
 	}
 
-	public String getMemo() {
-		return memo;
+	public String getConfirmedMemo() {
+		return confirmedMemo;
 	}
 
-	public void setMemo(String memo) {
-		this.memo = memo;
+	public void setMemo(String confirmedMemo) {
+		this.confirmedMemo = confirmedMemo;
 	}
 
 }

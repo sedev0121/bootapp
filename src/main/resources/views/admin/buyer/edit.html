@@ -123,11 +123,10 @@
   var checkuser_url = /*[[@{/buyer/checkuser/}]]*/'';
   var checkemail_url = /*[[@{/profile/checkemail}]]*/'';
   var checkmobile_url = /*[[@{/profile/checkmobile}]]*/'';
-  var checkweixin_url = /*[[@{/profile/checkweixin}]]*/'';
   var perm_search_url = /*[[@{/permission_group/search}]]*/'';
   var scope_list = [[${permission_scope}]];
   
-  var company_search_url = /*[[@{/buyer/company/list}]]*/'';
+  var company_search_url = /*[[@{/company/search}]]*/'';
   
   const SCOPE_COMPANY = 1;
   const SCOPE_ACCOUNT = 2;
@@ -200,7 +199,6 @@
 			  $('#unit_name').prop('disabled', true);
 			  $('#form').validate().settings.rules.email.required = true;
 			  $('#form').validate().settings.rules.mobile.required = true;
-			  $('#form').validate().settings.rules.weixin.required = true;
 		  } else {
 			  $('#username').prop('readonly', false);
 			  $('#realname').prop('readonly', false);
@@ -208,7 +206,6 @@
 			  $('#unit_name').prop('disabled', false);
 			  $('#form').validate().settings.rules.email.required = false;
 			  $('#form').validate().settings.rules.mobile.required = false;
-			  $('#form').validate().settings.rules.weixin.required = false;
 
 		  }
 	  }

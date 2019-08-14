@@ -32,6 +32,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.GenericJsonResponse;
 
 @Component
 @ComponentScan(basePackageClasses = AppProperties.class)
@@ -97,12 +98,37 @@ public class RestApiClient {
 		return postForData("SRM_pomo", "pomo");
 	}
 	
+	public RestApiResponse postForPurchaseIn() {
+		return postForData("SRM_rdrecord01", "batch_get");
+	}
+	
 	public RestApiResponse postConfirmForOrder(List<String> pocodes, List<String> mocodes) {
 		Map<String, List<String>> content = new HashMap<>();
 		content.put("pocodes", pocodes);
 		content.put("mocodes", mocodes);
 		
 		return postForConfirm("SRM_pomo", content);
+	}
+	
+	public RestApiResponse postConfirmForPurchaseIn(List<String> codes) {
+		
+		if (Constants.TEST) {
+			return null;
+		}
+		
+		String url = appProperties.getData_url();
+
+		Map<String, Object> postData = new HashMap<>();
+
+		Map<String, Object> content = new HashMap<>();
+		content.put("AutoIDs", codes);
+
+		postData.put("classname", "SRM_rdrecord01");
+		postData.put("method", "feedback");
+		postData.put("content", content);
+
+		return post(url, postData, null, true);
+		
 	}
 	
 	public RestApiResponse postForArrivalVouch(Map<String, Object> content) {
@@ -116,6 +142,18 @@ public class RestApiClient {
 
 		return post(url, postData, null, true);
 		
+	}
+	
+	public RestApiResponse postForU8Iinvoice(Map<String, Object> content) {
+		
+		String url = appProperties.getData_url();
+
+		Map<String, Object> postData = new HashMap<>();
+		postData.put("classname", "SRM_PurBillVouch");
+		postData.put("method", "createPurBillVouch");
+		postData.put("content", content);
+
+		return post(url, postData, null, true);
 	}
 	
 	public RestApiResponse getBoxMsg(Map<String, String> content) {

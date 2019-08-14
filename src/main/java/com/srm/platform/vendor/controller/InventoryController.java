@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -21,18 +20,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.srm.platform.vendor.model.Box;
 import com.srm.platform.vendor.model.Inventory;
-import com.srm.platform.vendor.repository.InventoryRepository;
-import com.srm.platform.vendor.searchitem.InventorySearchItem;
-import com.srm.platform.vendor.utility.AccountPermission;
+import com.srm.platform.vendor.searchitem.InventoryCheckItem;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
-import com.srm.platform.vendor.utility.Utils;
 
 //商品档案表
 @Controller
 @RequestMapping(path = "/inventory")
-@PreAuthorize("hasAuthority('基础资料-查看列表')")
 public class InventoryController extends CommonController {
 
 	@PersistenceContext
@@ -40,11 +34,13 @@ public class InventoryController extends CommonController {
 
 
 	@GetMapping({ "/", "" })
+	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	public String index() {
 		return "inventory/index";
 	}
 
 	@GetMapping("/{code}/edit")
+	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	public String edit(@PathVariable("code") String code, Model model) {
 		Inventory main = inventoryRepository.findOneByCode(code);
 		if (main == null)
@@ -80,13 +76,14 @@ public class InventoryController extends CommonController {
 			result = inventoryRepository.findBySearchTerm(inventory, inventoryClass, request);
 		} else {
 			result = inventoryRepository.findBySearchTerm(inventory, inventoryClass, boxClass, request);	
-		}
-		
+		}		
 
 		return result;
 	}
 	
+	
 	@Transactional
+	@PreAuthorize("hasAuthority('基础资料-查看列表')")
 	@PostMapping("/update")
 	public @ResponseBody GenericJsonResponse<Inventory> update_ajax(@RequestParam Map<String, String> requestParams) {
 
@@ -111,6 +108,16 @@ public class InventoryController extends CommonController {
 		}		
 
 		return jsonResponse;
+	}
+	
+	@RequestMapping(value = "/check", produces = "application/json")
+	public @ResponseBody List<InventoryCheckItem> check(@RequestParam Map<String, String> requestParams) {
+		
+		String inventoryStr = requestParams.get("codeList");
+		String[] inventoryList = inventoryStr.split(",");
+		List<InventoryCheckItem> result = inventoryRepository.checkCodes(inventoryList);		
+
+		return result;
 	}
 
 }

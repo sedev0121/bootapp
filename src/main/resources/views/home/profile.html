@@ -122,7 +122,7 @@ var edit_url = /*[[@{/account/}]]*/'';
 var vendor_search_url = /*[[@{/vendor/search}]]*/'';
 var checkemail_url = /*[[@{/profile/checkemail}]]*/'';
 var checkmobile_url = /*[[@{/profile/checkmobile}]]*/'';
-var checkweixin_url = /*[[@{/profile/checkweixin}]]*/'';
+
 
 /*[+
 var password_min_length = [[${password_min_length}]];
@@ -164,20 +164,6 @@ jQuery(document).ready(function() {
             }
           }
         },  
-        weixin: {
-          required: $('#role').val() == 'ROLE_VENDOR',
-          remote: {
-            url: checkweixin_url,
-            data: {
-              weixin: function() {
-                return $( "#weixin" ).val();
-              },
-              id: function() {
-                return $("#id").val();
-              }
-            }
-          }
-        },  
         mobile: {
           required: $('#role').val() == 'ROLE_VENDOR',
           remote: {
@@ -199,9 +185,6 @@ jQuery(document).ready(function() {
         },
         mobile: {
           remote: "该手机号已在使用！"
-        },
-        weixin: {
-          remote: "该微信号已在使用！"
         }
       },
       //display error alert on form submit  

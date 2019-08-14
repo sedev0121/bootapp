@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.InventoryClass;
+import com.srm.platform.vendor.model.PurchaseInDetail;
+import com.srm.platform.vendor.model.PurchaseInMain;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.Vendor;
@@ -23,6 +26,8 @@ import com.srm.platform.vendor.repository.BoxClassRepository;
 import com.srm.platform.vendor.repository.CompanyRepository;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
+import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
+import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.repository.VendorClassRepository;
@@ -64,6 +69,12 @@ public class SyncController {
 	@Autowired
 	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
 
+	@Autowired
+	public PurchaseInMainRepository purchaseInMainRepository;
+
+	@Autowired
+	public PurchaseInDetailRepository purchaseInDetailRepository;
+	
 	@ResponseBody
 	@GetMapping({ "", "/" })
 	public boolean index() {
@@ -73,6 +84,7 @@ public class SyncController {
 		this.inventory();
 		this.vendor();
 		this.order();
+		this.purchaseIn();
 		logger.info("=============== Sync End ==============");
 		return true;
 	}
@@ -89,6 +101,14 @@ public class SyncController {
 		String temp = String.valueOf(object.get(key));
 		if (!Utils.isEmpty(temp)) {
 			return Integer.valueOf(temp);
+		}
+		return null;
+	}
+	
+	private Long getLongValue(LinkedHashMap<String, Object> object, String key) {
+		String temp = String.valueOf(object.get(key));
+		if (!Utils.isEmpty(temp)) {
+			return Long.valueOf(temp);
 		}
 		return null;
 	}
@@ -109,11 +129,13 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = { "/inventory_class", "/inventory_class/" })
 	public int inventoryClass() {
+		logger.info("======/sync/inventory_class ======");
 		int totalCount = 0;
 		boolean hasMore = true;
 		while (hasMore) {
 			List<String> codes = new ArrayList<String>();
 
+			
 			RestApiResponse response = apiClient.postForInventoryClass();
 
 			if (response.isSuccess()) {
@@ -154,6 +176,7 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = { "/inventory", "/inventory/" })
 	public int inventory() {
+		logger.info("======/sync/inventory ======");
 		int totalCount = 0;
 		boolean hasMore = true;
 		while (hasMore) {
@@ -212,6 +235,7 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = { "/vendor_class", "/vendor_class/" })
 	public int vendorClass() {
+		logger.info("======/sync/vendor_class ======");
 		int totalCount = 0;
 		boolean hasMore = true;
 		while (hasMore) {
@@ -254,6 +278,7 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = { "/vendor", "/vendor/" })
 	public int vendor() {
+		logger.info("======/sync/vendor ======");
 		int totalCount = 0;
 		boolean hasMore = true;
 		while (hasMore) {
@@ -311,6 +336,7 @@ public class SyncController {
 	@ResponseBody
 	@RequestMapping(value = { "/order", "/order/" })
 	public int order() {
+		logger.info("======/sync/order ======");
 		int totalCount = 0;
 		boolean hasMore = true;
 		while (hasMore) {
@@ -502,6 +528,122 @@ public class SyncController {
 
 				if (pocodes.size() > 0 || mocodes.size() > 0) {
 					response = apiClient.postConfirmForOrder(pocodes, mocodes);
+				} else {
+					hasMore = false;
+					break;
+				}
+			} else {
+				hasMore = false;
+				break;
+			}
+		}
+
+		return totalCount;
+	}
+	
+	@Transactional
+	@ResponseBody
+	@RequestMapping(value = { "/purchasein", "/purchasein/" })
+	public int purchaseIn() {
+		logger.info("====== /sync/purchasein =====");
+		int totalCount = 0;
+		boolean hasMore = true;
+		while (hasMore) {
+			
+			List<String> codes = new ArrayList<String>();
+
+			RestApiResponse response = apiClient.postForPurchaseIn();
+
+			List<LinkedHashMap<String, Object>> data = response.getData("rdrecord01");
+			if (response.isSuccess()) {
+				if (data != null && data.size() == 0) {
+					hasMore = false;
+					break;
+				}
+				for (LinkedHashMap<String, Object> temp : data) {
+
+					String code = getStringValue(temp, "cCode");
+					String type = getStringValue(temp, "cBusType");
+					String vendor_code = getStringValue(temp, "cVenCode");
+					String companyCode = getStringValue(temp, "cFactoryCode");
+					String storeCode = getStringValue(temp, "cWhCode");
+					Integer bredvouch = getIntegerValue(temp, "bredvouch");
+					String date = getStringValue(temp, "dDate");
+					String verifyDate = getStringValue(temp, "dVeriDate");
+					
+					PurchaseInMain main = purchaseInMainRepository.findOneByCode(code);
+					if (main == null) {
+						main = new PurchaseInMain();
+						main.setCode(code);						
+					}
+
+					Vendor vendor = vendorRepository.findOneByCode(vendor_code);
+					main.setVendor(vendor);
+
+					main.setCompanyCode(companyCode);
+					main.setStoreCode(storeCode);
+					main.setType(type);
+					main.setBredvouch(bredvouch);
+					main.setDate(Utils.parseDateTime(date));
+					main.setVerifyDate(Utils.parseDateTime(verifyDate));
+					
+					purchaseInMainRepository.save(main);
+					
+					Double quantity = getDoubleValue(temp, "iQuantity");
+					Integer rowNo = getIntegerValue(temp, "irowno");
+					String inventoryCode = getStringValue(temp, "cInvCode");					
+					Double taxRate = getDoubleValue(temp, "iTaxRate");
+					Double tax = getDoubleValue(temp, "iTaxPrice");
+					
+					Double price = getDoubleValue(temp, "iUnitCost");
+					Double cost = getDoubleValue(temp, "iPrice");
+
+					Double taxCost = getDoubleValue(temp, "iSum");
+					Double taxPrice = getDoubleValue(temp, "iOriTaxCost");					
+					
+					Long autoId = getLongValue(temp, "AutoID");
+					
+					String poCode = getStringValue(temp, "cpoid");
+					Integer poRowNo = getIntegerValue(temp, "porowno");
+					String deliveryCode = getStringValue(temp, "cbarvcode");
+					Integer deliveryRowNo = getIntegerValue(temp, "purowno");
+					
+										
+					PurchaseInDetail detail = purchaseInDetailRepository.findOneByCodeAndRowno(code,rowNo);
+					if (detail != null) {
+						logger.info("code=" + code + " rowno=" + rowNo);
+					} else {
+						detail = new PurchaseInDetail();
+						detail.setMain(main);
+						detail.setRowNo(rowNo);
+					}
+
+					detail.setInventory(inventoryRepository.findOneByCode(inventoryCode));
+					detail.setQuantity(quantity);
+					
+					detail.setTaxRate(taxRate);
+					detail.setTax(tax);
+					
+					detail.setPrice(price);
+					detail.setCost(cost);
+					
+					detail.setTaxPrice(taxPrice);
+					detail.setTaxCost(taxCost);
+					
+					detail.setPoCode(poCode);
+					detail.setPoRowNo(poRowNo);
+					
+					detail.setDeliveryCode(deliveryCode);
+					detail.setDeliveryRowNo(deliveryRowNo);
+					detail.setAutoId(autoId);
+					detail.setSyncDate(new Date());
+					purchaseInDetailRepository.save(detail);	
+					
+					codes.add(String.valueOf(autoId));
+				}
+
+				if (codes.size() > 0) {
+					response = apiClient.postConfirmForPurchaseIn(codes);
 				} else {
 					hasMore = false;
 					break;

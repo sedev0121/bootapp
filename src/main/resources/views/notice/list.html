@@ -7,7 +7,7 @@
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li class="active">公告通知</li>
+      <li class="active">采购动态</li>
     </ul>
     <div class="search-content">
         <div class="search-cell width-4">
@@ -32,7 +32,7 @@
         </div>
         <div style="vertical-align: bottom" class="search-cell width-10">
           <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-          <a class="btn btn-primary" th:href="@{/notice/add}" sec:authorize="hasRole('ROLE_BUYER') and hasAuthority('公告通知-新建')"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
+          <a class="btn btn-primary" th:href="@{/notice/add}" sec:authorize="hasRole('ROLE_BUYER') and hasAuthority('采购动态-新建/修改')"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
         </div>
     </div>
     <div class="row">
@@ -111,26 +111,11 @@ $(document).ready(function() {
       className: 'dt-center',
       render : $.fn.time_renderer
     }, {
-      data : 'to_all_vendor',
-      className: 'dt-center',
-      render: App.valid_render,
-      title : '全部供应商',
-    }, {
-      data : 'to_unit_account',
-      className: 'dt-center',
-      render: App.valid_render,
-      title : '内部人员',
-    }, {
       data : 'state',
       className: 'dt-center',
       createdCell: App.getInqueryStateClass,
       render : App.getNoticeStateOfId,
       title : '状态',
-    }, {
-      data : 'read_date',
-      className: 'dt-center',
-      title : '查阅时间',
-      render : $.fn.time_renderer
     } ],
   });
 

@@ -54,10 +54,14 @@ public class PurchaseOrderSearchResult implements Serializable {
 	private Double exchange_rate;
 	private String currency;
 
+	private String contract_code;
+	private Double base_price;
+	
 	public PurchaseOrderSearchResult(String code, String vencode, Date audittime, String state, String vendorname, String companyname,
 			String deployername, String reviewername, Date deploydate, Date reviewdate, String maker, Date makedate,
 			Double sum, Double money, Integer srmstate, String purchase_type_name, Double prepay_money, String verifier, String closer, 
-			String department, String person, Double tax_rate, Double exchange_rate, String currency, Date closedate, Date orderdate ) {
+			String department, String person, Double tax_rate, Double exchange_rate, String currency, Date closedate, Date orderdate,
+			String contract_code, Double base_price) {
 		this.code = code;
 		this.setVencode(vencode);
 		this.setAudittime(audittime);
@@ -86,6 +90,8 @@ public class PurchaseOrderSearchResult implements Serializable {
 		this.closedate = closedate;
 		this.orderdate = orderdate;
 
+		this.contract_code = contract_code;
+		this.base_price = base_price;
 	}
 
 	public Double getPrepay_money() {
@@ -94,6 +100,22 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	public void setPrepay_money(Double prepay_money) {
 		this.prepay_money = prepay_money;
+	}
+
+	public String getContract_code() {
+		return contract_code;
+	}
+
+	public void setContract_code(String contract_code) {
+		this.contract_code = contract_code;
+	}
+
+	public Double getBase_price() {
+		return base_price;
+	}
+
+	public void setBase_price(Double base_price) {
+		this.base_price = base_price;
 	}
 
 	public Date getOrderdate() {

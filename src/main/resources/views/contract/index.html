@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+	<div class="container" layout:fragment="content">
+		<ul class="breadcrumb">
+			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+			<li class="active">合同管理</li>
+		</ul>
+		<div class="search-content">
+			<div class="search-cell width-10">
+				<label for="code">合同编号:</label> <input type="text" id="code" class="form-control" placeholder="合同编号：">
+			</div>
+			<div class="search-cell width-10" id="vendor_div">
+				<label for="vendor">供应商编码/名称：</label> <input type="text" id="vendor" name="vendor" class="form-control" placeholder="供应商编码/名称：">
+			</div>
+			<div class="search-cell width-10">
+				<label for="start_date">合同日期: </label> <input type="text" id="start_date" value="" class="form-control datepicker" placeholder="合同开始时间："/>
+			</div>
+			<div class="search-cell width-10">
+				<label for="end_date">　</label> <input type="text" id="end_date" value="" class="form-control datepicker" placeholder="结束时间"/>
+			</div>
+			<div class="search-cell width-10">
+				<label for="state">状态:</label> <select name="state" id="state" class="form-control">
+				</select>
+			</div>
+			<div style="vertical-align: bottom" class="search-cell width-15">
+				<button class="btn btn-default" id="btn_search">
+					<i class="fa fa-search"></i> 查询
+				</button>
+				<a class="btn btn-primary" sec:authorize="hasAuthority('合同管理-新建/提交')" th:href="@{/contract/add}"><i class="fa fa-plus-circle"></i> 新建</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12">
+				<table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+				</table>
+			</div>
+		</div>
+		<div class="modal fade" id="log_dialog" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">操作记录</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body form-horizontal">
+						<div class="row">
+							<div class="col-lg-12 table-responsive">
+								<table id="log_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
+	is_vendor = 1;
+</script>
+<script th:inline="javascript">
+	/*[+
+   var list_url = [[@{/contract/list}]];
+   var edit_url = [[@{/contract/}]];
+   var log_url = [[@{/operation_history/list/contract/}]];
+   +]*/
+   
+  var log_table, selected_code;
+  $(document).ready(function() {
+	  if (is_vendor) {
+		  $('#vendor_div').addClass('hidden');
+	  }
+
+	  $("#state").select2({
+	    data : App.getContractStateDataWithAll(),
+	    minimumResultsForSearch : -1
+	  });
+
+	  $(".datepicker").datepicker({
+		  onSelect : function(dateText) {
+			  table.draw();
+		  }
+	  });
+
+	  var table = $('#example').DataTable({
+	    ordering : true,
+	    ajax : {
+	      url : list_url,
+	      data : function(data) {
+		      var filter = {
+		        order : data.columns[data.order[0].column].data,
+		        dir : data.order[0].dir,
+		        rows_per_page : data.length,
+		        page_index : data.start / data.length + 1,
+		        vendor : $('#vendor').val(),
+		        state : $('#state').val(),
+		        type : $('#type').val(),
+		        code : $('#code').val(),
+		        start_date : $('#start_date').val(),
+		        end_date : $('#end_date').val()
+		      }
+		      return filter;
+	      },
+	      dataSrc : function(json) {
+		      json.recordsTotal = json.totalElements;
+		      json.recordsFiltered = json.totalElements;
+		      return json.content;
+	      },
+	    },
+	    fixedColumns : {
+		    leftColumns : 3,
+	    },
+	    createdRow : function(row, data, dataIndex) {
+		    $(row).addClass('');
+	    },
+	    columns : [ {
+	      data : 'code',
+	      title : '合同编号',
+	      render : function(data, display, record) {
+		      url = edit_url + data + '/edit';
+		      return '<a href="' + url + '">' + data + '</a>';
+	      },
+	    }, {
+	      data : 'state',
+	      title : '合同状态',
+	      className : 'dt-center',
+	      createdCell : App.getStateClass,
+	      render : App.getContractStateOfId
+	    }, {
+	      data : 'name',
+	      title : '合同名称',
+	    }, {
+	      data : 'type',
+	      title : '合同类型',
+	      render : App.getContractTypeOfId
+	    }, {
+	      data : 'kind',
+	      title : '合同性质',
+	      render : App.getContractKindOfId
+	    }, {
+	      data : 'company_name',
+	      title : '业务实体',
+	    }, {
+	      data : 'vendor_code',
+	      visible : !is_vendor,
+	      title : '供应商编码',
+	    }, {
+	      data : 'vendor_name',
+	      visible : !is_vendor,
+	      title : '供应商名称',
+	    }, {
+	      data : 'project_no',
+	      title : '项目编码',
+	    }, {
+	      data : 'price_type',
+	      title : '价格类型',
+	      render : App.getContractPriceOfId
+	    }, {
+	      data : null,
+	      defaultContent: 'CYN',
+	      title : '币别',
+	    }, {
+	      data : 'date',
+	      className : 'dt-center',
+	      title : '签订日期',
+	      render : $.fn.date_renderer
+	    }, {
+	      data : 'start_date',
+	      className : 'dt-center',
+	      title : '合同开始时间',
+	      render : $.fn.date_renderer
+	    }, {
+	      data : 'end_date',
+	      className : 'dt-center',
+	      title : '合同结束时间',
+	      render : $.fn.date_renderer
+	    }, {
+	      data : 'quantity_type',
+	      title : '数量控制方式',
+	      render : App.getContractQuantityOfId
+	    }, {
+	      data : 'tax_rate',
+	      title : '税率%',
+	    }, {
+	      data : 'pay_mode',
+	      title : '付款方式',
+	    }, {
+	      data : 'make_name',
+	      title : '创建人',
+	    }, {
+	      data : 'make_date',
+	      className : 'dt-center',
+	      title : '创建日期',
+	      render : $.fn.date_renderer
+	    }, {
+	    	orderable: false,
+	      data : null,	      
+	      title : '操作记录',
+	      render : function(data, display, record) {
+		      return '<a class="log" code="' + record.code + '" href="#">操作记录</a>';
+	      },
+	    }, {
+	      data : 'memo',
+	      title : '备注',
+	    } ],
+	    order : [ [ 0, "desc" ] ],
+	    drawCallback : function(settings) {
+	    	$(".log").click(function() {
+	    		$("#log_dialog").modal('show');
+	    		selected_code = $(this).attr("code");
+	    	});
+	    }
+	  });
+
+
+	  $('#log_dialog').on('shown.bs.modal', function() {
+	  	if (log_table) {
+	  		log_table.clear().destroy();
+			  $('#log_table').empty();
+		  }
+	  	
+	  	log_table = $('#log_table').DataTable({
+		    serverSide : false,
+		    processing : false,
+		    ajax : {
+		      url : log_url + selected_code,
+		      dataSrc : function(json) {
+			      return json;
+		      },
+		    },
+		    order : [ [ 0, 'desc' ] ],
+		    columns : [ {
+		      data : 'create_date',
+		      title : '日期',
+		      width : '150px',
+		      className : 'dt-center',
+		      render : $.fn.time_renderer,
+		    }, {
+		      data : 'action',
+		      title : '动作',
+		      width : '100px',
+		      className : 'dt-center',
+		    }, {
+		      data : 'account.realname',
+		      title : '操作人',
+		      width : '150px',
+		      className : 'dt-center',
+		    }, {
+		      data : 'content',
+		      title : '说明',
+		    } ],
+		  });
+	  });
+	  
+	  $("#btn_search").click(function() {
+		  table.draw();
+	  });
+
+	  $('#state, #type').change(function() {
+		  table.draw();
+	  });
+
+	  $('#vendor, #code, #start_date, #end_date').keyup(function(e) {
+		  if (e.keyCode == 13)
+			  table.draw();
+	  });
+  });
+</script>

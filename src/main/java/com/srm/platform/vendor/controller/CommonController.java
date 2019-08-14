@@ -42,17 +42,19 @@ import com.srm.platform.vendor.model.Price;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.repository.AccountRepository;
+import com.srm.platform.vendor.repository.AttachFileRepository;
 import com.srm.platform.vendor.repository.BoxClassRepository;
 import com.srm.platform.vendor.repository.BoxRepository;
 import com.srm.platform.vendor.repository.CompanyRepository;
+import com.srm.platform.vendor.repository.ContractDetailRepository;
+import com.srm.platform.vendor.repository.ContractMainRepository;
 import com.srm.platform.vendor.repository.DeliveryDetailRepository;
 import com.srm.platform.vendor.repository.DeliveryMainRepository;
 import com.srm.platform.vendor.repository.FunctionActionRepository;
 import com.srm.platform.vendor.repository.FunctionRepository;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
-import com.srm.platform.vendor.repository.NegotiationDetailRepository;
-import com.srm.platform.vendor.repository.NegotiationMainRepository;
+import com.srm.platform.vendor.repository.MasterRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.OperationHistoryRepository;
@@ -61,7 +63,6 @@ import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PermissionGroupUserRepository;
 import com.srm.platform.vendor.repository.PermissionUserScopeRepository;
 import com.srm.platform.vendor.repository.PriceRepository;
-import com.srm.platform.vendor.repository.ProvideClassRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
@@ -69,6 +70,8 @@ import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.StoreRepository;
+import com.srm.platform.vendor.repository.TaskLogRepository;
+import com.srm.platform.vendor.repository.TaskRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
 import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorClassRepository;
@@ -99,7 +102,7 @@ public class CommonController {
 	public final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
-	public ApiClient apiClient;
+	public RestApiClient apiClient;
 	
 	@Autowired
 	public RestApiClient restApiClient;
@@ -111,6 +114,9 @@ public class CommonController {
 	public EntityManager em;
 
 	@Autowired
+	public MasterRepository masterRepository;
+	
+	@Autowired
 	public VendorRepository vendorRepository;
 
 	@Autowired
@@ -118,6 +124,12 @@ public class CommonController {
 
 	@Autowired
 	public NoticeRepository noticeRepository;
+	
+	@Autowired
+	public TaskRepository taskRepository;
+	
+	@Autowired
+	public TaskLogRepository taskLogRepository;
 
 	@Autowired
 	public OperationHistoryRepository operationHistoryRepository;
@@ -135,12 +147,6 @@ public class CommonController {
 	public SessionCounter sessionCounter;
 
 	@Autowired
-	public NegotiationMainRepository negotiationMainRepository;
-	
-	@Autowired
-	public NegotiationDetailRepository negotiationDetailRepository;
-	
-	@Autowired
 	public DeliveryMainRepository deliveryMainRepository;
 	
 	@Autowired
@@ -154,9 +160,6 @@ public class CommonController {
 
 	@Autowired
 	public PriceRepository priceRepository;
-
-	@Autowired
-	public ProvideClassRepository provideClassRepository;
 
 	@Autowired
 	public PermissionGroupRepository permissionGroupRepository;
@@ -208,12 +211,21 @@ public class CommonController {
 
 	@Autowired
 	public StatementDetailRepository statementDetailRepository;
+	
+	@Autowired
+	public ContractMainRepository contractMainRepository;
 
+	@Autowired
+	public ContractDetailRepository contractDetailRepository;	
+	
 	@Autowired
 	public StoreRepository storeRepository;
 
 	@Autowired
 	public VendorClassRepository vendorClassRepository;
+	
+	@Autowired
+	public AttachFileRepository attachFileRepository;
 
 	protected int currentPage;
 	protected int maxResults;
@@ -375,32 +387,32 @@ public class CommonController {
 
 		GenericJsonResponse<VenPriceAdjustMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS,
 				null, main);
-		try {
-
-			map = new HashMap<>();
-
-			String postJson = createJsonString(main);
-			Map<String, String> getParams = new HashMap<>();
-
-			getParams.put("biz_id", main.getCcode());
-			getParams.put("sync", "1");
-
-			String response = apiClient.generateVenpriceadjust(getParams, postJson);
-
-			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
-			});
-
-			int errorCode = Integer.parseInt((String) map.get("errcode"));
-			String errmsg = String.valueOf(map.get("errmsg"));
-
-			if (errorCode != appProperties.getError_code_success()) {
-				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
-			}
-
-		} catch (IOException e) {
-			logger.info(e.getMessage());
-			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "服务器错误！", main);
-		}
+//		try {
+//
+//			map = new HashMap<>();
+//
+//			String postJson = createJsonString(main);
+//			Map<String, String> getParams = new HashMap<>();
+//
+//			getParams.put("biz_id", main.getCcode());
+//			getParams.put("sync", "1");
+//
+//			String response = apiClient.generateVenpriceadjust(getParams, postJson);
+//
+//			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
+//			});
+//
+//			int errorCode = Integer.parseInt((String) map.get("errcode"));
+//			String errmsg = String.valueOf(map.get("errmsg"));
+//
+//			if (errorCode != appProperties.getError_code_success()) {
+//				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
+//			}
+//
+//		} catch (IOException e) {
+//			logger.info(e.getMessage());
+//			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "服务器错误！", main);
+//		}
 
 		return jsonResponse;
 	}
@@ -486,6 +498,20 @@ public class CommonController {
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileName + "\"")
 				.body(file);
+	}
+	
+	public void deleteAttach(String filePath) {
+
+		Resource file = UploadFileHelper.getResource(filePath);
+		if (file != null) {
+			try {
+				file.getFile().delete();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 }

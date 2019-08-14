@@ -60,7 +60,8 @@
 						</div>
 						<div class="col-lg-3 col-md-3">
 							<input type="hidden" id="store_set" th:value="${main.store?.isAcceptSet}"/>
-							<label for="store">收货仓库：</label> <select name="store" id="store" class="form-control">
+							<label for="store">收货仓库：</label> 
+							<select name="store" id="store" class="form-control">
 								<option th:if="${main.store != null}" th:value="${main.store?.id}" th:text="${main.store?.name}" selected="selected">NEC（日电）有限公司</option>
 							</select>
 						</div>

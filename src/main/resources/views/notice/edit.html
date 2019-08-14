@@ -8,16 +8,16 @@
       <li>
         <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
       </li>
-      <li><a th:href="@{/notice}">公告通知</a></li>
-      <li class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建公告通知':'公告通知详细'"></li>
+      <li><a th:href="@{/notice}">采购动态</a></li>
+      <li class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建采购动态':'采购动态详细'"></li>
     </ul>
     <div class="btn-group-bar">
       <div class="text-right">
-        <a class="btn btn-primary" sec:authorize="hasAuthority('公告通知-新建') and (hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN'))" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}" id="save"><i class="fa fa-save"></i> 保存</a>
-        <a class="btn btn-primary" sec:authorize="hasAuthority('公告通知-新建') and (hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN'))" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}" id="submit"><i class="fa fa-share"></i> 提交</a>
-        <a class="btn btn-primary" sec:authorize="hasAuthority('公告通知-新建') and (hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN'))" th:if="${notice.createAccount?.id==session.account_id and notice.id !=null and (notice.state==1  || notice.state==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
-        <a class="btn btn-primary" sec:authorize="hasAuthority('公告通知-发布')" th:if="${notice.state==2}" id="verify"><i class="fa fa-check-square"></i> 发布</a>
-        <a class="btn btn-primary" sec:authorize="hasAuthority('公告通知-发布')" th:if="${notice.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
+        <a class="btn btn-primary" sec:authorize="hasAuthority('采购动态-新建/修改') and (hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN'))" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}" id="save"><i class="fa fa-save"></i> 保存</a>
+        <a class="btn btn-primary" sec:authorize="hasAuthority('采购动态-新建/修改') and (hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN'))" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}" id="submit"><i class="fa fa-share"></i> 提交</a>
+        <a class="btn btn-primary" sec:authorize="hasAuthority('采购动态-新建/修改') and (hasRole('ROLE_BUYER') or hasRole('ROLE_ADMIN'))" th:if="${notice.createAccount?.id==session.account_id and notice.id !=null and (notice.state==1  || notice.state==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a>
+        <a class="btn btn-primary" sec:authorize="hasAuthority('采购动态-发布')" th:if="${notice.state==2}" id="verify"><i class="fa fa-check-square"></i> 发布</a>
+        <a class="btn btn-primary" sec:authorize="hasAuthority('采购动态-发布')" th:if="${notice.state==2}" id="cancel"><i class="fa fa-undo"></i> 退回</a>
         <a class="btn btn-default" th:href="@{/notice}"><i class="fa fa-arrow-left"></i> 返回列表</a>
       </div>
     </div>
@@ -44,7 +44,7 @@
             <textarea name="content" id="content" class="form-control" rows=5 th:text="${notice.content}"></textarea>
           </div>
 
-          <div class="col-lg-8 col-md-8 form-group" id="file_select" th:if="${(notice.state==1 or notice.state == 4) and notice.attachFileName == null}">
+          <div class="col-lg-12 col-md-12 form-group" id="file_select" th:if="${(notice.state==1 or notice.state == 4) and notice.attachFileName == null}">
             <div class="input-group input-file" name="attach">
               <span class="input-group-btn">
                 <button class="btn btn-success btn-file btn-choose" type="button">选择附件</button>
@@ -55,34 +55,12 @@
               </span>
             </div>
           </div>
-          <div class="col-lg-8 col-md-8 form-group" id="file_show" th:if="!${(notice.state==1 or notice.state == 4) and notice.attachFileName == null}">
+          <div class="col-lg-12 col-md-12 form-group" id="file_show" th:if="!${(notice.state==1 or notice.state == 4) and notice.attachFileName == null}">
             <div>
               <a th:href="@{|/notice/${notice.id}/download|}" th:if="${notice.attachFileName}" th:text="${notice.attachOriginalName}"></a>
               <span th:if="!${notice.attachFileName}"><b>附件：</b>---</span>              
               <a class="btn btn-danger" id="del_attach" th:if="${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}">删除附件</a>
             </div>
-          </div>
-          <div class="col-lg-2 col-md-2 form-group" id="all_vendor_div">
-            <div class="ui toggle checkbox">
-              <input type="checkbox" name="to_all_vendor" id="to_all_vendor" value="1" th:checked="${notice.toAllVendor}">
-              <label>全部供应商</label>
-            </div>
-          </div>
-          <div class="col-lg-2 col-md-2 form-group" id="all_account_div">
-            <div class="ui toggle checkbox">
-              <input type="checkbox" id="to_unit_account" name="to_unit_account" value="1" th:checked="${notice.toUnitAccount}">
-              <label>内部人员</label>
-            </div>
-          </div>
-          <div class="col-lg-12 col-md-12 form-group" id="vendor_div">
-            <label for="vendor_table">供应商列表: </label>
-            <table id="vendor_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-            </table>
-          </div>
-          <div class="col-lg-12 col-md-12 form-group" id="account_div">
-            <label for="state">内部人员列表：</label>
-            <table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-            </table>
           </div>
           <div class="col-lg-3 col-md-3 form-group">
             <label for="title">创建人: </label>
@@ -100,94 +78,10 @@
             <label for="title">发布时间: </label>
             <input type="text" class="form-control" readonly th:value="${#dates.format(notice.verifyDate, 'yyyy-MM-dd HH:mm:ss')}">
           </div> 
-          <div class="col-lg-12 table-responsive" th:if="${notice.createAccount?.id==session.account_id and notice.state==3}">
-              <table id="table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width:100%">
-              </table>
-          </div>
         </div>
       </div>
     </div>
     </form>
-    <div class="modal fade" id="import_dialog" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document" style="width:1000px;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">
-                                                    选择用户
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    </button>
-                </div>
-                <div class="modal-body form-horizontal">
-
-                  <div class="search-content">
-                      <div class="search-cell form-group">
-                        <label for="search">用户名/真实姓名/所属组织/职位/邮箱：</label>
-                        <input type="text" id="search" class="form-control">
-                      </div>
-                      <div class="search-cell width-10 form-group">
-                        <label for="role">角色：</label>
-                        <select name="role" id="role" class="form-control">
-                        </select>
-                      </div>
-                      <div class="search-cell width-10 form-group">
-                        <label for="account_state">状态：</label>
-                        <select name="account_state" id="account_state" class="form-control">
-                        </select>
-                      </div>
-                      <div style="vertical-align: bottom" class="search-cell form-group">
-                        <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-                      </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-lg-12">
-                      <table id="import_account" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-                      </table>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="btn_import">保存</button>
-                </div>
-            </div>
-        </div>
-    </div> 
-    <div class="modal fade" id="import_vendor_dialog" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document" style="width:1000px;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                                                    选择供应商
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    </button>
-                </div>
-                <div class="modal-body form-horizontal">
-                  <div class="search-content">
-                      <div class="search-cell form-group">
-                        <label for="vendor_name">供应商名称/编码:</label>
-                        <input type="text" id="vendor_name" class="form-control">
-                      </div>                      
-                      <div style="vertical-align: bottom" class="search-cell form-group">
-                        <button class="btn btn-default" id="btn_vendor_search"><i class="fa fa-search"></i> 查询</button>
-                      </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-lg-12">
-                      <table id="import_vendor" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-                      </table>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="btn_vendor_import">保存</button>
-                </div>
-            </div>
-        </div>
-    </div> 
-    
     </div>
 </body>
 </html>
@@ -202,10 +96,7 @@ var account_table, import_table, editor, vendor_table, import_vendor_table, vend
 /*[+
 var isEditable = [[${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}?true:false]];
 var hasAttach = [[${notice.attachFileName != null}]];
-var is_to_all_vendor = [[${notice.toAllVendor}?true:false]];
 var is_editor = [[${notice.createAccount?.id==session.account_id}?true:false]];
-var is_to_unit_account = [[${notice.toUnitAccount}?true:false]];
-var read_list_url = [[@{|/notice/readlist/${notice.id}|}]];
 +]*/ 
 
 jQuery(document).ready(function() {   
@@ -216,7 +107,6 @@ jQuery(document).ready(function() {
   if (!isEditable){
     $('#title').attr("readonly", true);
     $("#content").attr("readonly", true);
-    $("input:checkbox").attr("disabled", true);
     $('textarea').attr("readonly", true);
   }else{
     if (hasAttach){
@@ -228,30 +118,7 @@ jQuery(document).ready(function() {
     }
   }
   
-  
 
-  if (state == 3 && !is_editor) {
-   $('#vendor_div').hide();
-   $('#account_div').hide();
-   $('#all_vendor_div').css('visibility', 'hidden');
-   $('#all_account_div').css('visibility', 'hidden');
-  } else {
-	  function checkTable(){
-	    if (!$('#to_all_vendor').attr('checked') && !$('#to_unit_account').attr('checked')) {
-	      if (!vendor_table || vendor_table.rows().data().toArray().length == 0) {
-	        App.showErrorDialog("输入有误", "请选择供应商的值");
-	        return false;
-	      }
-	    }  
-	    if ($('#to_unit_account').attr('checked')) {
-	      if (!account_table || account_table.rows().data().toArray().length == 0) {
-	        App.showErrorDialog("输入有误", "请输选择内部人员");
-	        return false;
-	      }
-	    }
-	    
-	    return true;
-	  };
 	  
 	  var is_add = $("#id").val().length==0;
 	  $("#form" ).validate({
@@ -271,9 +138,6 @@ jQuery(document).ready(function() {
 	    },
 
 	    submitHandler: function (form) {
-	      if (!checkTable()) {
-	        return;
-	      }
 	      var value='';
 	      if ($('#to_unit_account').attr('checked') && account_table){
 	        $.each(account_table.rows().data().toArray(), function(key, item){
@@ -311,394 +175,7 @@ jQuery(document).ready(function() {
 	    }
 	  }); 
 	  
-	  $("#to_all_vendor").change(function(){  //"select all" change 
-	    if($(this).prop("checked")){
-	      $( "#vendor_div" ).hide();
-	    }else{
-	      $( "#vendor_div" ).show();
-	      if (!vendor_table) {
-	        vendor_editor = new $.fn.dataTable.Editor({
-	          table: "#vendor_table",  
-	          idSrc: "code",
-	          i18n: {
-	            remove: {
-	              button: "删除行",
-	              title:  "删除",
-	              submit: "是",
-	              confirm: {
-	                _: "确定要删除%d行供应商吗?",
-	                1: "确定要删除吗?"
-	              }
-	            },
-	            error: {
-	              system: "发生错误！"
-	            }
-	          }
-	        });
-	        
-	        vendor_table = $('#vendor_table').DataTable({
-	          ordering: true,
-	          select: isEditable?{style: 'multi'}:false,
-	          serverSide:false,
-	          processing:false,
-	          buttons: isEditable?[
-	            { 
-	              text: "添加供应商", 
-	              action: function( e, dt, node, config) {
-	                $('#import_vendor_dialog').modal('show');
-	              } 
-	            },
-	            { extend: "remove", editor: vendor_editor }
-	          ]:[],
-	          ajax : {
-	            url : /*[[@{|/notice/${notice.id}/vendor/list|}]]*/'',
-	            dataSrc : function(json) {
-	              return json;
-	            },
-	          },          
-	          columns : [ {
-	              data : 'code',
-	              title : '供应商编码',
-	          }, {
-	              data : 'name',
-	              title : '供应商名称',
-	          }, {
-	              data : 'abbrname',
-	              title : '供应商简称',
-	          }, {
-	              data : "unitname",
-	              title : '采购组织',
-	          }, {
-	              data : 'address',
-	              title : '地址',
-	          }, {
-	              data : 'bank_open',
-	              title : '开户银行',
-	          }, {
-	              data : 'bank_acc_number',
-	              title : '银行帐号',
-	          }, {
-	              data : 'fax',
-	              title : '传真 ',
-	          }, {
-	              data : 'email',
-	              title : 'Email地址',
-	          }, {
-	              data : 'mobile',
-	              className: 'dt-right',
-	              title : '手机',
-	          }, {
-	              data : 'receive_site',
-	              title : '到货地址',                
-	          }, {
-	              data : 'end_date',
-	              className: 'dt-center',
-	              render : $.fn.date_renderer,
-	              title : '停用日期',                
-	          } ],
-	        });
-	      }
-	    }    
-	  });
 	  
-	  $("#to_unit_account").change(function(){  //"select all" change 
-	    if($(this).prop("checked")){
-	      $( "#account_div" ).show();
-	      if (!account_table) {
-	        editor = new $.fn.dataTable.Editor({
-	          table: "#example",  
-	          idSrc: "id",
-	          i18n: {
-	            remove: {
-	              button: "删除行",
-	              title:  "删除",
-	              submit: "是",
-	              confirm: {
-	                _: "确定要删除%d行用户吗?",
-	                1: "确定要删除吗?"
-	              }
-	            },
-	            error: {
-	              system: "发生错误！"
-	            }
-	          }
-	        });
-	        
-	        account_table = $('#example').DataTable({
-	          ordering: true,
-	          select: isEditable?{style: 'multi'}:false,
-	          serverSide:false,
-	          processing:false,
-	          buttons: isEditable?[
-	            { 
-	              text: "添加用户", 
-	              action: function( e, dt, node, config) {
-	                $('#import_dialog').modal('show');
-	              } 
-	            },
-	            { extend: "remove", editor: editor }
-	          ]:[],
-	          ajax : {
-	            url : /*[[@{|/notice/${notice.id}/account/list|}]]*/'',
-	            dataSrc : function(json) {
-	              return json;
-	            },
-	          },
-	          order: [ [0, 'asc'] ],
-	          columns : [ {
-	            data : 'username',
-	            title : '用户名',
-	          }, {
-	            data : 'realname',
-	            title : '真实姓名',
-	          }, {
-	              data : 'unitname',
-	              title : '所属组织',
-	          }, {
-	              data : 'duty',
-	              title : '职位',
-	          }, {        
-	            data : 'role',
-	            title : '角色',
-	            render: App.getRoleOfId,
-	          }, {        
-	            data : 'state',
-	            title : '状态',
-	            render: App.getAccountStateOfId,
-	          }, {
-	            data : 'vendorname',
-	            title : '供应商',
-	          }, {
-	            data : 'email',
-	            title : '邮箱',
-	          }, {
-	            data : 'tel',
-	            title : '电话',
-	          }, {
-	            data : 'mobile',
-	            title : '手机',
-	          } ],
-	        });
-	      }
-	    }else{
-	      $( "#account_div" ).hide();
-	    }    
-	  });
-	  
-	  $("#to_all_vendor").trigger('change');
-	  $("#to_unit_account").trigger('change');
-	  
-	  
-	  $('#role').select2({data: App.getRoleDataWithAll(), minimumResultsForSearch: -1});
-	  $('#account_state').select2({data: App.getAccountStateDataWithAll(), minimumResultsForSearch: -1});
-	  
-	  $("#btn_search").click(function() {
-	    import_table.draw();
-	  });
-	  
-	  $("#btn_vendor_search").click(function() {
-	    import_vendor_table.draw();
-	  });
-	  
-	  $('#account_state, #role').change(function() {
-	    import_table.draw();
-	  });
-	  
-	  $('#search').keyup(function(e){
-	      if(e.keyCode == 13)
-	        import_table.draw();
-	  });
-	  
-	  $('#vendor_name').keyup(function(e){
-	      if(e.keyCode == 13)
-	        import_vendor_table.draw();
-	  });
-	  
-	  $('#import_dialog').on('shown.bs.modal', function () {
-	    $('#search_inventory').val('');
-	    if (import_table == undefined) {
-	      import_table = $('#import_account').DataTable({
-	        ordering: true,
-	        select: {style: 'multi'},
-	        ajax : {
-	          url : /*[[@{/notice/account/list}]]*/'',
-	          data : function(data) {
-	            var filter = {
-	              rows_per_page : data.length,
-	              page_index : data.start / data.length + 1,
-	              order: data.columns[data.order[0].column].data,
-	              dir:data.order[0].dir,
-	              search: $('#search').val(),
-	              state:$('#account_state').val(),
-	              role:$('#role').val()
-	            }
-	            return filter;
-	          },
-	          dataSrc : function(json) {
-	            json.recordsTotal = json.totalElements;
-	            json.recordsFiltered = json.totalElements;
-	            return json.content;
-	          },
-	        },
-	        order: [ [0, 'asc'] ],
-	        columns : [ {
-	          data : 'username',
-	          title : '用户名',
-	        }, {
-	          data : 'realname',
-	          title : '真实姓名',
-	        }, {
-	            data : 'unitname',
-	            title : '所属组织',
-	        }, {
-	            data : 'duty',
-	            title : '职位',
-	        }, {        
-	          data : 'role',
-	          title : '角色',
-	          render: App.getRoleOfId,
-	        }, {        
-	          data : 'state',
-	          title : '状态',
-	          render: App.getAccountStateOfId,
-	        }, {
-	          data : 'vendorname',
-	          title : '供应商',
-	        }, {
-	          data : 'email',
-	          title : '邮箱',
-	        }, {
-	          data : 'tel',
-	          title : '电话',
-	        }, {
-	          data : 'mobile',
-	          title : '手机',
-	        } ],
-	      });
-	    }
-	  });
-	  
-	  $('#btn_import').click(function(){
-	    $('#import_dialog').modal('hide');//modal_1 is the id 1
-	    var selected_data = import_table.rows('.selected').data().toArray();
-	    var exist_data = account_table.rows().data().toArray();
-	    $.each(selected_data, function(key, item){
-
-	      var available = true;
-	      for(i=0; i<exist_data.length; i++) {
-	        exist_row = exist_data[i];
-	        if (exist_row.id == item.id) {
-	          available = false;
-	          break;
-	        }
-	      }
-	      
-	      if (available) {
-	        var temp = $.extend(true, {}, item);
-	        account_table.row.add(temp);  
-	      }
-
-	    })
-	    
-	    account_table.draw();      
-	    
-	  });
-	  
-	  
-	  $('#import_vendor_dialog').on('shown.bs.modal', function () {
-	      $('#vendor_name').val('');
-	      if (import_vendor_table == undefined) {
-	        import_vendor_table = $('#import_vendor').DataTable({
-	          ordering: true,
-	          select: {style: 'multi'},
-	          ajax : {
-	              url : /*[[@{/vendor/list}]]*/'',
-	              data : function(data) {
-	                  var filter = {
-	                      rows_per_page : data.length,
-	                      page_index : data.start / data.length + 1,
-	                      order: data.columns[data.order[0].column].data,
-	                      dir:data.order[0].dir,
-	                      search: $('#vendor_name').val()
-	                  }
-	                  return filter;
-	              },
-	              dataSrc : function(json) {
-	                json.recordsTotal = json.totalElements;
-	                json.recordsFiltered = json.totalElements;
-	                return json.content;
-	              },
-	          },
-	          
-	          columns : [ {
-	              data : 'code',
-	              title : '供应商编码',
-	          }, {
-	              data : 'name',
-	              title : '供应商名称',
-	          }, {
-	              data : 'abbrname',
-	              title : '供应商简称',
-	          }, {
-	              data : "unitname",
-	              title : '采购组织',
-	          }, {
-	              data : 'address',
-	              title : '地址',
-	          }, {
-	              data : 'bank_open',
-	              title : '开户银行',
-	          }, {
-	              data : 'bank_acc_number',
-	              title : '银行帐号',
-	          }, {
-	              data : 'fax',
-	              title : '传真 ',
-	          }, {
-	              data : 'email',
-	              title : 'Email地址',
-	          }, {
-	              data : 'mobile',
-	              className: 'dt-right',
-	              title : '手机',
-	          }, {
-	              data : 'receive_site',
-	              title : '到货地址',                
-	          }, {
-	              data : 'end_date',
-	              className: 'dt-center',
-	              render : $.fn.date_renderer,
-	              title : '停用日期',                
-	          } ],
-	        });
-	      }
-	    });
-	    
-	    $('#btn_vendor_import').click(function(){
-	      $('#import_vendor_dialog').modal('hide');//modal_1 is the id 1
-	      var selected_data = import_vendor_table.rows('.selected').data().toArray();
-	      var exist_data = vendor_table.rows().data().toArray();
-	      $.each(selected_data, function(key, item){
-
-	        var available = true;
-	        for(i=0; i<exist_data.length; i++) {
-	          exist_row = exist_data[i];
-	          if (exist_row.code == item.code) {
-	            available = false;
-	            break;
-	          }
-	        }
-	        
-	        if (available) {
-	          var temp = $.extend(true, {}, item);
-	          vendor_table.row.add(temp);  
-	        }
-
-	      })
-	      
-	      vendor_table.draw();      
-	      
-	    });
 	  
 	  $("#save").click(function() {
 	    $('#state').val(1);
@@ -741,48 +218,7 @@ jQuery(document).ready(function() {
 	        });
 	      });
 	    });
-	  });
-	  
-	  var table = $('#table').DataTable({
-	    ordering : true,
-	    ajax : {
-	        url : read_list_url,
-	        data : function(data) {
-	          var filter = {
-	            order : data.columns[data.order[0].column].data,
-	            dir : data.order[0].dir,
-	            rows_per_page : data.length,
-	            page_index : data.start / data.length + 1,
-	          }
-	          return filter;
-	        },
-	        dataSrc : function(json) {
-	          json.recordsTotal = json.totalElements;
-	          json.recordsFiltered = json.totalElements;
-	          return json.content;
-	        },              
-	    },
-	    
-	    columns : [ {
-	      data : 'realname',
-	      title : '用户名称',
-	    }, {
-	      data : 'unitname',
-	      title : '组织名称',
-	    }, {
-	      data : 'vendorname',
-	      title : '供应商名称',
-	    }, {
-	      data : 'read_date',
-	      title : '查阅时间',  
-	    }],
-	    order: [ [3, 'desc'] ],
-
-	  });
-  }
-	  
-
-  
+	  });  
 });
 
 

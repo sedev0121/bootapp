@@ -16,7 +16,7 @@ public interface VenPriceAdjustDetailRepository extends JpaRepository<VenPriceAd
 	@Query(value = "SELECT * FROM venpriceadjust_detail WHERE mainid= :mainId", nativeQuery = true)
 	List<VenPriceAdjustDetail> findByMainId(String mainId);
 
-	@Query(value = "select b.name, b.specs, c.name puunit_name, a.* from venpriceadjust_detail a left join inventory b on a.cinvcode=b.code left join measurement_unit c on b.main_measure=c.code where  a.mainid= :mainId order by a.rowno", nativeQuery = true)
+	@Query(value = "select b.name, b.specs, b.main_measure, a.* from venpriceadjust_detail a left join inventory b on a.cinvcode=b.code where  a.mainid= :mainId order by a.rowno", nativeQuery = true)
 	List<VenPriceDetailItem> findDetailsByMainId(String mainId);
 
 	@Modifying

@@ -14,21 +14,84 @@ public class StatementSaveForm {
 	private String vendor;
 	private String invoice_code;
 	private String remark;
-
+	private String date;
 	private Integer state;
-	private Long maker;
-	private Date make_date;
+	private Long company;
 	private Integer type;
+	private Integer invoice_state;
 	private Integer invoice_type;
+	private Double costSum;
+	private Double taxCostSum;
+	private Double taxSum;
+	private Double adjustCostSum;
 
-	private Long verifier;
-	private Date verify_date;
+	private Integer tax_rate;
 
-	private Float tax_rate;
-
-	private MultipartFile attach;
+	private List<MultipartFile> attach;
 
 	private List<Map<String, String>> table;
+	
+	private List<Long> attachIds;
+
+	private String content;
+	
+	private String action;
+	
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public List<Long> getAttachIds() {
+		return attachIds;
+	}
+
+	public void setAttachIds(List<Long> attachIds) {
+		this.attachIds = attachIds;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public Double getCostSum() {
+		return costSum;
+	}
+
+	public void setCostSum(Double costSum) {
+		this.costSum = costSum;
+	}
+
+	public Double getTaxCostSum() {
+		return taxCostSum;
+	}
+
+	public void setTaxCostSum(Double taxCostSum) {
+		this.taxCostSum = taxCostSum;
+	}
+
+	public Double getTaxSum() {
+		return taxSum;
+	}
+
+	public void setTaxSum(Double taxSum) {
+		this.taxSum = taxSum;
+	}
+
+	public Double getAdjustCostSum() {
+		return adjustCostSum;
+	}
+
+	public void setAdjustCostSum(Double adjustCostSum) {
+		this.adjustCostSum = adjustCostSum;
+	}
 
 	public String getCode() {
 		return code;
@@ -36,6 +99,14 @@ public class StatementSaveForm {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getInvoice_state() {
+		return invoice_state;
+	}
+
+	public void setInvoice_state(Integer invoice_state) {
+		this.invoice_state = invoice_state;
 	}
 
 	public Integer getInvoice_type() {
@@ -46,11 +117,11 @@ public class StatementSaveForm {
 		this.invoice_type = invoice_type;
 	}
 
-	public MultipartFile getAttach() {
+	public List<MultipartFile> getAttach() {
 		return attach;
 	}
 
-	public void setAttach(MultipartFile attach) {
+	public void setAttach(List<MultipartFile> attach) {
 		this.attach = attach;
 	}
 
@@ -70,20 +141,12 @@ public class StatementSaveForm {
 		this.vendor = vendor;
 	}
 
-	public Float getTax_rate() {
+	public Integer getTax_rate() {
 		return tax_rate;
 	}
 
-	public void setTax_rate(Float tax_rate) {
+	public void setTax_rate(Integer tax_rate) {
 		this.tax_rate = tax_rate;
-	}
-
-	public void setMake_date(Date make_date) {
-		this.make_date = make_date;
-	}
-
-	public void setVerify_date(Date verify_date) {
-		this.verify_date = verify_date;
 	}
 
 	public String getInvoice_code() {
@@ -110,38 +173,6 @@ public class StatementSaveForm {
 		this.state = state;
 	}
 
-	public Long getMaker() {
-		return maker;
-	}
-
-	public void setMaker(Long maker) {
-		this.maker = maker;
-	}
-
-	public Date getMake_date() {
-		return make_date;
-	}
-
-	public void setMake_date(String make_date) {
-		this.make_date = Utils.parseDate(make_date);
-	}
-
-	public Long getVerifier() {
-		return verifier;
-	}
-
-	public void setVerifier(Long verifier) {
-		this.verifier = verifier;
-	}
-
-	public Date getVerify_date() {
-		return verify_date;
-	}
-
-	public void setVerify_date(String verify_date) {
-		this.verify_date = Utils.parseDate(verify_date);
-	}
-
 	public List<Map<String, String>> getTable() {
 		return table;
 	}
@@ -150,4 +181,23 @@ public class StatementSaveForm {
 		this.table = table;
 	}
 
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public Long getCompany() {
+		return company;
+	}
+
+	public void setCompany(Long company) {
+		this.company = company;
+	}
+
+	public boolean isInvoiceAction() {
+		return "invoice".equalsIgnoreCase(action);
+	}
 }

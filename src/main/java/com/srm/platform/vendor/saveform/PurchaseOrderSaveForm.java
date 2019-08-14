@@ -10,7 +10,10 @@ public class PurchaseOrderSaveForm {
 	private Integer state;
 	
 	private Long store;
-
+	private String contract_code;
+	private Double base_price;
+	private Integer price_from;
+	
 	private List<Map<String, String>> table;
 
 	public String getCode() {
@@ -20,8 +23,31 @@ public class PurchaseOrderSaveForm {
 	public void setCode(String code) {
 		this.code = code;
 	}
-
 	
+	public Integer getPrice_from() {
+		return price_from;
+	}
+
+	public void setPrice_from(Integer price_from) {
+		this.price_from = price_from;
+	}
+
+	public String getContract_code() {
+		return contract_code;
+	}
+
+	public void setContract_code(String contract_code) {
+		this.contract_code = contract_code;
+	}
+
+	public Double getBase_price() {
+		return base_price;
+	}
+
+	public void setBase_price(Double base_price) {
+		this.base_price = base_price;
+	}
+
 	public String getContent() {
 		return content;
 	}

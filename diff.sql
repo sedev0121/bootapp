@@ -113,7 +113,6 @@ INSERT INTO `action` VALUES (9, '生成箱码');
 INSERT INTO `action` VALUES (10, '启用/停用');
 INSERT INTO `action` VALUES (11, '解绑');
 
-
 TRUNCATE TABLE function_action;
 ALTER TABLE function_action AUTO_INCREMENT = 1;
 INSERT INTO `function_action` VALUES (1, 1, 1);
@@ -232,12 +231,265 @@ alter table delivery_detail add column cancel_quantity double(20, 2) NULL DEFAUL
 alter table delivery_detail add column cancel_confirm_date datetime(0) NULL DEFAULT NULL;
 
 
+
+
+/******************************* SRM_V30 *******************************/
 /* 2019-07-19 */
 alter table purchase_order_detail add column package_quantity double(16,6) NULL DEFAULT NULL;
 alter table purchase_order_detail add column delivered_package_quantity double(16,6) NULL DEFAULT NULL;
 alter table delivery_detail add column delivered_package_quantity double(16,6) NULL DEFAULT NULL;
 
+/****************************** SRM_V32 ********************************/
+/* 2019-07-17 */
+DROP TABLE IF EXISTS vendor_provide;
+DROP TABLE IF EXISTS unit;
+DROP TABLE IF EXISTS unit_provide;
+DROP TABLE IF EXISTS provide_class;
+DROP TABLE IF EXISTS negotiation_main;
+DROP TABLE IF EXISTS negotiation_detail;
+DROP TABLE IF EXISTS warning;
+DROP TABLE IF EXISTS measurement_unit;
 
-/* 2019-07-30 */
+
+/* 2019-07-22 */
+alter table account DROP column wangwang;
+alter table account DROP column yahoo;
+alter table account DROP column weixin;
+alter table account DROP column qq;
+alter table account DROP column gtalk;
+alter table account DROP column entry_time;
+
+/* 2019-07-25 */
+alter table purchase_order_detail DROP column nat_price;
+alter table purchase_order_detail DROP column nat_tax_price;
+alter table purchase_order_detail DROP column nat_money;
+alter table purchase_order_detail DROP column nat_sum;
+
 INSERT INTO `action` VALUES (12, '收货');
 INSERT INTO `function_action` VALUES (20, 7, 12);
+
+INSERT INTO `function` VALUES (8, '对账单管理');
+INSERT INTO `action` VALUES (13, '新建/提交');
+INSERT INTO `action` VALUES (14, '审核');
+INSERT INTO `action` VALUES (15, '发布');
+INSERT INTO `action` VALUES (16, '撤回');
+INSERT INTO `action` VALUES (17, '审批');
+INSERT INTO `action` VALUES (18, '传递ERP');
+
+INSERT INTO `function_action` VALUES (21, 8, 1); /*对账单 查看列表 */
+INSERT INTO `function_action` VALUES (22, 8, 13); /*对账单 新建/提交 */
+INSERT INTO `function_action` VALUES (23, 8, 14); /*对账单 审核 */
+INSERT INTO `function_action` VALUES (24, 8, 15); /*对账单 发布 */
+INSERT INTO `function_action` VALUES (25, 8, 16); /*对账单 撤回 */
+INSERT INTO `function_action` VALUES (26, 8, 17); /*对账单 审批 */
+INSERT INTO `function_action` VALUES (27, 8, 18); /*对账单 传递ERP */
+
+/* 2019-07-29 */
+INSERT INTO `function` VALUES (9, '出货看板');
+INSERT INTO `function_action` VALUES (30, 9, 1); /*出货看板 查看列表*/
+
+DROP TABLE IF EXISTS `task`;
+CREATE TABLE `task`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `make_id` int(11) NULL DEFAULT NULL,
+  `make_date` datetime(0) NULL DEFAULT NULL,
+  `statement_date` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+DROP TABLE IF EXISTS `task_log`;
+CREATE TABLE `task_log`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NULL DEFAULT NULL,
+  `vendor_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `state` int(1) NULL DEFAULT NULL,
+  `failed_reason` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `create_date` datetime(0) NULL DEFAULT NULL,
+  `statement_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+DROP TABLE IF EXISTS `attach_file`;
+CREATE TABLE `attach_file`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `row_no` int(11) NULL DEFAULT NULL,
+  `filename` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `original_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `date` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+DROP TABLE IF EXISTS `purchase_in_main`;
+CREATE TABLE `purchase_in_main`  (
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `bredvouch` int(1) NULL DEFAULT NULL,
+  `vendor_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `company_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `store_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `date` datetime(0) NULL DEFAULT NULL,
+  `verify_date` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`code`) USING BTREE
+) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+DROP TABLE IF EXISTS `purchase_in_detail`;
+CREATE TABLE `purchase_in_detail`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `row_no` int(11) NOT NULL,
+  `inventory_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `quantity` double(20, 4) NULL DEFAULT NULL,
+  `price` double NULL DEFAULT NULL,
+  `cost` double(20, 2) NULL DEFAULT NULL,
+  `tax` double(20, 2) NULL DEFAULT NULL,
+  `tax_price` double NULL DEFAULT NULL,
+  `tax_rate` double(20, 2) NULL DEFAULT NULL,
+  `tax_cost` double NULL DEFAULT NULL,
+  `state` int(1) NOT NULL DEFAULT 0,
+  `auto_id` int(20) NULL DEFAULT NULL,
+  `po_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `po_row_no` int(20) NULL DEFAULT NULL,
+  `delivery_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `delivery_row_no` int(11) NULL DEFAULT NULL,
+  `sync_date` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = MyISAM AUTO_INCREMENT = 62 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+DROP TABLE IF EXISTS `contract_main`;
+CREATE TABLE `contract_main`  (
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `date` datetime(0) NOT NULL,
+  `start_date` datetime(0) NOT NULL,
+  `end_date` datetime(0) NOT NULL,
+  `type` int(1) NOT NULL DEFAULT 1,
+  `kind` int(1) NOT NULL,
+  `company_id` int(255) NULL DEFAULT NULL,
+  `vendor_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `state` int(1) NOT NULL,
+  `tax_rate` float(16, 0) NOT NULL DEFAULT 17,
+  `project_no` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `quantity_type` int(1) NOT NULL,
+  `price_type` int(1) NOT NULL,
+  `base_price` double(16, 2) NULL DEFAULT NULL,
+  `floating_price` double(16, 2) NULL DEFAULT NULL,
+  `pay_mode` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `memo` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `make_id` int(11) NULL DEFAULT NULL,
+  `make_date` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`code`) USING BTREE
+) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+DROP TABLE IF EXISTS `contract_detail`;
+CREATE TABLE `contract_detail`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `row_no` int(11) NOT NULL,
+  `inventory_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `quantity` double(16, 4) NULL DEFAULT NULL,
+  `tax_price` double(16, 4) NULL DEFAULT NULL,
+  `memo` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `floating_direction` int(1) NULL DEFAULT NULL,
+  `floating_price` double(16, 4) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = MyISAM AUTO_INCREMENT = 30 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+DROP TABLE IF EXISTS `statement_main`;
+CREATE TABLE `statement_main`  (
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `date` datetime(0) NULL DEFAULT NULL,
+  `type` int(1) NOT NULL DEFAULT 1 COMMENT '1:采购对账, 2:委外对账',
+  `company_id` int(255) NULL DEFAULT NULL,
+  `vendor_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `state` int(1) NULL DEFAULT NULL,
+  `tax_rate` float(16, 0) NOT NULL DEFAULT 17,
+  `make_id` int(11) NULL DEFAULT NULL,
+  `make_date` datetime(0) NULL DEFAULT NULL,
+  `review_id` int(11) NULL DEFAULT NULL,
+  `review_date` datetime(0) NULL DEFAULT NULL,
+  `deploy_id` int(11) NULL DEFAULT NULL,
+  `deploy_date` datetime(0) NULL DEFAULT NULL,
+  `cancel_id` int(11) NULL DEFAULT NULL,
+  `cancel_date` datetime(0) NULL DEFAULT NULL,
+  `confirm_id` int(11) NULL DEFAULT NULL,
+  `confirm_date` datetime(0) NULL DEFAULT NULL,
+  `invoice_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '0个字节 (04113256；04113257；04113258；04113259)',
+  `invoice_state` int(1) NULL DEFAULT NULL COMMENT '发票状态(已开发票/发票已退回/发票已审核/已传递ERP)',
+  `invoice_type` int(1) NULL DEFAULT 1 COMMENT '发票类型(专用发票/普通发票）',
+  `invoice_make_id` int(11) NULL DEFAULT NULL,
+  `invoice_make_date` datetime(0) NULL DEFAULT NULL,
+  `erp_invoice_make_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `erp_invoice_make_date` datetime(0) NULL DEFAULT NULL,
+  `invoice_confirm_id` int(11) NULL DEFAULT NULL,
+  `invoice_confirm_date` datetime(0) NULL DEFAULT NULL,
+  `invoice_cancel_id` int(11) NULL DEFAULT NULL,
+  `invoice_cancel_date` datetime(0) NULL DEFAULT NULL,
+  `task_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `cost_sum` double(16, 2) NULL DEFAULT NULL,
+  `tax_cost_sum` double(16, 2) NULL DEFAULT NULL,
+  `adjust_cost_sum` double(16, 2) NULL DEFAULT NULL,
+  `tax_sum` double(16, 2) NULL DEFAULT NULL,
+  PRIMARY KEY (`code`) USING BTREE
+) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+DROP TABLE IF EXISTS `statement_detail`;
+CREATE TABLE `statement_detail`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `row_no` int(11) NULL DEFAULT NULL,
+  `pi_detail_id` int(11) NULL DEFAULT NULL,
+  `adjust_tax_cost` double(16, 2) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = MyISAM AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+
+/* 2019-08-05 */
+alter table purchase_order_main add column contract_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table purchase_order_main add column base_price double(16, 2) NULL DEFAULT NULL;
+
+alter table purchase_order_detail add column price_from int(1) NOT NULL DEFAULT 0;
+alter table purchase_order_detail add column contract_code varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table purchase_order_detail add column base_price double(16, 2) NULL DEFAULT NULL;
+
+/* 2019-08-06 */
+alter table statement_main modify column tax_rate int(2) NOT NULL DEFAULT 16;
+
+
+/* 2019-08-12 */
+alter table statement_detail add column tax_rate int(2) NOT NULL DEFAULT 16;
+
+INSERT INTO `function` VALUES (11, '合同管理');
+INSERT INTO `function_action` VALUES (41, 11, 1); 
+INSERT INTO `function_action` VALUES (42, 11, 13);  
+
+
+/* 2019-08-13 */
+INSERT INTO `function` VALUES (10, '询价管理');
+INSERT INTO `action` VALUES (19, '新建/发布');
+INSERT INTO `action` VALUES (20, '通过/拒绝');
+INSERT INTO `action` VALUES (21, '审核/退回');
+INSERT INTO `action` VALUES (22, '归档');
+INSERT INTO `function_action` VALUES (31, 10, 1); 
+INSERT INTO `function_action` VALUES (32, 10, 19); 
+INSERT INTO `function_action` VALUES (33, 10, 20); 
+INSERT INTO `function_action` VALUES (34, 10, 21); 
+INSERT INTO `function_action` VALUES (35, 10, 22); 
+
+alter table venpriceadjust_main DROP column attach_original_name;
+alter table venpriceadjust_main DROP column attach_file_name;
+
+INSERT INTO `function` VALUES (12, '采购动态');
+INSERT INTO `function_action` VALUES (51, 12, 1); 
+INSERT INTO `function_action` VALUES (52, 12, 2); 
+INSERT INTO `function_action` VALUES (53, 12, 15); 
+
+DROP TABLE IF EXISTS `message`;
+alter table notice DROP column to_unit_account;
+alter table notice DROP column vendor_code_list;
+alter table notice DROP column to_all_vendor;

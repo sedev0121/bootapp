@@ -7,63 +7,107 @@ public class StatementSearchResult implements Serializable {
 	private static final long serialVersionUID = -2320094674551818628L;
 
 	String code;
-
-	String state;
-
-	String maker;
-
-	String makedate;
-
-	String verifier;
-
-	String verifydate;
-
-	String confirmer;
-
-	String confirmdate;
-
-	String invoicenummaker;
-
-	String invoicenumdate;
-
-	String u8invoicemaker;
-
-	String u8invoicedate;
-
-	String remark;
-
+	String date;
 	String type;
-
-	String invoice_code;
-
-	String vendor_name;
-
+	String company_name;
 	String vendor_code;
+	String vendor_name;
+	String vendor_address;
+	String state;
+	
+	String make_date;	
+	String review_date;
+	String deploy_date;
+	String confirm_date;
+	String invoice_code;
+	String invoice_state;
 	String invoice_type;
 
-	public StatementSearchResult(String code, String state, String maker, String makedate, String verifier,
-			String verifydate, String confirmer, String confirmdate, String invoicenummaker, String invoicenumdate,
-			String u8invoicemaker, String u8invoicedate, String remark, String invoice_code, String vendor_name,
-			String vendor_code, String type, String invoice_type) {
+	String erp_invoice_make_name;
+	String erp_invoice_make_date;
+	
+	String task_code;
+	String cost_sum;
+	String tax_cost_sum;
+	String adjust_cost_sum;
+	String tax_sum;
+
+	public StatementSearchResult(String code, String date, String type, String company_name, String vendor_code, 
+			String vendor_name, String vendor_address, String state, String make_date, String review_date, String deploy_date, String confirm_date,
+			String invoice_code, String invoice_state, String invoice_type, String erp_invoice_make_name, String erp_invoice_make_date,
+			String task_code, String cost_sum, String tax_cost_sum, String adjust_cost_sum, String tax_sum) {
 
 		this.code = code;
-		this.state = state;
-		this.maker = maker;
-		this.makedate = makedate;
-		this.verifier = verifier;
-		this.verifydate = verifydate;
-		this.confirmdate = confirmdate;
-		this.confirmer = confirmer;
-		this.remark = remark;
-		this.invoice_code = invoice_code;
+		this.date = date;
+		this.type = type;
+		this.company_name = company_name;
 		this.vendor_code = vendor_code;
 		this.vendor_name = vendor_name;
-		this.type = type;
-		this.invoicenumdate = invoicenumdate;
-		this.invoicenummaker = invoicenummaker;
-		this.u8invoicedate = u8invoicedate;
-		this.u8invoicemaker = u8invoicemaker;
+		this.vendor_address = vendor_address;
+		this.state = state;
+		this.make_date = make_date;
+		this.review_date = review_date;
+		this.deploy_date = deploy_date;
+		this.confirm_date = confirm_date;
+		this.invoice_code = invoice_code;
+		this.invoice_state = invoice_state;
 		this.invoice_type = invoice_type;
+		this.erp_invoice_make_name = erp_invoice_make_name;
+		this.erp_invoice_make_date = erp_invoice_make_date;
+		
+		this.task_code = task_code;
+		this.cost_sum = cost_sum;
+		this.tax_cost_sum = tax_cost_sum;
+		this.adjust_cost_sum = adjust_cost_sum;
+		this.tax_sum = tax_sum;
+	}
+
+	public String getTask_code() {
+		return task_code;
+	}
+
+	public void setTask_code(String task_code) {
+		this.task_code = task_code;
+	}
+
+	public String getCost_sum() {
+		return cost_sum;
+	}
+
+	public void setCost_sum(String cost_sum) {
+		this.cost_sum = cost_sum;
+	}
+
+	public String getTax_cost_sum() {
+		return tax_cost_sum;
+	}
+
+	public void setTax_cost_sum(String tax_cost_sum) {
+		this.tax_cost_sum = tax_cost_sum;
+	}
+
+	public String getAdjust_cost_sum() {
+		return adjust_cost_sum;
+	}
+
+	public void setAdjust_cost_sum(String adjust_cost_sum) {
+		this.adjust_cost_sum = adjust_cost_sum;
+	}
+
+	public String getTax_sum() {
+		return tax_sum;
+	}
+
+	public void setTax_sum(String tax_sum) {
+		this.tax_sum = tax_sum;
+	}
+
+	public String getVendor_address() {
+		return vendor_address;
+	}
+
+	public void setVendor_address(String vendor_address) {
+		this.vendor_address = vendor_address;
 	}
 
 	public String getCode() {
@@ -74,60 +118,12 @@ public class StatementSearchResult implements Serializable {
 		this.code = code;
 	}
 
-	public String getInvoice_type() {
-		return invoice_type;
+	public String getDate() {
+		return date;
 	}
 
-	public void setInvoice_type(String invoice_type) {
-		this.invoice_type = invoice_type;
-	}
-
-	public String getInvoicenummaker() {
-		return invoicenummaker;
-	}
-
-	public void setInvoicenummaker(String invoicenummaker) {
-		this.invoicenummaker = invoicenummaker;
-	}
-
-	public String getInvoicenumdate() {
-		return invoicenumdate;
-	}
-
-	public void setInvoicenumdate(String invoicenumdate) {
-		this.invoicenumdate = invoicenumdate;
-	}
-
-	public String getU8invoicemaker() {
-		return u8invoicemaker;
-	}
-
-	public void setU8invoicemaker(String u8invoicemaker) {
-		this.u8invoicemaker = u8invoicemaker;
-	}
-
-	public String getU8invoicedate() {
-		return u8invoicedate;
-	}
-
-	public void setU8invoicedate(String u8invoicedate) {
-		this.u8invoicedate = u8invoicedate;
-	}
-
-	public String getConfirmer() {
-		return confirmer;
-	}
-
-	public void setConfirmer(String confirmer) {
-		this.confirmer = confirmer;
-	}
-
-	public String getConfirmdate() {
-		return confirmdate;
-	}
-
-	public void setConfirmdate(String confirmdate) {
-		this.confirmdate = confirmdate;
+	public void setDate(String date) {
+		this.date = date;
 	}
 
 	public String getType() {
@@ -138,68 +134,12 @@ public class StatementSearchResult implements Serializable {
 		this.type = type;
 	}
 
-	public String getState() {
-		return state;
+	public String getCompany_name() {
+		return company_name;
 	}
 
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public String getMaker() {
-		return maker;
-	}
-
-	public void setMaker(String maker) {
-		this.maker = maker;
-	}
-
-	public String getMakedate() {
-		return makedate;
-	}
-
-	public void setMakedate(String makedate) {
-		this.makedate = makedate;
-	}
-
-	public String getVerifier() {
-		return verifier;
-	}
-
-	public void setVerifier(String verifier) {
-		this.verifier = verifier;
-	}
-
-	public String getVerifydate() {
-		return verifydate;
-	}
-
-	public void setVerifydate(String verifydate) {
-		this.verifydate = verifydate;
-	}
-
-	public String getRemark() {
-		return remark;
-	}
-
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-
-	public String getInvoice_code() {
-		return invoice_code;
-	}
-
-	public void setInvoice_code(String invoice_code) {
-		this.invoice_code = invoice_code;
-	}
-
-	public String getVendor_name() {
-		return vendor_name;
-	}
-
-	public void setVendor_name(String vendor_name) {
-		this.vendor_name = vendor_name;
+	public void setCompany_name(String company_name) {
+		this.company_name = company_name;
 	}
 
 	public String getVendor_code() {
@@ -210,4 +150,93 @@ public class StatementSearchResult implements Serializable {
 		this.vendor_code = vendor_code;
 	}
 
+	public String getVendor_name() {
+		return vendor_name;
+	}
+
+	public void setVendor_name(String vendor_name) {
+		this.vendor_name = vendor_name;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getMake_date() {
+		return make_date;
+	}
+
+	public void setMake_date(String make_date) {
+		this.make_date = make_date;
+	}
+
+	public String getReview_date() {
+		return review_date;
+	}
+
+	public void setReview_date(String review_date) {
+		this.review_date = review_date;
+	}
+
+	public String getDeploy_date() {
+		return deploy_date;
+	}
+
+	public void setDeploy_date(String deploy_date) {
+		this.deploy_date = deploy_date;
+	}
+
+	public String getConfirm_date() {
+		return confirm_date;
+	}
+
+	public void setConfirm_date(String confirm_date) {
+		this.confirm_date = confirm_date;
+	}
+
+	public String getInvoice_code() {
+		return invoice_code;
+	}
+
+	public void setInvoice_code(String invoice_code) {
+		this.invoice_code = invoice_code;
+	}
+
+	public String getInvoice_state() {
+		return invoice_state;
+	}
+
+	public void setInvoice_state(String invoice_state) {
+		this.invoice_state = invoice_state;
+	}
+
+	public String getInvoice_type() {
+		return invoice_type;
+	}
+
+	public void setInvoice_type(String invoice_type) {
+		this.invoice_type = invoice_type;
+	}
+
+	public String getErp_invoice_make_name() {
+		return erp_invoice_make_name;
+	}
+
+	public void setErp_invoice_make_name(String erp_invoice_make_name) {
+		this.erp_invoice_make_name = erp_invoice_make_name;
+	}
+
+	public String getErp_invoice_make_date() {
+		return erp_invoice_make_date;
+	}
+
+	public void setErp_invoice_make_date(String erp_invoice_make_date) {
+		this.erp_invoice_make_date = erp_invoice_make_date;
+	}
+	
+	
 }

@@ -5,18 +5,48 @@ function extractLast( term ) {
   return split( term ).pop();
 }
 
+function import_csv_as_text(callback) {
+	$("#import_file").click();
+	$("#import_file").off().change(function(evt) {
+		var reader = new FileReader();
+		reader.onload = function(evt) {
+			if(evt.target.readyState != 2) return;
+      if(evt.target.error) {
+          alert('Error while reading file');
+          return;
+      }
+
+      var filecontent = evt.target.result;
+      $("#import_file").val(null);
+      if (callback) {
+      	callback(filecontent);
+      }
+    };
+
+  	reader.readAsText(evt.target.files[0]);
+	});
+};
+
 var special_regex = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
 var App = function() {
-  var inquery_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"通过"}, {id:6, text:"审核"}, {id:7, text:"归档"}];
+	var price_from_data = [{id:0, text:' '}, {id:1, text:'合同'}];
+	var floating_direction = [{id:1, text:'向上浮动'}, {id:2, text:'向下浮动'}, {id:3, text:'上下浮动'}];
+	var contract_type = [{id:1, text:'框架合同'}, {id:2, text:'非框架合同'}];
+	var contract_kind = [{id:1, text:'采购合同'}, {id:2, text:'加工合同'}, {id:3, text:'租赁合同'}, {id:4, text:'维保合同'}];
+	var contract_price_type = [{id:1, text:'基材浮动区间价格'}, {id:2, text:'固定价格'}];
+	var contract_quantity_type = [{id:1, text:'不控制'}, {id:2, text:'严格控制'}];
+	var contract_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"已审核"}, {id:4, text:"已终止"}];
+	
+  var inquery_state_data = [{id:1, text:"新建"}, {id:2, text:"发布"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"通过"}, {id:6, text:"审核"}, {id:7, text:"归档"}];
   var inquery_type = [{id:1, text:'常规报价'}, {id:2, text:'区间报价'}, {id:3, text:'新品报价'}];
   var inquery_provide_type = [{id:1, text:'采购'}, {id:2, text:'委外'}];
   var purchase_order_state_data = [{id:0, text:'审核'}, {id:1, text:'发布'}, {id:2, text:'确认'}, {id:3, text:'关闭'}];
-  var purchase_in_state_data = [{id:0, text:'未对账'}, {id:1, text:'对账中'}, {id:2, text:'已对账'}];
+  var purchase_in_state_data = [{id:0, text:'未对账'}, {id:1, text:'对账中'}, {id:2, text:'已开票'}];
   var purchase_in_bredvouch_data = [{id:0, text:'蓝字'}, {id:1, text:'红字'}];
-  var statement_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"审核/发布"}, {id:4, text:"退回"}, {id:5, text:"确认"}, {id:6, text:"已生成U8发票"}, {id:7, text:"发票退回"}];
+  var invoice_state_data = [{id:0, text:"未开发票"}, {id:1, text:"已开发票"}, {id:2, text:"发票已审核"}, {id:3, text:"发票已退回"}, {id:4, text:"已传递ERP"}];
+  var statement_state_data = [{id:1, text:"新建"}, {id:2, text:"已提交"}, {id:3, text:"已审核"}, {id:4, text:"已发布"}, {id:6, text:"已确认"}, {id:7, text:"已退回"}];
   var notice_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"发布"}, {id:4, text:"退回"}];
-  var negotiation_state_data = [{id:1, text:"新建"}, {id:2, text:"议价中"}, {id:3, text:"已报价"}, {id:4, text:"退回"}, {id:5, text:"已完成"}];
   
   var role_data = [{id:"ROLE_BUYER", text:"采购员"}, {id:"ROLE_VENDOR", text:"供应商"}, {id:"ROLE_ADMIN", text:"管理员"}];
   var account_state_data = [{id:1, text:"启用"}, {id:0, text:"停用"}];
@@ -49,8 +79,10 @@ var App = function() {
   
 
   function escapeComma(str) {
-  	console.log(str);
+  	
   	str = str + '';
+  	str = str.replace(/null/g, '');
+  	str = str.replace(/undefined/g, '');
     if (str && str.indexOf(',') > -1) {
       return '"' + str + '"';
     } else {
@@ -59,7 +91,7 @@ var App = function() {
   }
   
   function isExportIgnoreCell(column_setting) {
-    if (column_setting.className == 'select-checkbox' || column_setting.className == 'ignore-export') {
+    if (column_setting.className && (column_setting.className == 'select-checkbox' || column_setting.className.indexOf('ignore-export')>-1) || column_setting.visible === false) {
         return true;
     } else {
         return false;
@@ -178,7 +210,7 @@ var App = function() {
 		  }
 		},
     getBoxCount : function (total, countPerBox) {
-		  if (!countPerBox || !total) {
+		  if (!countPerBox || countPerBox == "0" || !total) {
 		  	return '';
 		  } else {
 		  	var boxCount = parseFloat(total)/parseFloat(countPerBox);
@@ -202,10 +234,11 @@ var App = function() {
 		  	return boxCount;
 		  }
 		},
-    formatNumber : function (i, length) {
-      //var x = Math.pow(10, Number(length) + 1);      
-      //return (Number(App.intVal(i)) + (1 / x)).toFixed(length);
-      
+    formatNumber : function (i, length) {      
+    	if (isNaN(i) || i == Infinity) {
+    		return '';
+    	}
+    	
       var num = App.intVal(i);      
       return parseFloat((+(Math.round(+(num + 'e' + length)) + 'e' + -length)).toFixed(length));
       
@@ -225,6 +258,9 @@ var App = function() {
     },
     priceNumber : function (i) {
       return App.formatNumber(i, 6);
+    },
+    floatingPriceNumber : function (i) {
+      return App.formatNumber(i, 2);
     },
     costNumber : function (i) {
     	var result = App.formatNumber(i, 2);
@@ -267,10 +303,10 @@ var App = function() {
       })
     },
     getSelect2Options: function(search_url) {
-      return $.extend(true, {ajax:{url:search_url}}, select2_default_options);
+      return $.extend(true, select2_default_options, {ajax:{url:search_url}});
     },
     getSelect2OptionsWithFirstOption: function(search_url, firstOption) {
-    	return $.extend(true, select2_default_options, {      	
+    	return $.extend(true, {}, select2_default_options, {      	
       	ajax:{
       		url:search_url, 
       		processResults: function(data, page) {
@@ -282,7 +318,7 @@ var App = function() {
       });
     },
     getSelect2OptionsWithAll: function(search_url) {
-      return $.extend(true, select2_default_options, {      	
+      return $.extend(true, {}, select2_default_options, {      	
       	ajax:{
       		url:search_url, 
       		processResults: function(data, page) {
@@ -304,8 +340,23 @@ var App = function() {
     getInqueryStateData: function() {
       return inquery_state_data;
     },
-    getNegotiationStateData: function() {
-      return negotiation_state_data;
+    getContractStateData: function() {
+      return contract_state_data;
+    },
+    getContractTypeData: function() {
+      return contract_type;
+    },
+    getFloatingDirectionData: function() {
+      return floating_direction;
+    },
+    getContractKindData: function() {
+      return contract_kind;
+    },
+    getContractPriceData: function() {
+      return contract_price_type;
+    },
+    getContractQuantityData: function() {
+      return contract_quantity_type;
     },
     getDeliveryStateData: function() {
       return delivery_state_data;
@@ -376,14 +427,23 @@ var App = function() {
     getStatementStateData: function() {
       return statement_state_data;
     },
+    getInvoiceStateData: function() {
+      return invoice_state_data;
+    },
     getNoticeStateDataWithAll: function() {
       return [{id:-1, text:"　"}, ...notice_state_data];
+    },
+    getInvoiceStateDataWithAll: function() {
+      return [{id:-1, text:"　"}, ...invoice_state_data];
     },
     getStatementTypeDataWithAll: function() {
       return [{id:-1, text:"　"}, ...statement_type_data];
     },
     getStatementStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...statement_state_data];
+    },
+    getContractStateDataWithAll: function() {
+      return [{id:0, text:"　"}, ...contract_state_data];
     },
     getPurchaseInStateDataWithAll: function() {
       return [{id:-1, text:"　"}, ...purchase_in_state_data];
@@ -396,9 +456,6 @@ var App = function() {
     },
     getInqueryStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...inquery_state_data];
-    },
-    getNegotiationStateDataWithAll: function() {
-      return [{id:0, text:"　"}, ...negotiation_state_data];
     },
     getDeliveryStateDataWithAll: function() {
       return [{id:0, text:"　"}, ...delivery_state_data];
@@ -418,15 +475,15 @@ var App = function() {
     getDeliveryStateClass: function( td, cellData, rowData, row, col ) {
       $(td).addClass('delivery_state_' + cellData);
     },
+    getStateClass: function( td, cellData, rowData, row, col ) {
+      $(td).addClass('state_' + cellData);
+    },
     getNoticeReadStateClass: function( td, cellData, rowData, row, col ) {
       if (!rowData.read_date && rowData.state==3)
         $(td).addClass('new');
     },
     getInqueryStateOfId: function(id) {
       return getLabelOfId(inquery_state_data, id);
-    },
-    getNegotiationStateOfId: function(id) {
-      return getLabelOfId(negotiation_state_data, id);
     },
     getDeliveryStateOfId: function(id) {
       return getLabelOfId(delivery_state_data, id);
@@ -463,6 +520,30 @@ var App = function() {
     },
     getStatementStateOfId: function(id) {
       return getLabelOfId(statement_state_data, id);
+    },
+    getContractStateOfId: function(id) {
+      return getLabelOfId(contract_state_data, id);
+    },
+    getFloatingDirectionOfId: function(id) {
+      return getLabelOfId(floating_direction, id);
+    },
+    getPriceFromOfId: function(id) {
+      return getLabelOfId(price_from_data, id);
+    },
+    getContractTypeOfId: function(id) {
+      return getLabelOfId(contract_type, id);
+    },
+    getContractKindOfId: function(id) {
+      return getLabelOfId(contract_kind, id);
+    },
+    getContractQuantityOfId: function(id) {
+      return getLabelOfId(contract_quantity_type, id);
+    },
+    getContractPriceOfId: function(id) {
+      return getLabelOfId(contract_price_type, id);
+    },
+    getInvoiceStateOfId: function(id) {
+      return getLabelOfId(invoice_state_data, id);
     },
     getPurchaseOrderStateOfId: function(id) {
       return getLabelOfId(purchase_order_state_data, id);
@@ -623,15 +704,14 @@ var App = function() {
           if (isExportIgnoreCell(column_setting)) {
             continue;
           }
-          if (column_setting.data == "row_no") {
+          if (column_setting.data == "row_no" || column_setting.render == $.fn.rowno_renderer) {
           	cell_value = row_index + 1;
           } else if (column_setting.render) {
-          	cell_value = escapeComma(column_setting.render(null, null, row_data));
+          	cell_value = escapeComma(column_setting.render(row_data[[column_setting.data]], null, row_data));
           } else {
           	cell_value = escapeComma(row_data[[column_setting.data]]);
           }
           
-          console.log(cell_value);
           if (!cell_value || cell_value == undefined || cell_value == null || cell_value == 'undefined' || cell_value == 'null') {
           	cell_value = '';
           }
@@ -734,6 +814,10 @@ $(document).ready(function() {
 			timeout: 150000, 
 		},
 	});
+	
+	$.fn.rowno_renderer = function (data, type, row, meta) {
+    return meta.row + meta.settings._iDisplayStart + 1;
+	}
 	
 	$.fn.date_renderer = function (date_str) {
 		if (date_str == undefined) {

@@ -74,8 +74,19 @@
 				<ul>
 					<li th:classappend="${#strings.startsWith(#request.requestURI,'/purchaseorder')} ? active : ''"><a th:href="@{/purchaseorder}">订单管理</a></li>
 					<li th:classappend="${#strings.startsWith(#request.requestURI,'/delivery')} ? active : ''"><a th:href="@{/delivery}">发货单管理</a></li>
-					<li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/box')} ? active : ''"><a th:href="@{/box}">箱码管理</a></li>
-					<li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/store')} or ${#strings.startsWith(#request.requestURI,'/classofbox')} or ${#strings.startsWith(#request.requestURI,'/company')} or ${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')} or ${#strings.startsWith(#request.requestURI,'/baseprice')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
+					<li sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/box')} ? active : ''">
+						<a th:href="@{/box}">箱码管理</a>
+					</li>
+					<!-- li sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('出货看板-查看列表')" th:classappend="${#strings.startsWith(#request.requestURI,'/ship')} ? active : ''" ><a th:href="@{/ship}">出货看板</a></li>
+					<li sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('合同管理-查看列表')" th:classappend="${#strings.startsWith(#request.requestURI,'/contract')} ? active : ''" ><a th:href="@{/contract}">合同管理</a></li-->
+					<li class="dropdown" th:classappend="${#strings.startsWith(#request.requestURI,'/task')} or ${#strings.startsWith(#request.requestURI,'/purchasein')} or ${#strings.startsWith(#request.requestURI,'/statement')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">对账单管理 </a>
+						<ul class="dropdown-menu">
+							<li><a sec:authorize="hasRole('ROLE_BUYER')" th:href="@{/task}">账单任务</a></li>
+							<li><a sec:authorize="hasRole('ROLE_BUYER')" th:href="@{/purchasein}">入库单管理</a></li>
+							<li><a th:href="@{/statement}">对账单管理</a></li>
+						</ul>
+					</li>
+					<li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/store')} or ${#strings.startsWith(#request.requestURI,'/classofbox')} or ${#strings.startsWith(#request.requestURI,'/company')} or ${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
 						<ul class="dropdown-menu">
 							<li><a th:href="@{/vendorclass}">供应商分类</a></li>
 							<li><a th:href="@{/vendor}">供应商档案</a></li>
@@ -91,7 +102,8 @@
 							<li><a th:href="@{/buyer}">采购员用户管理</a></li>
 							<li><a th:href="@{/seller}">供应商用户管理</a></li>
 							<li><a th:href="@{/permission_group}">权限管理</a></li>
-						</ul></li>
+						</ul>
+					</li>
 				</ul>
 			</div>
 			<!-- BEGIN NAVIGATION -->
@@ -109,6 +121,7 @@
 	<!-- Header END -->
 	<div class="main">
 		<div class="container" layout:fragment="content"></div>
+		<input type="file" class="hidden" id="import_file"/>
 	</div>
 	<script th:src="@{/assets/plugins/jquery.min.js}" type="text/javascript"></script>
 	<script th:src="@{/assets/plugins/jquery-migrate.min.js}" type="text/javascript"></script>
@@ -140,6 +153,7 @@
 	<script th:src="@{/assets/plugins/select2/js/select2.min.js}" type="text/javascript"></script>
 	<script th:src="@{/assets/plugins/select2/js/i18n/zh-CN.js}" type="text/javascript"></script>
 	<script th:src="@{/assets/plugins/jquery.blockui.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/jquery.mask.min.js}" type="text/javascript"></script>
 	<script th:src="@{/assets/plugins/session-timeout/bootstrap-session-timeout.min.js}" type="text/javascript"></script>
 	<script th:src="@{/assets/corporate/scripts/layout.js}" type="text/javascript"></script>
 	<script th:src="@{/assets/corporate/scripts/app.js}" type="text/javascript"></script>

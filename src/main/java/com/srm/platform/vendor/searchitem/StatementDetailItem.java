@@ -3,72 +3,39 @@ package com.srm.platform.vendor.searchitem;
 public interface StatementDetailItem {
 
 	// statement_detail table info
-	Long getPurchase_in_detail_id();
-
 	Long getId();
-
-	Float getClosed_quantity();
-
-	Float getRemain_quantity();
-
-	Double getClosed_price();
-
-	Double getClosed_money();
-
-	Double getClosed_tax_price();
-
-	Double getClosed_tax_money();
-
+	Long getRow_no();
+	Long getPi_detail_id();
 	String getType();
-
+	String getAdjust_tax_cost();
+	
 	// purchase_in_detail table info
-	String getPurchase_in_code();
-
-	String getQuantity();
-
+	String getPi_code();
+	String getPi_date();
+	String getPi_quantity();
+	String getPi_auto_id();
+	String getTax_rate();
+	String getTax();
 	String getPrice();
-
 	String getCost();
-
 	String getTax_price();
-
 	String getTax_cost();
 
-	String getTax_rate();
-
-	String getUnitname();
-
-	Integer getRowno();
-
-	String getPurchase_in_date();
 
 	// inventory table info
-	String getInventoryname();
-
-	String getInventorycode();
-
+	String getInventory_name();
+	String getInventory_code();
 	String getSpecs();
-
-	String getMaterial_quantity();
-
-	String getMaterial_tax_price();
-
-	String getReal_quantity();
-
-	String getYuanci();
-
-	String getYinci();
-
-	String getUnit_weight();
-
-	String getMemo();
-
+	String getUnitname();
+	
+	//purchase_order info
+	String getConfirmed_memo();
 	String getPo_code();
-
-	String getNat_price();
-
-	String getNat_tax_price();
-
-	String getNat_tax_rate();
+	String getPo_row_no();
+	
+	//delivery info
+	String getDelivery_code();
+	String getDelivered_quantity();
+	String getDelivery_row_no();
 
 }

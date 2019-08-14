@@ -84,10 +84,7 @@ public class VenPriceAdjustMain {
 
 	Date dpublishdate;
 	
-	private String attachFileName;
-	private String attachOriginalName;
-
-	public VenPriceAdjustMain() {
+	public VenPriceAdjustMain(AccountRepository accountRepository) {
 
 		this.ccode = Utils.generateId();
 		this.isupplytype = 1;
@@ -100,10 +97,16 @@ public class VenPriceAdjustMain {
 		cal.setTime(this.dstartdate);
 		cal.add(Calendar.MONTH, 1);
 		this.denddate = cal.getTime();
+		this.maker = accountRepository
+				.findOneByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 		this.reviewer = new Account();
 		this.verifier = new Account();
 		this.publisher = new Account();
 		this.vendor = this.maker.getVendor();
+
+	}
+
+	public VenPriceAdjustMain() {
 
 	}
 
@@ -113,23 +116,6 @@ public class VenPriceAdjustMain {
 
 	public void setCcode(String ccode) {
 		this.ccode = ccode;
-	}
-
-	
-	public String getAttachFileName() {
-		return attachFileName;
-	}
-
-	public void setAttachFileName(String attachFileName) {
-		this.attachFileName = attachFileName;
-	}
-
-	public String getAttachOriginalName() {
-		return attachOriginalName;
-	}
-
-	public void setAttachOriginalName(String attachOriginalName) {
-		this.attachOriginalName = attachOriginalName;
 	}
 
 	public Integer getCreatetype() {

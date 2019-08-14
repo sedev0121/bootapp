@@ -10,71 +10,87 @@
 		<div class="btn-group-bar">
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
 				<a class="btn btn-primary" id="deploy" th:if="${(main.srmstate==0 && canDeploy)}"><i class="fa fa-share"></i> 发布</a> 
+				<a class="btn btn-warning" id="negotiate" th:if="${(main.srmstate==0 && canDeploy)}"><i class="fa fa-comments"></i> 协议采购</a>
 				<a class="btn btn-primary" id="confirm" sec:authorize="hasRole('ROLE_VENDOR')" th:if="${main.srmstate==1}"><i class="fa fa-arrow-up"></i> 确认</a> 
 				<a class="btn btn-danger" id="close" th:if="${main.srmstate>=1 && main.srmstate!=3 && canClose}"><i class="fa fa-remove"></i> 订单关闭</a>
 				<a class="btn btn-primary" id="close_row" th:if="${(main.srmstate>=1 && main.srmstate<3 && canCloseRow)}"><i class="fa fa-undo"></i> 行关闭</a> 
 				<a class="btn btn-primary" id="export"><i class="fa fa-print"></i> 导出明细</a>
+				<a class="btn btn-primary" id="print"><i class="fa fa-print"></i> 打印</a>
 				<a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<div class="row">
-					<div class="col-md-2">
-						<label>订单编号： </label> <input type="text" id="code" class="form-control" th:value="${main.code}" readonly />
+				<form id="form" th:action="@{/purchaseorder/update}" method="post">
+					<div class="row">
+						<div class="col-md-2">
+							<label>订单编号： </label> 
+							<input type="text" id="code" class="form-control" th:value="${main.code}" readonly />
+						</div>
+						<div class="col-md-2">
+							<label>订单日期： </label> 
+							<input type="text" class="form-control" th:value="${#dates.format(main.orderdate, 'yyyy-MM-dd')}" readonly />
+						</div>
+						<div class="col-md-2">
+							<label>采购类型： </label> 
+							<input type="text" class="form-control" th:value="${main.purchaseTypeName}" readonly />
+						</div>
+						<div class="col-md-2">
+							<label for="state">订单状态：</label> 
+							<select id="state" class="form-control" readonly>
+							</select>
+						</div>
+						<div class="col-md-2">
+							<label for="state">合同编号：</label> 
+							<input type="text" class="form-control" id="contract_code" name="contract_code" th:value="${main.contractCode}" readonly />
+							</select>
+						</div>
+						<div class="col-md-2">
+							<label for="state">基材价格：</label> 
+							<input type="number" class="form-control" id="base_price" name="base_price" th:value="${main.basePrice}" readonly />
+							</select>
+						</div>
 					</div>
-					<div class="col-md-2">
-						<label>订单日期： </label> <input type="text" class="form-control" th:value="${#dates.format(main.orderdate, 'yyyy-MM-dd')}" readonly />
+					<div class="row">
+						<div class="col-md-2">
+							<label>创建人： </label> <input type="text" class="form-control" th:value="${main.maker}" readonly />
+						</div>
+						<div class="col-md-2">
+							<label>创建日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.makedate, 'yyyy-MM-dd')}" readonly />
+						</div>
+						<div class="col-md-2">
+							<label>发布人： </label> <input type="text" class="form-control" th:value="${main.deployer?.realname}" readonly />
+						</div>
+						<div class="col-md-2">
+							<label>发布日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.deploydate, 'yyyy-MM-dd')}" readonly />
+						</div>
+						<div class="col-md-2">
+							<label>确认人： </label> <input type="text" class="form-control" th:value="${main.reviewer?.realname}" readonly />
+						</div>
+						<div class="col-md-2">
+							<label>确认日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.reviewdate, 'yyyy-MM-dd')}" readonly />
+						</div>
 					</div>
-					<div class="col-md-2">
-						<label>采购类型： </label> <input type="text" class="form-control" th:value="${main.purchaseTypeName}" readonly />
+					<div class="row">
+						<div class="col-md-2">
+							<label>供应商: </label> <input type="text" class="form-control" th:value="${main.vendor?.name}" readonly />
+						</div>
+						<div class="col-md-2">
+							<label>业务实体： </label> <input type="text" class="form-control" th:value="${main.company?.name}" readonly />
+						</div>
+						<input type="hidden" id="save_state"/>
+						<input type="hidden" id="store_set" th:value="${main.store?.isAcceptSet}"/>
+						<div class="col-md-2">
+							<label>收货仓库： </label> 
+							<select name="store" id="store" class="form-control">
+								<option th:if="${main.store != null}" th:value="${main.store?.id}" th:text="${main.store?.name}" selected="selected"></option>
+							</select>
+						</div>
+						<div class="col-md-6">
+							<label>订单摘要： </label> <input type="text" class="form-control" th:value="${main.remark}" readonly />
+						</div>
 					</div>
-					<div class="col-md-2">
-						<label for="state">订单状态：</label> <select name="state" id="state" class="form-control" readonly>
-						</select>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2">
-						<label>创建人： </label> <input type="text" class="form-control" th:value="${main.maker}" readonly />
-					</div>
-					<div class="col-md-2">
-						<label>创建日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.makedate, 'yyyy-MM-dd')}" readonly />
-					</div>
-					<div class="col-md-2">
-						<label>发布人： </label> <input type="text" class="form-control" th:value="${main.deployer?.realname}" readonly />
-					</div>
-					<div class="col-md-2">
-						<label>发布日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.deploydate, 'yyyy-MM-dd')}" readonly />
-					</div>
-					<div class="col-md-2">
-						<label>确认人： </label> <input type="text" class="form-control" th:value="${main.reviewer?.realname}" readonly />
-					</div>
-					<div class="col-md-2">
-						<label>确认日期：</label> <input type="text" class="form-control" th:value="${#dates.format(main.reviewdate, 'yyyy-MM-dd')}" readonly />
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2">
-						<label>供应商: </label> <input type="text" class="form-control" th:value="${main.vendor?.name}" readonly />
-					</div>
-					<div class="col-md-2">
-						<label>业务实体： </label> <input type="text" class="form-control" th:value="${main.company?.name}" readonly />
-					</div>
-					<form id="form" th:action="@{/purchaseorder/update}" method="post">
-					<input type="hidden" id="save_state"/>
-					<input type="hidden" id="store_set" th:value="${main.store?.isAcceptSet}"/>
-					<div class="col-md-2">
-						<label>收货仓库： </label> 
-						<select name="store" id="store" class="form-control">
-							<option th:if="${main.store != null}" th:value="${main.store?.id}" th:text="${main.store?.name}" selected="selected"></option>
-						</select>
-					</div>
-					</form>
-					<div class="col-md-6">
-						<label>订单摘要： </label> <input type="text" class="form-control" th:value="${main.remark}" readonly />
-					</div>
-				</div>
+				</form>				
 				<div class="row margin-top-10">
 					<div class="col-lg-12">
 						<div class="detail-tabs margin-bottom-30">
@@ -85,32 +101,7 @@
 								</ul>
 								<div class="tab-content">
 									<div id="tab-1" class="tab-pane row-fluid fade in active">
-										<table id="basic_info" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-											<tfoot>
-												<tr>
-													<th colspan="6" class="dt-center">合计</th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th colspan="3"></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th colspan="3"></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th></th>
-													<th colspan="5"></th>
-												</tr>
-											</tfoot>
+										<table id="basic_info" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">											
 										</table>
 									</div>
 									<div id="tab-2" class="tab-pane row-fluid fade in">
@@ -142,6 +133,7 @@
 									<textarea name="content" placeholder="请输入说明" id="history_content" class="history-content" rows="5"></textarea>
 								</div>
 							</div>
+						</form>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
@@ -149,6 +141,40 @@
 					</div>
 				</div>
 			</div>
+		</div>
+		<div class="modal fade" id="negotiate_dialog" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" role="document" style="width: 1000px;">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">协议采购</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6">
+								<label>合同编号： </label> 
+								<select id="contract_list" class="form-control">									
+								</select>
+							</div>
+							<div class="col-md-2">
+								<label>基材价格： </label> <input type="number" id="contract_base_price" class="form-control" />
+							</div>
+							<div class="col-md-3">
+								<label> </label>
+								<div>
+									<button class="btn btn-primary" id="btn_contract_save">合同取价计算</button>
+									<button class="btn btn-default" data-dismiss="modal">退出</button>
+								</div>
+							</div>
+						</div>
+						<div class="row" style="margin-top: 10px;">
+							<div class="col-lg-12">
+								<table id="negotiate_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
 		</div>
 	</div>
 </body>
@@ -166,12 +192,30 @@
    var store_url = [[@{/store/search/}]] + [[${main.company.id}]];
    var submit_url = [[@{/purchaseorder/update}]];
    var state = [[${main.srmstate}]];
+   var contract_search_url = [[@{|/contract/search/${main.code}|}]];   
+   var contract_details_url = [[@{|/contract/search_order_details/${main.code}/|}]];
    +]*/
 
-  var editor;
+  var editor, selectedContractData;
 
   $(document).ready(function() {
+  	var basic_table, history_table, negotiate_table;
+  	
+	  var footer = $("<tfoot></tfoot>").appendTo("#basic_info");
+	  var footertr = $("<tr></tr>").appendTo(footer);
+	  var columnCount = 37;
 
+
+	  //Add footer cells
+	  var mergeColumnCount = 6;
+	  for (var i = 0; i < columnCount - mergeColumnCount + 1; i++) {
+		  if (i == 0) {
+			  $("<th colspan='" + mergeColumnCount + "' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
+		  } else {
+			  $("<th></th>").appendTo(footertr);
+		  }
+	  }
+	  
 	  Layout.initUniform();
 	  $("#state").select2({
 	    data : App.getPurchaseOrderStateData(),
@@ -184,8 +228,131 @@
 	  	$("#store_set").val(store_data[0].is_set);
 	  });
 	  
-	  var basic_table, history_table;
+	  
+	  $('#contract_list').change(function() {
+	  	selectedContractData = $('#contract_list').select2('data');
+	  	selectedContractData = selectedContractData[0];
+	  	
+	  	if (selectedContractData.price_type == 1) {
+	  		$("#contract_base_price").attr("readonly", false);
+	  	} else {
+	  		$("#contract_base_price").attr("readonly", true);
+	  	}
+	  	negotiate_table.ajax.url(contract_details_url + $("#contract_list").val());
+	  	negotiate_table.ajax.reload();
+	  });	  
+	  
+	  function getFloatingPrice(quantity, floating_price) {
+  		var startWeight = selectedContractData.base_price;
+  		var floatingRange = selectedContractData.floating_price;
+  		var startPrice = $("#contract_base_price").val();
+  		quantity = parseFloat(quantity);
+  		
+  		if (!startPrice) {
+  			startPrice = 0;
+  		} else {
+  			startPrice = parseFloat(startPrice);
+  		}
+  			
+  		if (!startWeight) {
+  			startWeight = 0;
+  		} else {
+  			startWeight = parseFloat(startWeight);
+  		}
+  		
+  		if (!floatingRange) {
+  			floatingRange = 0;
+  		} else {
+  			floatingRange = parseFloat(floatingRange);
+  		}
 
+  		var price = 0, startIndex, endIndex;
+  		if (floatingRange > 0 && startPrice) {
+  			if (quantity >= startWeight) {
+  				startIndex = parseInt((quantity - startWeight) / floatingRange) - 1; 
+  				endIndex = parseInt((quantity + floatingRange) / floatingRange) + 1;
+  				for(var i=startIndex; i<endIndex; i++) {
+  					startWeight = startWeight + floatingRange * i;
+      			endWeight = startWeight + floatingRange * (i + 1);
+  					if (startWeight <= quantity && quantity < endWeight) {
+  						price = App.floatingPriceNumber(startPrice + floating_price * i);
+  					}
+  				}
+    		} else {
+  				startIndex = parseInt((quantity + floatingRange) / floatingRange) + 1; 
+  				endIndex = parseInt((startWeight - quantity) / floatingRange) - 1;
+  				for(var i=startIndex; i>endIndex; i--) {
+  					startWeight = startWeight + floatingRange * i;
+      			endWeight = startWeight + floatingRange * (i + 1);
+  					if (startWeight <= quantity && quantity < endWeight) {
+  						price = App.floatingPriceNumber(startPrice + floating_price * i);
+  					}
+  				}
+    		}
+  		}
+  		
+			return price;
+	  }
+	  
+	  $("#contract_base_price").change(function() {
+	  	if (selectedContractData.price_type == 1) {
+	  		var exist_data = negotiate_table.rows().data().toArray();
+	 		 
+	  		for (var i = 0; i < exist_data.length; i++) {
+	  			var item = exist_data[i];
+	  			item.tax_price = getFloatingPrice(item.quantity, item.contract_floating_price);
+      		item.price = App.priceNumber(item.tax_price * 100 / (100 + parseFloat(item.tax_rate)));
+      		item.tax_cost = App.costNumber(item.tax_price * item.quantity);
+      		item.cost = App.costNumber(item.price * item.quantity);
+      		item.tax = App.costNumber(item.tax_cost - item.cost);	
+		  	}
+			  	
+	  		negotiate_table.rows().invalidate().draw();
+	  	}
+	  });
+
+	  $("#btn_contract_save").click(function() {
+	  	if (selectedContractData.price_type == 1) {
+	  		if (!$("#contract_base_price").val()) {
+	  			App.showErrorDialog("请输入基材价格");
+	  			return;
+	  		}
+	  		
+		  	$("#base_price").val($("#contract_base_price").val());
+		  } else {
+		  	$("#base_price").val(null);
+		  }
+	  	
+	  	$("#contract_code").val(selectedContractData.id);
+	  	var contract_data = negotiate_table.rows().data().toArray();
+		  var exist_data = basic_table.rows().data().toArray();
+		  $.each(contract_data, function(key, item) {
+			  
+			  for (i = 0; i < exist_data.length; i++) {
+				  exist_row = exist_data[i];
+				  if (exist_row.id == item.id) {
+				  	exist_row.tax_price = item.tax_price;
+				  	exist_row.price = item.price;
+				  	exist_row.tax_cost = item.tax_cost;
+				  	exist_row.cost = item.cost;
+				  	exist_row.tax = item.tax;
+				  	exist_row.contract_code = selectedContractData.id;
+				  	exist_row.price_from = 1;
+				  	if (selectedContractData.price_type == 1) {
+				  		exist_row.base_price = $("#contract_base_price").val();
+				  	} else {
+				  		exist_row.base_price = null;
+				  	}				  	
+					  break;
+				  }
+			  }
+		  })
+
+		  basic_table.rows().invalidate().draw();
+		  
+		  
+	  });
+	  
 	  $('#save_history').click(function() {
 	  	if (!$('#history_content').val()) {
 	  		App.showErrorDialog("日志内容不能为空！");
@@ -268,8 +435,8 @@
 			      item.tax = App.costNumber(item.sum - item.money);
 			      item.not_arrived_quantity = item.quantity - item.delivered_quantity;
 			      if (state == 0) {
-			      	item.count_per_box = item.inventory.count_per_box;	
-			      }			      
+				      item.count_per_box = item.inventory.count_per_box;
+			      }
 			      item.not_arrived_box_quantity = App.getBoxCount(item.not_arrived_quantity, item.count_per_box);
 			      item.arrived_box_quantity = App.getBoxCount(item.delivered_quantity, item.count_per_box);
 			      item.box_quantity = App.getBoxCount(item.quantity, item.count_per_box);
@@ -308,12 +475,12 @@
 	      data : null,
 	      defaultContent : '',
 	      title : '规格型号',
-	      render: function (data, display, record) {
-	        if (record.inventory) {
-	        	return record.inventory.specs;
-	        } else {
-	        	return "";
-	        }
+	      render : function(data, display, record) {
+		      if (record.inventory) {
+			      return record.inventory.specs;
+		      } else {
+			      return "";
+		      }
 	      },
 	    }, {
 	      data : 'quantity',
@@ -331,12 +498,12 @@
 	      data : 'inventory.boxClass',
 	      className : 'dt-right',
 	      title : '装箱规格',
-	      render: function (data, display, record) {
-	        if (record.inventory.boxClass) {
-	        	return record.inventory.boxClass.name;
-	        } else {
-	        	return "";
-	        }
+	      render : function(data, display, record) {
+		      if (record.inventory.boxClass) {
+			      return record.inventory.boxClass.name;
+		      } else {
+			      return "";
+		      }
 	      },
 	    }, {
 	      data : 'count_per_box',
@@ -358,27 +525,41 @@
 	      data : 'price',
 	      className : 'dt-right',
 	      title : '未税单价',
-	      render: App.costNumber,
+	      render : App.costNumber,
 	    }, {
 	      data : 'tax_price',
 	      className : 'dt-right',
 	      title : '含税单价',
-	      render: App.costNumber,
+	      render : App.costNumber,
+	    }, {
+	      data : 'price_from',
+	      className : 'dt-center',
+	      title : '价格来源',
+	      render : function(data, display, record) {
+		      return App.getPriceFromOfId(record.price_from);
+	      },
+	    }, {
+	      data : 'contract_code',
+	      title : '合同编号',
+	    }, {
+	      data : 'base_price',
+	      className : 'dt-right',
+	      title : '基材价格',
 	    }, {
 	      data : 'money',
 	      className : 'dt-right',
 	      title : '未税金额',
-	      render: App.costNumber,
+	      render : App.costNumber,
 	    }, {
 	      data : 'tax',
 	      className : 'dt-right',
 	      title : '税额',
-	      render: App.costNumber,
+	      render : App.costNumber,
 	    }, {
 	      data : 'sum',
 	      className : 'dt-right',
 	      title : '含税金额',
-	      render: App.costNumber,
+	      render : App.costNumber,
 	    }, {
 	      data : 'arrive_date',
 	      title : '需求日期',
@@ -414,8 +595,8 @@
 	      data : null,
 	      className : 'dt-right',
 	      title : '订单未发件数',
-	      render: function (data, display, record) {
-	      	return record.package_quantity - record.delivered_package_quantity;
+	      render : function(data, display, record) {
+		      return record.package_quantity - record.delivered_package_quantity;
 	      },
 	    }, {
 	      data : 'not_arrived_box_quantity',
@@ -430,7 +611,7 @@
 	      data : 'prepay_money',
 	      className : 'dt-right',
 	      title : '订金',
-	      render: App.costNumber,
+	      render : App.costNumber,
 	    }, {
 	      data : 'confirmed_quantity',
 	      className : 'dt-right',
@@ -457,17 +638,16 @@
 	      className : 'vendor-cell',
 	      title : '供方备注',
 	    } ],
-	    rowCallback: function (row, data) {
-        if (data.close_date) {
-            $(row).addClass('closed');
-        }
-    	},
+	    rowCallback : function(row, data) {
+		    if (data.close_date) {
+			    $(row).addClass('closed');
+		    }
+	    },
 	    footerCallback : function(row, data, start, end, display) {
 		    App.footerCallback(this.api(), [ [ 6, "quantity" ], [ 10, "quantity" ], [ 11, "quantity" ], [ 15, "cost" ], [ 16, "cost" ], [ 17, "cost" ], [ 21, "quantity" ], [ 22, "quantity" ], [ 23, "quantity" ], [ 24, "quantity" ], [ 25, "quantity" ], [ 28, "cost" ] ]);
 	    },
 	  });
 
-	  
 	  history_table = $('#history_table').DataTable({
 	    serverSide : false,
 	    processing : false,
@@ -481,23 +661,136 @@
 	    columns : [ {
 	      data : 'create_date',
 	      title : '日期',
-	      width: '150px',
+	      width : '150px',
 	      className : 'dt-center',
 	      render : $.fn.time_renderer,
 	    }, {
 	      data : 'action',
 	      title : '动作',
-	      width: '100px',
+	      width : '100px',
 	      className : 'dt-center',
 	    }, {
 	      data : 'account.realname',
 	      title : '操作人',
-	      width: '150px',
+	      width : '150px',
 	      className : 'dt-center',
 	    }, {
 	      data : 'content',
 	      title : '说明',
 	    } ],
+	  });
+
+	  $('#negotiate_dialog').on('shown.bs.modal', function() {
+		  if (!negotiate_table) {
+		  	$("#contract_list").select2(App.getSelect2Options(contract_search_url));
+		  	
+			  var footer = $("<tfoot></tfoot>").appendTo("#negotiate_table");
+			  var footertr = $("<tr></tr>").appendTo(footer);
+			  var columnCount = 12;
+
+			  //Add footer cells
+			  var mergeColumnCount = 5;
+			  for (var i = 0; i < columnCount - mergeColumnCount + 1; i++) {
+				  if (i == 0) {
+					  $("<th colspan='" + mergeColumnCount + "' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
+				  } else {
+					  $("<th></th>").appendTo(footertr);
+				  }
+			  }
+
+			  negotiate_table = $('#negotiate_table').DataTable({
+			    serverSide : false,
+			    processing : false,
+			    destroy : true,
+			    ordering : false,
+			    ajax : {
+			      url : contract_details_url + $("#contract_list").val(),
+			      dataSrc : function(json) {
+				      $.each(json, function(key, item) {
+					      if (selectedContractData) {
+						      if (selectedContractData.price_type == 1) {
+							      item.tax_price = getFloatingPrice(item.quantity, item.contract_floating_price);
+							      item.price = App.priceNumber(item.tax_price * 100 / (100 + parseFloat(item.tax_rate)));
+							      item.tax_cost = App.costNumber(item.tax_price * item.quantity);
+							      item.cost = App.costNumber(item.price * item.quantity);
+							      item.tax = App.costNumber(item.tax_cost - item.cost);
+						      } else {
+							      item.tax_price = item.contract_tax_price;
+							      item.price = App.priceNumber(item.tax_price * 100 / (100 + parseFloat(item.tax_rate)));
+							      item.tax_cost = App.costNumber(item.tax_price * item.quantity);
+							      item.cost = App.costNumber(item.price * item.quantity);
+							      item.tax = App.costNumber(item.tax_cost - item.cost);
+						      }
+					      }
+				      });
+				      return json;
+			      },
+			    },
+			    ordering : true,
+			    order : [ [ 0, "asc" ] ],
+			    columns : [ {
+			      data : 'row_no',
+			      className : 'dt-center',
+			      title : '行号',
+			    }, {
+			      data : 'code',
+			      title : '货品代码',
+			    }, {
+			      data : 'name',
+			      title : '货品名称',
+			    }, {
+			      data : 'specs',
+			      title : '规格型号',
+			    }, {
+			      data : 'main_measure',
+			      className : 'dt-center',
+			      title : '单位',
+			    }, {
+			      data : 'quantity',
+			      className : 'dt-right',
+			      orderable : false,
+			      title : '订单数量',
+			    }, {
+			      data : 'price',
+			      className : 'dt-right',
+			      orderable : false,
+			      title : '未税单价',
+			      render : App.priceNumber,
+			    }, {
+			      data : 'tax_rate',
+			      className : 'dt-right',
+			      orderable : false,
+			      title : '税率'
+			    }, {
+			      data : 'tax_price',
+			      className : 'dt-right',
+			      orderable : false,
+			      title : '含税单价',
+			      render : App.priceNumber,
+			    }, {
+			      data : 'cost',
+			      className : 'dt-right',
+			      orderable : false,
+			      title : '未税金额',
+			      render : App.costNumber,
+			    }, {
+			      data : 'tax',
+			      className : 'dt-right',
+			      orderable : false,
+			      title : '税额',
+			      render : App.costNumber,
+			    }, {
+			      data : 'tax_cost',
+			      className : 'dt-right',
+			      orderable : false,
+			      title : '含税金额',
+			      render : App.costNumber,
+			    } ],
+			    footerCallback : function(row, data, start, end, display) {
+				    App.footerCallback(this.api(), [ [ 5, "quantity" ], [ 9, "cost" ], [ 10, "cost" ], [ 11, "cost" ] ]);
+			    },
+			  });
+		  }
 	  });
 
 	  $('.detail-tabs a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
@@ -532,28 +825,28 @@
 
 	  $.validator.addMethod("checkTable", function(value, element) {
 		  var exist_data = basic_table.rows().data().toArray();
-		 
+
 		  var store_set = $('#store_set').val();
 		  if (store_set == 1) {
-		  	for (i = 0; i < exist_data.length; i++) {
+			  for (i = 0; i < exist_data.length; i++) {
 				  var exist_row = exist_data[i];
-				  
+
 				  if (!exist_row.count_per_box) {
-				  	App.showErrorDialog("操作失败", exist_row.inventory.name + "(" + exist_row.inventory.code + ")" + "的单位包装量为空。请先维护此货品的单位包装量。");
+					  App.showErrorDialog("操作失败", exist_row.inventory.name + "(" + exist_row.inventory.code + ")" + "的单位包装量为空。请先维护此货品的单位包装量。");
 					  return false;
-				  }			  
-			  }	
-		  }		  
+				  }
+			  }
+		  }
 
 		  return true;
 	  }, "");
-	  
+
 	  $("#form").validate({
 	    rules : {
-	    	store : {
-	        required : true,
-	        checkTable : true
-	      },
+		    store : {
+		      required : true,
+		      checkTable : true
+		    },
 	    },
 
 	    //display error alert on form submit  
@@ -561,17 +854,30 @@
 		    App.showErrorDialog("操作失败", "请输入正确的值");
 	    },
 	    submitHandler : function(form) {
-	    	submit();
+		    submit();
 	    }
 	  });
-	  
+
 	  function submit() {
-		  editor.submit();	  
+		  editor.submit();
 		  var state = $('#save_state').val();
 		  var data = basic_table.rows().data().toArray();
 		  var small_data = [];
 
-		  if (state == 10) {
+		  var confirmMessage = "";
+		  if (state == 1) {
+			  confirmMessage = "确定要发布订单吗?";
+			  $.each(data, function(key, item) {
+				  if (item.contract_count && item.contract_count > 0 && item.price_from == 0) {
+					  confirmMessage = "未进行协议采购取价,\n是否继续发布?";
+				  }
+			  });
+		  } else if (state == 2) {
+			  confirmMessage = "确定要确认订单吗?";
+		  } else if (state == 3) {
+			  confirmMessage = "确定要关闭订单吗?";
+		  } else if (state == 10) {
+			  confirmMessage = "确定要行关闭吗?";
 			  data = basic_table.rows('.selected').data().toArray();
 			  if (data.length == 0) {
 				  App.showErrorDialog("操作失败", "请选择至少一行数据！");
@@ -579,58 +885,49 @@
 			  }
 		  }
 
-		  var confirmMessage = "";
-		  if (state == 1) {
-		  	confirmMessage = "发布订单";
-		  } else if (state == 2) {
-		  	confirmMessage = "确认订单";
-		  } else if (state == 3) {
-		  	confirmMessage = "关闭订单";
-		  } else if (state == 10) {
-		  	confirmMessage = "行关闭";
-		  }
-		  
-		  App.showInputConfirmDialog('确定要' + confirmMessage + '吗?', function(submit_content) {
-		  	$.each(data, function(key, item) {
+		  App.showInputConfirmDialog(confirmMessage, function(submit_content) {
+			  $.each(data, function(key, item) {
 				  small_data.push({
 				    id : item.id,
 				    memo : item.memo,
-				    count_per_box: item.count_per_box,
+				    count_per_box : item.count_per_box,
 				    confirmed_date : item.confirmed_date,
 				    confirmed_memo : item.confirmed_memo,
-				    close_state : item.close_state
+				    close_state : item.close_state,
+				    contract_code: item.contract_code,
+				    base_price: item.base_price,
+				    price_from: item.price_from
 				  });
 			  });
 
 			  $('#form').ajaxSubmit({
-			  	beforeSend : function() {
-			      App.blockUI();
-		      },
-		      complete : function() {
-			      App.unblockUI();
-		      },
+			    beforeSend : function() {
+				    App.blockUI();
+			    },
+			    complete : function() {
+				    App.unblockUI();
+			    },
 			    data : {
 			      code : $('#code').val(),
-			      store : $('#store').val(),
 			      state : state,
 			      table : small_data,
-			      content: submit_content,
+			      content : submit_content,
 			    },
 			    success : function(res, status, xhr, form) {
-			    	if (res.success == 1) {
-			    		App.showSuccessDialog("操作成功", function() {
+				    if (res.success == 1) {
+					    App.showSuccessDialog("操作成功", function() {
 						    window.location.reload(true);
-					    });	
-			    	} else {
-			    		App.showErrorDialog("操作失败", res.errmsg);
-			    	}
-				    
+					    });
+				    } else {
+					    App.showErrorDialog("操作失败", res.errmsg);
+				    }
+
 			    },
 			    error : function(res, status, xhr, form) {
 				    App.showErrorDialog("操作失败", "请输入正确的值");
 			    }
 			  });
-	    });
+		  });
 	  }
 
 	  $("#deploy").click(function() {
@@ -658,12 +955,26 @@
 	  });
 
 	  $('#show_modal_btn').click(function() {
-	  	$('#history_dialog').modal('show'); 
+		  $('#history_dialog').modal('show');
 	  });
-	  
+
 	  $('#export').click(function() {
-	  	var file_name = $('#code').val() + "_订单明细.csv";
-	  	App.exportCSVFromDatatable(basic_table, file_name);
+		  var file_name = $('#code').val() + "_订单明细.csv";
+		  App.exportCSVFromDatatable(basic_table, file_name);
 	  });
+
+	  $("#print").click(function() {
+		  var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
+		  if (window.location.host.startsWith("192.")) {
+			  url = "http://192.168.30.204:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
+		  }
+		  var win = window.open(url, '_blank');
+		  win.focus();
+	  });
+
+	  $("#negotiate").click(function() {
+		  $('#negotiate_dialog').modal('show');
+	  });
+
   });
 </script>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+	<div class="container" layout:fragment="content">
+		<ul class="breadcrumb">
+			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+			<li class="active">账单任务</li>
+		</ul>
+		<div class="search-content">
+			<div class="search-cell width-10">
+				<input type="text" id="start_date" value="" class="form-control datepicker" placeholder="日期："/>
+			</div>
+			<div class="search-cell width-10">
+				<input type="text" id="end_date" value="" class="form-control datepicker" placeholder=""/>
+			</div>
+			<div style="vertical-align: bottom" class="search-cell width-15">
+				<button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
+				<a class="btn btn-primary" id="add_btn"><i class="fa fa-plus-circle"></i> 生成账单</a>
+				<a class="btn btn-primary" id="auto_task_btn"><i class="fa fa-plus-circle"></i> 自动任务设置</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12">
+				<table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+				</table>
+			</div>
+		</div>
+		<div class="modal fade" id="new_dialog" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">生成对账单</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-lg-12 col-md-12">
+								<div class="form-group">
+									<label for="code" class="control-label col-lg-2 col-md-2">对账时间： </label> 
+									<div class="col-lg-10 col-md-10">
+										<input type="text" name="statement_date" id="manual_statement_date" class="form-control datepicker"/>
+									</div>										
+								</div>									
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">退出</button>
+						<button type="button" class="btn btn-primary" id="save_task_btn">生成</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="auto_setting_dialog" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">自动任务设置</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="auto_setting_form" class="form-horizontal form-without-legend" th:action="@{/task/update_auto_setting}" method="post">
+							<input type="hidden" name="action" value=" 添加说明" />
+							<div class="row">
+								<div class="col-lg-12 col-md-12 content">
+									对账时间：每月	<input type="number" maxlength="2" max="31" min="1" class="auto-setting" name="statement_date" id="statement_date"/>日（例如：每月25日，表示对账取单截至到本月25日，即小于等于该日期的所有未对账单据都包括，要考虑2月份的情况）	
+								</div>
+								<div class="col-lg-12 col-md-12 content">
+									自动运行时间：每月<input type="number" maxlength="2" max="31" min="1" class="auto-setting" name="start_date" id="auto_start_date"/>日<input type="text" maxlength="2" max="23" min="0" class="auto-setting" name="start_hour" id="auto_start_hour"/>点<input type="text" maxlength="2" max="59" min="0" class="auto-setting" name="start_min" id="auto_start_min"/>分
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+						<button type="button" class="btn btn-primary" id="save_setting_btn">保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="log_dialog" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" role="document" style="width: 800px;">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">日志查询</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<table id="log_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
+	is_vendor = 1;
+</script>
+<script th:inline="javascript">
+	/*[+
+   var list_url = [[@{/task/list}]];
+   var log_url = [[@{/task/}]];
+   var auto_setting_url = [[@{/task/auto_setting}]];
+   var manual_generate_url = [[@{/api/statement/}]];
+   +]*/
+
+  $(document).ready(function() {
+		var log_table, selected_task_id;
+		
+  	$(".datepicker").datepicker({
+		  onSelect : function(dateText) {
+			  table.draw();
+		  }
+	  });
+  	
+	  var table = $('#example').DataTable({
+	    ordering : true,
+	    scrollY : '355px',
+	    order : [ [ 0, "desc" ] ],
+	    ajax : {
+	      url : list_url,
+	      data : function(data) {
+		      var filter = {
+		        order : data.columns[data.order[0].column].data,
+		        dir : data.order[0].dir,
+		        rows_per_page : data.length,
+		        page_index : data.start / data.length + 1,
+		        start_date : $('#start_date').val(),
+		        end_date : $('#end_date').val(),
+		        code: '',
+		      }
+		      return filter;
+	      },
+	      dataSrc : function(json) {
+		      json.recordsTotal = json.totalElements;
+		      json.recordsFiltered = json.totalElements;
+		      return json.content;
+	      },
+	    },
+	    columns : [ {
+	      data : 'code',
+	      title : '任务编号',
+	      width : '150px',
+	    }, {
+	      data : 'make_date',
+	      title : '日期',
+	      width : '150px',
+	      className : 'dt-center',
+	      render : $.fn.date_renderer
+	    }, {
+	      data : 'statement_date',
+	      title : '账期',
+	      width : '150px',
+	      className : 'dt-center',
+	      render : $.fn.date_renderer
+	    }, {
+	      data : 'maker',
+	      title : '操作人',
+	      width : '150px',
+	      className : 'dt-center',
+	      render : $.fn.date_renderer
+	    }, {
+	      data : null,
+	      orderable: false,
+	      title : '任务日志',
+	      className : 'dt-center',
+	      render : function(data, display, record) {
+		      return '<a class="log" task_id="' + record.id + '" href="#">日志查询</a>';
+	      },
+	    } ],
+	    drawCallback : function(settings) {
+	    	$(".log").click(function() {
+	  			$('#log_dialog').modal('show');
+	  			selected_task_id = $(this).attr("task_id");
+	  	  });
+	    }
+	  });
+
+	  $('#log_dialog').on('shown.bs.modal', function (e) {
+	  	if (log_table) {
+	  		log_table.clear().destroy();
+			  $('#log_table').empty();
+		  }  	
+	  	
+	  	var url = log_url + selected_task_id + "/log";
+	  	log_table = $('#log_table').DataTable({
+	  		ordering : true,
+		    scrollY : '355px',
+		    order : [ [ 0, "desc" ] ],
+		    ajax : {
+		      url : url,
+		      data : function(data) {
+			      var filter = {
+			        order : data.columns[data.order[0].column].data,
+			        dir : data.order[0].dir,
+			        rows_per_page : data.length,
+			        page_index : data.start / data.length + 1,
+			        search: '',
+			      }
+			      return filter;
+		      },
+		      dataSrc : function(json) {
+			      json.recordsTotal = json.totalElements;
+			      json.recordsFiltered = json.totalElements;
+			      return json.content;
+		      },
+		    },
+		    columns : [ {
+		      data : 'create_date',
+		      title : '日期',
+		      className : 'dt-center',
+		      render : $.fn.date_renderer
+		    }, {
+		      data : 'vendor_code',
+		      title : '供应商代码',
+		      width : '150px',
+		      className : 'dt-center',
+		      render : $.fn.time_renderer,
+		    }, {
+		      data : 'vendor_name',
+		      title : '供应商名称',
+		      className : 'dt-center',
+		    }, {
+		      data : 'company_name',
+		      title : '业务实体',
+		      className : 'dt-center',
+		    }, {
+		      data : 'type',
+		      title : '对账类型',
+		      className : 'dt-center',
+		      render : App.getStatementTypeOfId
+		    }, {
+		      data : 'state',
+		      title : '成功/失败',
+		      width : '150px',
+		      className : 'dt-center',
+		      render: function(data) {
+		      	var result = "成功";
+		      	if (data != 1)
+		      		result = "失败";
+		      	
+		      	return result;
+		      }
+		    }, {
+		      data : 'failed_reason',
+		      title : '失败原因',
+		    } ],
+		  });
+	  })
+	  
+	  $("#btn_search").click(function() {
+		  table.draw();
+	  });
+
+	  $('#start_date, #start_date').keyup(function(e) {
+		  if (e.keyCode == 13)
+			  table.draw();
+	  });
+	  
+	  $("#add_btn").click(function() {
+	  	$('#new_dialog').modal('show');
+	  });
+	  
+	  $.validator.addMethod("compateDate", function(value, element) {
+	  	if ($('#statement_date').val() * 1 >= $('#auto_start_date').val() * 1) {
+	  		return false;
+	  	}
+	  	return true;
+	  }, "自动运行日期必须大于队长日期");
+	  
+	  $("#auto_setting_form").validate({
+	    rules : {
+	      statement_date : {
+	        required : true,
+	      },
+	      start_date : {
+	        required : true,
+	        compateDate: true,
+	      },
+	      start_hour : {
+	        required : true,
+	      },
+	      start_min : {
+	        required : true,
+	      },
+	    },
+
+	    //display error alert on form submit  
+	    invalidHandler : function(event, validator) {
+		    App.showErrorDialog("操作失败", "请输入正确的值");
+	    },
+	    submitHandler : function(form) {
+			  App.showConfirmDialog('确定要保存自动任务设置吗?', function() {
+			  	jQuery(form).ajaxSubmit({
+			      beforeSend : function() {
+				      App.blockUI();
+			      },
+			      complete : function() {
+				      App.unblockUI();
+			      },
+			      success : function(res, status, xhr, form) {
+				      if (res.success == 1) {
+				      	$('#auto_setting_dialog').modal('hide');
+					      App.showSuccessDialog("操作成功");
+				      } else {
+					      App.showErrorDialog("操作失败", res.errmsg);
+				      }
+			      },
+			      error : function(res, status, xhr, form) {
+				      App.showErrorDialog("操作失败", "请输入正确的值");
+			      }
+			    });
+			  });		    
+	    }
+	  });
+	  
+	  $("#save_task_btn").click(function() {
+	  	if (!$("#manual_statement_date").val()) {
+	  		App.showErrorDialog("操作失败", "请输入对账时间");
+	  	} else {
+	  		App.showConfirmDialog('确定要生成对账单吗?', function() {
+				  var url = manual_generate_url + $("#manual_statement_date").val();
+				  App.blockUI();
+				  $.get(url, function(res, status) {
+				  	App.unblockUI();
+				  	if (res.success == 1) {
+				  		App.showSuccessDialog("操作成功", function() {
+							  window.location.reload(true);
+						  });	
+				  	} else {
+				  		App.showErrorDialog("操作失败", res.errmsg);
+				  	}					  
+				  });
+			  });
+	  	}	  	
+	  });
+	  
+	  $("#save_setting_btn").click(function() {
+	  	$('#auto_setting_form').submit();
+	  });
+		
+	  $('#show_current_task_history').click(function() {
+	  	
+	  });
+	  
+		
+		$("#auto_task_btn").click(function() {
+			  $('#statement_date').val("");
+			  $('#auto_start_date').val("");
+			  $('#auto_start_hour').val("");
+			  $('#auto_start_min').val("");
+	
+			  $.ajax({
+			    url : auto_setting_url,
+			    success : function(data, res) {
+				    $('#statement_date').val(data.data.statement_date);
+				    $('#auto_start_date').val(data.data.start_date);
+				    var temp = data.data.start_time.split(":");
+				    $('#auto_start_hour').val(temp[0]);
+				    $('#auto_start_min').val(temp[1]);
+			    }
+			  });
+			  $('#auto_setting_dialog').modal('show');
+		  });
+	  });
+</script>

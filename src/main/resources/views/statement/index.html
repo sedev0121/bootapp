@@ -1,208 +1,340 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{layout/layout}">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
 <body>
-  <div class="container" layout:fragment="content">
-    <ul class="breadcrumb">
-      <li>
-        <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
-      </li>
-      <li class="active">对账单管理</li>
-    </ul>
-    <div class="search-content">
-        <div class="search-cell width-10">
-          <label for="start_date">对账日期: </label>
-          <input type="text" id="start_date" value="" class="form-control datepicker" />
-        </div>
-        <div class="search-cell width-10">
-          <label for="end_date">　</label>
-          <input type="text" id="end_date" value="" class="form-control datepicker" />
-        </div>
-        <div class="search-cell width-10">
-          <label for="code">单据号:</label>
-          <input type="text" id="code" class="form-control">
-        </div>
-        <div class="search-cell width-10" id="vendor_div">
-          <label for="vendor">供应商编码/名称：</label>
-          <input type="text" id="vendor" name="vendor" class="form-control">
-        </div>
-        <div class="search-cell width-10">
-          <label for="state">状态:</label>
-          <select name="state" id="state" class="form-control">
-          </select>
-        </div>
-        <div class="search-cell width-10">
-          <label for="type">对账类型:</label>
-          <select name="type" id="type" class="form-control">
-          </select>
-        </div>
-        <div style="vertical-align: bottom" class="search-cell width-15">
-          <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-          <a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/发布')"  th:href="@{/statement/add}"><i class="fa fa-plus-circle"></i>&nbsp; 新建</a>
-        </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-12">
-        <table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-        </table>
+	<div class="container" layout:fragment="content">
+		<ul class="breadcrumb">
+			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+			<li class="active">对账单管理</li>
+		</ul>
+		<div class="row">
+			<div class="col-lg-12 box-top-bar">
+				<a class="btn btn-primary" sec:authorize="hasAuthority('对账单管理-新建/提交')" th:href="@{/statement/add}"><i class="fa fa-plus-circle"></i> 新建</a>
+				<button class="btn btn-info" sec:authorize="hasAuthority('对账单管理-审核')" id="bulk_review"><i class="fa fa-check-square"></i> 批量审核</button>
+				<button class="btn btn-info" sec:authorize="hasAuthority('对账单管理-发布')" id="bulk_deploy"><i class="fa fa-share"></i> 批量发布</button>
+			</div>
+		</div>
+		<div class="search-content">
+			<div class="search-cell width-10">
+				<label for="start_date">对账日期: </label> <input type="text" id="start_date" value="" class="form-control datepicker" placeholder="对账日期："/>
+			</div>
+			<div class="search-cell width-10">
+				<label for="end_date">　</label> <input type="text" id="end_date" value="" class="form-control datepicker" placeholder=""/>
+			</div>
+			<div class="search-cell width-10">
+        <label for="company">业务实体：</label>
+        <select name="company" id="company" class="form-control">
+        	<option value="-1" text="　" selected="selected"></option>
+        </select>
       </div>
-    </div>
-  </div>
+			<div class="search-cell width-10" id="vendor_div">
+				<label for="vendor">供应商编码/名称：</label> <input type="text" id="vendor" name="vendor" class="form-control" placeholder="供应商编码/名称：">
+			</div>
+			<div class="search-cell width-10">
+				<label for="code">对账单号:</label> <input type="text" id="code" class="form-control" placeholder="对账单号：">
+			</div>
+			<div class="search-cell width-10">
+				<label for="state">状态:</label> <select name="state" id="state" class="form-control">
+				</select>
+			</div>
+			<div class="search-cell width-10">
+				<label for="invoice_state">发票状态:</label> <select name="invoice_state" id="invoice_state" class="form-control">
+				</select>
+			</div>
+			<!-- <div class="search-cell width-10">
+				<label for="type">对账类型:</label> <select name="type" id="type" class="form-control">
+				</select>
+			</div> -->
+			<div style="vertical-align: bottom" class="search-cell width-15">
+				<button class="btn btn-default" id="btn_search">
+					<i class="fa fa-search"></i> 查询
+				</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12">
+				<table id="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+				</table>
+			</div>
+		</div>
+		<div class="modal fade" id="log_dialog" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">操作记录</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body form-horizontal">
+						<div class="row">
+							<div class="col-lg-12 table-responsive">
+								<table id="log_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 </body>
 </html>
-
 <script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
-is_vendor = 1;
+	is_vendor = 1;
 </script>
-
 <script th:inline="javascript">
-/*[+
-var list_url = [[@{/statement/list}]];
-var edit_url = [[@{/statement/}]];
-+]*/
+	/*[+
+   var list_url = [[@{/statement/list}]];
+   var edit_url = [[@{/statement/}]];
+   var bluk_review_url = [[@{/statement/bulk_review}]];
+   var bluk_deploy_url = [[@{/statement/bulk_deploy}]];
+   var company_search_url = [[@{/company/search}]];
+   var log_url = [[@{/operation_history/list/statement/}]];
+   +]*/
+   
+  var log_table, selected_code;
+  $(document).ready(function() {
+	  if (is_vendor) {
+		  $('#vendor_div').addClass('hidden');
+	  }
 
-$(document).ready(function() {
-  if (is_vendor){
-    $('#vendor_div').addClass('hidden');
-  }
-  
-  $("#state").select2({
-    data : App.getStatementStateDataWithAll(),
-    minimumResultsForSearch : -1
-  });
-  
-  $("#type").select2({
-    data : App.getStatementTypeDataWithAll(),
-    minimumResultsForSearch : -1
-  });
+	  $("#company").select2(App.getSelect2OptionsWithAll(company_search_url));
+	  $("#state").select2({
+	    data : App.getStatementStateDataWithAll(),
+	    minimumResultsForSearch : -1
+	  });
 
-  $(".datepicker").datepicker({
-    onSelect: function(dateText) {
-      table.draw();
-    }
-  });
+	  $("#invoice_state").select2({
+	    data : App.getInvoiceStateDataWithAll(),
+	    minimumResultsForSearch : -1
+	  });
+	  
+	  $("#type").select2({
+	    data : App.getStatementTypeDataWithAll(),
+	    minimumResultsForSearch : -1
+	  });
 
-  
-  var table = $('#example').DataTable({
-    ordering : true,
-    ajax : {
-      url : list_url,
-      data : function(data) {
-        var filter = {
-          order : data.columns[data.order[0].column].data,
-          dir : data.order[0].dir,
-          rows_per_page : data.length,
-          page_index : data.start / data.length + 1,
-          vendor : $('#vendor').val(),
-          state: $('#state').val(),
-          type: $('#type').val(),
-          code : $('#code').val(),
-          start_date : $('#start_date').val(),
-          end_date : $('#end_date').val()
-        }
-        return filter;
-      },
-      dataSrc : function(json) {
-        json.recordsTotal = json.totalElements;
-        json.recordsFiltered = json.totalElements;
-        return json.content;
-      },
-    },
-    createdRow: function( row, data, dataIndex ) {
-        $(row).addClass('');
-    },
-    columns : [ {
-      data : 'code',
-      title : '单据号',
-      render : function(data, display, record) {
-        url =edit_url + data + '/edit';
-        return '<a href="' + url + '">' + data + '</a>';
-      },
-    }, {
-      data : 'vendor_name',
-      visible: !is_vendor,
-      title : '供应商名称',
-    }, {
-      data : 'vendor_code',
-      visible: !is_vendor,
-      title : '供应商编码',
-    }, {
-      data : 'type',
-      title : '对账类型',
-      className: 'dt-center',
-      render : App.getStatementTypeOfId
-    }, {
-      data : 'state',
-      title : '状态',
-      className: 'dt-center',
-      createdCell: App.getInqueryStateClass,
-      render : App.getStatementStateOfId
-    }, {
-      data : 'invoice_code',
-      title : '发票号',
-    }, {
-      data : 'maker',
-      className: 'dt-center',
-      title : '制单人',
-    }, {
-      data : 'makedate',
-      className: 'dt-center',
-      title : '制单日期',
-      render : $.fn.date_renderer
-    }, {        
-      data : 'confirmer',
-      className: 'dt-center',
-      title : '确认人',
-    }, {
-      data : 'confirmdate',
-      className: 'dt-center',
-      title : '确认日期',
-      render : $.fn.date_renderer
-    }, {        
-      data : 'verifier',
-      className: 'dt-center',
-      title : '审核人',
-    }, {
-      data : 'verifydate',
-      className: 'dt-center',
-      title : '审核日期',
-      render : $.fn.date_renderer
-    }, {        
-      data : 'invoicenummaker',
-      className: 'dt-center',
-      title : '填发票号人',
-    }, {
-      data : 'invoicenumdate',
-      className: 'dt-center',
-      title : '填发票号日期',
-      render : $.fn.date_renderer
-    }, {        
-      data : 'u8invoicemaker',
-      className: 'dt-center',
-      title : '生成U8采购发票人',
-    }, {
-      data : 'u8invoicedate',
-      className: 'dt-center',
-      title : '生成U8采购发票日期',
-      render : $.fn.date_renderer
-    } ],
-    order: [  [ 7, "desc" ] ]
+	  $(".datepicker").datepicker({
+		  onSelect : function(dateText) {
+			  table.draw();
+		  }
+	  });
 
-    
-  });
+	  var table = $('#example').DataTable({
+	    ordering : true,
+	    ajax : {
+	      url : list_url,
+	      data : function(data) {
+		      var filter = {
+		        order : data.columns[data.order[0].column].data,
+		        dir : data.order[0].dir,
+		        rows_per_page : data.length,
+		        page_index : data.start / data.length + 1,
+		        vendor : $('#vendor').val(),
+		        state : $('#state').val(),
+		        invoice_state : $('#invoice_state').val(),
+		        type : $('#type').val(),
+		        company : $('#company').val(),
+		        code : $('#code').val(),
+		        start_date : $('#start_date').val(),
+		        end_date : $('#end_date').val()
+		      }
+		      return filter;
+	      },
+	      dataSrc : function(json) {
+		      json.recordsTotal = json.totalElements;
+		      json.recordsFiltered = json.totalElements;
+		      return json.content;
+	      },
+	    },
+	    fixedColumns : {
+		    leftColumns : 3,
+	    },
+	    createdRow : function(row, data, dataIndex) {
+		    $(row).addClass('');
+	    },
+	    columns : [ {
+	      data : 'code',
+	      title : '账单编号',
+	      render : function(data, display, record) {
+		      url = edit_url + data + '/edit';
+		      return '<a href="' + url + '">' + data + '</a>';
+	      },
+	    }, {
+	      data : 'state',
+	      title : '状态',
+	      className : 'dt-center',
+	      createdCell : App.getStateClass,
+	      render : App.getStatementStateOfId
+	    }, {
+	      data : 'date',
+	      className : 'dt-center',
+	      title : '账单时间',
+	      render : $.fn.date_renderer
+	    }, {
+	      data : 'company_name',
+	      title : '业务实体',
+	    }, {
+	      data : 'vendor_code',
+	      visible : !is_vendor,
+	      title : '供应商编码',
+	    }, {
+	      data : 'vendor_name',
+	      visible : !is_vendor,
+	      title : '供应商名称',
+	    }, {
+	      data : 'vendor_address',
+	      visible : !is_vendor,
+	      title : '供应商地址',
+	    }, {
+	      data : 'type',
+	      title : '对账类型',
+	      className : 'dt-center',
+	      render : App.getStatementTypeOfId
+	    }, {
+	      data : 'cost_sum',
+	      className : 'dt-right',
+	      title : '未税总金额',
+	    }, {
+	      data : 'tax_sum',
+	      className : 'dt-right',
+	      title : '税额',
+	    }, {
+	      data : 'tax_cost_sum',
+	      className : 'dt-right',
+	      title : '含税总金额',
+	    }, {
+	      data : null,
+	      orderable: false,
+	      defaultContent: '人民币',
+	      title : '币别',
+	    }, {
+	      data : 'make_date',
+	      className : 'dt-center',
+	      title : '创建日期',
+	      render : $.fn.date_renderer
+	    }, {
+	      data : 'deploy_date',
+	      className : 'dt-center',
+	      title : '发布日期',
+	      render : $.fn.date_renderer
+	    }, {
+	    	orderable: false,
+	      data : null,	      
+	      title : '操作记录',
+	      render : function(data, display, record) {
+		      return '<a class="log" code="' + record.code + '" href="#">操作记录</a>';
+	      },
+	    }, {
+	      data : 'task_code',
+	      title : '任务编号',
+	    }, {
+	      data : 'invoice_state',
+	      title : '发票状态',
+	      createdCell : App.getStateClass,
+	      className : 'dt-center',
+	      render : App.getInvoiceStateOfId
+	    }, {
+	      data : 'invoice_code',
+	      title : 'ERP发票号',
+	    }, {
+	      data : 'erp_invoice_make_name',
+	      className : 'dt-center',
+	      title : 'ERP发票制单人',
+	    }, {
+	      data : 'erp_invoice_make_date',
+	      className : 'dt-center',
+	      title : 'ERP发票日期',
+	      render : $.fn.date_renderer 
+	    } ],
+	    order : [ [ 0, "desc" ] ],
+	    drawCallback : function(settings) {
+	    	$(".log").click(function() {
+	    		$("#log_dialog").modal('show');
+	    		selected_code = $(this).attr("code");
+	    	});
+	    }
+	  });
 
-  $("#btn_search").click(function() {
-    table.draw();
+
+	  $('#log_dialog').on('shown.bs.modal', function() {
+	  	if (log_table) {
+	  		log_table.clear().destroy();
+			  $('#log_table').empty();
+		  }
+	  	
+	  	log_table = $('#log_table').DataTable({
+		    serverSide : false,
+		    processing : false,
+		    ajax : {
+		      url : log_url + selected_code,
+		      dataSrc : function(json) {
+			      return json;
+		      },
+		    },
+		    order : [ [ 0, 'desc' ] ],
+		    columns : [ {
+		      data : 'create_date',
+		      title : '日期',
+		      width : '150px',
+		      className : 'dt-center',
+		      render : $.fn.time_renderer,
+		    }, {
+		      data : 'action',
+		      title : '动作',
+		      width : '100px',
+		      className : 'dt-center',
+		    }, {
+		      data : 'account.realname',
+		      title : '操作人',
+		      width : '150px',
+		      className : 'dt-center',
+		    }, {
+		      data : 'content',
+		      title : '说明',
+		    } ],
+		  });
+	  });
+	  
+	  $("#btn_search").click(function() {
+		  table.draw();
+	  });
+
+	  $('#state, #company, #invoice_state').change(function() {
+		  table.draw();
+	  });
+
+	  $('#vendor, #code, #start_date, #end_date').keyup(function(e) {
+		  if (e.keyCode == 13)
+			  table.draw();
+	  });
+	  
+	  $('#bulk_review').click(function() {
+	  	App.showConfirmDialog('确定要批量审核吗?', function() {
+			  $.get(bluk_review_url, function(res, status) {
+			  	if (res.success == 1) {
+			  		table.draw();
+			  		App.showSuccessDialog("操作成功");
+			  	} else {
+			  		App.showErrorDialog(res.errmsg);
+			  	}				  
+			  });
+		  });
+	  });
+	  
+	  $('#bulk_deploy').click(function() {
+	  	App.showConfirmDialog('确定要批量发布吗?', function() {
+			  $.get(bluk_deploy_url, function(res, status) {
+			  	if (res.success == 1) {
+			  		table.draw();
+			  		App.showSuccessDialog("操作成功");
+			  	} else {
+			  		App.showErrorDialog(res.errmsg);
+			  	}				  
+			  });
+		  });
+	  });
   });
-  
-  $('#state, #type').change(function() {
-    table.draw();
-  });
-  
-  $('#vendor, #code, #start_date, #end_date').keyup(function(e) {
-    if (e.keyCode == 13)
-      table.draw();
-  });
-});	
-  
 </script>

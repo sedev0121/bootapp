@@ -132,9 +132,6 @@ var edit_url = [[@{/purchaseorder/}]];
         leftColumns: 3,
     	},
       columns : [ {
-        data : 'purchase_type_name',
-        title : '订单类型'
-      }, {
         data : 'code',
         title : '订单编号',
         render : function(data, display, record) {
@@ -165,47 +162,29 @@ var edit_url = [[@{/purchaseorder/}]];
         visible: !is_vendor,
         title : '供应商简称'
       }, {
-        data : 'tax_rate',
-        className: 'dt-right',
-        title : '税率'
+        data : 'purchase_type_name',
+        title : '订单类型'
       }, {
-        data : 'currency',
-        className: 'dt-right',
-        title : '币种'
+        data : 'contract_code',
+        title : '合同编号'
       }, {
-        data : 'exchange_rate',
-        className: 'dt-right',
-        title : '汇率'
-      }, {
-        data : 'sum',
-        className: 'dt-right',
-        title : '原币金额',
-        render: App.costNumber,
+        data : 'base_price',
+        title : '基材价格'
       }, {
         data : 'money',
         className: 'dt-right',
         title : '原币价税合计',
         render: App.costNumber,
       }, {
+        data : 'sum',
+        className: 'dt-right',
+        title : '原币金额',
+        render: App.costNumber,
+      }, {
         data : 'prepay_money',
         className: 'dt-right',
         title : '订金',
         render: App.costNumber,
-      }, {
-        data : null,
-        defaultContent: '',
-        orderable: false,
-        visible: false,
-        className: 'dt-right',
-        title : '购方备注'
-      }, {
-        data : 'department',
-        className: 'dt-right',
-        title : '采购组织'
-      }, {
-        data : 'person',
-        className: 'dt-right',
-        title : '采购员'
       }, {
         data : 'state',
         className: 'dt-center',
@@ -216,24 +195,6 @@ var edit_url = [[@{/purchaseorder/}]];
         className: 'dt-center',
         createdCell: App.getInqueryStateClass,
         render : App.getPurchaseOrderStateOfId
-      }, {
-        data : 'maker',
-        className: 'dt-center',
-        title : '制单人'
-      }, {
-        data : 'makedate',
-        className: 'dt-center',
-        render : $.fn.date_renderer,
-        title : '制单日期'
-      }, {
-        data : 'verifier',
-        className: 'dt-center',
-        title : '审核人'
-      }, {
-        data : 'audittime',
-        className: 'dt-center',
-        render : $.fn.date_renderer,
-        title : '审核日期'
       }, {
         data : 'deployername',
         className: 'dt-center',
@@ -252,22 +213,13 @@ var edit_url = [[@{/purchaseorder/}]];
         className: 'dt-center',
         title : '确认日期',
         render : $.fn.date_renderer,
-      }, {
-        data : 'closer',
-        className: 'dt-center',
-        title : '关闭人'
-      }, {
-        data : 'closedate',
-        render : $.fn.date_renderer,
-        className: 'dt-center',
-        title : '关闭日期'
       } ],
       rowCallback: function (row, data) {
         if (data.srmstate == 3) {
             $(row).addClass('closed');
         }
     	},
-      order: [  [ 2, "desc" ] ]      
+      order: [  [ 1, "desc" ] ]      
     });
 
     $("#btn_search").click(function() {

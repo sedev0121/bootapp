@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.DeliveryDetail;
 import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
@@ -24,6 +26,11 @@ public class Utils {
 
 	private static SimpleDateFormat getDateTimeFormat() {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return dateFormat;
+	}
+	
+	private static SimpleDateFormat getStartDateTimeFormat() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd HH:mm");
 		return dateFormat;
 	}
 
@@ -91,13 +98,6 @@ public class Utils {
 		return cal.getTime();
 	}
 	
-	public static Date getNegotiationEndDate() {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.add(Calendar.MONTH, 3);
-		return cal.getTime();
-	}
-
 	public static Date getStartSyncDate(Date date) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
@@ -120,6 +120,29 @@ public class Utils {
 			return null;
 		}
 	}
+	
+	public static Date getStatementDate(String dateStr) {
+		Date today = new Date();
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
+		String todayDate = dateFormat.format(today);
+		String statementDateStr;
+		if (Integer.parseInt(todayDate) > Integer.parseInt(dateStr)) {
+			dateFormat = new SimpleDateFormat("yyyy-MM-");
+			String yearMonth = dateFormat.format(today);
+			statementDateStr = yearMonth + dateStr;
+		} else {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(today);
+			cal.add(Calendar.MONTH, -1);
+			Date prevMonthDate = cal.getTime();			
+			dateFormat = new SimpleDateFormat("yyyy-MM-");
+			String yearMonth = dateFormat.format(prevMonthDate);
+			statementDateStr = yearMonth + dateStr;
+		}
+		
+		return parseDate(statementDateStr);
+	}
 
 	public static String formatDate(Date date) {
 		if (date == null)
@@ -133,6 +156,13 @@ public class Utils {
 
 		return getDateTimeFormat().format(date);
 	}
+	
+	public static String formatStatementDateTime(Date date) {
+		if (date == null)
+			return "";
+
+		return getStartDateTimeFormat().format(date);
+	}
 
 	public static String formatDateZeroTime(Date date) {
 		if (date == null)
@@ -144,11 +174,20 @@ public class Utils {
 	public static String generateId() {
 		String id = "";
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmssSSS");
 		id = dateFormat.format(new Date());
 
-		int rand = (int) (Math.random() * 1000);
-		id += String.format("%03d", rand);
+		int rand = (int) (Math.random() * 100);
+		id += String.format("%02d", rand);
+
+		return id;
+	}
+	
+	public static String generateTaskCode() {
+		String id = "";
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmssSSS");
+		id = dateFormat.format(new Date());
 
 		return id;
 	}
@@ -178,7 +217,7 @@ public class Utils {
 		id += vendorCode;
 		return id;
 	}
-
+	
 	public static String generateResetPassword() {
 		int max = 1000000;
 		int min = 100000;
@@ -207,6 +246,18 @@ public class Utils {
 	public static double costRound(double value) {
 		double result = Double.parseDouble(String.format("%.2f", value));
 		return result;
+	}
+	
+	public static String costNumber(double value) {
+		return String.format("%.2f", value);
+	}
+	
+	public static String priceNumber(double value) {
+		return String.format("%.6f", value);
+	}
+	
+	public static String quantityNumber(double value) {
+		return String.format("%.2f", value);
 	}
 	
 	public static RestApiResponse postForArrivalVouch(DeliveryMain deliveryMain,List<DeliveryDetail> details, RestApiClient apiClient) {
@@ -248,5 +299,17 @@ public class Utils {
 		RestApiResponse response = apiClient.postForArrivalVouch(postData);
 		
 		return response;
+	}
+	
+	public static String convertMapToJson(Map<String, Object> map) {
+		String json = "";
+		try {
+			json = new ObjectMapper().writeValueAsString(map);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			json = e.getMessage();
+		}
+		
+		return json;
 	}
 }

@@ -1,23 +1,25 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
 <body>
 	<div class="container" layout:fragment="content">
 		<ul class="breadcrumb">
 			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
-			<li><a th:href="@{/purchageorder}">订单管理</a></li>
-			<li><a th:href="@{/inquery}">议价单管理</a></li>
-			<li th:text="${#strings.contains(#request.requestURI,'add')} ?'新建议价单':'询价议价细'">议价单</li>
+			<li sec:authorize="hasRole('ROLE_BUYER')"><a th:href="@{/inquery}" class="active">询价管理</a></li>
+			<li sec:authorize="hasRole('ROLE_BUYER')" class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建询价单':'询价单详细'">询价单</li>
+			<li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/inquery}" class="active">报价管理</a></li>
+			<li sec:authorize="hasRole('ROLE_VENDOR')" class="active" th:text="${#strings.contains(#request.requestURI,'add')} ?'新建报价单':'报价单详细'">询价单</li>
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right">
-				<a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a> 
-				<a class="btn btn-primary" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-share"></i> 提交</a> 
-				<a class="btn btn-primary" th:if="${!#strings.contains(#request.requestURI,'add') && (main.iverifystate==1  || main.iverifystate==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
-				<a class="btn btn-primary" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i>通过</a> 
-				<a class="btn btn-primary" th:if="${main.iverifystate==3}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a> 
-				<a class="btn btn-primary" th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a> 
-				<a class="btn btn-primary" th:if="${main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a> 
-				<a class="btn btn-primary" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="save"><i class="fa fa-save"></i> 保存</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${main.iverifystate==1  || main.iverifystate==4}" id="submit"><i class="fa fa-share"></i> 发布</a> 
+				<a class="btn btn-primary" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')" th:if="${!#strings.contains(#request.requestURI,'add') && (main.iverifystate==1  || main.iverifystate==4)}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="pass"><i class="fa fa-arrow-up"></i> 通过</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-通过/拒绝')" th:if="${main.iverifystate==3}" id="cancel"><i class="fa fa-undo"></i> 拒绝</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" 	th:if="${main.iverifystate==5}" id="verify"><i class="fa fa-check-square"></i> 审核</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-审核/退回')" th:if="${main.iverifystate==5}" id="cancel"><i class="fa fa-undo"></i> 退回</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('询价管理-归档')" th:if="${main.iverifystate==6}" id="publish"><i class="fa fa-cloud-upload"></i> 归档</a> 
 				<a class="btn btn-default" th:href="@{/inquery}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -86,28 +88,60 @@
 						<div class="col-lg-3 col-md-3">
 							<label>归档日期:</label> <input type="text" th:value="${#dates.format(main.dpublishdate, 'yyyy-MM-dd')}" class="form-control" readonly>
 						</div>
-						<div class="col-lg-6 col-md-6 form-group margin-top-10" id="file_select" th:if="${(main.iverifystate==1 or main.iverifystate==4) and main.attachFileName == null}">
-							<div class="input-group input-file" name="attach">
-								<span class="input-group-btn">
-									<button class="btn btn-success btn-file btn-choose" type="button">选择附件</button>
-								</span> <input type="text" class="form-control" placeholder='请选择附件' /> <span class="input-group-btn">
-									<button class="btn btn-warning btn-file btn-reset" type="button">重置</button>
-								</span>
-							</div>
-						</div>
-						<div class="col-lg-6 col-md-6 form-group margin-top-10" id="file_show" th:if="!${(main.iverifystate==1 or main.iverifystate==4) and main.attachFileName == null}">
-							<div>
-								<b> 附件：</b><a th:href="@{|/inquery/${main.ccode}/download|}" th:if="${main.attachFileName}" th:text="${main.attachOriginalName}"></a> <span th:if="!${main.attachFileName}">---</span> <a class="btn btn-danger" id="del_attach" th:if="${main.maker?.id==session.account_id and (main.iverifystate==1  || main.iverifystate==4)}">删除附件</a>
-							</div>
-						</div>
 					</div>
 					<div class="row margin-top-10">
 						<div class="col-lg-12">
-							<table id="example" name="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
-							</table>
+							<div class="tab-style-1" id="tabs">
+								<ul class="nav nav-tabs">
+									<li class="active"><a data-toggle="tab" href="#tab-1">明细</a></li>
+									<li><a data-toggle="tab" href="#tab-2">附件</a></li>
+									<li><a data-toggle="tab" href="#tab-3">操作日志</a></li>
+								</ul>
+								<div class="tab-content">
+									<div id="tab-1" class="tab-pane row-fluid fade in active">
+										<table id="example" name="example" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
+									</div>
+									<div id="tab-2" class="tab-pane row-fluid fade in">
+										<table id="attach_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
+									</div>
+									<div id="tab-3" class="tab-pane row-fluid fade in">
+										<div class="row edit-history">
+											<a class="btn btn-primary save-history" id="show_modal_btn"><i class="fa fa-plus"></i> 添加说明</a>
+										</div>
+										<table id="history_table" class="table table-striped table-bordered nowrap table-striped table-hover" style="width: 100%">
+										</table>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</form>
+			</div>
+		</div>
+		<div class="modal fade" id="history_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">添加说明</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="history_form" th:action="@{/operation_history/update}" method="post">
+							<input type="hidden" name="action" value=" 添加说明" />
+							<div class="row">
+								<div class="col-md-12">
+									<textarea name="content" placeholder="请输入说明" id="history_content" class="history-content" rows="5"></textarea>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+						<button type="button" class="btn btn-primary" id="save_history">保存</button>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="modal fade" id="import_dialog" role="dialog" aria-hidden="true">
@@ -142,31 +176,35 @@
 				</div>
 			</div>
 		</div>
-	</div>
-	</div>
+  </div>
 </body>
 </html>
+
+
 <script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
 	is_vendor = 1;
 </script>
 
-<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR') or hasRole('ROLE_BUYER') or hasAuthority('询价管理-新建/发布')">
-is_readonly = 0;
+<script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-新建/发布')">
+	is_readonly = 0;
 </script>
 
 <script th:inline="javascript">
-	var editor, table;
+	var editor, table, attach_table, history_table, attach_editor;
   /*[+
   var detail_url = [[@{|/inquery/${main.ccode}/details|}]];
+  var inventory_search_url = [[@{/inventory/select}]];
   var edit_url = [[@{/inquery/}]];
-  var hasAttach = [[${main.attachFileName != null}]];
   var del_url = [[@{|/inquery/${main.ccode}/delete|}]];
+  var download_url = [[@{|/inquery/${main.ccode}/download|}]];
   +]*/
 
   var vendor_search_url = /*[[@{/vendor/search}]]*/'';
   var state = /*[[${main.iverifystate}]]*/'';
   var type = /*[[${main.type}]]*/'';
   var supply_type = /*[[${main.isupplytype}]]*/'';
+  var attach_list_url = /*[[@{|/inquery/${main.ccode}/attaches|}]]*/'';
+  var history_url = /*[[@{|/operation_history/list/inquery/${main.ccode}}|]]*/'';
 
   $(document).ready(function() {
 
@@ -193,6 +231,187 @@ is_readonly = 0;
 	  }).select2("val", supply_type.toString());
 
 	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
+
+	  function canEdit() {
+		  if (!is_readonly && (state == 1 || state == 4)) {
+			  return true;
+		  } else {
+			  return false;
+		  }
+	  }
+
+	  attach_editor = new $.fn.dataTable.Editor({
+	    table : "#attach_table",
+	    idSrc : "row_no",
+	    i18n : {
+		    remove : {
+		      button : "删除行",
+		      title : "删除行",
+		      submit : "是",
+		      confirm : {
+		        _ : "确定要删除%d行数据吗?",
+		        1 : "确定要删除吗?"
+		      }
+		    },
+	    }
+	  }).on('postRemove', function(e, json, ids) {
+		  var table_data = attach_table.rows().data().toArray();
+		  var id = 1;
+		  $.each(table_data, function(key, item) {
+			  item.row_no = id++;
+		  })
+		  attach_table.rows().invalidate();
+	  });
+
+	  attach_table = $('#attach_table').DataTable({
+	    serverSide : false,
+	    processing : false,
+	    ajax : {
+	      url : attach_list_url,
+	      dataSrc : function(json) {
+		      return json;
+	      },
+	    },
+	    select : canEdit() ? {
+	      style : 'multi',
+	      selector : 'td:first-child',
+	    } : false,
+	    columns : [ {
+	      data : null,
+	      defaultContent : '',
+	      orderable : false,
+	      visible : canEdit(),
+	      title : '选择',
+	      className : 'select-checkbox',
+	    }, {
+	      data : 'row_no',
+	      className : 'dt-center',
+	      title : '行号',
+	      width : '30px'
+	    }, {
+	      data : 'date',
+	      title : '日期',
+	      className : 'dt-center',
+	      render : $.fn.date_renderer,
+	      width : '100px'
+	    }, {
+	      data : 'original_name',
+	      title : '附件',
+	      render : function(data, display, record) {
+		      var url = download_url + "/" + record.row_no;
+		      var html = data;
+		      if (data) {
+			      html = '<a href="' + url + '">' + data + '</a>';
+		      } else {
+			      html = '<input type="file" name="attach"/>';
+		      }
+
+		      return html;
+	      }
+	    } ],
+	    buttons : canEdit() ? [ {
+	      text : "添加行",
+	      action : function(e, dt, node, config) {
+		      var new_row = {
+		        row_no : attach_table.rows().data().toArray().length + 1,
+		        date : new Date().toISOString().slice(0, 10)
+		      };
+		      attach_table.row.add(new_row);
+		      attach_table.draw();
+	      }
+	    }, {
+	      extend : "remove",
+	      editor : attach_editor
+	    } ] : false,
+	  });
+
+	  $('#show_modal_btn').click(function() {
+		  $('#history_dialog').modal('show');
+	  });
+	  
+	  $('#history_dialog').on('shown.bs.modal', function() {
+		  $('#history_content').focus();
+	  });
+	  
+	  $('#save_history').click(function() {
+		  if (!$('#history_content').val()) {
+			  App.showErrorDialog("日志内容不能为空！");
+			  return;
+		  }
+
+		  $("#history_form").ajaxSubmit({
+		    data : {
+		      target_type : "inquery",
+		      target_id : $('#ccode').val(),
+		    },
+		    beforeSend : function() {
+			    App.blockUI();
+		    },
+		    complete : function() {
+			    App.unblockUI();
+		    },
+		    success : function(res, status, xhr, form) {
+			    if (res.success == 1) {
+				    $('#history_content').val('');
+				    history_table.ajax.reload();
+				    $('#history_dialog').modal('hide');
+			    } else {
+				    App.showErrorDialog(res.errmsg);
+			    }
+		    },
+		    error : function(res, status, xhr, form) {
+			    App.showErrorDialog("操作失败", "请稍后重试");
+		    }
+		  });
+	  });
+
+	  history_table = $('#history_table').DataTable({
+	    serverSide : false,
+	    processing : false,
+	    ajax : {
+	      url : history_url,
+	      dataSrc : function(json) {
+		      return json;
+	      },
+	    },
+	    order : [ [ 0, 'desc' ] ],
+	    columns : [ {
+	      data : 'create_date',
+	      title : '日期',
+	      width : '150px',
+	      className : 'dt-center',
+	      render : $.fn.time_renderer,
+	    }, {
+	      data : 'action',
+	      title : '动作',
+	      width : '100px',
+	      className : 'dt-center',
+	    }, {
+	      data : 'account.realname',
+	      title : '操作人',
+	      width : '150px',
+	      className : 'dt-center',
+	    }, {
+	      data : 'content',
+	      title : '说明',
+	    } ],
+	  });
+
+	  $('#tabs a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+		  // FYP-table is id of datatable
+		  if (table) {
+			  table.columns.adjust().fixedColumns().relayout();
+		  }
+
+		  if (attach_table) {
+			  attach_table.columns.adjust();
+		  }
+
+		  if (history_table) {
+			  history_table.columns.adjust();
+		  }
+
+	  });
 
 	  var prev_type;
 	  $("#type").on("select2:selecting", function(e) {
@@ -246,22 +465,13 @@ is_readonly = 0;
 		  if (table_data.length == 0) {
 			  onChangeType();
 		  }
-
 	  });
 
-	  if ((state != 1 && state != 4) || is_readonly) {
+	  if (!canEdit()) {
 		  $('input').attr("readonly", true);
 		  $('select').attr("readonly", true);
 		  $("#start_date").datepicker("option", "disabled", true);
 		  $("#end_date").datepicker("option", "disabled", true);
-	  } else {
-		  if (hasAttach) {
-			  $('#file_select').hide();
-			  $('#file_show').show();
-		  } else {
-			  $('#file_select').show();
-			  $('#file_show').hide();
-		  }
 	  }
 
 	  if (is_vendor)
@@ -456,10 +666,11 @@ is_readonly = 0;
 	  var table_options = {
 	    serverSide : false,
 	    processing : false,
-	    select : (state == 1 && !is_readonly) ? {
-		    style : 'multi'
+	    select : (canEdit()) ? {
+	      style : 'multi',
+	      selector : 'td:first-child'
 	    } : false,
-	    buttons : [ {
+	    buttons : canEdit()? [ {
 	      text : "添加物料",
 	      action : function(e, dt, node, config) {
 
@@ -481,7 +692,7 @@ is_readonly = 0;
 	    }, {
 	      extend : "remove",
 	      editor : editor
-	    } ],
+	    } ] : false,
 	    ajax : {
 	      url : detail_url,
 	      dataSrc : function(json) {
@@ -496,6 +707,13 @@ is_readonly = 0;
 	    },
 
 	    columns : [ {
+	      data : null,
+	      defaultContent : '',
+	      orderable : false,
+	      title : '选择',
+	      visible: canEdit(),
+	      className : 'select-checkbox',
+	    }, {
 	      data : 'rowno',
 	      className : 'dt-center',
 	      title : '行号',
@@ -509,13 +727,17 @@ is_readonly = 0;
 	      data : 'specs',
 	      title : '规格型号',
 	    }, {
-	      data : 'puunit_name',
+	      data : 'main_measure',
 	      className : 'dt-center',
 	      title : '单位',
 	    }, {
+	      data : 'fminquantity',
+	      className : 'dt-right minquantity ',
+	      title : '最小数量',
+	    }, {
 	      data : 'fmaxquantity',
 	      className : 'dt-right maxquantity ',
-	      title : '数量小于',
+	      title : '最大数量',
 	    }, {
 	      data : 'iunitprice',
 	      className : 'dt-right unitprice ',
@@ -556,10 +778,6 @@ is_readonly = 0;
 	    },
 	  };
 
-	  if ((state != 1 && state != 4) || is_readonly) {
-		  table_options.buttons = [];
-	  }
-
 	  table = $('#example').DataTable(table_options);
 
 	  table.on('select', function(e, dt, type, indexes) {
@@ -598,7 +816,7 @@ is_readonly = 0;
 	  }
 
 	  function onChangeType() {
-		  if ((state == 1 || state == 4) && !is_readonly) {
+		  if (canEdit()) {
 			  table.on('click', 'td.memo, td.startdate, td.enddate, td.taxrate', function(e) {
 				  editor.inline(this, {
 				    submit : 'allIfChanged',
@@ -662,8 +880,9 @@ is_readonly = 0;
 		  if (import_table == undefined) {
 			  import_table = $('#import_table').DataTable({
 			    ordering : true,
+			    order : [ [ 1, "asc" ] ],
 			    select : {
-				    style : 'os'
+				    style : 'multi'
 			    },
 			    ajax : {
 			      url : /*[[@{/inventory/list}]]*/'',
@@ -673,7 +892,7 @@ is_readonly = 0;
 				        page_index : data.start / data.length + 1,
 				        order : data.columns[data.order[0].column].data,
 				        dir : data.order[0].dir,
-				        search : $('#search_inventory').val()
+				        inventory : $('#search_inventory').val()
 				      }
 				      return filter;
 			      },
@@ -685,6 +904,12 @@ is_readonly = 0;
 			    },
 
 			    columns : [ {
+			      data : null,
+			      defaultContent : '',
+			      orderable : false,
+			      title : '选择',
+			      className : 'select-checkbox',
+			    }, {
 			      data : 'code',
 			      title : '物料编码',
 			    }, {
@@ -694,7 +919,7 @@ is_readonly = 0;
 			      data : 'specs',
 			      title : '规格型号',
 			    }, {
-			      data : 'main_measure.name',
+			      data : 'main_measure',
 			      className : 'dt-center',
 			      title : '单位',
 			    } ],
@@ -772,7 +997,7 @@ is_readonly = 0;
 
 				  temp.ivalid = 0;
 				  temp.name = item.name;
-				  temp.puunit_name = item.main_measure.name;
+				  temp.main_measure = item.main_measure;
 				  temp.specs = item.specs;
 
 				  table.row.add(temp);
@@ -835,7 +1060,7 @@ is_readonly = 0;
 		  }
 
 		  if ($('#type').val() == 2 && $('#state').val() == 5 && inventoryIdList.length != validInventoryIdList.length) {
-			  App.showErrorDialog("操作失败", "每个货品必须得有一个有效的！");
+			  App.showErrorDialog("操作失败", "每个存货必须得有一个有效的！");
 			  return false;
 		  }
 
@@ -866,29 +1091,57 @@ is_readonly = 0;
 	    },
 
 	    submitHandler : function(form) {
-		    var data = table.rows().data().toArray();
-		    jQuery(form).ajaxSubmit({
-		      beforeSend : function() {
-			      App.blockUI();
-		      },
-		      complete : function() {
-			      App.unblockUI();
-		      },
-		      data : {
-			      table : data
-		      },
-		      success : function(res, status, xhr, form) {
-			      if (res.success == 1) {
-				      App.showSuccessDialog("操作成功", function() {
-					      window.location.href = edit_url + res.data.ccode + "/edit";
-				      });
-			      } else {
-				      App.showErrorDialog("操作失败", res.errmsg);
+		    var state = $('#state').val();
+		    if (state == 1) {
+			    confirmMessage = "保存";
+		    } else if (state == 2) {
+			    confirmMessage = "提交";
+		    } else if (state == 3) {
+			    confirmMessage = "确认";
+		    } else if (state == 4) {
+			    confirmMessage = "退回";
+		    } else if (state == 5) {
+			    confirmMessage = "通过";
+		    } else if (state == 6) {
+			    confirmMessage = "审核";
+		    } else if (state == 7) {
+			    confirmMessage = "归档";
+		    }
+
+		    var attaches = attach_table.rows().data().toArray();
+		    var postAttachIds = [];
+		    $.each(attaches, function(key, item) {
+			    if (item.id)
+				    postAttachIds.push(item.id);
+		    });
+		    
+		    App.showInputConfirmDialog('确定要' + confirmMessage + '吗?', function(submit_content) {
+			    var data = table.rows().data().toArray();
+			    jQuery(form).ajaxSubmit({
+			      beforeSend : function() {
+				      App.blockUI();
+			      },
+			      complete : function() {
+				      App.unblockUI();
+			      },
+			      data : {
+			        content : submit_content,
+			        attachIds : postAttachIds.join(","),
+			        table : data
+			      },
+			      success : function(res, status, xhr, form) {
+				      if (res.success == 1) {
+					      App.showSuccessDialog("操作成功", function() {
+						      window.location.href = edit_url + res.data.ccode + "/edit";
+					      });
+				      } else {
+					      App.showErrorDialog("操作失败", res.errmsg);
+				      }
+			      },
+			      error : function(res, status, xhr, form) {
+				      App.showErrorDialog("操作失败", "请输入正确的值");
 			      }
-		      },
-		      error : function(res, status, xhr, form) {
-			      App.showErrorDialog("操作失败", "请输入正确的值");
-		      }
+			    });
 		    });
 	    }
 	  });
@@ -955,3 +1208,4 @@ is_readonly = 0;
 	  });
   });
 </script>
+

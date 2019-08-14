@@ -240,6 +240,8 @@ public class PurchaseOrderController extends CommonController {
 			main.setStore(storeRepository.findOneById(form.getStore()));
 			main.setDeploydate(new Date());
 			main.setDeployer(account);
+			main.setContractCode(form.getContract_code());
+			main.setBasePrice(form.getBase_price());
 		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CONFIRM) {
 			main.setReviewdate(new Date());
 			main.setReviewer(account);
@@ -292,6 +294,13 @@ public class PurchaseOrderController extends CommonController {
 				PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneById(Long.parseLong(item.get("id")));
 				if (form.getState() == Constants.PURCHASE_ORDER_STATE_DEPLOY) {
 					detail.setMemo(item.get("memo"));
+					detail.setContractCode(item.get("contract_code"));
+					detail.setPriceFrom(Integer.parseInt(item.get("price_from")));
+					detail.setBasePrice(null);
+					if (!Utils.isEmpty(item.get("base_price"))) {
+						detail.setBasePrice(Double.parseDouble(item.get("base_price")));	
+					}
+					
 					detail.setConfirmedDate(detail.getArriveDate());
 					detail.setConfirmedQuantity(detail.getQuantity());
 					detail.setCountPerBox(Integer.valueOf(item.get("count_per_box")));

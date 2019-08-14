@@ -3,39 +3,34 @@
 <body>
   <div class="container"  layout:fragment="content">  
       <ul class="breadcrumb">
-        <li>
-          <a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a>
-        </li>
-        <li th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}">订单管理</li>
-        <li class="active" th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}">订单发货</li>
-        <li class="active" th:if="${#strings.startsWith(#request.requestURI,'/ship/view')}">出货看板</li>
+        <li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
+        <li th:if="${#strings.startsWith(#request.requestURI,'/ship')}">出货看板</li>
       </ul>
       <div class="search-content">
           <div class="search-cell width-10">
-            <label for="code">订单号码：</label>
-            <input type="text" id="code" class="form-control">
+            <label for="arrive_date">订单日期: </label>
+            <input type="text" id="start_date" value="" class="form-control datepicker"  placeholder="订单日期:"/>
+          </div>
+          <div class="search-cell width-10">
+            <label for="confirm_date">　</label>
+            <input type="text" id="end_date" value="" class="form-control datepicker" />
           </div>
           <div class="search-cell width-10" id="vendor_div">
             <label for="vendor">供应商编码/名称：</label>
-            <input type="text" id="vendor" class="form-control">
+            <input type="text" id="vendor" class="form-control" placeholder="供应商编码/名称：">
           </div>          
           <div class="search-cell width-10">
             <label for="inventory">物料编码/名称：</label>
-            <input type="text" id="inventory" class="form-control">
+            <input type="text" id="inventory" class="form-control" placeholder="物料编码/名称：">
           </div>
           <div class="search-cell width-10">
-            <label for="arrive_date">需求日期: </label>
-            <input type="text" id="arrive_date" value="" class="form-control datepicker" />
-          </div>
-          <div class="search-cell width-10">
-            <label for="confirm_date">承诺日期</label>
-            <input type="text" id="confirm_date" value="" class="form-control datepicker" />
-          </div>
+            <label for="state">订单状态:</label>
+            <select name="status" id="state" class="form-control">
+            </select>
+          </div>          
           <div style="vertical-align: bottom" class="search-cell width-15">
             <button class="btn btn-default" id="btn_search"><i class="fa fa-search"></i> 查询</button>
-            <button sec:authorize="hasRole('ROLE_VENDOR')" th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}" class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</button>
-            <button sec:authorize="hasRole('ROLE_VENDOR')" th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}" class="btn btn-default" id="export"><i class="fa fa-level-down"></i> 导出</button>
-            <button sec:authorize="hasRole('ROLE_VENDOR')" th:if="${#strings.startsWith(#request.requestURI,'/ship/index')}" class="btn btn-default" id="import"><i class="fa fa-level-up"></i> 导入</button>
+            <button class="btn btn-default" id="export"><i class="fa fa-level-down"></i> 导出</button>
           </div>
       </div>
       <div class="row">
@@ -46,31 +41,8 @@
       </div>
       <form id="export_form" th:action="@{/ship/export}" method="post">
         <input type="hidden" id="export_data" name="export_data"/>
-      </form> 
-      <form id="save_form" th:action="@{/ship/save}" method="post">        
-      </form>     
-      <div class="modal fade" id="import_dialog" tabindex="-1" role="dialog" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                  <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">
-                                                      选择导入Excel文档
-                      </h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      </button>
-                  </div>
-                  <div class="modal-body">
-                      <form id="import_form" th:action="@{/ship/import}" method="post" enctype="multipart/form-data">
-                        <input type="file" id="import_file" name="import_file"/>
-                      </form>  
-                  </div>
-                  <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                      <button type="button" class="btn btn-primary" id="start_import">导入</button>
-                  </div>
-              </div>
-          </div>
-      </div> 
+      </form>
+      
   </div>  
 </body>
 </html>
@@ -100,6 +72,11 @@ $(document).ready(function() {
     }
   });
 
+  $("#state").select2({
+    data : App.getPurchaseOrderStateDataWithAll(),
+    minimumResultsForSearch : -1,
+  });
+  
   if (is_vendor){
     $('#vendor_div').addClass('hidden');
   }
@@ -131,7 +108,6 @@ $(document).ready(function() {
   
   var table = $('#example').DataTable({
     ordering : true,
-    select: editable?{style: 'multi'}:false,
     ajax : {
         url : list_url,
         data : function(data) {
@@ -141,189 +117,317 @@ $(document).ready(function() {
             rows_per_page : data.length,
             page_index : data.start / data.length + 1,
             inventory : $('#inventory').val(),
-            code : $('#code').val(),
             vendor: $('#vendor').val(),
-            confirm_date : $('#confirm_date').val(),
-            arrive_date : $('#arrive_date').val()
+            state: $('#state').val(),
+            start_date : $('#start_date').val(),
+            end_date : $('#end_date').val()
           }
           return filter;
         },
         dataSrc : function(json) {
-          $.each(json, function(key, item){
-            item.today_quantity = '';
-          });
-          json.recordsTotal = json.totalElements;
-          json.recordsFiltered = json.totalElements;
-          return json.content;
-        },              
-    },
-    
-    columns : [ {
-      data : 'code',
-      title : '订单号',
-    }, {
-      data : 'rowno',
-      className: 'dt-center',
-      title : '订单行号',
-    }, {
-      data : 'vendorname',
-      visible: !is_vendor,
-      title : '供应商名称',
-    }, {
-      data : 'vendorcode',
-      visible: !is_vendor,
-      title : '供应商编码',
-    }, {
-      data : 'inventorycode',
-      title : '物料编码',              
-    }, {
-      data : 'inventoryname',
-      title : '物料名称',
-    }, {
-      data : 'specs',
-      title : '物料描述',
-    }, {
-      data : 'unitname',
-      className: 'dt-center',
-      title : '单位',
-    }, {
-      data : 'quantity',
-      className: 'dt-right',
-      title : '数量',
-    }, {
-      data : 'lastshipdate',
-      className: 'dt-center',
-      title : '最新预发货日期',
-      render: $.fn.date_renderer,
-    }, {
-      data : 'shipped_quantity',
-      className: 'dt-right',
-      title : '最新预发货数量',    
-    }, {
-      data : null,
-      className: 'dt-center',
-      visible: editable,
-      orderable: false,
-      title : '本次预发货日期',
-      defaultContent: today
-    }, {
-      data : 'today_quantity',
-      className: 'dt-right edit-cell',
-      visible: editable,
-      orderable: false,
-      title : '本次预发货数量',
-      defaultContent: '',
-    }, {
-      data : 'remain_quantity',
-      className: 'dt-right edit-cell',
-      title : '未交数量',               
-    }, {
-      data : 'arrivedate',
-      className: 'dt-center',
-      title : '需求日期',
-      render: $.fn.date_renderer,
-    }, {
-      data : 'arrivenote',
-      title : '备注',
-    }, {
-      data : 'confirmdate',
-      className: 'dt-center',
-      title : '承诺交货日期',
-      render: $.fn.date_renderer,
-    }, {
-      data : 'confirmnote',
-      title : '供方备注',
-    } ],
-    order: [ [14, 'desc'] ],
-    createdRow: function ( row, data, index ) {
-      if ( (new Date(data.confirmdate)).getTime() < (new Date()).getTime() && data.remain_quantity>0) {
-        $('td', row).eq(editable?11:(is_vendor?9:11)).addClass('red');
-      }
-    }
-  });
-    
-  if (editable){
-    table.on( 'click', 'tbody td.edit-cell', function (e) {
-      editor.inline( this, { submit: 'allIfChanged', submitOnBlur: true, drawType: 'none' });
-    } );
-    App.addKeyDownEditor(editor, 10, 10);
-  }
-  
-  $("#btn_search").click(function() {
-    table.draw();
-  });
 
-  $("#import").click(function() {
-    $('#import_dialog').modal('show');
-  });
+		      $.each(json.content, function(key, item) {
+			      item.box_quantity = App.getBoxCount(item.quantity, item.count_per_box);
+			      
+			      item.delivered_package_quantity = App.getPackageQuantity(item.delivered_quantity, item.package_rate);
+			      item.delivered_box_quantity = App.getBoxCount(item.delivered_quantity, item.count_per_box);
+			      item.package_rate = App.getPackageRate(item.quantity, item.package_quantity);
 
-  $('#start_import').click(function(){
-    if (!$('#import_file').val()){
-      App.showErrorDialog("请选择Excel文档！");
-      return;
-    }
-    $('#import_form').submit();
-    $('#import_dialog').modal('hide');//modal_1 is the id 1
-  });
+			      item.arrived_box_quantity = App.getBoxCount(item.arrived_quantity, item.count_per_box);
+			      item.arrived_package_quantity = App.getPackageQuantity(item.arrived_quantity, item.package_rate);
 
-  $('#save').click(function() {
-    editor.submit();
+			      item.not_arrived_quantity = item.quantity - item.delivered_quantity * 1;
+			      item.not_arrived_box_quantity = App.getBoxCount(item.not_arrived_quantity, item.count_per_box);
+			      item.not_arrived_package_quantity = App.getPackageQuantity(item.not_arrived_quantity, item.package_rate);
+		      });
+		      json.recordsTotal = json.totalElements;
+		      json.recordsFiltered = json.totalElements;
+		      return json.content;
+	      },
+	    },
 
-    if (changedRows.length == 0){
-      App.showErrorDialog("操作失败", "请输入本次预发货数量");
-      return;
-    }
-    
-    var post_data = {};
-    $.each(changedRows, function(key, item){
-      if (item.today_quantity){
-        post_data[item.id] = item.today_quantity;  
-      }      
-    });
-    $('#save_form').ajaxSubmit({
-      data:post_data,
-      success: function(res, status, xhr, form) {
-        changedRows = [];
-        App.showSuccessDialog("操作成功", function(){
-          window.location.reload(true);
-        });
-      },
-      error: function (res, status, xhr, form) {
-        App.showErrorDialog("操作失败", "请输入正确的值");
-      }
-    });
-  });
-  
-  $("#export").click(function() {
-    
-    var order = table.order();
-    var selected_data = table.rows('.selected').data().toArray();
-    
-    if (selected_data.length == 0) {
-      App.showErrorDialog("请选择至少一行数据！");
-      return;
-    }
-    
-    var export_list = [];
-    $.each(selected_data, function(key, item){
-      export_list.push(item.id);        
-    });
-    
-    var post_data = {
-        order: "code",
-        dir: "asc",
-        inventory : $('#inventory').val(),
-        code : $('#code').val(),
-        list:export_list,          
-    };
-    
-    $('#export_data').val(JSON.stringify(post_data));
-    $('#export_form').submit();
-  });
+	    columns : [ {
+	      data : null,
+	      title : '序号',
+	      className : 'dt-center',
+	      render : $.fn.rowno_renderer
+	    }, {
+	      data : 'company_name',
+	      title : '业务实体',
+	    }, {
+	      data : 'code',
+	      title : '订单编号',
+	    }, {
+	      data : 'row_no',
+	      className : 'dt-center',
+	      title : '订单行号',
+	    }, {
+	      data : 'vencode',
+	      visible : !is_vendor,
+	      title : '供应商编码',
+	    }, {
+	      data : 'vendor_name',
+	      visible : !is_vendor,
+	      title : '供应商名称',
+	    }, {
+	      data : 'inventory_code',
+	      title : '货品代码',
+	    }, {
+	      data : 'inventory_name',
+	      title : '货品名称',
+	    }, {
+	      data : 'specs',
+	      title : '规格型号',
+	    }, {
+	      data : 'unit_name',
+	      className : 'dt-center',
+	      title : '单位',
+	    }, {
+	      data : 'orderdate',
+	      className : 'dt-center',
+	      title : '订单交期',
+	      render : $.fn.date_renderer,
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right',
+	      title : '订单数量',
+	    }, {
+	      data : 'package_rate',
+	      className : 'dt-right',
+	      orderable : false,
+	      title : '换算率',
+	    }, {
+	      data : 'package_quantity',
+	      className : 'dt-center',
+	      title : '订单件数',
+	    }, {
+	      data : 'box_class_name',
+	      className : 'dt-right',
+	      title : '装箱规格',
+	    }, {
+	      data : 'count_per_box',
+	      className : 'dt-right edit-cell',
+	      title : '每箱数量',
+	    }, {
+	      data : 'quantity',
+	      className : 'dt-right edit-cell',
+	      title : '订单箱数',
+	    }, {
+	      data : 'delivered_quantity',
+	      className : 'dt-right edit-cell',
+	      title : '订单已发数量',
+	    }, {
+	      data : 'delivered_package_quantity',
+	      className : 'dt-right edit-cell',
+	      title : '订单已发件数',
+	    }, {
+	      data : 'delivered_box_quantity',
+	      className : 'dt-right edit-cell',
+	      orderable : false,
+	      title : '订单已发箱数',
+	    }, {
+	      data : 'arrived_quantity',
+	      className : 'dt-right edit-cell',
+	      title : '订单到货数量',
+	    }, {
+	      data : 'arrived_package_quantity',
+	      orderable : false,
+	      className : 'dt-right edit-cell',
+	      title : '订单到货件数',
+	    }, {
+	      data : 'arrived_box_quantity',
+	      orderable : false,
+	      className : 'dt-right edit-cell',
+	      title : '订单到货箱数',
+	    }, {
+	      data : 'invoiced_quantity',
+	      className : 'dt-right edit-cell',
+	      title : '订单入库数量',
+	    }, {
+	      data : 'not_arrived_quantity',
+	      orderable : false,
+	      className : 'dt-right edit-cell',
+	      title : '订单未发数量',
+	    }, {
+	      data : 'not_arrived_package_quantity',
+	      orderable : false,
+	      className : 'dt-right edit-cell',
+	      title : '订单未发件数',
+	    }, {
+	      data : 'not_arrived_box_quantity',
+	      className : 'dt-right edit-cell',
+	      orderable : false,
+	      title : '订单未发箱数',
+	    }, {
+	      data : null,
+	      defaultContent : '',
+	      className : 'dt-right edit-cell',
+	      orderable : false,
+	      title : '拒收次数',
+	    }, {
+	      data : null,
+	      defaultContent : '',
+	      className : 'dt-right edit-cell',
+	      orderable : false,
+	      title : '拒收数量',
+	    }, {
+	      data : 'backed_quantity',
+	      className : 'dt-right edit-cell',
+	      title : '退货数量',
+	    }, {
+	      data : 'price',
+	      className : 'dt-right edit-cell',
+	      title : '未税单价',
+	    }, {
+	      data : 'money',
+	      className : 'dt-right edit-cell',
+	      title : '未税金额',
+	    }, {
+	      data : 'tax_rate',
+	      className : 'dt-right edit-cell',
+	      title : '税率',
+	    }, {
+	      data : 'tax_price',
+	      className : 'dt-right edit-cell',
+	      title : '含税单价',
+	    }, {
+	      data : 'sum',
+	      className : 'dt-right edit-cell',
+	      title : '含税金额',
+	    }, {
+	      data : null,
+	      defaultContent : '',
+	      orderable : false,
+	      title : '技术要求',
+	    }, {
+	      data : 'memo',
+	      title : '购方备注',
+	    }, {
+	      data : 'confirmed_memo',
+	      title : '供方备注',
+	    }, {
+	      data : 'close_date',
+	      title : '行状态',
+	      render : function(data, display, record) {
+		      return record.close_date ? '关闭' : '';
+	      },
+	    } ],
+	    order : [ [ 2, 'desc' ] ],
+	    createdRow : function(row, data, index) {
+		    if ((new Date(data.confirmdate)).getTime() < (new Date()).getTime() && data.remain_quantity > 0) {
+			    $('td', row).eq(editable ? 11 : (is_vendor ? 9 : 11)).addClass('red');
+		    }
+	    }
+	  });
 
-  $('#code, #inventory, #arrive_date, #confirm_date').keyup(function(e) {
-    if (e.keyCode == 13)
-      table.draw();
+	  if (editable) {
+		  table.on('click', 'tbody td.edit-cell', function(e) {
+			  editor.inline(this, {
+			    submit : 'allIfChanged',
+			    submitOnBlur : true,
+			    drawType : 'none'
+			  });
+		  });
+		  App.addKeyDownEditor(editor, 10, 10);
+	  }
+
+	  $("#btn_search").click(function() {
+		  table.draw();
+	  });
+
+	  $("#import").click(function() {
+		  $('#import_dialog').modal('show');
+	  });
+
+	  $('#start_import').click(function() {
+		  if (!$('#import_file').val()) {
+			  App.showErrorDialog("请选择Excel文档！");
+			  return;
+		  }
+		  $('#import_form').submit();
+		  $('#import_dialog').modal('hide');//modal_1 is the id 1
+	  });
+
+	  $('#save').click(function() {
+		  editor.submit();
+
+		  if (changedRows.length == 0) {
+			  App.showErrorDialog("操作失败", "请输入本次预发货数量");
+			  return;
+		  }
+
+		  var post_data = {};
+		  $.each(changedRows, function(key, item) {
+			  if (item.today_quantity) {
+				  post_data[item.id] = item.today_quantity;
+			  }
+		  });
+		  $('#save_form').ajaxSubmit({
+		    data : post_data,
+		    success : function(res, status, xhr, form) {
+			    changedRows = [];
+			    App.showSuccessDialog("操作成功", function() {
+				    window.location.reload(true);
+			    });
+		    },
+		    error : function(res, status, xhr, form) {
+			    App.showErrorDialog("操作失败", "请输入正确的值");
+		    }
+		  });
+	  });
+
+	  $('#export').click(function() {
+      var table_order = table.order();
+      var table_order_column = table.settings().init().columns[table_order[0][0]].data;
+
+      var filter = {};
+
+      filter.start_date = $('#start_date').val();
+      filter.end_date = $('#end_date').val();
+      filter.inventory = $('#inventory').val();
+      filter.vendor = $('#vendor').val();
+      filter.state = $('#state').val();
+
+      filter.sortName = table_order_column;
+      filter.sortDir = table_order[0][1];
+      filter.start = 0;
+      filter.length = -1;
+      filter["_csrf"] = $("#export_form input").val();
+      
+      $.ajax({
+      	url: table.ajax.url(),
+      	type : "post",
+		    data : filter,
+		  }).done(function(resp) {
+		  	$.each(resp.content, function(key, item) {
+		      item.box_quantity = App.getBoxCount(item.quantity, item.count_per_box);
+		      
+		      item.delivered_package_quantity = App.getPackageQuantity(item.delivered_quantity, item.package_rate);
+		      item.delivered_box_quantity = App.getBoxCount(item.delivered_quantity, item.count_per_box);
+		      item.package_rate = App.getPackageRate(item.quantity, item.package_quantity);
+
+		      item.arrived_box_quantity = App.getBoxCount(item.arrived_quantity, item.count_per_box);
+		      item.arrived_package_quantity = App.getPackageQuantity(item.arrived_quantity, item.package_rate);
+
+		      item.not_arrived_quantity = item.quantity - item.delivered_quantity * 1;
+		      item.not_arrived_box_quantity = App.getBoxCount(item.not_arrived_quantity, item.count_per_box);
+		      item.not_arrived_package_quantity = App.getPackageQuantity(item.not_arrived_quantity, item.package_rate);
+	      });
+		  	
+			  var file_name = "出货看板.csv";
+			  App.exportCSVFromDatatable(table, file_name);
+		  }).fail(function() {
+		  	App.showErrorDialog("操作失败", "请重新试试");
+		  });
+
+	  });
+
+	  $('#start_date, #inventory, #end_date, #vendor').keyup(function(e) {
+		  if (e.keyCode == 13)
+			  table.draw();
+	  });
+	  $('#state').change(function(e) {
+		  table.draw();
+	  });
   });
-});
 </script>

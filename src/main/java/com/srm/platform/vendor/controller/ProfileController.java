@@ -60,26 +60,16 @@ public class ProfileController extends CommonController {
 	@PostMapping("/update")
 	public @ResponseBody Account profile_update_ajax(@RequestParam Map<String, String> requestParams,
 			Principal principal) {
-		String weixin = requestParams.get("weixin");
-		String qq = requestParams.get("qq");
-		String yahoo = requestParams.get("yahoo");
-		String wangwang = requestParams.get("wangwang");
 		String mobile = requestParams.get("mobile");
 		String tel = requestParams.get("tel");
 		String address = requestParams.get("address");
-		String gtalk = requestParams.get("gtalk");
 		String email = requestParams.get("email");
 
 		Account account = accountRepository.findOneByUsername(principal.getName());
 
-		account.setWeixin(weixin);
-		account.setQq(qq);
-		account.setYahoo(yahoo);
-		account.setWangwang(wangwang);
 		account.setMobile(mobile);
 		account.setTel(tel);
 		account.setAddress(address);
-		account.setGtalk(gtalk);
 		account.setEmail(email);
 
 		account = accountRepository.save(account);
@@ -146,16 +136,6 @@ public class ProfileController extends CommonController {
 	public @ResponseBody Boolean checkMobile_ajax(@RequestParam("id") Long id, @RequestParam("mobile") String mobile) {
 		Account account = accountRepository.findOneByMobile(mobile);
 
-		if (account != null && account.getId() != id) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	@GetMapping("/checkweixin")
-	public @ResponseBody Boolean checkWeixin_ajax(@RequestParam("id") Long id, @RequestParam("weixin") String weixin) {
-		Account account = accountRepository.findOneByWeixin(weixin);
 		if (account != null && account.getId() != id) {
 			return false;
 		} else {

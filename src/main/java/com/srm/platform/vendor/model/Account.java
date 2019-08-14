@@ -22,7 +22,6 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.BuyerSearchResult;
 import com.srm.platform.vendor.searchitem.SellerSearchResult;
 
@@ -93,8 +92,7 @@ public class Account implements Serializable {
 	private String duty;
 	private String unitname;
 	private String address;
-	@Column(name = "entry_time")
-	private Date entryTime;
+	
 
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "company_id", nullable=true)
@@ -108,11 +106,7 @@ public class Account implements Serializable {
 
 	private String email;
 	private String tel;
-	private String qq;
-	private String weixin;
-	private String yahoo;
-	private String gtalk;
-	private String wangwang;
+	
 	private String mobile;
 	@Column(name = "modify_time")
 	private Instant modifyTime;
@@ -147,46 +141,6 @@ public class Account implements Serializable {
 
 	public void setTel(String tel) {
 		this.tel = tel;
-	}
-
-	public String getQq() {
-		return qq;
-	}
-
-	public void setQq(String qq) {
-		this.qq = qq;
-	}
-
-	public String getWeixin() {
-		return weixin;
-	}
-
-	public void setWeixin(String weixin) {
-		this.weixin = weixin;
-	}
-
-	public String getYahoo() {
-		return yahoo;
-	}
-
-	public void setYahoo(String yahoo) {
-		this.yahoo = yahoo;
-	}
-
-	public String getGtalk() {
-		return gtalk;
-	}
-
-	public void setGtalk(String gtalk) {
-		this.gtalk = gtalk;
-	}
-
-	public String getWangwang() {
-		return wangwang;
-	}
-
-	public void setWangwang(String wangwang) {
-		this.wangwang = wangwang;
 	}
 
 	public String getMobile() {
@@ -251,14 +205,6 @@ public class Account implements Serializable {
 
 	public void setRealname(String realname) {
 		this.realname = realname;
-	}
-
-	public Date getEntryTime() {
-		return entryTime;
-	}
-
-	public void setEntryTime(Date entryTime) {
-		this.entryTime = entryTime;
 	}
 
 	public Instant getModifyTime() {

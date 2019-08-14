@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.searchitem.StatementDetailItem;
+import com.srm.platform.vendor.searchitem.StatementPendingDetail;
+import com.srm.platform.vendor.searchitem.StatementPendingItem;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
@@ -18,12 +21,25 @@ public interface StatementDetailRepository extends JpaRepository<StatementDetail
 	@Query(value = "SELECT * FROM statement_detail WHERE code= :code order by row_no", nativeQuery = true)
 	List<StatementDetail> findByCode(String code);
 
-	@Query(value = "select a.*, c.quantity-ifnull(a.closed_quantity, 0) remain_quantity, d.type, c.code purchase_in_code, c.po_code, c.nat_price, a.tax_rate nat_tax_rate, "
-			+ "c.rowno, c.quantity, c.price, c.cost, c.tax_price, c.tax_cost, c.nat_tax_price, c.material_quantity, c.material_tax_price, "
-			+ "f.name unitname, d.date purchase_in_date, e.code inventorycode, e.name inventoryname, e.specs "
-			+ "from statement_detail a left join statement_main b on a.code=b.code left join purchase_in_detail c on a.purchase_in_detail_id=c.id "
-			+ "left join purchase_in_main d on c.code=d.code left join inventory e on c.inventory_code=e.code "
-			+ "left join measurement_unit f on e.main_measure=f.code where a.code=?1 order by a.row_no", nativeQuery = true)
+	@Query(value = "select a.*, c.code pi_code, c.auto_id pi_auto_id, d.date pi_date, e.code inventory_code, e.name inventory_name, e.specs, e.main_measure unitname, "
+			+ "c.quantity pi_quantity, c.tax_price, c.tax_cost, po.code po_code, po.row_no po_row_no, po.confirmed_memo confirmed_memo, "
+			+ "delivery.code delivery_code, delivery.row_no delivery_row_no, delivery.delivered_quantity "
+			+ "from statement_detail a left join statement_main b on a.code=b.code "
+			+ "left join purchase_in_detail c on a.pi_detail_id=c.id left join purchase_in_main d on c.code=d.code "
+			+ "left join purchase_order_detail po on c.po_code=po.code and c.po_row_no=po.row_no "
+			+ "left join delivery_detail delivery on c.delivery_code=delivery.code and c.delivery_row_no=delivery.row_no "
+			+ "left join inventory e on c.inventory_code=e.code "
+			+ "where a.code=?1 order by a.row_no", nativeQuery = true)
 	List<StatementDetailItem> findDetailsByCode(String code);
+	
+	
+	@Query(value = "select b.vendor_code, b.type, b.company_code, c.id company_id from purchase_in_detail a "
+			+ "left join purchase_in_main b on a.code=b.code left join company c on b.company_code=c.code "
+			+ "where a.state=0 and b.company_code is not null and b.date < ?1 GROUP BY b.vendor_code, b.type, b.company_code", nativeQuery = true)
+	List<StatementPendingItem> findAllPendingData(Date filterDate);
+	
+	@Query(value = "select a.id, a.code from purchase_in_detail a left join purchase_in_main b on a.code=b.code "
+			+ "where a.state=0 and b.company_code is not null and b.vendor_code = ?1 and b.company_code = ?2 and b.type = ?3 and b.date < ?4", nativeQuery = true)
+	List<StatementPendingDetail> findAllPendingDetail(String vendorCode, String companyCode, String type, Date filterDate);
 
 }

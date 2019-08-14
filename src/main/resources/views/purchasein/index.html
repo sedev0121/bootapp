@@ -10,20 +10,32 @@
       </ul>
       <div class="search-content">
           <div class="search-cell width-10">
-            <label for="code">出入库单号：</label>
-            <input type="text" id="code" class="form-control">
+            <label for="code">接收单号：</label>
+            <input type="text" id="code" class="form-control" placeholder="接收单号">
+          </div>
+          <div class="search-cell width-10">
+            <label for="company">业务实体：</label>
+            <select name="company" id="company" class="form-control">
+            	<option value="-1" text="　" selected="selected"></option>
+            </select>
+          </div>
+          <div class="search-cell width-10">
+            <label for="store">库房：</label>
+            <select name="store" id="store" class="form-control">
+            	<option value="-1" text="　" selected="selected"></option>
+            </select>
           </div>
           <div class="search-cell width-10">
             <label for="vendor">供应商编码/名称：</label>
-            <input type="text" id="vendor" class="form-control">
+            <input type="text" id="vendor" class="form-control" placeholder="供应商编码/名称">
           </div>
           <div class="search-cell width-10">
-            <label for="start_date">入库时间: </label>
-            <input type="text" id="start_date" value="" class="form-control datepicker" />
+            <label for="start_date">接收时间: </label>
+            <input type="text" id="start_date" value="" class="form-control datepicker" placeholder="接收时间"/>
           </div>
           <div class="search-cell width-10">
             <label for="end_date">　</label>
-            <input type="text" id="end_date" value="" class="form-control datepicker" />
+            <input type="text" id="end_date" value="" class="form-control datepicker" placeholder=""/>
           </div>
           <div class="search-cell width-10">
             <label for="state">状态:</label>
@@ -48,6 +60,8 @@
 <script th:inline="javascript">
 /*[+
 var edit_url = [[@{/purchasein/}]];
+var company_search_url = [[@{/company/search}]];
+var store_search_url = [[@{/store/search/}]];
 +]*/ 
 
   $(document).ready(function() {
@@ -61,8 +75,11 @@ var edit_url = [[@{/purchasein/}]];
     $("#state").select2({
       data : App.getPurchaseInStateDataWithAll(),
       minimumResultsForSearch : -1
-    });
-
+    }).select2("val", "0");
+    
+    $("#company").select2(App.getSelect2OptionsWithAll(company_search_url));
+    $("#store").select2();
+    
     $('#start_date').datepicker();
     $('#end_date').datepicker();
 
@@ -77,6 +94,8 @@ var edit_url = [[@{/purchasein/}]];
             rows_per_page : data.length,
             page_index : data.start / data.length + 1,
             vendor : $('#vendor').val(),
+            company : $('#company').val(),
+            store : $('#store').val(),
             state: $('#state').val(),
             code : $('#code').val(),
             start_date : $('#start_date').val(),
@@ -90,50 +109,38 @@ var edit_url = [[@{/purchasein/}]];
           return json.content;
         },
       },
+      fixedColumns : {
+		    leftColumns : 3,
+	    },
       createdRow: function( row, data, dataIndex ) {
           $(row).addClass('');
       },
       columns : [ {
-        data : 'vendorcode',
-        title : '供应商编码'
-      }, {
-        data : 'vendorname',
-        title : '供应商名称'
-      }, {
         data : 'code',
-        title : '出入库单号'
+        title : '接收单号'
+      }, {
+        data : 'row_no',
+        className:'dt-center',
+        title : '行号',
       }, {
         data : 'date',
         render : $.fn.date_renderer,
         className:'dt-center',
-        title : '单据日期'
+        title : '接收日期'
       }, {
-          data : 'verify_date',
-          render : $.fn.date_renderer,
-          className:'dt-center',
-          title : '审核日期'
-      }, {
-        data : 'type',
+        data : 'company_name',
         className:'dt-center',
-        title : '入库类型',
+        title : '业务实体'
       }, {
-        data : 'bredvouch',
-        className: 'dt-center',
-        render : App.getPurchaseInBredvouchOfId,
-        title : '红蓝字'  
-      }, {
-        data : 'mainmemo',
-        title : '备注',        
-      }, {
-        data : 'rowno',
+        data : 'store_name',
         className:'dt-center',
-        title : '行号',
+        title : '库房'
       }, {
-        data : 'inventorycode',
-        title : '物料编码'
+        data : 'inventory_code',
+        title : '货品代码'
       }, {
-        data : 'inventoryname',
-        title : '物料名称'
+        data : 'inventory_name',
+        title : '货品名称'
       }, {
         data : 'specs',
         title : '规格型号',
@@ -144,15 +151,15 @@ var edit_url = [[@{/purchasein/}]];
       }, {
         data : 'quantity',
         className:'dt-right',
-        title : '入库数量',
+        title : '数量',
       }, {
         data : 'price',
         className:'dt-right',
-        title : '单价',
+        title : '未税单价',
       }, {
         data : 'cost',
         className:'dt-right',
-        title : '金额',
+        title : '未税金额',
       }, {
         data : 'tax_rate',
         className:'dt-right',
@@ -166,27 +173,62 @@ var edit_url = [[@{/purchasein/}]];
         className:'dt-right',
         title : '含税金额',
       }, {
-        data : 'memo',
-        title : '行备注',
+        data : 'vendorcode',
+        title : '供应商编码'
+      }, {
+        data : 'vendorname',
+        title : '供应商名称'
+      }, {
+        data : 'po_code',
+        title : '订单编号',
+      }, {
+        data : 'po_row_no',
+        className:'dt-center',
+        title : '订单行号',
+      }, {
+        data : 'confirmed_memo',
+        className:'dt-center',
+        title : '订单行购方备注',
+      }, {
+        data : 'delivery_code',
+        title : '发货单号',
+      }, {
+        data : 'delivery_row_no',
+        className:'dt-center',
+        title : '发货单行号',
+      }, {
+        data : 'delivered_quantity',
+        className:'dt-center',
+        title : '发货数量',
+      }, {
+        data : 'sync_date',
+        className:'dt-center',
+        render : $.fn.date_renderer,
+        title : 'SRM创建日期',
       }, {
         data : 'state',
         className:'dt-right',
-        title : '对账状态',
+        createdCell : App.getStateClass,
+        title : 'SRM状态',
         render : App.getPurchaseInStateOfId,
 
       } ],
-      order: [  [ 3, "desc" ] ]
-
-      
+      order: [  [ 0, "desc" ] ]
     });
 
     $("#btn_search").click(function() {
       table.draw();
     });
     
-    $('#state').change(function() {
+    $('#state, #company, #store').change(function() {
       table.draw();
     });
+    
+    $('#company').change(function() {
+	  	var store_url = store_search_url + $('#company').val();
+	  	$("#store").select2(App.getSelect2OptionsWithAll(store_url));
+	  	$("#store").val("-1").trigger('change');
+	  });	 
     
     $('#vendor, #code, #start_date, #end_date').keyup(function(e) {
       if (e.keyCode == 13)
