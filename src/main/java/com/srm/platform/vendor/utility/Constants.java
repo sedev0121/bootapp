@@ -43,6 +43,7 @@ public class Constants {
 	public final static int STATEMENT_STATE_CANCEL = 5; //采购撤回
 	public final static int STATEMENT_STATE_CONFIRM = 6; //供应商确认
 	public final static int STATEMENT_STATE_DENY = 7; //供应商退回
+	public final static int STATEMENT_STATE_CANCEL_CONFIRM = 8; //供应商确认取消
 	
 	public final static int INVOICE_STATE_NONE = 0; //未开发票
 	public final static int INVOICE_STATE_DONE = 1; //供应商已开发票

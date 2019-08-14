@@ -335,6 +335,10 @@ public class StatementController extends CommonController {
 				main.setCanceler(this.getLoginAccount());
 				main.setCancelDate(new Date());
 				main.setState(Constants.STATEMENT_STATE_NEW);
+			} else if (form.getState() == Constants.STATEMENT_STATE_CANCEL_CONFIRM) {
+				main.setCanceler(this.getLoginAccount());
+				main.setCancelDate(new Date());
+				main.setState(Constants.STATEMENT_STATE_DEPLOY);
 			}
 			
 			switch (form.getState()) {
@@ -367,6 +371,10 @@ public class StatementController extends CommonController {
 			case Constants.STATEMENT_STATE_DENY:
 				toList.add(main.getMaker());
 				action = "退回";
+				break;
+			case Constants.STATEMENT_STATE_CANCEL_CONFIRM:
+				toList.add(main.getMaker());
+				action = "确认取消";
 				break;
 			}			
 		} else {
