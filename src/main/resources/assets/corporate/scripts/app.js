@@ -306,7 +306,7 @@ var App = function() {
       return $.extend(true, select2_default_options, {ajax:{url:search_url}});
     },
     getSelect2OptionsWithFirstOption: function(search_url, firstOption) {
-    	return $.extend(true, select2_default_options, {      	
+    	return $.extend(true, {}, select2_default_options, {      	
       	ajax:{
       		url:search_url, 
       		processResults: function(data, page) {
@@ -318,7 +318,7 @@ var App = function() {
       });
     },
     getSelect2OptionsWithAll: function(search_url) {
-      return $.extend(true, select2_default_options, {      	
+      return $.extend(true, {}, select2_default_options, {      	
       	ajax:{
       		url:search_url, 
       		processResults: function(data, page) {

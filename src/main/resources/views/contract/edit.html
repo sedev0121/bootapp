@@ -208,9 +208,10 @@
   	var rangeLength = 10;
   	
   	$(".datepicker").datepicker();
+
   	
   	$("#company").select2(App.getSelect2OptionsWithAll(company_search_url));
-	  $("#vendor").select2(App.getSelect2Options(vendor_search_url));
+  	$("#vendor").select2(App.getSelect2Options(vendor_search_url));
 
 	  $("#state").select2({
 	    data : App.getContractStateData(),
