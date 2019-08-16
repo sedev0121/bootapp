@@ -1425,6 +1425,7 @@
 				  item.invoice_quantity = item.quantity;
 				  item.invoice_cost = item.tax_cost;
 				  item.adjust_tax_cost = 0;
+				  item.tax_rate = parseFloat($('#tax_rate').val());
 				  item.invoice_price = App.costNumber(item.invoice_cost / item.invoice_quantity);
 
 				  table.row.add(item);

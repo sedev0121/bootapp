@@ -67,12 +67,14 @@ public class TaskController extends CommonController {
 
 	// 查询列表
 	@GetMapping({ "", "/" })
+	@PreAuthorize("hasAuthority('账单任务-查看列表')")
 	public String index() {
 		return "task/index";
 	}
 
 	// 新建
 	@GetMapping({ "/add" })
+	@PreAuthorize("hasAuthority('账单任务-查看列表')")
 	public String add(Model model) {
 		DeliveryMain main = new DeliveryMain();
 		main.setVendor(getLoginAccount().getVendor());
