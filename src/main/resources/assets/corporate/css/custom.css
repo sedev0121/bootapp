@@ -697,3 +697,25 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
 .select-all-div {
 	display: inline-block;
 }
+
+.notice-title {
+	font-size: 20px;
+	text-align: center;
+}
+
+.notice-content {
+	color: blue;
+	padding-top: 10px;
+}
+
+.notice-attachment {
+	padding-top: 10px;
+}
+
+.notice-deploy-info {
+	margin-top: 10px;		
+}
+
+.notice-deploy-info .deployer {
+	margin-left: 10px;
+}

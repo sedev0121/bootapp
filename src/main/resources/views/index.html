@@ -16,7 +16,7 @@
           <div class="panel-body" >
             <p th:each="notice : ${noticeList}">                    
               <span th:classappend="!${notice.verify_date}?new" th:text="|${#dates.format(notice.verify_date, 'yyyy-MM-dd HH:mm:ss')} |">aaa</span>
-              <a th:classappend="!${notice.verify_date}?new" th:href="@{|/notice/${notice.id}/edit|}" th:utext="${notice.title}">2018-6-11 9:29:09 采购管理平台</a>
+              <a class="notice" th:data-target="${notice.id}" href="#" th:classappend="!${notice.verify_date}?new" th:utext="${notice.title}">2018-6-11 9:29:09 采购管理平台</a>
             </p>
           </div>
         </div>
@@ -36,7 +36,40 @@
         </div>
       </div>
     </div>
+    <div class="modal fade" id="notice_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">采购动态</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body" id="notice_body">	
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">确认</button>
+					</div>
+				</div>
+			</div>
+		</div>
+  
   </div>
 </body>
 <!-- END BODY -->
 </html>
+<script th:inline="javascript">
+var view_url = /*[[@{/notice/}]]*/'';
+var notice_data;
+
+jQuery(document).ready(function() {  
+	$(".notice").click(function() {
+		var id = $(this).attr("data-target");	
+		var url = id + "/notice";
+		$.get(url,function(data) {	
+			notice_data = data;
+			$("#notice_body").html(data);
+		  $("#notice_dialog").modal("show");
+		});
+	});
+});
+</script>
+  

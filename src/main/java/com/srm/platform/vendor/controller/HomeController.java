@@ -1,5 +1,6 @@
 package com.srm.platform.vendor.controller;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,21 +9,30 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriUtils;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import com.srm.platform.vendor.model.Notice;
+import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.utility.Constants;
+import com.srm.platform.vendor.utility.UploadFileHelper;
 
 @Controller
 @RequestMapping(path = "/")
@@ -36,6 +46,9 @@ public class HomeController {
 
 	@Autowired
 	private HttpSession httpSession;
+	
+	@Autowired
+	public NoticeRepository noticeRepository;
 
 	@GetMapping("/forbidden")
 	public String forbidden() {
@@ -85,6 +98,14 @@ public class HomeController {
 		String html = templateEngine.process("email/resetpassword", context);
 
 		return "email/resetpassword";
+	}
+	
+	// 用户管理->修改
+	@GetMapping("/{id}/notice")
+	public String edit(@PathVariable("id") Long id, Model model) {
+		Notice notice = noticeRepository.findOneById(id);
+		model.addAttribute("notice", notice);
+		return "notice/view";
 	}
 
 }

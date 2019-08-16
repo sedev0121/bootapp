@@ -43,17 +43,18 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/notice")
-@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('采购动态-查看列表')")
 public class NoticeController extends CommonController {
 
 	// 用户管理->列表
 	@GetMapping({ "/", "" })
+	@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('采购动态-查看列表')")
 	public String index(Model model) {
 		return "notice/list";
 	}
 
 	// 用户管理->列表
 	@GetMapping("/list")
+	@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('采购动态-查看列表')")
 	public @ResponseBody Page<NoticeSearchResult> list_ajax(@RequestParam Map<String, String> requestParams) {
 		int rows_per_page = Integer.parseInt(requestParams.getOrDefault("rows_per_page", "10"));
 		int page_index = Integer.parseInt(requestParams.getOrDefault("page_index", "1"));
@@ -130,6 +131,7 @@ public class NoticeController extends CommonController {
 
 	// 用户管理->修改
 	@GetMapping("/{id}/edit")
+	@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('采购动态-查看列表')")
 	public String edit(@PathVariable("id") Long id, Model model) {
 		Notice notice = noticeRepository.findOneById(id);
 		checkPermission(notice);
@@ -192,10 +194,6 @@ public class NoticeController extends CommonController {
 		String title = requestParams.get("title");
 		String content = requestParams.get("content");
 		String stateStr = requestParams.get("state");
-		String to_all_vendor = requestParams.get("to_all_vendor");
-		String to_unit_account = requestParams.get("to_unit_account");
-		String vendor_list = requestParams.get("vendor_list");
-		String account_list = requestParams.get("account_list");
 		Integer state = Integer.parseInt(stateStr);
 		Notice notice = new Notice();
 
@@ -338,8 +336,6 @@ public class NoticeController extends CommonController {
 	@GetMapping("/{id}/download")
 	public ResponseEntity<Resource> download(@PathVariable("id") Long id) {
 		Notice notice = noticeRepository.findOneById(id);
-		checkPermission(notice);
-
 		return download(Constants.PATH_UPLOADS_NOTICE + File.separator + notice.getAttachFileName(),
 				notice.getAttachOriginalName());
 	}
@@ -362,14 +358,5 @@ public class NoticeController extends CommonController {
 			show403();
 
 	}
-	
-	
-	public List<String> getAllUnitsOfId(Long unitId) {
-		String unitList = String.valueOf(unitId);
-
-		return Arrays.asList(StringUtils.split(unitList, ","));
-	}
-
-	
 
 }
