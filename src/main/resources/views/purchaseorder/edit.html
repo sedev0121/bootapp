@@ -266,26 +266,28 @@
   			floatingRange = parseFloat(floatingRange);
   		}
 
-  		var price = 0, startIndex, endIndex;
+  		var price = 0, startIndex, endIndex, fromWeight, toWeight;
   		if (floatingRange > 0 && startPrice) {
   			if (quantity >= startWeight) {
   				startIndex = parseInt((quantity - startWeight) / floatingRange) - 1; 
   				endIndex = parseInt((quantity + floatingRange) / floatingRange) + 1;
   				for(var i=startIndex; i<endIndex; i++) {
-  					startWeight = startWeight + floatingRange * i;
-      			endWeight = startWeight + floatingRange * (i + 1);
-  					if (startWeight <= quantity && quantity < endWeight) {
+  					fromWeight = startWeight + floatingRange * i;
+  					toWeight = startWeight + floatingRange * (i + 1);
+  					if (fromWeight <= quantity && quantity < toWeight) {
   						price = App.floatingPriceNumber(startPrice + floating_price * i);
+  						break;
   					}
   				}
     		} else {
-  				startIndex = parseInt((quantity + floatingRange) / floatingRange) + 1; 
+  				startIndex = parseInt((startWeight - quantity) / floatingRange) + 1; 
   				endIndex = parseInt((startWeight - quantity) / floatingRange) - 1;
-  				for(var i=startIndex; i>endIndex; i--) {
-  					startWeight = startWeight + floatingRange * i;
-      			endWeight = startWeight + floatingRange * (i + 1);
-  					if (startWeight <= quantity && quantity < endWeight) {
+  				for(var i=startIndex; i>=endIndex; i--) {
+  					fromWeight = startWeight - floatingRange * i;
+  					toWeight = startWeight - floatingRange * (i - 1);
+  					if (fromWeight <= quantity && quantity < toWeight) {
   						price = App.floatingPriceNumber(startPrice + floating_price * i);
+  						break;
   					}
   				}
     		}
@@ -295,7 +297,7 @@
 	  }
 	  
 	  $("#contract_base_price").change(function() {
-	  	if (selectedContractData.price_type == 1) {
+	  	if (selectedContractData && selectedContractData.price_type == 1) {
 	  		var exist_data = negotiate_table.rows().data().toArray();
 	 		 
 	  		for (var i = 0; i < exist_data.length; i++) {
