@@ -34,11 +34,11 @@
 							<input type="text" name="date" id="date" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" class="form-control datepicker">
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label for="makedate">合同开始时间: </label> <input type="text" name="start_date" th:value="${#dates.format(main.startDate, 'yyyy-MM-dd')}" class="form-control datepicker">
+							<label for="makedate">合同开始时间: </label> <input type="text" name="start_date" id="start_date" th:value="${#dates.format(main.startDate, 'yyyy-MM-dd')}" class="form-control datepicker">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="makedate">合同结束时间: </label> 
-							<input type="text" name="end_date" th:value="${#dates.format(main.endDate, 'yyyy-MM-dd')}" class="form-control datepicker">
+							<input type="text" name="end_date" th:value="${#dates.format(main.endDate, 'yyyy-MM-dd')}" id="end_date" class="form-control datepicker">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="type">合同类型:</label> 
@@ -987,6 +987,16 @@
 			  App.showErrorDialog("操作失败", "没有添加货品");
 			  return false;
 		  }
+		  
+		  var startDate = $('#start_date').val();
+		  var endDate = $('#end_date').val();
+		  startDate = Date.parse(startDate);
+		  endDate = Date.parse(endDate);
+	    if (endDate < startDate){
+	    	App.showErrorDialog("操作失败", "合同开始日期必须小于等于结束日期");
+	       return false;
+	    }
+	    
 		  return true;
 	  }
 
