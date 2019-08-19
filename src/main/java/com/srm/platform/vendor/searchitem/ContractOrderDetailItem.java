@@ -21,4 +21,6 @@ public interface ContractOrderDetailItem {
 	Double getContract_tax_price();
 	
 	Double getContract_floating_price();
+	
+	Integer getContract_floating_direction();
 }

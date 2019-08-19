@@ -520,13 +520,21 @@
 			  		for (var j=0; j<rangeLength; j++) {
 				  		var titleItem = titleList[rangeLength - j - 1];
 				  		var key = titleItem.key;
-				  		item[key] = App.floatingPriceNumber(item.tax_price - item.floating_price * j);
+				  		var value = App.floatingPriceNumber(item.tax_price - item.floating_price * j);
+				  		if (value < 0) {
+				  			value = 0;
+				  		}
+				  		item[key] = value;
 				  	}
 			  	} else {
 			  		for (var j=0; j<rangeLength; j++) {
 				  		var titleItem = titleList[j];
 				  		var key = titleItem.key;
-				  		item[key] = App.floatingPriceNumber(item.tax_price * 1 + item.floating_price * j);
+				  		var value = App.floatingPriceNumber(item.tax_price * 1 + item.floating_price * j);
+				  		if (value < 0) {
+				  			value = 0;
+				  		}
+				  		item[key] = value;
 				  	}	
 			  	}
 			  	

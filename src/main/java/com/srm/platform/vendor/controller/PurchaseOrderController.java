@@ -296,9 +296,26 @@ public class PurchaseOrderController extends CommonController {
 					detail.setMemo(item.get("memo"));
 					detail.setContractCode(item.get("contract_code"));
 					detail.setPriceFrom(Integer.parseInt(item.get("price_from")));
+					
 					detail.setBasePrice(null);
 					if (!Utils.isEmpty(item.get("base_price"))) {
 						detail.setBasePrice(Double.parseDouble(item.get("base_price")));	
+					}
+					
+					if (!Utils.isEmpty(item.get("price"))) {
+						detail.setPrice(Double.parseDouble(item.get("price")));	
+					}
+					
+					if (!Utils.isEmpty(item.get("tax_price"))) {
+						detail.setTaxPrice(Double.parseDouble(item.get("tax_price")));	
+					}
+					
+					if (!Utils.isEmpty(item.get("money"))) {
+						detail.setMoney(Double.parseDouble(item.get("money")));	
+					}
+					
+					if (!Utils.isEmpty(item.get("sum"))) {
+						detail.setSum(Double.parseDouble(item.get("sum")));	
 					}
 					
 					detail.setConfirmedDate(detail.getArriveDate());

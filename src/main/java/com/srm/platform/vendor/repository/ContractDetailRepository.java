@@ -22,6 +22,6 @@ public interface ContractDetailRepository extends JpaRepository<ContractDetail, 
 	@Query(value = "SELECT * FROM contract_detail WHERE code= :code order by row_no", nativeQuery = true)
 	List<ContractDetail> findDetailsByCode(String code);
 
-	@Query(value = "select a.id, a.row_no, c.code, c.name, c.specs, c.main_measure, a.quantity, a.tax_rate, b.tax_price contract_tax_price, b.floating_price contract_floating_price from purchase_order_detail a left join contract_detail b on a.inventory_code=b.inventory_code left join inventory c on a.inventory_code=c.code where a.code=?1 and b.code=?2", nativeQuery = true)
+	@Query(value = "select a.id, a.row_no, c.code, c.name, c.specs, c.main_measure, a.quantity, a.tax_rate, b.floating_direction contract_floating_direction, b.tax_price contract_tax_price, b.floating_price contract_floating_price from purchase_order_detail a left join contract_detail b on a.inventory_code=b.inventory_code left join inventory c on a.inventory_code=c.code where a.code=?1 and b.code=?2", nativeQuery = true)
 	List<ContractOrderDetailItem> searchOrderDetailsByCode(String orderCode, String contractCode);
 }
