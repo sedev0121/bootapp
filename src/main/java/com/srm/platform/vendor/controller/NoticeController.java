@@ -293,44 +293,6 @@ public class NoticeController extends CommonController {
 
 		return new PageImpl<NoticeReadSearchResult>(list, request, totalCount.longValue());
 	}
-
-	@GetMapping("/{id}/account/list")
-	public @ResponseBody List<AccountSearchResult> accountList_ajax(@PathVariable("id") String noticeId) {
-
-		if (noticeId == null || "null".equals(noticeId)) {
-			return new ArrayList<>();
-		}
-
-		Notice notice = noticeRepository.findOneById(Long.valueOf(noticeId));
-
-		List<Long> idList = new ArrayList<>();
-		String accountIdListStr = notice.getAccountIdList();
-		if (accountIdListStr != null) {
-			idList = convertListStrToLongList(accountIdListStr);
-		} else {
-			return new ArrayList<>();
-		}
-
-		if (idList.isEmpty())
-			return new ArrayList<>();
-
-		String selectQuery = "SELECT t.*, '' unitname, v.name vendorname FROM account t "
-				+ "left join vendor v on t.vendor_code=v.code where t.id in :idList ";
-
-		Map<String, Object> params = new HashMap<>();
-
-		params.put("idList", idList);
-
-		Query q = em.createNativeQuery(selectQuery, "AccountSearchResult");
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			q.setParameter(entry.getKey(), entry.getValue());
-		}
-
-		return q.getResultList();
-
-	}
-	
-
 	
 
 	@GetMapping("/{id}/download")

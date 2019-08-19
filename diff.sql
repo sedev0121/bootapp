@@ -493,6 +493,8 @@ DROP TABLE IF EXISTS `message`;
 alter table notice DROP column to_unit_account;
 alter table notice DROP column vendor_code_list;
 alter table notice DROP column to_all_vendor;
+alter table notice DROP column create_unit;
+alter table notice DROP column account_id_list;
 
 /* 2019-08-15 */
 INSERT INTO `function` VALUES (13, '账单任务');

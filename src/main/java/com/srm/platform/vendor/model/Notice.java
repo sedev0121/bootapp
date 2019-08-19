@@ -58,8 +58,12 @@ public class Notice {
 	private Integer state = 1;
 	private String attachFileName;
 	private String attachOriginalName;
-	private String accountIdList;
+	
 	private String url;
+	
+	@OneToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumn(name = "class_id", referencedColumnName = "id")
+	private NoticeClass noticeClass;
 	
 	public Notice() {
 		this.createDate = new Date();
@@ -73,20 +77,20 @@ public class Notice {
 		this.id = id;
 	}
 
+	public NoticeClass getNoticeClass() {
+		return noticeClass;
+	}
+
+	public void setNoticeClass(NoticeClass noticeClass) {
+		this.noticeClass = noticeClass;
+	}
+
 	public String getUrl() {
 		return url;
 	}
 
 	public void setUrl(String url) {
 		this.url = url;
-	}
-
-	public String getAccountIdList() {
-		return accountIdList;
-	}
-
-	public void setAccountIdList(String accountIdList) {
-		this.accountIdList = accountIdList;
 	}
 
 	public String getTitle() {
