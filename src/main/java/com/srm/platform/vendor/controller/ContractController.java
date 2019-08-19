@@ -287,7 +287,7 @@ public class ContractController extends CommonController {
 
 		main.setState(form.getState());
 		
-		if (form.getState() <= Constants.CONTRACT_STATE_SUBMIT) {
+		if (form.getState() <= Constants.CONTRACT_STATE_REVIEW) {
 			main.setDate(Utils.parseDate(form.getDate()));
 			main.setName(form.getName());
 			main.setProjectNo(form.getProject_no());
@@ -395,11 +395,6 @@ public class ContractController extends CommonController {
 		case Constants.CONTRACT_STATE_NEW:
 			toList.add(main.getMaker());
 			action = "保存";
-			break;
-		case Constants.CONTRACT_STATE_SUBMIT:
-			toList.add(main.getMaker());
-			toList.addAll(accountRepository.findAccountsByVendor(main.getVendor().getCode()));
-			action = "提交";
 			break;
 		case Constants.CONTRACT_STATE_REVIEW:
 			toList.add(main.getMaker());

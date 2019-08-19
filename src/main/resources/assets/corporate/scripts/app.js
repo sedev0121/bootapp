@@ -36,7 +36,7 @@ var App = function() {
 	var contract_kind = [{id:1, text:'采购合同'}, {id:2, text:'加工合同'}, {id:3, text:'租赁合同'}, {id:4, text:'维保合同'}];
 	var contract_price_type = [{id:1, text:'基材浮动区间价格'}, {id:2, text:'固定价格'}];
 	var contract_quantity_type = [{id:1, text:'不控制'}, {id:2, text:'严格控制'}];
-	var contract_state_data = [{id:1, text:"新建"}, {id:2, text:"提交"}, {id:3, text:"已审核"}, {id:4, text:"已终止"}];
+	var contract_state_data = [{id:1, text:"新建"}, {id:2, text:"已审核"}, {id:3, text:"已终止"}];
 	
   var inquery_state_data = [{id:1, text:"新建"}, {id:2, text:"发布"}, {id:3, text:"确认"}, {id:4, text:"退回"}, {id:5, text:"通过"}, {id:6, text:"审核"}, {id:7, text:"归档"}];
   var inquery_type = [{id:1, text:'常规报价'}, {id:2, text:'区间报价'}, {id:3, text:'新品报价'}];

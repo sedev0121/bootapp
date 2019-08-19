@@ -67,9 +67,8 @@ public class Constants {
 	public final static String KEY_DEFAULT_UNIT_LIST = "my_unit_list";
 
 	public final static int CONTRACT_STATE_NEW = 1; //新建
-	public final static int CONTRACT_STATE_SUBMIT = 2; //提交
-	public final static int CONTRACT_STATE_REVIEW = 3; //审核
-	public final static int CONTRACT_STATE_STOP = 4; //终止
+	public final static int CONTRACT_STATE_REVIEW = 2; //审核
+	public final static int CONTRACT_STATE_STOP = 3; //终止
 	
 	public final static int CONTRACT_TYPE_YES = 1;
 	public final static int CONTRACT_TYPE_NO = 2;

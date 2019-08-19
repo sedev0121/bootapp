@@ -10,10 +10,9 @@
 		<div class="btn-group-bar">
 			<div class="text-right">
 				<a class="btn btn-primary" sec:authorize="hasAuthority('合同管理-新建/提交')" th:if="${main.state==1}" id="save"><i class="fa fa-save"></i> 保存</a> 
-				<a class="btn btn-primary" sec:authorize="hasAuthority('合同管理-新建/提交')" th:if="${!#strings.contains(#request.requestURI,'add') and main.state <= 2}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
-				<a class="btn btn-primary" sec:authorize="hasAuthority('合同管理-新建/提交')" th:if="${main.state==1}" id="submit"><i class="fa fa-share"></i> 提交</a> 
-				<a class="btn btn-primary" sec:authorize="hasAuthority('合同管理-新建/提交')" th:if="${main.state==2}" id="review"><i class="fa fa-arrow-up"></i> 审核</a> 
-				<a class="btn btn-primary" sec:authorize="hasAuthority('合同管理-新建/提交')" th:if="${main.state==3}" id="stop"><i class="fa fa-check-square"></i> 终止</a>
+				<a class="btn btn-primary" sec:authorize="hasAuthority('合同管理-新建/提交')" th:if="${!#strings.contains(#request.requestURI,'add') and main.state == 1}" id="delete"><i class="fa fa-remove"></i> 删除</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('合同管理-新建/提交')" th:if="${!#strings.contains(#request.requestURI,'add') and main.state==1}" id="review"><i class="fa fa-arrow-up"></i> 审核</a> 
+				<a class="btn btn-primary" sec:authorize="hasAuthority('合同管理-新建/提交')" th:if="${main.state==2}" id="stop"><i class="fa fa-check-square"></i> 终止</a>
 				<a class="btn btn-default" th:href="@{/contract}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -948,10 +947,8 @@
 		    if (new_state == 1) {
 			    confirmMessage = "保存";
 		    } else if (new_state == 2) {
-			    confirmMessage = "提交";
-		    } else if (new_state == 3) {
 			    confirmMessage = "审核";
-		    } else if (new_state == 4) {
+		    } else if (new_state == 3) {
 			    confirmMessage = "终止";
 		    }
 		    
@@ -984,13 +981,13 @@
 	    }
 	  });
 
-	  function checkTable() {
-		  var available = true;
-
-		  if (!available) {
-			  App.showErrorDialog("操作失败", "请在表里的【" + empty_column + "】列输入有效值！");
+	  function checkTable() {		  
+		  var data = table.rows().data().toArray();
+		  if (data.length == 0) {
+			  App.showErrorDialog("操作失败", "没有添加货品");
+			  return false;
 		  }
-		  return available;
+		  return true;
 	  }
 
 	  $("#save").click(function() {
@@ -1002,27 +999,17 @@
 		  $("#form").submit();
 	  });
 
-	  $("#submit").click(function() {
+	  $("#review").click(function() {
 		  editor.submit();
 		  if (!checkTable()) {
-			  return;
-		  }
-		  var data = table.rows().data().toArray();
-		  if (data.length == 0) {
-			  App.showErrorDialog("操作失败", "没有要提交的货品");
 			  return;
 		  }
 		  $('#state').val(2);
 		  $("#form").submit();
 	  });
-
-	  $("#review").click(function() {
-		  $('#state').val(3);
-		  $("#form").submit();
-	  });
 	  
 	  $("#stop").click(function() {
-		  $('#state').val(4);
+		  $('#state').val(3);
 		  $("#form").submit();
 	  });
 	  
