@@ -499,3 +499,6 @@ alter table notice DROP column account_id_list;
 /* 2019-08-15 */
 INSERT INTO `function` VALUES (13, '账单任务');
 INSERT INTO `function_action` VALUES (61, 13, 1); 
+
+/* 2019-08-19 */
+alter table notice add column class_id int(1) NULL;
