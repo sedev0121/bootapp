@@ -889,4 +889,8 @@ $(document).ready(function() {
     }
 	  return true;
   }, "日期无效");
+  
+  $.validator.addMethod('positiveNumber',function (value) { 
+  	return Number(value) > 0;
+  }, '必须大于0');
 });

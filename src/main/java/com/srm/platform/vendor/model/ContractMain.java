@@ -93,7 +93,7 @@ public class ContractMain {
 	Vendor vendor;
 	
 	@Column(name = "tax_rate")
-	private Float taxRate = 16F;
+	private Integer taxRate = 16;
 	
 	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "make_id", referencedColumnName = "id")
@@ -232,11 +232,11 @@ public class ContractMain {
 		this.vendor = vendor;
 	}
 
-	public Float getTaxRate() {
+	public Integer getTaxRate() {
 		return taxRate;
 	}
 
-	public void setTaxRate(Float taxRate) {
+	public void setTaxRate(Integer taxRate) {
 		this.taxRate = taxRate;
 	}
 

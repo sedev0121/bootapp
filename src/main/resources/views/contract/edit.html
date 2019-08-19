@@ -252,6 +252,8 @@
 	  		
 	  		$('#form').validate().settings.rules.base_price.required = false;
 	  		$('#form').validate().settings.rules.floating_price.required = false;
+	  		$('#form').validate().settings.rules.base_price.positiveNumber = false;
+	  		$('#form').validate().settings.rules.floating_price.positiveNumber = false;
 	  		
 	  		table.columns([9, 10]).visible(false);
 	  		$(table.column(7).header()).text('含税单价');
@@ -262,10 +264,14 @@
 	  		
 	  		$('#form').validate().settings.rules.base_price.required = true;
 	  		$('#form').validate().settings.rules.floating_price.required = true;
+	  		$('#form').validate().settings.rules.base_price.positiveNumber = true;
+	  		$('#form').validate().settings.rules.floating_price.positiveNumber = true;
 	  		
 	  		table.columns([9, 10]).visible(true);
 	  		$(table.column(7).header()).text('基准含税单价');
 	  	}
+	  	
+	  	table.columns.adjust().fixedColumns().relayout()
 	  }
 	  
 	  
@@ -688,6 +694,22 @@
 			      }
 			    },
 		    }
+		  }).on('preSubmit', function(e, data, action) {
+		  	var currentFieldName = e.currentTarget.s.includeFields[0];
+			  if (currentFieldName == "tax_price" || currentFieldName == "floating_price") {
+			  	var keys = Object.keys(data.data);
+		  		for (var i = 0; i < keys.length; i++) {
+		  			var item = data.data[keys[i]];
+			  		if (item[currentFieldName]) {			  			
+			  			var value = parseFloat(item[currentFieldName]);
+			  			if (value <= 0) {
+			  				this.error( currentFieldName, '必须大于0' );
+			  				return false;
+			  			}
+			  			item[currentFieldName] = value;
+			  		}
+			  	};
+			  }
 		  }).on('preOpen', function(e, data, action) {	  	
 			  var currentFieldName = e.currentTarget.s.includeFields[0];
 			  if (currentFieldName == "floating_direction") {
@@ -784,7 +806,7 @@
 		      sortable : false,
 		      className : 'dt-center edit-cell ignore-export',
 		      visible: $('#price_type').val()==1,
-		      title : '浮动方向',
+		      title : '　　浮动方向　　',
 		      render: function (data, display, record) {
 		      	return App.getFloatingDirectionOfId(record.floating_direction);
 		      }		      
@@ -860,11 +882,16 @@
 	      },
 	      tax_rate : {
 		      required : true,
+		      digits : true,
+	        max : 17,
+	        min : 0,
 	      },
 	      base_price: {
+	      	positiveNumber: true,
 	      	required : $('#price_type').val()==1
 	      },
 	      floating_price: {
+	      	positiveNumber: true,
 	      	required : $('#price_type').val()==1
 	      },
 	      invoice_code : {
