@@ -514,12 +514,22 @@
 	  		rowDatas = table.data();
 			  for(var i=0; i<rowDatas.length; i++) {
 			  	var item = rowDatas[i];
+			  	var direction = item.floating_direction;
 			  	item.tax_cost = App.costNumber(item.tax_price * item.quantity);
-			  	for (var j=0; j<rangeLength; j++) {
-			  		var titleItem = titleList[j];
-			  		var key = titleItem.key;
-			  		item[key] = App.floatingPriceNumber(item.tax_price * 1 + item.floating_price * j);
+			  	if (direction == 2) {
+			  		for (var j=0; j<rangeLength; j++) {
+				  		var titleItem = titleList[rangeLength - j - 1];
+				  		var key = titleItem.key;
+				  		item[key] = App.floatingPriceNumber(item.tax_price - item.floating_price * j);
+				  	}
+			  	} else {
+			  		for (var j=0; j<rangeLength; j++) {
+				  		var titleItem = titleList[j];
+				  		var key = titleItem.key;
+				  		item[key] = App.floatingPriceNumber(item.tax_price * 1 + item.floating_price * j);
+				  	}	
 			  	}
+			  	
 			  }
 	  	}
 	  	
