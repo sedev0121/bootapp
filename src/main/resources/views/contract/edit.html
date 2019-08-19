@@ -35,8 +35,7 @@
 							<input type="text" name="date" id="date" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" class="form-control datepicker">
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label for="makedate">合同开始时间: </label> 
-							<input type="text" name="start_date" th:value="${#dates.format(main.startDate, 'yyyy-MM-dd')}" class="form-control datepicker">
+							<label for="makedate">合同开始时间: </label> <input type="text" name="start_date" th:value="${#dates.format(main.startDate, 'yyyy-MM-dd')}" class="form-control datepicker">
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="makedate">合同结束时间: </label> 
@@ -207,9 +206,6 @@
 
   	var rangeLength = 10;
   	
-  	$(".datepicker").datepicker();
-
-  	
   	$("#company").select2(App.getSelect2OptionsWithAll(company_search_url));
   	$("#vendor").select2(App.getSelect2Options(vendor_search_url));
 
@@ -238,8 +234,7 @@
 	    minimumResultsForSearch : -1
 	  }).select2("val", quantity_type.toString());
 	  
- 	
-	  $('#price_type, #tax_rate, #base_price, #floating_price').change(function() {
+	  $('#price_type, #tax_rate, #base_price, #floating_price').change(function() {	  	
 	  	table.rows().invalidate().draw();
 	  	showFloatingTab();
 	  });	
@@ -250,16 +245,30 @@
 	  		if ($('[href="#tab-2"]').closest('li').hasClass("active")) {
 	  			$('[href="#tab-1"]').closest('a').click();
 	  		}
+	  		$('#base_price').val("");
+	  		$('#floating_price').val("");
 	  		$('#base_price').attr("readonly", true);
 	  		$('#floating_price').attr("readonly", true);
+	  		
+	  		$('#form').validate().settings.rules.base_price.required = false;
+	  		$('#form').validate().settings.rules.floating_price.required = false;
+	  		
+	  		table.columns([9, 10]).visible(false);
+	  		$(table.column(7).header()).text('含税单价');
 	  	} else {
 	  		$('[href="#tab-2"]').closest('li').show();	 
 	  		$('#base_price').attr("readonly", false);
 	  		$('#floating_price').attr("readonly", false);
+	  		
+	  		$('#form').validate().settings.rules.base_price.required = true;
+	  		$('#form').validate().settings.rules.floating_price.required = true;
+	  		
+	  		table.columns([9, 10]).visible(true);
+	  		$(table.column(7).header()).text('基准含税单价');
 	  	}
 	  }
 	  
-	  showFloatingTab();
+	  
 	  
   	function canEdit() {
   		if (state == 1) {
@@ -827,7 +836,7 @@
 			  });
 		  }
 	  }
-
+	  
 	  $("#form").validate({
 	    // define validation rules
 	    rules : {
@@ -835,19 +844,28 @@
 		      required : true
 	      },
 	      date : {
-		      required : true
+		      required : true,
+		      checkDate: true,
 	      },
 	      start_date : {
-		      required : true
+		      required : true,
+		      checkDate: true,
 	      },
 	      end_date : {
-		      required : true
+		      required : true,
+		      checkDate: true,
 	      },
 	      vendor : {
 		      required : true
 	      },
 	      tax_rate : {
 		      required : true,
+	      },
+	      base_price: {
+	      	required : $('#price_type').val()==1
+	      },
+	      floating_price: {
+	      	required : $('#price_type').val()==1
 	      },
 	      invoice_code : {
 		      required : state==6
@@ -1091,10 +1109,9 @@
 					  }						
 					}
 				});
-				
-			  
 	  	});
 	  };
 	  
+	  showFloatingTab();
   });
 </script>

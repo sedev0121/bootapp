@@ -879,4 +879,14 @@ $(document).ready(function() {
 	    min: jQuery.validator.format("请输入不小于{0}的值.")
 	});
 	
+	$(".datepicker").datepicker();
+	$(".datepicker").mask("0000-00-00");
+	
+  $.validator.addMethod("checkDate", function(val, element) {
+  	val1 = Date.parse(val);
+    if (isNaN(val1)==true && val!==''){
+       return false;
+    }
+	  return true;
+  }, "日期无效");
 });
