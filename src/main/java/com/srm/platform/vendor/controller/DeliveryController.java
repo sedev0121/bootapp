@@ -1,6 +1,5 @@
 package com.srm.platform.vendor.controller;
 
-import java.io.File;
 import java.math.BigInteger;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -11,13 +10,10 @@ import java.util.Map;
 
 import javax.persistence.Query;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,13 +31,10 @@ import com.srm.platform.vendor.model.DeliveryDetail;
 import com.srm.platform.vendor.model.DeliveryMain;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
-import com.srm.platform.vendor.model.PurchaseOrderMain;
-import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.DeliverySaveForm;
 import com.srm.platform.vendor.searchitem.BoxExportResult;
 import com.srm.platform.vendor.searchitem.DeliverySearchResult;
-import com.srm.platform.vendor.u8api.RestApiClient;
 import com.srm.platform.vendor.u8api.RestApiResponse;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
@@ -324,8 +317,7 @@ public class DeliveryController extends CommonController {
 		}
 		String title = String.format("预发货单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
 
-		// this.sendmessage(title, toList, String.format("/delivery/%s/read",
-		// main.getCode()));
+		this.sendmessage(title, toList, String.format("/delivery/%s/read", main.getCode()));
 		this.addOpertionHistory(main.getCode(), action, form.getContent());		
 
 		if (form.getState() == Constants.DELIVERY_STATE_CONFIRM_CANCEL) {
