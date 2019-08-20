@@ -502,3 +502,9 @@ INSERT INTO `function_action` VALUES (61, 13, 1);
 
 /* 2019-08-19 */
 alter table notice add column class_id int(1) NULL;
+DROP TABLE IF EXISTS `notice_class`;
+CREATE TABLE `notice_class`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
