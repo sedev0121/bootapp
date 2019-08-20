@@ -177,31 +177,37 @@
 				<div class="col-md-4 news">
 					<h4>采购动态</h4>
 					<ul class="list-unstyled">
-						<li><a href="#">2018光电一体IBU-ATE测试夹具</a></li>
-						<li><a href="#">2018光电一体IBU-ATE测试夹具</a></li>
-						<li><a href="#">凝光煜色-小圆扩散罩喷油遮蔽夹具</a></li>
-						<li><a href="#">项目范围包括四个业务场景,分别为:支付宝退款</a></li>
+						<li th:each="notice : ${noticeList}"><a class="notice" href="#" th:data-target="${notice.id}" th:classappend="!${notice.verify_date}?new" th:utext="${notice.title}"></a></li>
 					</ul>
 				</div>
 				<div class="col-md-4 notice">
 					<h4>采购动态</h4>
 					<ul class="list-unstyled">
-						<li><a href="#">2018光电一体IBU-ATE测试夹具</a></li>
-						<li><a href="#">2018光电一体IBU-ATE测试夹具</a></li>
-						<li><a href="#">凝光煜色-小圆扩散罩喷油遮蔽夹具</a></li>
-						<li><a href="#">项目范围包括四个业务场景,分别为:支付宝退款</a></li>
+						<li th:each="notice : ${noticeList}"><a class="notice" href="#" th:data-target="${notice.id}" th:classappend="!${notice.verify_date}?new" th:utext="${notice.title}"></a></li>
 					</ul>
 				</div>
 				<div class="col-md-4 alarm">
 					<h4>采购动态</h4>
 					<ul class="list-unstyled">
-						<li><a href="#">2018光电一体IBU-ATE测试夹具</a></li>
-						<li><a href="#">2018光电一体IBU-ATE测试夹具</a></li>
-						<li><a href="#">凝光煜色-小圆扩散罩喷油遮蔽夹具</a></li>
-						<li><a href="#">项目范围包括四个业务场景,分别为:支付宝退款</a></li>
+						<li th:each="notice : ${noticeList}"><a class="notice" href="#" th:data-target="${notice.id}" th:classappend="!${notice.verify_date}?new" th:utext="${notice.title}"></a></li>
 					</ul>
 				</div>
 				<!-- END TWITTER BLOCK -->
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="notice_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">采购动态</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="notice_body">	
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">确认</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -227,6 +233,7 @@
 	<script th:src="@{/assets/plugins/bootstrap/js/bootstrap.min.js}" type="text/javascript"></script>
 	<script th:src="@{/assets/corporate/scripts/back-to-top.js}" type="text/javascript"></script>
 	<script th:src="@{/assets/plugins/fancybox/source/jquery.fancybox.pack.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/plugins/jquery.mask.min.js}" type="text/javascript"></script>
 	<!-- pop up -->
 	<script th:src="@{/assets/plugins/owl.carousel/owl.carousel.min.js}" type="text/javascript"></script>
 	<!-- slider for products -->
@@ -392,5 +399,16 @@ var version = [[${version}]];;
 	  $('#version').dblclick(function() {
 	  	App.showSuccessDialog(version);
 	  });
+	  
+		$(".notice").click(function() {
+			var id = $(this).attr("data-target");	
+			var url = id + "/notice";
+			$.get(url,function(data) {	
+				notice_data = data;
+				$("#notice_body").html(data);
+			  $("#notice_dialog").modal("show");
+			});
+		});
+		
   });
 </script>

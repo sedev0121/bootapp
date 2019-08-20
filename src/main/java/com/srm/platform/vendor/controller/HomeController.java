@@ -2,8 +2,12 @@ package com.srm.platform.vendor.controller;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +35,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.repository.NoticeRepository;
+import com.srm.platform.vendor.searchitem.NoticeSearchResult;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 
@@ -43,9 +48,9 @@ public class HomeController {
 
 	@Autowired
 	private SpringTemplateEngine templateEngine;
-
-	@Autowired
-	private HttpSession httpSession;
+	
+	@PersistenceContext
+	public EntityManager em;
 	
 	@Autowired
 	public NoticeRepository noticeRepository;
@@ -57,6 +62,8 @@ public class HomeController {
 
 	@GetMapping(value = "/login")
 	public String login(Model model) {
+		List<NoticeSearchResult> noticeList = getLastNotice();
+		model.addAttribute("noticeList", noticeList);	
 		model.addAttribute("version", Constants.VERSION);
 		return "login";
 	}
@@ -108,4 +115,31 @@ public class HomeController {
 		return "notice/view";
 	}
 
+	private List<NoticeSearchResult> getLastNotice() {
+		String selectQuery = "SELECT distinct a.*, b.realname create_name, d.realname verify_name, null read_date FROM notice a left join account b on a.create_account=b.id "
+				+ "left join account d on d.id=a.verify_account where type=1 and a.state=3 order by verify_date desc ";
+
+		Query q = em.createNativeQuery(selectQuery, "NoticeSearchResult");
+
+		return q.setFirstResult(0).setMaxResults(5).getResultList();
+	}
+	
+	@GetMapping("/{id}/noticedownload")
+	public ResponseEntity<Resource> download(@PathVariable("id") Long id) {
+		Notice notice = noticeRepository.findOneById(id);
+		String filePath = Constants.PATH_UPLOADS_NOTICE + File.separator + notice.getAttachFileName();
+		String downloadFileName = notice.getAttachOriginalName();
+		
+		Resource file = UploadFileHelper.getResource(filePath);
+
+		if (file == null) {
+			throw new ResourceNotFoundException();
+		}
+
+		downloadFileName = UriUtils.encodePath(downloadFileName, Charsets.UTF_8.toString());
+
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileName + "\"")
+				.body(file);
+	}
 }

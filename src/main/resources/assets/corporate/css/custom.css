@@ -556,6 +556,10 @@ table.dataTable tr.selected td.select-checkbox:after, table.dataTable tr.selecte
 	margin-left: 50px;
 }
 
+.news {
+	min-height: 150px;
+}
+
 .news a,
 .notice a,
 .alarm a {
