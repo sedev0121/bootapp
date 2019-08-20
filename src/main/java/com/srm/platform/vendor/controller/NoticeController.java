@@ -32,6 +32,7 @@ import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Notice;
+import com.srm.platform.vendor.model.NoticeClass;
 import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.searchitem.AccountSearchResult;
 import com.srm.platform.vendor.searchitem.NoticeReadSearchResult;
@@ -78,15 +79,15 @@ public class NoticeController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
 
-		String selectQuery = "SELECT distinct a.*, b.realname create_name, d.realname verify_name, e.read_date read_date ";
+		String selectQuery = "SELECT distinct a.*, b.realname create_name, d.realname verify_name, e.name class_name, null read_date ";
 		String countQuery = "select count(distinct a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id and e.to_account_id=:to_account where type=1 ";
+		String bodyQuery = "FROM notice a left join account b on a.create_account=b.id left join account d on d.id=a.verify_account left join notice_class e on a.class_id=e.id where type=1 ";
 
 		
 		Map<String, Object> params = new HashMap<>();
-		params.put("to_account", this.getLoginAccount().getId());
+		
 		if (!search.trim().isEmpty()) {
 			bodyQuery += " and (a.title like CONCAT('%',:search, '%') or a.content like CONCAT('%',:search, '%')) ";
 			params.put("search", search.trim());
@@ -192,6 +193,7 @@ public class NoticeController extends CommonController {
 
 		String id = requestParams.get("id");
 		String title = requestParams.get("title");
+		String classId = requestParams.get("classofnotice");
 		String content = requestParams.get("content");
 		String stateStr = requestParams.get("state");
 		Integer state = Integer.parseInt(stateStr);
@@ -207,6 +209,8 @@ public class NoticeController extends CommonController {
 			notice.setTitle(title);
 			notice.setType(Constants.NOTICE_TYPE_USER);
 			notice.setContent(content);
+			NoticeClass noticeClass = noticeClassRepository.findOneById(Long.parseLong(classId));
+			notice.setNoticeClass(noticeClass);
 			notice.setCreateDate(new Date());
 			if (savedFileName != null) {
 				notice.setAttachFileName(savedFileName);

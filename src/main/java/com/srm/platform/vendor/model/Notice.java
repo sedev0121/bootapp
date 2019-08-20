@@ -10,9 +10,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import com.srm.platform.vendor.searchitem.NoticeSearchResult;
 
@@ -21,7 +25,9 @@ import com.srm.platform.vendor.searchitem.NoticeSearchResult;
 
 @SqlResultSetMapping(name = "NoticeSearchResult", classes = {
 		@ConstructorResult(targetClass = NoticeSearchResult.class, columns = {
-				@ColumnResult(name = "id", type = String.class), @ColumnResult(name = "title", type = String.class),
+				@ColumnResult(name = "id", type = String.class), 
+				@ColumnResult(name = "title", type = String.class),
+				@ColumnResult(name = "class_name", type = String.class),
 				@ColumnResult(name = "content", type = String.class),
 				@ColumnResult(name = "create_date", type = Date.class),
 				@ColumnResult(name = "create_name", type = String.class),
@@ -61,7 +67,10 @@ public class Notice {
 	
 	private String url;
 	
-	private Long classId;
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "class_id")
+	@ManyToOne()
+	private NoticeClass noticeClass;
 	
 	public Notice() {
 		this.createDate = new Date();
@@ -75,13 +84,12 @@ public class Notice {
 		this.id = id;
 	}
 
-
-	public Long getClassId() {
-		return classId;
+	public NoticeClass getNoticeClass() {
+		return noticeClass;
 	}
 
-	public void setClassId(Long classId) {
-		this.classId = classId;
+	public void setNoticeClass(NoticeClass noticeClass) {
+		this.noticeClass = noticeClass;
 	}
 
 	public String getUrl() {

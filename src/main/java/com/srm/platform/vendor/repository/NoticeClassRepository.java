@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.srm.platform.vendor.model.BoxClass;
+import com.srm.platform.vendor.model.Company;
 import com.srm.platform.vendor.model.NoticeClass;
 import com.srm.platform.vendor.searchitem.SearchItem;
 
@@ -23,4 +24,7 @@ public interface NoticeClassRepository extends JpaRepository<NoticeClass, Long> 
 	
 	@Query(value = "SELECT * FROM notice_class order by id asc", nativeQuery = true)
 	List<NoticeClass> findAllNodes();
+	
+	@Query(value = "SELECT id code, name FROM notice_class", nativeQuery = true)
+	Page<SearchItem> findForSelect(Pageable pageable);
 }

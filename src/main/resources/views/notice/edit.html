@@ -30,10 +30,16 @@
     <div class="panel panel-default">
       <div class="panel-body form-body"> 
         <div class="row">
-          <div class="col-lg-10 col-md-10 form-group">
+          <div class="col-lg-8 col-md-8 form-group">
             <label for="title">标题: </label>
             <input type="text" name="title" id="title" class="form-control" th:value="${notice.title}">
           </div>
+          <div class="col-lg-2 col-md-2">
+							<label for="classofnotice">分类: </label> 
+							<select name="classofnotice" id="classofnotice" class="form-control">	
+								<option th:if="${notice.noticeClass != null}" th:value="${notice.noticeClass?.id}" th:text="${notice.noticeClass?.name}" selected="selected"></option>							
+							</select>							
+						</div>
           <div class="col-lg-2 col-md-2 form-group">
             <label for="title">状态: </label>
             <select type="text" id="state" name="state" class="form-control" readonly></select>
@@ -97,6 +103,7 @@ var account_table, import_table, editor, vendor_table, import_vendor_table, vend
 var isEditable = [[${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}?true:false]];
 var hasAttach = [[${notice.attachFileName != null}]];
 var is_editor = [[${notice.createAccount?.id==session.account_id}?true:false]];
+var class_search_url = [[@{/classofnotice/search}]];
 +]*/ 
 
 jQuery(document).ready(function() {   
@@ -104,9 +111,12 @@ jQuery(document).ready(function() {
   App.bs_input_file();
   $("#state").select2({ data: App.getNoticeStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
   
+  $("#classofnotice").select2(App.getSelect2Options(class_search_url));
+  
   if (!isEditable){
     $('#title').attr("readonly", true);
     $("#content").attr("readonly", true);
+    $("#classofnotice").attr("readonly", true);
     $('textarea').attr("readonly", true);
   }else{
     if (hasAttach){
@@ -130,6 +140,9 @@ jQuery(document).ready(function() {
 	        content: {
 	            required: true
 	        },
+	        classofnotice: {
+            required: true
+        },
 	    },
 	    
 	    //display error alert on form submit  

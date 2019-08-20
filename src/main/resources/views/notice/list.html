@@ -82,16 +82,19 @@ $(document).ready(function() {
         return json.content;
       },
     },
-    order: [ [2, 'desc'] ],
+    order: [ [3, 'desc'] ],
     columns : [ {
       data : 'title',
-      createdCell: App.getNoticeReadStateClass,
       title : '标题',
       render: function (data, display, record) {
         var edit_url = /*[[@{/notice/}]]*/'';
         edit_url +=  record.id + '/edit';
         return '<a href="' + edit_url + '">' + data  + '</a>';
       },
+    }, {        
+      data : 'class_name',
+      className: 'dt-center',
+      title : '分类',        
     }, {        
       data : 'create_name',
       className: 'dt-center',

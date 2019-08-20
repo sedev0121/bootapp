@@ -560,10 +560,14 @@ table.dataTable tr.selected td.select-checkbox:after, table.dataTable tr.selecte
 	min-height: 150px;
 }
 
+.news li {
+	margin-bottom: 5px;
+}
+
 .news a,
 .notice a,
 .alarm a {
-	color: black;
+	color: #4183c4;
 	text-decoration: none;
 }
 

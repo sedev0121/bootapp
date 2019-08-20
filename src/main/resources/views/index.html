@@ -15,7 +15,7 @@
           </div>
           <div class="panel-body" >
             <p th:each="notice : ${noticeList}">                    
-              <span th:classappend="!${notice.verify_date}?new" th:text="|${#dates.format(notice.verify_date, 'yyyy-MM-dd HH:mm:ss')} |">aaa</span>
+              <span th:classappend="!${notice.verify_date}?new" th:text="|${#dates.format(notice.verify_date, 'yyyy-MM-dd HH:mm:ss')} [${notice.class_name}]|">aaa</span>
               <a class="notice" th:data-target="${notice.id}" href="#" th:classappend="!${notice.verify_date}?new" th:utext="${notice.title}">2018-6-11 9:29:09 采购管理平台</a>
             </p>
           </div>

@@ -34,6 +34,7 @@ import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.searchitem.InventorySearchItem;
+import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
@@ -121,4 +122,10 @@ public class NoticeClassController extends CommonController {
 		return response;
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/search", produces = "application/json")
+	public Page<SearchItem> classList(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
+		return noticeClassRepository.findForSelect(request);
+	}
 }

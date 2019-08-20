@@ -38,23 +38,16 @@ public class DashboardController extends CommonController {
 
 	@SuppressWarnings("unchecked")
 	private List<NoticeSearchResult> getLastNotice() {
-		String selectQuery = "SELECT distinct a.*, b.realname create_name, d.realname verify_name, e.read_date FROM notice a left join account b on a.create_account=b.id "
-				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id where type=1 and a.state=3 ";
-
-		Map<String, Object> params = new HashMap<>();
-
-		selectQuery += "order by verify_date desc ";
+		String selectQuery = "SELECT distinct a.*, b.realname create_name, d.realname verify_name, e.name class_name, null read_date FROM notice a left join account b on a.create_account=b.id "
+				+ "left join account d on d.id=a.verify_account left join notice_class e on a.class_id=e.id where type=1 and a.state=3 ";
 		Query q = em.createNativeQuery(selectQuery, "NoticeSearchResult");
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			q.setParameter(entry.getKey(), entry.getValue());
-		}
 
 		return q.setFirstResult(0).setMaxResults(5).getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
 	private List<NoticeSearchResult> getLastMessage() {
-		String selectQuery = "SELECT distinct a.*, b.realname create_name, d.realname verify_name, e.read_date FROM notice a left join account b on a.create_account=b.id "
+		String selectQuery = "SELECT distinct a.*, b.realname create_name, d.realname verify_name, '' class_name, e.read_date FROM notice a left join account b on a.create_account=b.id "
 				+ "left join account d on d.id=a.verify_account left join notice_read e on a.id=e.notice_id where type=2 and a.state=3 ";
 
 		Map<String, Object> params = new HashMap<>();

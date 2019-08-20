@@ -10,6 +10,8 @@ public class NoticeSearchResult implements Serializable {
 	String id;
 
 	String title;
+	
+	String class_name;
 
 	String content;
 
@@ -29,12 +31,13 @@ public class NoticeSearchResult implements Serializable {
 	
 	String url;
 
-	public NoticeSearchResult(String id, String title, String content, Date create_date, String create_name,
+	public NoticeSearchResult(String id, String title, String class_name, String content, Date create_date, String create_name,
 			Date verify_date, String verify_name, Integer state, String attach_file_name, Date read_date, String url) {
 
 		this.id = id;
 		this.title = title;
 		this.content = content;
+		this.class_name = class_name;
 		this.create_date = create_date;
 		this.create_name = create_name;
 		this.verify_date = verify_date;
@@ -51,6 +54,14 @@ public class NoticeSearchResult implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getClass_name() {
+		return class_name;
+	}
+
+	public void setClass_name(String class_name) {
+		this.class_name = class_name;
 	}
 
 	public Date getRead_date() {
