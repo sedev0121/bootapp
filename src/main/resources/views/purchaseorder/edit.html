@@ -15,7 +15,6 @@
 				<a class="btn btn-danger" id="close" th:if="${main.srmstate>=1 && main.srmstate!=3 && canClose}"><i class="fa fa-remove"></i> 订单关闭</a>
 				<a class="btn btn-primary" id="close_row" th:if="${(main.srmstate>=1 && main.srmstate<3 && canCloseRow)}"><i class="fa fa-undo"></i> 行关闭</a> 
 				<a class="btn btn-primary" id="export"><i class="fa fa-print"></i> 导出明细</a>
-				<a class="btn btn-primary" id="print"><i class="fa fa-print"></i> 打印</a>
 				<a class="btn btn-default" th:href="@{/purchaseorder}"><i class="fa fa-arrow-left"></i> 返回列表</a>
 			</div>
 		</div>
@@ -961,15 +960,6 @@
 	  $('#export').click(function() {
 		  var file_name = $('#code').val() + "_订单明细.csv";
 		  App.exportCSVFromDatatable(basic_table, file_name);
-	  });
-
-	  $("#print").click(function() {
-		  var url = "http://www.meidasy.cn:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
-		  if (window.location.host.startsWith("192.")) {
-			  url = "http://192.168.30.204:8180/WebReport/ReportServer?reportlet=SRM/shdSrm.cpt&code=" + $('#code').val();
-		  }
-		  var win = window.open(url, '_blank');
-		  win.focus();
 	  });
 
 	  $("#negotiate").click(function() {
