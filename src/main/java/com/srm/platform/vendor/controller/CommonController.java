@@ -55,6 +55,7 @@ import com.srm.platform.vendor.repository.FunctionRepository;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
 import com.srm.platform.vendor.repository.InventoryRepository;
 import com.srm.platform.vendor.repository.MasterRepository;
+import com.srm.platform.vendor.repository.NoticeClassRepository;
 import com.srm.platform.vendor.repository.NoticeReadRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.OperationHistoryRepository;
@@ -119,6 +120,9 @@ public class CommonController {
 	@Autowired
 	public VendorRepository vendorRepository;
 
+	@Autowired
+	public NoticeClassRepository noticeClassRepository;
+	
 	@Autowired
 	public CompanyRepository companyRepository;
 

@@ -28,9 +28,6 @@ public interface BoxRepository extends JpaRepository<Box, Long> {
 	@Query(value = "update box set delivery_code=null, inventory_code=null, used=0, quantity=null, bind_date=null, bind_property=null where delivery_code=?1", nativeQuery = true)
 	void emptyBoxByDeliveryCode(String deliveryCode);
 	
-	@Query(value = "SELECT * FROM box WHERE box_class_id=?1 and code like %?2%", nativeQuery = true)
-	Page<Box> findBySearchTerm2(Long classId, String search, Pageable pageable);
-
 	@Query(value = "SELECT * FROM box where code LIKE %?1% and box_class_id=?2", nativeQuery = true)
 	Page<Box> findBySearchTerm(String search, Long classId, Pageable pageable);
 	

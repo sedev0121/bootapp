@@ -19,7 +19,7 @@
 						<div class="clearfix">
 							<h3 class="pull-left">采购动态分类信息</h3><a class="btn btn-primary btn-add-boxclass" id="add"><i class="fa fa-plus"></i> </a>
 						</div>						
-						<form id="form" th:action="@{/classofbox/update}" method="post">  
+						<form id="form" th:action="@{/classofnotice/update}" method="post">  
               <input type="hidden" id="id" name="id">
 							<div class="form-group row">
 								<label for="name" class="col-sm-3 col-form-label">采购动态分类名称:</label>
@@ -41,8 +41,8 @@
 </body>
 </html>
 <script th:inline="javascript">
-	var url = /*[[@{/classofbox/all}]]*/'';
-	var del_url = /*[[@{/classofbox/}]]*/'';
+	var url = /*[[@{/classofnotice/all}]]*/'';
+	var del_url = /*[[@{/classofnotice/}]]*/'';
   jQuery(document).ready(function() {
 	  jQuery("#tree_3").jstree({
 	    core : {

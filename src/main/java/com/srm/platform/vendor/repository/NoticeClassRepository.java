@@ -19,6 +19,8 @@ public interface NoticeClassRepository extends JpaRepository<NoticeClass, Long> 
 	NoticeClass findOneById(Long id);
 	
 	@Query(value = "SELECT * FROM notice_class WHERE name like %?1% order by code asc", nativeQuery = true)
-	List<BoxClass> findBySearchTerm(String search);
+	List<NoticeClass> findBySearchTerm(String search);
 	
+	@Query(value = "SELECT * FROM notice_class order by id asc", nativeQuery = true)
+	List<NoticeClass> findAllNodes();
 }

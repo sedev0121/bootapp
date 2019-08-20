@@ -27,6 +27,8 @@ import com.srm.platform.vendor.model.Box;
 import com.srm.platform.vendor.model.BoxClass;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.InventoryClass;
+import com.srm.platform.vendor.model.Notice;
+import com.srm.platform.vendor.model.NoticeClass;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
@@ -53,39 +55,22 @@ public class NoticeClassController extends CommonController {
 
 	@Transactional
 	@PostMapping("/update")
-	public @ResponseBody GenericJsonResponse<BoxClass> update_ajax(@RequestParam Map<String, String> requestParams) {
+	public @ResponseBody GenericJsonResponse<NoticeClass> update_ajax(@RequestParam Map<String, String> requestParams) {
 
-		GenericJsonResponse<BoxClass> jsonResponse;
+		GenericJsonResponse<NoticeClass> jsonResponse;
 		
 		String idStr = requestParams.get("id");
-		String code = requestParams.get("code");
 		String name = requestParams.get("name");
 		
-		BoxClass main;
+		NoticeClass main;
 		if (idStr == null || idStr.isEmpty()) {
-			main = boxClassRepository.findOneByCode(code);
-			if (main != null) {
-				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "分类编码重复", null);
-				return jsonResponse;
-				
-			} else {
-				main = new BoxClass();
-				main.setCode(code);
-				main.setName(name);
-				main = boxClassRepository.save(main);
-			}
+			main = new NoticeClass();
+			main.setName(name);
+			main = noticeClassRepository.save(main);
 		} else {
-			main = boxClassRepository.findOneByCode(code);
-			Long id = Long.valueOf(idStr);
-			if (main != null && main.getId() != id) {
-				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "分类编码重复", null);
-				return jsonResponse;
-			} else {
-				main = boxClassRepository.findOneById(id);	
-				main.setCode(code);
-				main.setName(name);
-				main = boxClassRepository.save(main);
-			}			
+			main = noticeClassRepository.findOneById(Long.parseLong(idStr));	
+			main.setName(name);
+			main = noticeClassRepository.save(main);			
 		}
 		
 		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, main);	
@@ -94,19 +79,19 @@ public class NoticeClassController extends CommonController {
 	}
 	
 	@GetMapping("/{id}/delete")
-	public @ResponseBody GenericJsonResponse<BoxClass> delete(@PathVariable("id") Long id) {
-		GenericJsonResponse<BoxClass> jsonResponse;
-		BoxClass main = boxClassRepository.findOneById(id);
+	public @ResponseBody GenericJsonResponse<NoticeClass> delete(@PathVariable("id") Long id) {
+		GenericJsonResponse<NoticeClass> jsonResponse;
+		NoticeClass main = noticeClassRepository.findOneById(id);
 		if (main != null) {
-			List<Box> boxList = boxRepository.findByBoxClassId(id);
-			if (boxList.size() > 0) {
-				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "该箱码分类已被使用", null);
+			List<Notice> noticeList = noticeRepository.findAllByClassId(id);
+			if (noticeList.size() > 0) {
+				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "该采购动态分类已被使用", null);
 			} else {
-				boxClassRepository.delete(main);
+				noticeClassRepository.delete(main);
 				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);	
 			}
 		} else {
-			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "找不到该箱码分类", null);
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "找不到该采购动态分类", null);
 			
 		}
 
@@ -116,9 +101,9 @@ public class NoticeClassController extends CommonController {
 	
 	@GetMapping("/all")
 	public @ResponseBody List<Map<String, Object>> list_ajax() {
-		List<BoxClass> children = boxClassRepository.findAllNodes();
+		List<NoticeClass> children = noticeClassRepository.findAllNodes();
 
-		BoxClass temp;
+		NoticeClass temp;
 
 		Map<String, Object> row = new HashMap<>();
 		List<Map<String, Object>> response = new ArrayList<>();
@@ -127,9 +112,8 @@ public class NoticeClassController extends CommonController {
 			temp = children.get(i);
 			row = new HashMap<>();
 			row.put("id", temp.getId());
-			row.put("code", temp.getCode());
 			row.put("name", temp.getName());
-			row.put("text", String.format("(%s) %s", temp.getCode(), temp.getName()));
+			row.put("text", temp.getName());
 			row.put("children", false);
 			response.add(row);
 		}

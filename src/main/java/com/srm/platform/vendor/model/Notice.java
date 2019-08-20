@@ -61,9 +61,7 @@ public class Notice {
 	
 	private String url;
 	
-	@OneToOne(cascade = { CascadeType.REFRESH })
-	@JoinColumn(name = "class_id", referencedColumnName = "id")
-	private NoticeClass noticeClass;
+	private Long classId;
 	
 	public Notice() {
 		this.createDate = new Date();
@@ -77,12 +75,13 @@ public class Notice {
 		this.id = id;
 	}
 
-	public NoticeClass getNoticeClass() {
-		return noticeClass;
+
+	public Long getClassId() {
+		return classId;
 	}
 
-	public void setNoticeClass(NoticeClass noticeClass) {
-		this.noticeClass = noticeClass;
+	public void setClassId(Long classId) {
+		this.classId = classId;
 	}
 
 	public String getUrl() {
