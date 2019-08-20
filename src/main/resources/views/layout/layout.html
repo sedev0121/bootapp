@@ -86,6 +86,20 @@
 							<li><a th:href="@{/statement}">对账单管理</a></li>
 						</ul>
 					</li>
+					<li class="dropdown" sec:authorize="hasRole('ROLE_VENDOR') or hasAuthority('询价管理-查看列表')" th:classappend="${#strings.startsWith(#request.requestURI,'/inquery')} or ${#strings.startsWith(#request.requestURI,'/quote')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">价格管理</a>
+						<ul class="dropdown-menu">
+							<li sec:authorize="hasAuthority('询价管理-查看列表')"><a th:href="@{/inquery}">询价管理</a></li>
+							<li sec:authorize="hasAuthority('询价管理-查看列表')"><a th:href="@{/quote}">报价管理</a></li>
+							<li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/inquery}">报价管理</a></li>
+							<li sec:authorize="hasRole('ROLE_VENDOR')"><a th:href="@{/quote}">询价管理</a></li>
+						</ul>
+					</li>
+					<li class="dropdown" sec:authorize="hasAuthority('采购动态-查看列表')" th:classappend="${#strings.startsWith(#request.requestURI,'/classofnotice')} or ${#strings.startsWith(#request.requestURI,'/notice')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">采购动态管理</a>
+						<ul class="dropdown-menu">
+							<li sec:authorize="hasAuthority('采购动态-查看列表')"><a th:href="@{/classofnotice}">采购动态分类</a></li>
+							<li sec:authorize="hasAuthority('采购动态-查看列表')"><a th:href="@{/notice}">采购动态</a></li>
+						</ul>
+					</li>
 					<li class="dropdown" sec:authorize="hasRole('ROLE_BUYER')" th:classappend="${#strings.startsWith(#request.requestURI,'/store')} or ${#strings.startsWith(#request.requestURI,'/classofbox')} or ${#strings.startsWith(#request.requestURI,'/company')} or ${#strings.startsWith(#request.requestURI,'/vendor')} or ${#strings.startsWith(#request.requestURI,'/inventory')}? active : ''"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">基础资料 </a>
 						<ul class="dropdown-menu">
 							<li><a th:href="@{/vendorclass}">供应商分类</a></li>

@@ -177,6 +177,9 @@
 <script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
 	is_vendor = 1;
 </script>
+<script th:inline="javascript" sec:authorize="hasAuthority('合同管理-新建/提交')">
+is_readonly = 0;
+</script>
 
 <script th:inline="javascript">
 	var editor, invoice_editor, attach_editor, table_options, table, import_table, history_table, floating_table, attach_table;
@@ -237,6 +240,7 @@
 	  	table.rows().invalidate().draw();
 	  	showFloatingTab();
 	  });	
+
 	  
 	  function showFloatingTab() {
 	  	if ($('#price_type').val() == 2) {
@@ -258,8 +262,11 @@
 	  		$(table.column(7).header()).text('含税单价');
 	  	} else {
 	  		$('[href="#tab-2"]').closest('li').show();	 
-	  		$('#base_price').attr("readonly", false);
-	  		$('#floating_price').attr("readonly", false);
+	  		
+	  		if (canEdit()) {
+	  			$('#base_price').attr("readonly", false);
+		  		$('#floating_price').attr("readonly", false);	
+	  		}  		
 	  		
 	  		$('#form').validate().settings.rules.base_price.required = true;
 	  		$('#form').validate().settings.rules.floating_price.required = true;
@@ -276,7 +283,7 @@
 	  
 	  
   	function canEdit() {
-  		if (state == 1) {
+  		if (state == 1 && !is_readonly) {
   			return true;
   		}	else {
   			return false;

@@ -43,9 +43,6 @@ public class DashboardController extends CommonController {
 
 		Map<String, Object> params = new HashMap<>();
 
-		selectQuery += " and e.to_account_id=:to_account ";
-		params.put("to_account", this.getLoginAccount().getId());
-
 		selectQuery += "order by verify_date desc ";
 		Query q = em.createNativeQuery(selectQuery, "NoticeSearchResult");
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
