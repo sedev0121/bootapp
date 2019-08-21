@@ -130,6 +130,7 @@ public class Constants {
 	public final static int PASSWORD_TYPE_NORMAL = 1;
 	public final static int PASSWORD_TYPE_SECOND = 2;
 	
+	public final static String DEFAULT_PASSWORD = "111";
 	public final static String DEFAULT_SECOND_PASSWORD = "123";
 	
 	public final static String VERSION = "srm_v32_20190807";

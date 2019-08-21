@@ -9,6 +9,7 @@
 		</ul>
 		<div class="btn-group-bar">
 			<div class="text-right">
+				<a class="btn btn-primary" th:if="${account.id}" sec:authorize="hasRole('ROLE_ADMIN')" id="reset_pwd"><i class="fa fa-key"></i> 重置密码</a>
 				<a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a> 
 				<a class="btn btn-danger hidden" id="del" th:if="${account.id}"><i class="fa fa-remove"></i> 删除</a> 
 				<a class="btn btn-default" th:href="@{/seller}"><i class="fa fa-arrow-left"></i> 返回列表</a>
@@ -24,7 +25,7 @@
 							<label for="username">用户名: </label> <input type="text" name="username" id="username" class="form-control" th:value="${account.username}" readonly>
 						</div>
 						<div class="col-md-3 form-group">
-							<label for="init_password">初始密码： </label> <input type="text" name="password" class="form-control" th:value="111" readonly>
+							<label for="init_password">初始密码： </label> <input type="text" name="password" class="form-control" th:value="${pwd}" readonly>
 						</div>
 						<div class="col-md-2 form-group">
 							<label for="state">状态: </label>
@@ -121,7 +122,7 @@
 </html>
 <script th:inline="javascript">
 	var edit_url = /*[[@{/seller/}]]*/'';
-
+	var reset_pwd_url = /*[[@{/seller/reset_pwd}]]*/'';
   var table, vendor_table;
 
   jQuery(document).ready(function() {
@@ -265,5 +266,26 @@
 		  });
 	  });
 
+	  $("#reset_pwd").click(function() {
+      App.showConfirmDialog('确定要重置密码吗?', function() {
+        $.ajax({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          }, 
+          url : reset_pwd_url + "/" + $("#id").val(),
+          success : function(data, res) {
+            if (data == "1") {
+              App.showSuccessDialog("重置密码成功");
+            }else{
+              App.showErrorDialog("重置密码失败");
+            }
+          }
+        });
+      });
+      
+    });
   });
 </script>

@@ -146,6 +146,7 @@ public class SellerController extends AccountController {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('供应商用户管理-新建/修改')")
 	public String add(Model model) {
 		model.addAttribute("account", new Account());
+		model.addAttribute("pwd", Constants.DEFAULT_PASSWORD);
 		model.addAttribute("groupList", "[]");
 		return "admin/seller/edit";
 	}

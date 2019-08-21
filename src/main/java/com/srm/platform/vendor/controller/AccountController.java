@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.searchitem.SearchItem;
+import com.srm.platform.vendor.utility.Constants;
 
 public class AccountController extends CommonController {
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -43,5 +45,17 @@ public class AccountController extends CommonController {
 		} else {
 			return true;
 		}
+	}
+	
+	// 用户修改
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@GetMapping("/reset_pwd/{id}")
+	public @ResponseBody String resetPassword(@PathVariable("id") Long id) {
+		Account account = accountRepository.findOneById(id);
+		account.setPassword(passwordEncoder.encode(Constants.DEFAULT_PASSWORD));
+		account = accountRepository.save(account);
+		
+		return "1";
 	}
 }

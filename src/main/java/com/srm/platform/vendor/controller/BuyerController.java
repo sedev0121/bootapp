@@ -35,6 +35,7 @@ import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.AccountSaveForm;
 import com.srm.platform.vendor.searchitem.BuyerSearchResult;
 import com.srm.platform.vendor.searchitem.PermissionScopeOfAccount;
+import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 
 @Controller
@@ -89,6 +90,7 @@ public class BuyerController extends AccountController {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasAuthority('采购员用户管理-新建/修改')")
 	public String add(Model model) {
 		model.addAttribute("account", new Account());
+		model.addAttribute("pwd", Constants.DEFAULT_PASSWORD);
 		model.addAttribute("groupList", "[]");
 		return "admin/buyer/edit";
 	}
