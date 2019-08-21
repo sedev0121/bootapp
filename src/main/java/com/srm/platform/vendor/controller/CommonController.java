@@ -254,12 +254,11 @@ public class CommonController {
 		throw new AccessDeniedException("access denied");
 	}
 
-	public AccountPermission getPermissionScopeOfFunction(Long functionActionId) {
+	public AccountPermissionInfo getPermissionScopeOfFunction(Long functionActionId) {
 		List<DimensionTargetItem> scopeList = permissionGroupRepository.findPermissionScopeOf(this.getLoginAccount().getId(), functionActionId);
 		AccountPermissionInfo accountPermissionInfo = new AccountPermissionInfo(this.getLoginAccount().getId(), functionActionId, scopeList);
-		this.logger.info(accountPermissionInfo.toString());
-		AccountPermission accountPermission = new AccountPermission(this.getLoginAccount().getId(), functionActionId, scopeList);
-		return accountPermission;
+		logger.info(accountPermissionInfo.toString());
+		return accountPermissionInfo;
 	}
 
 	public boolean hasAuthority(String authority) {

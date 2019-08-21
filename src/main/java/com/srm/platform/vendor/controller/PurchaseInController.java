@@ -36,6 +36,7 @@ import com.srm.platform.vendor.searchitem.InquerySearchResult;
 import com.srm.platform.vendor.searchitem.PurchaseInDetailItem;
 import com.srm.platform.vendor.searchitem.PurchaseInDetailResult;
 import com.srm.platform.vendor.utility.AccountPermission;
+import com.srm.platform.vendor.utility.AccountPermissionInfo;
 import com.srm.platform.vendor.utility.Utils;
 
 @Controller
@@ -128,13 +129,29 @@ public class PurchaseInController extends CommonController {
 			params.put("vendor", vendorStr);
 
 		} else {
+			int index = 0; String key = "";
+			
 			String subWhere = " 1=0 ";
-			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
-			List<String> allowedVendorCodeList = accountPermission.getVendorList();
-			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
-				subWhere += " or v.code in :vendorList";
-				params.put("vendorList", allowedVendorCodeList);
-			}						
+			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
+				String tempSubWhere = " 1=1 ";
+				List<String> allowedVendorCodeList = accountPermission.getVendorList();
+				if (allowedVendorCodeList.size() > 0) {
+					key = "vendorList" + index;
+					tempSubWhere += " and v.code in :" + key;
+					params.put(key, allowedVendorCodeList);
+				}
+
+				List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+				if (allowedCompanyIdList.size() > 0) {
+					key = "companyList" + index;
+					tempSubWhere += " and com.id in :" + key;
+					params.put(key, allowedCompanyIdList);
+				}
+				
+				subWhere += " or (" + tempSubWhere + ") ";
+				index++;
+			}
 			
 			bodyQuery += " and (" + subWhere + ") ";
 

@@ -467,6 +467,10 @@ div.DTE_Field.DTE_Field_Type_date input.jqueryui {
 	border: 1px solid #c5c5c5
 }
 
+.permission-scope {
+	margin-bottom: 20px;
+}
+
 .permission-scope .ui-widget.ui-widget-content {
 	border: none;
 }

@@ -42,6 +42,7 @@ import com.srm.platform.vendor.saveform.PurchaseOrderSaveForm;
 import com.srm.platform.vendor.searchitem.PurchaseInDetailResult;
 import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 import com.srm.platform.vendor.utility.AccountPermission;
+import com.srm.platform.vendor.utility.AccountPermissionInfo;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.Utils;
@@ -150,23 +151,36 @@ public class PurchaseOrderController extends CommonController {
 
 		} else {
 			String subWhere = " 1=0 ";
-			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
-			List<String> allowedVendorCodeList = accountPermission.getVendorList();
-			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
-				subWhere += " or a.vencode in :vendorList";
-				params.put("vendorList", allowedVendorCodeList);
-			}
+			int index = 0; String key = "";
+			
+			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
+				
+				String tempSubWhere = " 1=1 ";
+				List<String> allowedVendorCodeList = accountPermission.getVendorList();
+				if (allowedVendorCodeList.size() > 0) {
+					key = "vendorList" + index;
+					tempSubWhere += " and a.vencode in :" + key;
+					params.put(key, allowedVendorCodeList);
+				}
 
-			List<Long> allowedAccountIdList = accountPermission.getAccountList();
-			if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)) {
-				subWhere += " or a.deployer in :accountList";
-				params.put("accountList", allowedAccountIdList);
-			}
+				List<Long> allowedAccountIdList = accountPermission.getAccountList();
+				if (allowedAccountIdList.size() > 0) {
+					key = "accountList" + index;
+					tempSubWhere += " and a.deployer in :" + key;
+					params.put(key, allowedAccountIdList);
+				}
 
-			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
-				subWhere += " or a.company_id in :companyList";
-				params.put("companyList", allowedCompanyIdList);
+				List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+				if (allowedCompanyIdList.size() > 0) {
+					key = "companyList" + index;
+					tempSubWhere += " and a.company_id in :" + key;
+					params.put(key, allowedCompanyIdList);
+				}
+				
+				subWhere += " or (" + tempSubWhere + ") ";
+				
+				index++;
 			}
 			
 			bodyQuery += " and (" + subWhere + ") ";
@@ -198,6 +212,7 @@ public class PurchaseOrderController extends CommonController {
 		}
 
 		countQuery += bodyQuery;
+		
 		Query q = em.createNativeQuery(countQuery);
 
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -207,6 +222,7 @@ public class PurchaseOrderController extends CommonController {
 		BigInteger totalCount = (BigInteger) q.getSingleResult();
 
 		selectQuery += bodyQuery + orderBy;
+		logger.info(selectQuery);
 		q = em.createNativeQuery(selectQuery, "PurchaseOrderSearchResult");
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			q.setParameter(entry.getKey(), entry.getValue());
@@ -399,24 +415,32 @@ public class PurchaseOrderController extends CommonController {
 	}
 	
 	private boolean hasPermission(PurchaseOrderMain main, Long functionActionId) {
-		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
-		List<String> allowedVendorCodeList = accountPermission.getVendorList();
-		List<Long> allowedAccountIdList = accountPermission.getAccountList();
-		List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-		
 		boolean isValid = false;
-
-		if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)
-				&& main.getVendor() != null
-				&& allowedVendorCodeList.contains(main.getVendor().getCode())) {
-			isValid = true;
-		} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0) 
-				&& main.getDeployer() != null 
-				&& allowedAccountIdList.contains(main.getDeployer().getId())) {
-			isValid = true;
-		} else if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)
-				&& main.getCompany() != null && allowedCompanyIdList.contains(main.getCompany().getId())) {
-			isValid = true;
+		
+		if (main.getVendor() != null && main.getCompany() != null && main.getDeployer() != null) {
+			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(functionActionId);
+			for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
+				
+				List<String> allowedVendorCodeList = accountPermission.getVendorList();
+				List<Long> allowedAccountIdList = accountPermission.getAccountList();
+				List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+				
+				if (allowedVendorCodeList.size() > 0 && !allowedVendorCodeList.contains(main.getVendor().getCode())) {
+					continue;
+				}
+				
+				if (allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getDeployer().getId())) {
+					continue;
+				}
+				
+				if (allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {
+					continue;
+				}
+				
+				isValid = true;
+				break;
+				
+			}
 		}
 
 		return isValid;

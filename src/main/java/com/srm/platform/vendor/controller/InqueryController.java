@@ -239,8 +239,6 @@ public class InqueryController extends CommonController {
 	@Transactional
 	@PostMapping("/update")
 	public @ResponseBody GenericJsonResponse<VenPriceAdjustMain> update_ajax(VenPriceSaveForm form, Principal principal) {
-
-		
 		
 		VenPriceAdjustMain venPriceAdjustMain = venPriceAdjustMainRepository.findOneByCcode(form.getCcode());
 
@@ -248,9 +246,7 @@ public class InqueryController extends CommonController {
 			venPriceAdjustMain = new VenPriceAdjustMain();
 			venPriceAdjustMain.setCreatetype(isVendor() ? Constants.CREATE_TYPE_VENDOR : Constants.CREATE_TYPE_BUYER);
 			venPriceAdjustMain.setCcode(form.getCcode());
-		}
-
-		
+		}		
 		
 		if ((venPriceAdjustMain.getIverifystate() == null || venPriceAdjustMain.getIverifystate() == Constants.STATE_CANCEL
 				|| venPriceAdjustMain.getIverifystate() == Constants.STATE_NEW) && form.getState() <= Constants.STATE_CONFIRM) {

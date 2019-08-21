@@ -37,6 +37,7 @@ import com.srm.platform.vendor.searchitem.BoxExportResult;
 import com.srm.platform.vendor.searchitem.DeliverySearchResult;
 import com.srm.platform.vendor.u8api.RestApiResponse;
 import com.srm.platform.vendor.utility.AccountPermission;
+import com.srm.platform.vendor.utility.AccountPermissionInfo;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.Utils;
@@ -171,32 +172,37 @@ public class DeliveryController extends CommonController {
 
 		} else {
 			String subWhere = " 1=0 ";
-			AccountPermission accountPermission = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
-			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
-				subWhere += " or a.company_id in :companyList";
-				params.put("companyList", allowedCompanyIdList);
-			}
+			int index = 0; String key = "";
+			
+			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
+				String tempSubWhere = " 1=1 ";
+				List<String> allowedVendorCodeList = accountPermission.getVendorList();
+				if (allowedVendorCodeList.size() > 0) {
+					key = "vendorList" + index;
+					tempSubWhere += " and a.vendor_code in :" + key;
+					params.put(key, allowedVendorCodeList);
+				}
 
-			List<String> allowedVendorCodeList = accountPermission.getVendorList();
-			if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0)) {
-				subWhere += " or a.vendor_code in :vendorList";
-				params.put("vendorList", allowedVendorCodeList);
-			}
+				List<Long> allowedStoreIdList = accountPermission.getStoreList();
+				if (allowedStoreIdList.size() > 0) {
+					key = "storeList" + index;
+					tempSubWhere += " and a.store_id in :" + key;
+					params.put(key, allowedStoreIdList);
+				}
 
-			List<Long> allowedStoreIdList = accountPermission.getStoreList();
-			if (!(allowedStoreIdList == null || allowedStoreIdList.size() == 0)) {
-				subWhere += " or a.store_id in :storeList";
-				params.put("storeList", allowedStoreIdList);
+				List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+				if (allowedCompanyIdList.size() > 0) {
+					key = "companyList" + index;
+					tempSubWhere += " and a.company_id in :" + key;
+					params.put(key, allowedCompanyIdList);
+				}
+				
+				subWhere += " or (" + tempSubWhere + ") ";
+				index++;
 			}
-
-			List<Long> allowedAccountIdList = accountPermission.getAccountList();
-			if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0)) {
-				subWhere += " or a.confirmer_id in :accountList";
-				params.put("accountList", allowedAccountIdList);
-			}
-
-			bodyQuery += " and (" + subWhere + ") ";
+			
+			bodyQuery += " and (" + subWhere + ") ";			
 			bodyQuery += " and a.state>=" + Constants.DELIVERY_STATE_SUBMIT;
 		}
 
@@ -225,6 +231,7 @@ public class DeliveryController extends CommonController {
 		BigInteger totalCount = (BigInteger) q.getSingleResult();
 
 		selectQuery += bodyQuery + orderBy;
+		
 		q = em.createNativeQuery(selectQuery, "DeliverySearchResult");
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			q.setParameter(entry.getKey(), entry.getValue());
@@ -538,26 +545,33 @@ public class DeliveryController extends CommonController {
 	}
 
 	private boolean hasPermission(DeliveryMain main, Long functionActionId) {
-		AccountPermission accountPermission = this.getPermissionScopeOfFunction(functionActionId);
-		List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-		List<String> allowedVendorCodeList = accountPermission.getVendorList();
-		List<Long> allowedStoreIdList = accountPermission.getStoreList();
-		List<Long> allowedAccountIdList = accountPermission.getAccountList();
 
 		boolean isValid = false;
-
-		if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0) && main.getCompany() != null
-				&& allowedCompanyIdList.contains(main.getCompany().getId())) {
-			isValid = true;
-		} else if (!(allowedVendorCodeList == null || allowedVendorCodeList.size() == 0) && main.getVendor() != null
-				&& allowedVendorCodeList.contains(main.getVendor().getCode())) {
-			isValid = true;
-		} else if (!(allowedStoreIdList == null || allowedStoreIdList.size() == 0) && main.getStore() != null
-				&& allowedStoreIdList.contains(main.getStore().getId())) {
-			isValid = true;
-		} else if (!(allowedAccountIdList == null || allowedAccountIdList.size() == 0) && main.getConfirmer() != null
-				&& main.getConfirmer() != null && allowedAccountIdList.contains(main.getConfirmer().getId())) {
-			isValid = true;
+		
+		if (main.getVendor() != null && main.getCompany() != null && main.getStore() != null) {
+			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(functionActionId);
+			for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
+				
+				List<String> allowedVendorCodeList = accountPermission.getVendorList();
+				List<Long> allowedStoreIdList = accountPermission.getStoreList();
+				List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+				
+				if (allowedVendorCodeList.size() > 0 && !allowedVendorCodeList.contains(main.getVendor().getCode())) {
+					continue;
+				}
+				
+				if (allowedStoreIdList.size() > 0 && !allowedStoreIdList.contains(main.getStore().getId())) {
+					continue;
+				}
+				
+				if (allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {
+					continue;
+				}
+				
+				isValid = true;
+				break;
+				
+			}
 		}
 
 		return isValid;
