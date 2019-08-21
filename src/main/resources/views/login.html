@@ -174,24 +174,12 @@
 		<div class="container">
 			<div class="row">
 				<!-- BEGIN BOTTOM ABOUT BLOCK -->
-				<div class="col-md-4 news">
-					<h4>采购动态</h4>
+				<div class="col-md-4 news" th:each="noticeClass : ${noticeList}">
+					<h4 th:utext="${noticeClass.title}"></h4>
 					<ul class="list-unstyled">
-						<li th:each="notice : ${noticeList}"><a class="notice" href="#" th:data-target="${notice.id}" th:classappend="!${notice.verify_date}?new" th:utext="${notice.title}"></a></li>
+						<li th:each="notice : ${noticeClass.list}"><a class="notice" href="#" th:data-target="${notice.id}" th:classappend="!${notice.verify_date}?new" th:utext="${notice.title}"></a></li>
 					</ul>
-				</div>
-				<div class="col-md-4 news">
-					<h4>采购动态</h4>
-					<ul class="list-unstyled">
-						<li th:each="notice : ${noticeList}"><a class="notice" href="#" th:data-target="${notice.id}" th:classappend="!${notice.verify_date}?new" th:utext="${notice.title}"></a></li>
-					</ul>
-				</div>
-				<div class="col-md-4 news">
-					<h4>采购动态</h4>
-					<ul class="list-unstyled">
-						<li th:each="notice : ${noticeList}"><a class="notice" href="#" th:data-target="${notice.id}" th:classappend="!${notice.verify_date}?new" th:utext="${notice.title}"></a></li>
-					</ul>
-				</div>
+				</div>				
 				<!-- END TWITTER BLOCK -->
 			</div>
 		</div>

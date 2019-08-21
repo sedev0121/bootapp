@@ -39,7 +39,7 @@ public class DashboardController extends CommonController {
 	@SuppressWarnings("unchecked")
 	private List<NoticeSearchResult> getLastNotice() {
 		String selectQuery = "SELECT distinct a.*, b.realname create_name, d.realname verify_name, e.name class_name, null read_date FROM notice a left join account b on a.create_account=b.id "
-				+ "left join account d on d.id=a.verify_account left join notice_class e on a.class_id=e.id where type=1 and a.state=3 ";
+				+ "left join account d on d.id=a.verify_account left join notice_class e on a.class_id=e.id where type=1 and a.state=3 order by a.verify_date desc ";
 		Query q = em.createNativeQuery(selectQuery, "NoticeSearchResult");
 
 		return q.setFirstResult(0).setMaxResults(5).getResultList();

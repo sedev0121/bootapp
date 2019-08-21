@@ -15,4 +15,5 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
 	@Query(value = "SELECT * FROM notice where class_id=?1", nativeQuery = true)
 	List<Notice> findAllByClassId(Long classId);	
+
 }

@@ -26,5 +26,8 @@ public interface NoticeClassRepository extends JpaRepository<NoticeClass, Long> 
 	List<NoticeClass> findAllNodes();
 	
 	@Query(value = "SELECT id code, name FROM notice_class", nativeQuery = true)
-	Page<SearchItem> findForSelect(Pageable pageable);
+	Page<SearchItem> findForSelect(Pageable pageable);	
+	
+	@Query(value = "select a.* from notice_class a left join (select class_id from notice GROUP BY class_id ORDER BY max(verify_date) desc limit 3) b on a.id=b.class_id where b.class_id is not null", nativeQuery = true)
+	List<NoticeClass> findLast3Class();
 }

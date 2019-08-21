@@ -1,6 +1,7 @@
 package com.srm.platform.vendor.controller;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import com.srm.platform.vendor.model.Notice;
+import com.srm.platform.vendor.model.NoticeClass;
+import com.srm.platform.vendor.repository.NoticeClassRepository;
 import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.searchitem.NoticeSearchResult;
 import com.srm.platform.vendor.utility.Constants;
@@ -55,6 +58,9 @@ public class HomeController {
 	@Autowired
 	public NoticeRepository noticeRepository;
 
+	@Autowired
+	public NoticeClassRepository noticeClassRepository;
+	
 	@GetMapping("/forbidden")
 	public String forbidden() {
 		return "denied";
@@ -62,8 +68,18 @@ public class HomeController {
 
 	@GetMapping(value = "/login")
 	public String login(Model model) {
-		List<NoticeSearchResult> noticeList = getLastNotice();
-		model.addAttribute("noticeList", noticeList);	
+		List<Map<String, Object>> noticeMapList = new ArrayList<Map<String, Object>>();
+		List<NoticeClass> noticeClassList = noticeClassRepository.findLast3Class();
+		for(NoticeClass noticeClass : noticeClassList) {
+			List<NoticeSearchResult> noticeList = getLastNotice(noticeClass);
+			Map<String, Object> oneClass = new HashMap<>();
+			oneClass.put("title", noticeClass.getName());
+			oneClass.put("list", noticeList);
+			
+			noticeMapList.add(oneClass);
+		}
+		
+		model.addAttribute("noticeList", noticeMapList);	
 		model.addAttribute("version", Constants.VERSION);
 		return "login";
 	}
@@ -115,11 +131,12 @@ public class HomeController {
 		return "notice/view";
 	}
 
-	private List<NoticeSearchResult> getLastNotice() {
+	private List<NoticeSearchResult> getLastNotice(NoticeClass noticeClass) {
 		String selectQuery = "SELECT distinct a.*, b.realname create_name, d.realname verify_name, e.name class_name, null read_date FROM notice a left join account b on a.create_account=b.id "
-				+ "left join account d on d.id=a.verify_account left join notice_class e on a.class_id=e.id where type=1 and a.state=3 ";
+				+ "left join account d on d.id=a.verify_account left join notice_class e on a.class_id=e.id where type=1 and a.state=3 and class_id=:class_id order by a.verify_date desc";
 		Query q = em.createNativeQuery(selectQuery, "NoticeSearchResult");
-
+		q.setParameter("class_id", noticeClass.getId());
+		
 		return q.setFirstResult(0).setMaxResults(5).getResultList();	
 	}
 	
