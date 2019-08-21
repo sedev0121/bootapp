@@ -83,6 +83,7 @@ import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.u8api.AppProperties;
 import com.srm.platform.vendor.u8api.RestApiClient;
 import com.srm.platform.vendor.utility.AccountPermission;
+import com.srm.platform.vendor.utility.AccountPermissionInfo;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.U8VenpriceadjustPostData;
@@ -254,10 +255,10 @@ public class CommonController {
 	}
 
 	public AccountPermission getPermissionScopeOfFunction(Long functionActionId) {
-		List<DimensionTargetItem> scopeList = permissionGroupRepository
-				.findPermissionScopeOf(this.getLoginAccount().getId(), functionActionId);
-		AccountPermission accountPermission = new AccountPermission(this.getLoginAccount().getId(), functionActionId,
-				scopeList);
+		List<DimensionTargetItem> scopeList = permissionGroupRepository.findPermissionScopeOf(this.getLoginAccount().getId(), functionActionId);
+		AccountPermissionInfo accountPermissionInfo = new AccountPermissionInfo(this.getLoginAccount().getId(), functionActionId, scopeList);
+		this.logger.info(accountPermissionInfo.toString());
+		AccountPermission accountPermission = new AccountPermission(this.getLoginAccount().getId(), functionActionId, scopeList);
 		return accountPermission;
 	}
 

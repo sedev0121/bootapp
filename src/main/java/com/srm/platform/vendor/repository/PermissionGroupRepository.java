@@ -67,7 +67,7 @@ public interface PermissionGroupRepository extends JpaRepository<PermissionGroup
 	@Query(value = "select * from inventory_class", nativeQuery = true)
 	List<ScopeInventoryItem> findInventoryList();
 	
-	@Query(value = "select dimension_id, GROUP_CONCAT(target_id) targets from permission_user_scope where account_id=:accountId and group_id in (select group_id from permission_group_function_action where function_action_id=:functionActionId) and group_id in (select group_id from permission_group_user where account_id=:accountId) GROUP BY dimension_id", nativeQuery = true)
+	@Query(value = "select group_id, dimension_id, GROUP_CONCAT(target_id) targets from permission_user_scope where account_id=:accountId and group_id in (select group_id from permission_group_function_action where function_action_id=:functionActionId) and group_id in (select group_id from permission_group_user where account_id=:accountId) GROUP BY group_id, dimension_id order by group_id", nativeQuery = true)
 	List<DimensionTargetItem> findPermissionScopeOf(@Param("accountId") Long accountId, @Param("functionActionId") Long functionActionId);
 
 }

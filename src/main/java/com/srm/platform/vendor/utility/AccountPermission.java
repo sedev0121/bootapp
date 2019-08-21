@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.thymeleaf.util.StringUtils;
 
 import com.srm.platform.vendor.searchitem.DimensionTargetItem;
@@ -13,11 +11,11 @@ import com.srm.platform.vendor.searchitem.DimensionTargetItem;
 public class AccountPermission {
 	private Long accountId;
 	private Long functionActionId;
-	private List<Long> companyList;
-	private List<Long> accountList;
-	private List<Long> storeList;
-	private List<String> vendorList;
-	private List<String> inventoryClassList;
+	private List<Long> companyList = new ArrayList<Long>();
+	private List<Long> accountList = new ArrayList<Long>();
+	private List<Long> storeList = new ArrayList<Long>();
+	private List<String> vendorList = new ArrayList<String>();
+	private List<String> inventoryClassList = new ArrayList<String>();
 
 	public AccountPermission(Long accountId, Long functionActionId, List<DimensionTargetItem> scopeList) {
 		this.accountId = accountId;
@@ -163,6 +161,30 @@ public class AccountPermission {
 		} else {
 			return this.inventoryClassList.contains(inventoryClassCode);
 		}
+	}
+	
+	public String toString() {
+		String accountStr = "", vendorStr = "", storeStr = "", companyStr = "", inventoryClassStr = "";
+		
+		if (this.accountList != null && this.accountList.size() > 0) {
+			accountStr = StringUtils.join(this.accountList, ",");
+		}
+		if (this.vendorList != null && this.vendorList.size() > 0) {
+			vendorStr = StringUtils.join(this.vendorList, ",");
+		}
+		if (this.storeList != null && this.storeList.size() > 0) {
+			storeStr = StringUtils.join(this.storeList, ",");
+		}
+		if (this.companyList != null && this.companyList.size() > 0) {
+			companyStr = StringUtils.join(this.companyList, ",");
+		}
+		if (this.inventoryClassList != null && this.inventoryClassList.size() > 0) {
+			inventoryClassStr = StringUtils.join(this.inventoryClassList, ",");
+		}
+		
+		String result = String.format("vendor=(%s) store=(%s) company=(%s) account=(%s) inventory=(%s)", vendorStr, storeStr, companyStr, accountStr, inventoryClassStr);
+		
+		return result;
 	}
 
 }
