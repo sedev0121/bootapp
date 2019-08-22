@@ -1,8 +1,0 @@
-<div class="notice-title" th:text="${notice.title}"></div>
-<div class="notice-content" th:utext="${notice.content}"></div>
-<div class="notice-attachment" th:if="${notice.attachFileName}">
-  <a th:href="@{|/${notice.id}/noticedownload|}" th:text="${notice.attachOriginalName}"></a>
-</div>
-<div class="notice-deploy-info">
-	<span class="deploy-time" th:text="${#dates.format(notice.verifyDate, 'yyyy-MM-dd HH:mm:ss')}"></span><span class="deployer" th:text="${notice.verifyAccount?.realname}"></span>
-</div>

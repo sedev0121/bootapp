@@ -4,13 +4,16 @@
 	<div class="container" layout:fragment="content">
 		<ul class="breadcrumb">
 			<li><a th:href="@{/}"><i class="fa fa-dashboard"></i> 首页</a></li>
-			<li class="active">采购动态</li>
+			<li><a th:href="@{/notice_view}">采购动态</a></li>
+			<li class="active">采购动态详细</li>
 		</ul>
 		<div class="row">
 			<div class="col-lg-12 notice-div">
 				<div class="notice-title" th:text="${notice.title}"></div>
 				<div class="notice-deploy-info">
-					<span class="deploy-time" th:text="${#dates.format(notice.verifyDate, 'yyyy-MM-dd HH:mm:ss')}"></span><span class="deployer" th:text="${notice.verifyAccount?.realname}"></span>
+					<span class="type" th:text="|[${notice.noticeClass?.name}]|"></span>
+					<span class="deploy-time" th:text="${#dates.format(notice.verifyDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+					<span class="deployer" th:text="${notice.verifyAccount?.realname}"></span>					
 				</div>
 				<div class="notice-content" th:utext="${notice.content}"></div>
 				<div class="notice-attachment" th:if="${notice.attachFileName}">

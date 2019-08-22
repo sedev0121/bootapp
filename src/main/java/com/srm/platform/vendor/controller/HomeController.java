@@ -122,14 +122,6 @@ public class HomeController {
 
 		return "email/resetpassword";
 	}
-	
-	// 用户管理->修改
-	@GetMapping("/{id}/notice")
-	public String edit(@PathVariable("id") Long id, Model model) {
-		Notice notice = noticeRepository.findOneById(id);
-		model.addAttribute("notice", notice);
-		return "notice/view";
-	}
 
 	private List<NoticeSearchResult> getLastNotice(NoticeClass noticeClass) {
 		String selectQuery = "SELECT distinct a.*, b.realname create_name, d.realname verify_name, e.name class_name, null read_date FROM notice a left join account b on a.create_account=b.id "
