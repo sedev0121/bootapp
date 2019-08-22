@@ -1,5 +1,8 @@
 package com.srm.platform.vendor.config;
 
+import java.io.File;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,16 +23,25 @@ import org.thymeleaf.templateresolver.UrlTemplateResolver;
 
 import com.srm.platform.vendor.service.SessionCounter;
 import com.srm.platform.vendor.u8api.ApiClient;
+import com.srm.platform.vendor.utility.Constants;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
+	private String FILE_UPLOAD_PATH;
+
+	@Value("${srm.file.upload.dir}")
+	public void setUploadFilePath(String uploadPath) {
+		FILE_UPLOAD_PATH = uploadPath;
+	}
+	
 	private static final String VIEWS = "classpath:views/";
 	private static final String ASSETS_LOCATION = "classpath:/assets/";
 	private static final String ASSETS_HANDLER = "/assets/**";
 
+	
 	@Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**");
@@ -81,7 +93,9 @@ public class MvcConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler(ASSETS_HANDLER).addResourceLocations(ASSETS_LOCATION);
+		String imageLocation = "file:///" + FILE_UPLOAD_PATH + "/" + Constants.PATH_UPLOADS_NOTICE_IMAGE + "/";
+		String imageHandler = "/notice_images/**";		
+		registry.addResourceHandler(ASSETS_HANDLER, imageHandler).addResourceLocations(ASSETS_LOCATION, imageLocation);
 	}
 
 	@Override

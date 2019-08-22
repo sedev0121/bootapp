@@ -21,8 +21,6 @@
         <a class="btn btn-default" th:href="@{/notice}"><i class="fa fa-arrow-left"></i> 返回列表</a>
       </div>
     </div>
-    
-    
     <form id="form" th:action="@{/notice/update}" method="post" enctype="multipart/form-data">  
     <input type="hidden" id="id" name="id" th:value="${notice.id}">
     <input type="hidden" id="account_list" name="account_list">
@@ -47,7 +45,7 @@
           
           <div class="col-lg-12 col-md-12 form-group">
             <label for="content">内容: </label>
-            <textarea name="content" id="content" class="form-control" rows=5 th:text="${notice.content}"></textarea>
+            <textarea name="content" id="content" class="form-control" th:text="${notice.content}"></textarea>
           </div>
 
           <div class="col-lg-12 col-md-12 form-group" id="file_select" th:if="${(notice.state==1 or notice.state == 4) and notice.attachFileName == null}">
@@ -94,146 +92,169 @@
 <script th:inline="javascript" sec:authorize="hasRole('ROLE_VENDOR')">
 is_vendor = 1;
 </script>
-
 <script th:inline="javascript">
-var edit_url = /*[[@{/notice/}]]*/'';
-var state = /*[[${notice.state}]]*/'';
-var account_table, import_table, editor, vendor_table, import_vendor_table, vendor_editor;
-/*[+
-var isEditable = [[${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}?true:false]];
-var hasAttach = [[${notice.attachFileName != null}]];
-var is_editor = [[${notice.createAccount?.id==session.account_id}?true:false]];
-var class_search_url = [[@{/classofnotice/search}]];
-+]*/ 
+	var edit_url = /*[[@{/notice/}]]*/'';
+  var state = /*[[${notice.state}]]*/'';
+  var account_table, import_table, editor, vendor_table, import_vendor_table, vendor_editor;
+  /*[+
+   var isEditable = [[${notice.createAccount?.id==session.account_id and (notice.state==1  || notice.state==4)}?true:false]];
+   var hasAttach = [[${notice.attachFileName != null}]];
+   var is_editor = [[${notice.createAccount?.id==session.account_id}?true:false]];
+   var class_search_url = [[@{/classofnotice/search}]];
+   var image_upload_url = [[@{/notice/upload_image}]];
+   var notice_image_url = [[@{/notice_images/}]];
+   +]*/
 
-jQuery(document).ready(function() {   
+  jQuery(document).ready(function() {
 
-  App.bs_input_file();
-  $("#state").select2({ data: App.getNoticeStateData(),minimumResultsForSearch: -1}).select2("val", state.toString());
-  
-  $("#classofnotice").select2(App.getSelect2Options(class_search_url));
-  
-  if (!isEditable){
-    $('#title').attr("readonly", true);
-    $("#content").attr("readonly", true);
-    $("#classofnotice").attr("readonly", true);
-    $('textarea').attr("readonly", true);
-  }else{
-    if (hasAttach){
-      $('#file_select').hide();
-      $('#file_show').show();
-    }else{
-      $('#file_select').show();
-      $('#file_show').hide();
-    }
-  }
-  
-
-	  
-	  var is_add = $("#id").val().length==0;
-	  $("#form" ).validate({
-	    // define validation rules
-	    rules: {
-	        title: {
-	            required: true,
-	        }, 
-	        content: {
-	            required: true
-	        },
-	        classofnotice: {
-            required: true
-        },
-	    },
+	  $('#content').summernote({
+	    lang : 'zh-CN',
+	    callbacks : {
+	    	onImageUpload : function(files, editor, welEditable) {
+			    sendFile(files[0], editor, welEditable);
+		    }
+    	}
 	    
-	    //display error alert on form submit  
-	    invalidHandler: function(event, validator) {
-	      App.showErrorDialog("输入有误", "请输入正确的值");
+	  });
+
+	  function sendFile(file, editor, welEditable) {
+      data = new FormData();
+      data.append("file", file);
+      data.append("_csrf", $("#form input[name='_csrf']").val()),
+      $.ajax({
+          data: data,
+          type: "POST",
+          url: image_upload_url,
+          cache: false,
+          contentType: false,
+          processData: false,
+          success: function(filename) {
+          	$('#content').summernote("insertImage", notice_image_url + filename);
+          }
+      });
+  	}
+	  
+	  App.bs_input_file();
+	  $("#state").select2({
+	    data : App.getNoticeStateData(),
+	    minimumResultsForSearch : -1
+	  }).select2("val", state.toString());
+
+	  $("#classofnotice").select2(App.getSelect2Options(class_search_url));
+
+	  if (!isEditable) {
+		  $('#title').attr("readonly", true);
+		  $("#content").attr("readonly", true);
+		  $("#classofnotice").attr("readonly", true);
+		  $('textarea').attr("readonly", true);
+	  } else {
+		  if (hasAttach) {
+			  $('#file_select').hide();
+			  $('#file_show').show();
+		  } else {
+			  $('#file_select').show();
+			  $('#file_show').hide();
+		  }
+	  }
+
+	  var is_add = $("#id").val().length == 0;
+	  $("#form").validate({
+	    // define validation rules
+	    rules : {
+	      title : {
+		      required : true,
+	      },
+	      content : {
+		      required : true
+	      },
+	      classofnotice : {
+		      required : true
+	      },
 	    },
 
-	    submitHandler: function (form) {
-	      var value='';
-	      if ($('#to_unit_account').attr('checked') && account_table){
-	        $.each(account_table.rows().data().toArray(), function(key, item){
-	          value += item.id + ",";
-	        });
-	        value = value.replace(/,$/, '');
-	      }
-	      $('#account_list').val(value);
-	      
-	      if (!$('#to_all_vendor').attr('checked') && vendor_table){
-	        value = '';
-	        $.each(vendor_table.rows().data().toArray(), function(key, item){
-	          value += item.code + ",";
-	        });
-	        value = value.replace(/,$/, '');
-	      }
-	      $('#vendor_list').val(value);
-	        
-	      jQuery(form).ajaxSubmit({
-	        beforeSend: function(){
-	          App.blockUI();
-	        },
-	        complete: function(){
-	          App.unblockUI();
-	        },
-	        success: function(res, status, xhr, form) {
-	          App.showSuccessDialog("操作成功", function(){
-	              window.location.href = edit_url + res.id + "/edit";
-	          });
-	        },
-	        error: function (res, status, xhr, form) {
-	          App.showErrorDialog("操作失败", "请输入正确的值");
-	        }
-	      });
+	    //display error alert on form submit  
+	    invalidHandler : function(event, validator) {
+		    App.showErrorDialog("输入有误", "请输入正确的值");
+	    },
+
+	    submitHandler : function(form) {
+		    var value = '';
+		    if ($('#to_unit_account').attr('checked') && account_table) {
+			    $.each(account_table.rows().data().toArray(), function(key, item) {
+				    value += item.id + ",";
+			    });
+			    value = value.replace(/,$/, '');
+		    }
+		    $('#account_list').val(value);
+
+		    if (!$('#to_all_vendor').attr('checked') && vendor_table) {
+			    value = '';
+			    $.each(vendor_table.rows().data().toArray(), function(key, item) {
+				    value += item.code + ",";
+			    });
+			    value = value.replace(/,$/, '');
+		    }
+		    $('#vendor_list').val(value);
+
+		    jQuery(form).ajaxSubmit({
+		      beforeSend : function() {
+			      App.blockUI();
+		      },
+		      complete : function() {
+			      App.unblockUI();
+		      },
+		      success : function(res, status, xhr, form) {
+			      App.showSuccessDialog("操作成功", function() {
+				      window.location.href = edit_url + res.id + "/edit";
+			      });
+		      },
+		      error : function(res, status, xhr, form) {
+			      App.showErrorDialog("操作失败", "请输入正确的值");
+		      }
+		    });
 	    }
-	  }); 
-	  
-	  
-	  
+	  });
+
 	  $("#save").click(function() {
-	    $('#state').val(1);
-	    $("#form").submit();            
+		  $('#state').val(1);
+		  $("#form").submit();
 	  });
-	  
+
 	  $("#submit").click(function() {
-	    $('#state').val(2);
-	    $("#form").submit();            
+		  $('#state').val(2);
+		  $("#form").submit();
 	  });
-	  
+
 	  $("#verify").click(function() {
-	    $('#state').val(3);
-	    $("#form").submit();            
+		  $('#state').val(3);
+		  $("#form").submit();
 	  });
 
 	  $("#cancel").click(function() {
-	    $('#state').val(4);
-	    $("#form").submit();            
-	  });
-	  
-	  
-	  $("#delete").click(function(){
-	    App.showConfirmDialog('确定要删除吗?', function(){
-	      var del_url = edit_url + $("#id").val() + "/delete";  
-	      $.get(del_url, function(data, status){
-	        App.showSuccessDialog("操作成功", function() {
-	          window.location.href = edit_url;
-	        });
-	      });
-	    });
+		  $('#state').val(4);
+		  $("#form").submit();
 	  });
 
-	  $("#del_attach").click(function(){
-	    App.showConfirmDialog('确定要删除吗?', function(){
-	      var del_url = edit_url + $("#id").val() + "/deleteattach";  
-	      $.get(del_url, function(data, status){
-	        App.showSuccessDialog("操作成功", function() {
-	          window.location.reload(true);
-	        });
-	      });
-	    });
-	  });  
-});
+	  $("#delete").click(function() {
+		  App.showConfirmDialog('确定要删除吗?', function() {
+			  var del_url = edit_url + $("#id").val() + "/delete";
+			  $.get(del_url, function(data, status) {
+				  App.showSuccessDialog("操作成功", function() {
+					  window.location.href = edit_url;
+				  });
+			  });
+		  });
+	  });
 
-
+	  $("#del_attach").click(function() {
+		  App.showConfirmDialog('确定要删除吗?', function() {
+			  var del_url = edit_url + $("#id").val() + "/deleteattach";
+			  $.get(del_url, function(data, status) {
+				  App.showSuccessDialog("操作成功", function() {
+					  window.location.reload(true);
+				  });
+			  });
+		  });
+	  });
+  });
 </script>
-

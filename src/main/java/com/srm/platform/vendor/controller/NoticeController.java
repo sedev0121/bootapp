@@ -175,6 +175,19 @@ public class NoticeController extends CommonController {
 		return true;
 	}
 
+	@Transactional
+	@PostMapping("/upload_image")
+	public @ResponseBody String uloadImage(@RequestParam(value = "file") MultipartFile attach) {
+
+		File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_NOTICE_IMAGE);
+
+		if (file != null) {
+			return file.getName();
+		} else {
+			return "0";
+		}
+	}
+	
 	// 用户修改
 	@Transactional
 	@PostMapping("/update")

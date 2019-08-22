@@ -86,6 +86,7 @@ public class Constants {
 
 	public final static String PATH_UPLOADS_SHIP = "ship";
 	public final static String PATH_UPLOADS_NOTICE = "notice";
+	public final static String PATH_UPLOADS_NOTICE_IMAGE = "notice_image";
 	public final static String PATH_UPLOADS_STATEMENT = "statement";
 	public final static String PATH_UPLOADS_INQUERY = "inquery";
 	

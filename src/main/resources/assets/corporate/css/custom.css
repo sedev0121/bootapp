@@ -731,3 +731,14 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
 .notice-deploy-info .deployer {
 	margin-left: 10px;
 }
+
+.ui-helper-hidden-accessible {
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+}
