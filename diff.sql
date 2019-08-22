@@ -508,3 +508,6 @@ CREATE TABLE `notice_class`  (
   `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+/* 2019-08-23 */
+alter table notice modify COLUMN content longtext NULL DEFAULT NULL;
