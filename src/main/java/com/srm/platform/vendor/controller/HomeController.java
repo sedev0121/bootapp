@@ -158,4 +158,24 @@ public class HomeController {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileName + "\"")
 				.body(file);
 	}
+	
+	@RequestMapping(value = "/about_us")
+	public String aboutUs(Model model) {
+		return "home/about_us";
+	}
+	
+	@RequestMapping(value = "/link_us")
+	public String linkUs(Model model) {
+		return "home/link_us";
+	}
+	
+	@RequestMapping(value = "/intro")
+	public String manual(Model model) {
+		return "home/intro";
+	}
+	
+	@RequestMapping(value = "/others")
+	public String others(Model model) {
+		return "home/others";
+	}
 }

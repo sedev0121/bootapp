@@ -203,7 +203,14 @@
 	<div class="footer">
 		<div class="container">
 			<div class="row text-center">
-				<a href="#" class="link">关于我们</a> <a href="#" class="link">系统介绍</a> <a href="#" class="link">联系我们</a> <a href="#" class="link">注册说明</a> <a href="#" class="link">操作指南</a> <a href="#" class="link">友情链接</a>
+				<ul class="footer-bar">
+					<li><a th:href="@{/about_us}" class="link">关于我们</a></li>
+					<li><a th:href="@{/intro}" class="link">系统介绍</a></li>
+					<li><a th:href="@{/link_us}" class="link">联系我们</a></li>
+					<li><a href="#" class="link">注册说明</a></li>
+					<li><a th:href="@{/assets/files/SRM供应商管理平台.pdf}" class="link" target="_blank">操作指南</a></li>
+					<li><a th:href="@{/others}" class="link">友情链接</a></li>
+				</ul>
 			</div>
 			<hr />
 			<div class="row">

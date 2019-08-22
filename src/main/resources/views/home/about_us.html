@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<body>
+	<div class="container" layout:fragment="content">
+		<!-- BEGIN SIDEBAR & CONTENT -->
+		<div class="row margin-bottom-40" style="min-height: 510px;">
+			<!-- BEGIN CONTENT -->
+			<div class="sidebar col-md-3 col-sm-3">
+				<ul class="list-group margin-bottom-25 sidebar-menu">
+					<li class="list-group-item clearfix current"><i class="fa fa-angle-right"></i> 关于我们</li>
+					<li class="list-group-item clearfix"><a th:href="@{/intro}"><i class="fa fa-angle-right"></i> 系统介绍</a></li>
+					<li class="list-group-item clearfix"><a th:href="@{/link_us}"><i class="fa fa-angle-right"></i> 联系我们</a></li>
+					<li class="list-group-item clearfix"><a th:href="@{/assets/files/SRM供应商管理平台.pdf}" target="_blank"><i class="fa fa-angle-right"></i> 操作指南</a></li>
+					<li class="list-group-item clearfix"><a th:href="@{/others}"><i class="fa fa-angle-right"></i>友情链接</a></li>
+				</ul>
+			</div>
+			<div class="col-md-9 col-sm-9">
+				<div class="content-page introduction">
+					<h2>关于我们</h2>
+					<p>美尔凯特供应商协同平台支持在线采购、在线对账、采购询报价、采购比价、采购订单协同、交货管理、付款结算与供应商评估，帮助企业和供应商提高工作效率、降低交易成本。</p>
+				</div>
+			</div>
+			<!-- END CONTENT -->
+		</div>
+	</div>
+</body>
+</html>
