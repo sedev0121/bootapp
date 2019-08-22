@@ -1,7 +1,6 @@
 package com.srm.platform.vendor.controller;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,9 +10,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -29,10 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.PurchaseInMain;
 import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
-import com.srm.platform.vendor.repository.PurchaseInMainRepository;
-import com.srm.platform.vendor.repository.VendorRepository;
-import com.srm.platform.vendor.searchitem.InquerySearchResult;
 import com.srm.platform.vendor.searchitem.PurchaseInDetailItem;
 import com.srm.platform.vendor.searchitem.PurchaseInDetailResult;
 import com.srm.platform.vendor.utility.AccountPermission;
@@ -41,11 +33,10 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/purchasein")
-@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('订单管理-查看列表')")
+@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('对账单管理-查看列表')")
 public class PurchaseInController extends CommonController {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private static Long LIST_FUNCTION_ACTION_ID = 14L;
+	private static Long LIST_FUNCTION_ACTION_ID = 21L;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -128,30 +119,36 @@ public class PurchaseInController extends CommonController {
 			bodyQuery += " and v.code= :vendor";
 			params.put("vendor", vendorStr);
 
-		} else {
-			int index = 0; String key = "";
+		} else {			
 			
 			String subWhere = " 1=0 ";
 			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
-			for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
-				String tempSubWhere = " 1=1 ";
-				List<String> allowedVendorCodeList = accountPermission.getVendorList();
-				if (allowedVendorCodeList.size() > 0) {
-					key = "vendorList" + index;
-					tempSubWhere += " and v.code in :" + key;
-					params.put(key, allowedVendorCodeList);
-				}
+			if (accountPermissionInfo.isNoPermission()) {
+				subWhere = " 1=0 ";
+			} else if (accountPermissionInfo.isAllPermission()) {
+				subWhere = " 1=1 ";
+			} else {
+				int index = 0; String key = "";
+				for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
+					String tempSubWhere = " 1=1 ";
+					List<String> allowedVendorCodeList = accountPermission.getVendorList();
+					if (allowedVendorCodeList.size() > 0) {
+						key = "vendorList" + index;
+						tempSubWhere += " and v.code in :" + key;
+						params.put(key, allowedVendorCodeList);
+					}
 
-				List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-				if (allowedCompanyIdList.size() > 0) {
-					key = "companyList" + index;
-					tempSubWhere += " and com.id in :" + key;
-					params.put(key, allowedCompanyIdList);
+					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+					if (allowedCompanyIdList.size() > 0) {
+						key = "companyList" + index;
+						tempSubWhere += " and com.id in :" + key;
+						params.put(key, allowedCompanyIdList);
+					}
+					
+					subWhere += " or (" + tempSubWhere + ") ";
+					index++;
 				}
-				
-				subWhere += " or (" + tempSubWhere + ") ";
-				index++;
-			}
+			}			
 			
 			bodyQuery += " and (" + subWhere + ") ";
 

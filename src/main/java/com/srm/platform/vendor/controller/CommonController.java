@@ -32,7 +32,6 @@ import org.springframework.web.util.UriUtils;
 import org.thymeleaf.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Notice;
@@ -79,10 +78,8 @@ import com.srm.platform.vendor.repository.VendorClassRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.searchitem.DimensionTargetItem;
 import com.srm.platform.vendor.service.SessionCounter;
-import com.srm.platform.vendor.u8api.ApiClient;
 import com.srm.platform.vendor.u8api.AppProperties;
 import com.srm.platform.vendor.u8api.RestApiClient;
-import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.AccountPermissionInfo;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
@@ -256,7 +253,8 @@ public class CommonController {
 
 	public AccountPermissionInfo getPermissionScopeOfFunction(Long functionActionId) {
 		List<DimensionTargetItem> scopeList = permissionGroupRepository.findPermissionScopeOf(this.getLoginAccount().getId(), functionActionId);
-		AccountPermissionInfo accountPermissionInfo = new AccountPermissionInfo(this.getLoginAccount().getId(), functionActionId, scopeList);
+		List<Long> groupList = permissionGroupRepository.findGroupsOfAccountFunction(this.getLoginAccount().getId(), functionActionId);
+		AccountPermissionInfo accountPermissionInfo = new AccountPermissionInfo(this.getLoginAccount().getId(), functionActionId, scopeList, groupList);
 		logger.info(accountPermissionInfo.toString());
 		return accountPermissionInfo;
 	}

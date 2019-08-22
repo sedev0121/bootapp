@@ -23,8 +23,6 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -53,6 +51,8 @@ import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.saveform.ExportShipForm;
 import com.srm.platform.vendor.searchitem.ShipSearchResult;
+import com.srm.platform.vendor.utility.AccountPermission;
+import com.srm.platform.vendor.utility.AccountPermissionInfo;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.UploadFileHelper;
 import com.srm.platform.vendor.utility.Utils;
@@ -62,8 +62,9 @@ import com.srm.platform.vendor.view.ExcelShipReportView;
 @RequestMapping(path = "/ship")
 @PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('出货看板-查看列表')")
 public class ShipController extends CommonController {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
+	
+	private static Long LIST_FUNCTION_ACTION_ID = 30L;
+	
 	@PersistenceContext
 	private EntityManager em;
 
@@ -100,21 +101,6 @@ public class ShipController extends CommonController {
 		Date endDate = Utils.getNextDate(end_date);
 		Integer state = Integer.parseInt(stateStr);
 
-//		switch (order) {
-//		case "remain_quantity":
-//			order = "remain_quantity";
-//			break;
-//
-//		case "vendorname":
-//			order = "d.name";
-//			break;
-//		case "vendorcode":
-//			order = "d.code";
-//			break;
-//		case "inventoryname":
-//			order = "c.name";
-//			break;
-//		}
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
@@ -136,18 +122,47 @@ public class ShipController extends CommonController {
 			bodyQuery += " and f.code= :vendor";
 			params.put("vendor", vendorStr);
 		} else {
-//			List<String> vendorList = this.getVendorListOfUser();
-//			
-//			if (vendorList.size() == 0) {
-//				return new PageImpl<PurchaseOrderDetailSearchResult>(new ArrayList(), request, 0);
-//			}
-//			
-//			bodyQuery += " and d.code in :vendorList";
-//			params.put("vendorList", vendorList);
-//			if (!vendorStr.trim().isEmpty()) {
-//				bodyQuery += " and (d.name like CONCAT('%',:vendor, '%') or d.code like CONCAT('%',:vendor, '%')) ";
-//				params.put("vendor", vendorStr.trim());
-//			}
+			String subWhere = " 1=0 ";
+
+			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			if (accountPermissionInfo.isNoPermission()) {
+				subWhere = " 1=0 ";
+			} else if (accountPermissionInfo.isAllPermission()) {
+				subWhere = " 1=1 ";
+			} else {
+				int index = 0;
+				String key = "";
+				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
+
+					String tempSubWhere = " 1=1 ";
+					List<String> allowedVendorCodeList = accountPermission.getVendorList();
+					if (allowedVendorCodeList.size() > 0) {
+						key = "vendorList" + index;
+						tempSubWhere += " and b.vencode in :" + key;
+						params.put(key, allowedVendorCodeList);
+					}
+
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+					if (allowedAccountIdList.size() > 0) {
+						key = "accountList" + index;
+						tempSubWhere += " and b.deployer in :" + key;
+						params.put(key, allowedAccountIdList);
+					}
+
+					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+					if (allowedCompanyIdList.size() > 0) {
+						key = "companyList" + index;
+						tempSubWhere += " and b.company_id in :" + key;
+						params.put(key, allowedCompanyIdList);
+					}
+
+					subWhere += " or (" + tempSubWhere + ") ";
+
+					index++;
+				}
+			}
+
+			bodyQuery += " and (" + subWhere + ") ";
 
 		}
 

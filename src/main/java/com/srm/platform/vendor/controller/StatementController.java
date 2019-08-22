@@ -56,14 +56,7 @@ import com.srm.platform.vendor.utility.Utils;
 public class StatementController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 21L;
-	private static Long NEW_FUNCTION_ACTION_ID = 22L;
-	private static Long REVIEW_FUNCTION_ACTION_ID = 23L;
-	private static Long DEPLOY_FUNCTION_ACTION_ID = 24L;
-	private static Long CANCEL_FUNCTION_ACTION_ID = 25L;
-	private static Long CONFIRM_FUNCTION_ACTION_ID = 26L;
-	private static Long ERP_FUNCTION_ACTION_ID = 27L;
-	
-	
+
 	@PersistenceContext
 	private EntityManager em;
 
@@ -71,7 +64,7 @@ public class StatementController extends CommonController {
 	protected String getOperationHistoryType() {
 		return "statement";
 	};
-	
+
 	// 查询列表
 	@GetMapping({ "", "/" })
 	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('对账单管理-查看列表') or hasRole('ROLE_VENDOR')")
@@ -86,19 +79,19 @@ public class StatementController extends CommonController {
 	@PreAuthorize("hasAuthority('对账单管理-新建/提交')")
 	public String add(Model model) {
 		StatementMain main = new StatementMain();
-		main.setMaker(this.getLoginAccount());		
-		
+		main.setMaker(this.getLoginAccount());
+
 		Master master = masterRepository.findOneByItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
 		if (master == null) {
-			master = new Master();	
+			master = new Master();
 			master.setItemKey(Constants.KEY_AUTO_TASK_STATEMENT_DATE);
 			master.setItemValue(Constants.DEFAULT_STATEMENT_DATE);
 			masterRepository.save(master);
 		}
-		
+
 		Date statementDate = Utils.getStatementDate(master.getItemValue());
 		main.setDate(statementDate);
-		
+
 		model.addAttribute("main", main);
 		return "statement/edit";
 	}
@@ -112,9 +105,9 @@ public class StatementController extends CommonController {
 		if (!checkSecondPassword()) {
 			return "second_password";
 		}
-		
+
 		checkPermission(main, LIST_FUNCTION_ACTION_ID);
-		
+
 		model.addAttribute("main", main);
 		return "statement/edit";
 	}
@@ -132,8 +125,7 @@ public class StatementController extends CommonController {
 			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
 			if (detailList != null) {
 				for (StatementDetail detail : detailList) {
-					PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
-							.findOneById(detail.getPiDetailId());
+					PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPiDetailId());
 
 					if (purchaseInDetail == null)
 						continue;
@@ -144,7 +136,7 @@ public class StatementController extends CommonController {
 			}
 			statementDetailRepository.deleteAll(detailList);
 			statementMainRepository.delete(main);
-//			postUnLock(main);
+			// postUnLock(main);
 		}
 
 		return true;
@@ -198,32 +190,40 @@ public class StatementController extends CommonController {
 			bodyQuery += " and b.code= :vendor";
 			params.put("vendor", vendorStr);
 
-			bodyQuery += " and (a.state=" + Constants.STATEMENT_STATE_DEPLOY + " or a.state >=" + Constants.STATEMENT_STATE_CONFIRM + ")";
+			bodyQuery += " and (a.state=" + Constants.STATEMENT_STATE_DEPLOY + " or a.state >="
+					+ Constants.STATEMENT_STATE_CONFIRM + ")";
 
 		} else {
-			int index = 0; String key = "";
 			String subWhere = " 1=0 ";
 			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
-			for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
-				String tempSubWhere = " 1=1 ";
-				List<String> allowedVendorCodeList = accountPermission.getVendorList();
-				if (allowedVendorCodeList.size() > 0) {
-					key = "vendorList" + index;
-					tempSubWhere += " and a.vendor_code in :" + key;
-					params.put(key, allowedVendorCodeList);
-				}
+			if (accountPermissionInfo.isNoPermission()) {
+				subWhere = " 1=0 ";
+			} else if (accountPermissionInfo.isAllPermission()) {
+				subWhere = " 1=1 ";
+			} else {
+				int index = 0; String key = "";
+				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
+					String tempSubWhere = " 1=1 ";
+					List<String> allowedVendorCodeList = accountPermission.getVendorList();
+					if (allowedVendorCodeList.size() > 0) {
+						key = "vendorList" + index;
+						tempSubWhere += " and a.vendor_code in :" + key;
+						params.put(key, allowedVendorCodeList);
+					}
 
-				List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-				if (allowedCompanyIdList.size() > 0) {
-					key = "companyList" + index;
-					tempSubWhere += " and a.company_id in :" + key;
-					params.put(key, allowedCompanyIdList);
+					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+					if (allowedCompanyIdList.size() > 0) {
+						key = "companyList" + index;
+						tempSubWhere += " and a.company_id in :" + key;
+						params.put(key, allowedCompanyIdList);
+					}
+
+					subWhere += " or (" + tempSubWhere + ") ";
+					index++;
 				}
-				
-				subWhere += " or (" + tempSubWhere + ") ";
-				index++;
 			}
 			
+
 			bodyQuery += " and (" + subWhere + ") ";
 		}
 
@@ -237,7 +237,7 @@ public class StatementController extends CommonController {
 			bodyQuery += " and com.id=:company";
 			params.put("company", companyId);
 		}
-		
+
 		if (state > 0) {
 			bodyQuery += " and a.state=:state";
 			params.put("state", state);
@@ -247,7 +247,7 @@ public class StatementController extends CommonController {
 			bodyQuery += " and a.invoice_state=:invoiceState";
 			params.put("invoiceState", invoiceState);
 		}
-		
+
 		if (type > 0) {
 			bodyQuery += " and a.type=:type";
 			params.put("type", type);
@@ -261,7 +261,7 @@ public class StatementController extends CommonController {
 			bodyQuery += " and a.make_date<:endDate";
 			params.put("endDate", endDate);
 		}
-		
+
 		if (!vendorStr.trim().isEmpty()) {
 			bodyQuery += " and (b.code like CONCAT('%',:vendor, '%') or b.name like CONCAT('%',:vendor, '%'))";
 			params.put("vendor", vendorStr);
@@ -294,7 +294,7 @@ public class StatementController extends CommonController {
 
 		return list;
 	}
-	
+
 	@RequestMapping(value = "/{code}/attaches", produces = "application/json")
 	public @ResponseBody List<AttachFile> listAttaches(@PathVariable("code") String code) {
 		List<AttachFile> list = attachFileRepository.findAllByTypeCode(Constants.ATTACH_TYPE_STATEMENT, code);
@@ -315,10 +315,10 @@ public class StatementController extends CommonController {
 
 		String action = null;
 		List<Account> toList = new ArrayList<>();
-		
+
 		if (!form.isInvoiceAction()) {
 			main.setState(form.getState());
-			
+
 			if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
 				main.setDate(Utils.parseDate(form.getDate()));
 				main.setMakeDate(new Date());
@@ -349,7 +349,7 @@ public class StatementController extends CommonController {
 				main.setCancelDate(new Date());
 				main.setState(Constants.STATEMENT_STATE_DEPLOY);
 			}
-			
+
 			switch (form.getState()) {
 			case Constants.STATEMENT_STATE_NEW:
 				toList.add(main.getMaker());
@@ -385,16 +385,17 @@ public class StatementController extends CommonController {
 				toList.add(main.getMaker());
 				action = "确认取消";
 				break;
-			}			
+			}
 		} else {
 			List<Long> attachIdList = form.getAttachIds();
-						
-			List<AttachFile> oldAttachList = attachFileRepository.findAllByTypeCode(Constants.ATTACH_TYPE_STATEMENT, main.getCode());
+
+			List<AttachFile> oldAttachList = attachFileRepository.findAllByTypeCode(Constants.ATTACH_TYPE_STATEMENT,
+					main.getCode());
 			List<AttachFile> newAttachList = new ArrayList<AttachFile>();
 			if (attachIdList == null) {
 				attachFileRepository.deleteAll(oldAttachList);
 			} else {
-				for(AttachFile attach : oldAttachList) {
+				for (AttachFile attach : oldAttachList) {
 					if (!attachIdList.contains(attach.getId())) {
 						deleteAttach(Constants.PATH_UPLOADS_STATEMENT + File.separator + attach.getFilename());
 						attachFileRepository.delete(attach);
@@ -403,16 +404,16 @@ public class StatementController extends CommonController {
 					}
 				}
 			}
-			
+
 			int index = 1;
-			for(AttachFile attach : newAttachList) {
+			for (AttachFile attach : newAttachList) {
 				attach.setRowNo(index++);
 				attachFileRepository.save(attach);
 			}
-			
+
 			List<MultipartFile> attachList = form.getAttach();
 			if (attachList != null) {
-				for(MultipartFile attach : attachList) {
+				for (MultipartFile attach : attachList) {
 					if (attach != null) {
 						String origianlFileName = attach.getOriginalFilename();
 						File file = UploadFileHelper.simpleUpload(attach, true, Constants.PATH_UPLOADS_STATEMENT);
@@ -421,7 +422,7 @@ public class StatementController extends CommonController {
 						if (file != null) {
 							savedFileName = file.getName();
 						}
-						
+
 						AttachFile attachFile = new AttachFile();
 						attachFile.setType(Constants.ATTACH_TYPE_STATEMENT);
 						attachFile.setCode(main.getCode());
@@ -432,9 +433,9 @@ public class StatementController extends CommonController {
 					}
 				}
 			}
-			
+
 			main.setInvoiceState(form.getInvoice_state());
-			
+
 			if (form.getInvoice_state() == Constants.INVOICE_STATE_DONE) {
 				main.setInvoiceType(form.getInvoice_type());
 				main.setInvoiceCode(form.getInvoice_code());
@@ -453,13 +454,13 @@ public class StatementController extends CommonController {
 			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCEL_UPLOAD) {
 				main.setInvoiceType(form.getInvoice_type());
 				main.setInvoiceCode(form.getInvoice_code());
-//				main.setInvoiceCanceler(this.getLoginAccount());
-//				main.setInvoiceCancelDate(new Date());
+				// main.setInvoiceCanceler(this.getLoginAccount());
+				// main.setInvoiceCancelDate(new Date());
 			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
 				main.setInvoiceType(form.getInvoice_type());
 				main.setInvoiceCode(form.getInvoice_code());
 			}
-			
+
 			switch (form.getInvoice_state()) {
 			case Constants.INVOICE_STATE_DONE:
 				toList.add(main.getMaker());
@@ -476,15 +477,14 @@ public class StatementController extends CommonController {
 			case Constants.INVOICE_STATE_UPLOAD_ERP:
 				toList.add(main.getMaker());
 				action = "传递ERP";
-				break;	
+				break;
 			case Constants.INVOICE_STATE_CANCEL_UPLOAD:
 				main.setInvoiceState(Constants.INVOICE_STATE_CONFIRMED);
 				toList.add(main.getMaker());
 				action = "审批撤消";
-				break;	
+				break;
 			}
 		}
-		
 
 		if (action != null) {
 			String title = String.format("对账单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(),
@@ -492,9 +492,9 @@ public class StatementController extends CommonController {
 
 			this.sendmessage(title, toList, String.format("/statement/%s/read", main.getCode()));
 		}
-		
+
 		this.addOpertionHistory(main.getCode(), action, form.getContent());
-		
+
 		main = statementMainRepository.save(main);
 
 		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
@@ -511,18 +511,18 @@ public class StatementController extends CommonController {
 					detail.setPiDetailId(Long.parseLong(row.get("pi_detail_id")));
 					try {
 						detail.setAdjustTaxCost(Double.parseDouble(row.get("adjust_tax_cost")));
-					}catch(Exception e) {
-						
+					} catch (Exception e) {
+
 					}
-					
+
 					try {
 						detail.setTaxRate(Integer.parseInt(row.get("tax_rate")));
-					}catch(Exception e) {
-						
+					} catch (Exception e) {
+
 					}
-					
+
 					detail.setRowNo(i++);
-					
+
 					detail = statementDetailRepository.save(detail);
 				}
 			}
@@ -534,12 +534,12 @@ public class StatementController extends CommonController {
 		} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCEL_UPLOAD) {
 			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START);
 		}
-		
+
 		if (form.isInvoiceAction() && form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
 			GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
 			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
 				main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
-				main.setErpInvoiceMakeDate(new Date());				
+				main.setErpInvoiceMakeDate(new Date());
 				main = statementMainRepository.save(main);
 			} else {
 				main.setInvoiceState(Constants.INVOICE_STATE_CONFIRMED);
@@ -547,8 +547,7 @@ public class StatementController extends CommonController {
 				return u8Response;
 			}
 		}
-		 
-	
+
 		return jsonResponse;
 	}
 
@@ -570,100 +569,101 @@ public class StatementController extends CommonController {
 	private Map<String, Object> createU8InvoicePostData(StatementMain main) {
 		Vendor vendor = main.getVendor();
 		Map<String, Object> postParams = new HashMap<>();
-		postParams.put("cPBVBillType", main.getInvoiceType()==1?"01":"02"); //发票类型，01:专用发票02:普通发票
-		postParams.put("cPTCode", main.getType()==1?"01":"02"); //采购类型编码，01:采购 02:委外
-		postParams.put("dPBVDate", Utils.formatDateTime(main.getInvoiceMakeDate())); //开票日期
-		postParams.put("cVenCode", vendor.getCode()); //供应商编码
-		postParams.put("cUnitCode", vendor.getCode()); //代垫供应商编码
-		postParams.put("cDepCode", "02"); //部门编码
-		postParams.put("cPersonCode", this.getLoginAccount().getId().toString()); //业务员
-		postParams.put("iPBVTaxRate", main.getTaxRate().toString()); //表头税率，填个默认值就行
-		postParams.put("cPBVMaker", main.getMaker().getRealname()); //制单人
-		postParams.put("cPBVCode", main.getInvoiceCode()); //发票号
-		postParams.put("cVenBank", vendor.getBankOpen()); //银行名称
-		postParams.put("cVenAccount", vendor.getBankAccNumber()); //银行卡号
-		postParams.put("cVenPerson", vendor.getContact()); //联系人
-		
+		postParams.put("cPBVBillType", main.getInvoiceType() == 1 ? "01" : "02"); // 发票类型，01:专用发票02:普通发票
+		postParams.put("cPTCode", main.getType() == 1 ? "01" : "02"); // 采购类型编码，01:采购 02:委外
+		postParams.put("dPBVDate", Utils.formatDateTime(main.getInvoiceMakeDate())); // 开票日期
+		postParams.put("cVenCode", vendor.getCode()); // 供应商编码
+		postParams.put("cUnitCode", vendor.getCode()); // 代垫供应商编码
+		postParams.put("cDepCode", "02"); // 部门编码
+		postParams.put("cPersonCode", this.getLoginAccount().getId().toString()); // 业务员
+		postParams.put("iPBVTaxRate", main.getTaxRate().toString()); // 表头税率，填个默认值就行
+		postParams.put("cPBVMaker", main.getMaker().getRealname()); // 制单人
+		postParams.put("cPBVCode", main.getInvoiceCode()); // 发票号
+		postParams.put("cVenBank", vendor.getBankOpen()); // 银行名称
+		postParams.put("cVenAccount", vendor.getBankAccNumber()); // 银行卡号
+		postParams.put("cVenPerson", vendor.getContact()); // 联系人
+
 		List<StatementDetailItem> list = statementDetailRepository.findDetailsByCode(main.getCode());
 		List<Map<String, String>> listParams = new ArrayList<Map<String, String>>();
-		for(StatementDetailItem detail : list) {
+		for (StatementDetailItem detail : list) {
 			Map<String, String> row = new HashMap<>();
-			row.put("RdsId", detail.getPi_auto_id()); //外购入库单行ID
-			row.put("cInvCode", detail.getInventory_code()); //存货编码
-			row.put("dInDate", detail.getPi_date()); //入库时间
-			row.put("iPBVQuantity", detail.getPi_quantity()); //开票数量
+			row.put("RdsId", detail.getPi_auto_id()); // 外购入库单行ID
+			row.put("cInvCode", detail.getInventory_code()); // 存货编码
+			row.put("dInDate", detail.getPi_date()); // 入库时间
+			row.put("iPBVQuantity", detail.getPi_quantity()); // 开票数量
 
 			String taxPriceStr = detail.getTax_price();
 			String taxCostStr = detail.getTax_cost();
 			String taxRateStr = detail.getTax_rate();
 			String adjustTaxCostStr = detail.getAdjust_tax_cost();
 			String quantityStr = detail.getPi_quantity();
-			
-			double quantity=0, taxPrice=0, taxCost=0, taxRate=0, adjustTaxCost=0, price=0, cost=0, tax=0, invoiceTaxPrice=0, invoiceTaxCost=0;
-			
+
+			double quantity = 0, taxPrice = 0, taxCost = 0, taxRate = 0, adjustTaxCost = 0, price = 0, cost = 0,
+					tax = 0, invoiceTaxPrice = 0, invoiceTaxCost = 0;
+
 			try {
 				quantity = Double.parseDouble(quantityStr);
-			}catch(Exception e) {
-				
+			} catch (Exception e) {
+
 			}
-			
+
 			try {
 				taxPrice = Double.parseDouble(taxPriceStr);
-			}catch(Exception e) {
-				
+			} catch (Exception e) {
+
 			}
-			
+
 			try {
 				taxCost = Double.parseDouble(taxCostStr);
-			}catch(Exception e) {
-				
+			} catch (Exception e) {
+
 			}
-			
+
 			try {
 				taxRate = Double.parseDouble(taxRateStr);
-			}catch(Exception e) {
-				
+			} catch (Exception e) {
+
 			}
-			
+
 			try {
 				adjustTaxCost = Double.parseDouble(adjustTaxCostStr);
-			}catch(Exception e) {
-				
+			} catch (Exception e) {
+
 			}
-			
+
 			invoiceTaxCost = taxCost + adjustTaxCost;
 			invoiceTaxPrice = invoiceTaxCost / quantity;
 			price = invoiceTaxPrice * 100 / (100 + taxRate);
-			cost = price * quantity;			
+			cost = price * quantity;
 			tax = invoiceTaxCost - cost;
-			
-			row.put("iOriCost", Utils.priceNumber(price)); //原币单价 
-			row.put("iOriTaxCost", Utils.priceNumber(invoiceTaxPrice)); //原币含税单价
-			row.put("iOriMoney", Utils.costNumber(cost)); //原币金额
-			row.put("iOriTaxPrice", Utils.costNumber(tax)); //原币税额
-			row.put("iOriSum", Utils.costNumber(invoiceTaxCost)); //原币价税合计
-			
-			row.put("iCost", Utils.priceNumber(price)); //本币单价
-			row.put("iMoney", Utils.costNumber(cost)); //本币金额
-			row.put("iTaxPrice", Utils.costNumber(tax)); //本币税额
-			row.put("iSum", Utils.costNumber(invoiceTaxCost)); //本币价税合计
 
-			
-			row.put("iTaxRate", detail.getTax_rate()); //税率
-			row.put("ivouchrowno", detail.getRow_no().toString()); //行号
-			row.put("cbMemo", detail.getConfirmed_memo()); //行备注
-			
+			row.put("iOriCost", Utils.priceNumber(price)); // 原币单价
+			row.put("iOriTaxCost", Utils.priceNumber(invoiceTaxPrice)); // 原币含税单价
+			row.put("iOriMoney", Utils.costNumber(cost)); // 原币金额
+			row.put("iOriTaxPrice", Utils.costNumber(tax)); // 原币税额
+			row.put("iOriSum", Utils.costNumber(invoiceTaxCost)); // 原币价税合计
+
+			row.put("iCost", Utils.priceNumber(price)); // 本币单价
+			row.put("iMoney", Utils.costNumber(cost)); // 本币金额
+			row.put("iTaxPrice", Utils.costNumber(tax)); // 本币税额
+			row.put("iSum", Utils.costNumber(invoiceTaxCost)); // 本币价税合计
+
+			row.put("iTaxRate", detail.getTax_rate()); // 税率
+			row.put("ivouchrowno", detail.getRow_no().toString()); // 行号
+			row.put("cbMemo", detail.getConfirmed_memo()); // 行备注
+
 			listParams.add(row);
 		}
-		
+
 		postParams.put("list", listParams);
-		
+
 		return postParams;
 	}
 
 	@GetMapping("/{code}/download/{rowNo}")
 	public ResponseEntity<Resource> download(@PathVariable("code") String code, @PathVariable("rowNo") Integer rowNo) {
-		AttachFile attach = this.attachFileRepository.findOneByTypeCodeAndRowNo(Constants.ATTACH_TYPE_STATEMENT, code, rowNo);
+		AttachFile attach = this.attachFileRepository.findOneByTypeCodeAndRowNo(Constants.ATTACH_TYPE_STATEMENT, code,
+				rowNo);
 		if (attach == null) {
 			show404();
 		}
@@ -700,15 +700,15 @@ public class StatementController extends CommonController {
 	}
 
 	private void postLock(StatementMain main) {
-//		String postJson = createLockJsonString(main);
-//		String response = apiClient.postLock(String.format("{%s}", postJson));
+		// String postJson = createLockJsonString(main);
+		// String response = apiClient.postLock(String.format("{%s}", postJson));
 	}
 
 	private void postUnLock(StatementMain main) {
-//		String postJson = createLockJsonString(main);
-//		String response = apiClient.postUnLock(String.format("{%s}", postJson));
+		// String postJson = createLockJsonString(main);
+		// String response = apiClient.postUnLock(String.format("{%s}", postJson));
 	}
-	
+
 	private void checkPermission(StatementMain main, Long functionActionId) {
 		if (this.isVendor()) {
 			if (!main.getVendor().getCode().equals(this.getLoginAccount().getVendor().getCode())) {
@@ -723,30 +723,36 @@ public class StatementController extends CommonController {
 
 	private boolean hasPermission(StatementMain main, Long functionActionId) {
 		boolean isValid = false;
-		if (main.getVendor() != null && main.getCompany() != null && main.getDeployer() != null) {
-			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(functionActionId);
-			for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
-				
-				List<String> allowedVendorCodeList = accountPermission.getVendorList();
-				List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-				
-				if (allowedVendorCodeList.size() > 0 && !allowedVendorCodeList.contains(main.getVendor().getCode())) {
-					continue;
+		AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(functionActionId);
+		if (accountPermissionInfo.isNoPermission()) {
+			isValid = false;
+		} else if (accountPermissionInfo.isAllPermission()) {
+			isValid = true;
+		} else {
+			if (main.getVendor() != null && main.getCompany() != null && main.getDeployer() != null) {
+				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
+
+					List<String> allowedVendorCodeList = accountPermission.getVendorList();
+					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+
+					if (allowedVendorCodeList.size() > 0 && !allowedVendorCodeList.contains(main.getVendor().getCode())) {
+						continue;
+					}
+
+					if (allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {
+						continue;
+					}
+
+					isValid = true;
+					break;
+
 				}
-				
-				if (allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {
-					continue;
-				}
-				
-				isValid = true;
-				break;
-				
 			}
 		}
 
 		return isValid;
 	}
-	
+
 	@Transactional
 	@GetMapping("/bulk_review")
 	public @ResponseBody GenericJsonResponse<String> bulkReview() {
@@ -759,20 +765,20 @@ public class StatementController extends CommonController {
 			Date today = new Date();
 			List<StatementMain> list = statementMainRepository.findAllPending(Constants.STATEMENT_STATE_SUBMIT);
 			list = filter(list);
-			
+
 			for (StatementMain item : list) {
 				item.setState(Constants.STATEMENT_STATE_REVIEW);
 				item.setReviewDate(today);
 				item.setReviewer(account);
-				
-				statementMainRepository.save(item);				
+
+				statementMainRepository.save(item);
 				this.addOpertionHistory(item.getCode(), "批量审核", null);
 			}
 		}
-		
+
 		return jsonResponse;
 	}
-	
+
 	@Transactional
 	@GetMapping("/bulk_deploy")
 	public @ResponseBody GenericJsonResponse<String> bulkDeploy() {
@@ -785,28 +791,28 @@ public class StatementController extends CommonController {
 			Date today = new Date();
 			List<StatementMain> list = statementMainRepository.findAllPending(Constants.STATEMENT_STATE_REVIEW);
 			list = filter(list);
-			
+
 			for (StatementMain item : list) {
 				item.setState(Constants.STATEMENT_STATE_DEPLOY);
 				item.setDeployDate(today);
 				item.setDeployer(account);
-				
-				statementMainRepository.save(item);				
+
+				statementMainRepository.save(item);
 				this.addOpertionHistory(item.getCode(), "批量发布", null);
 			}
 		}
-		
+
 		return jsonResponse;
 	}
-	
+
 	private List<StatementMain> filter(List<StatementMain> list) {
-		
+
 		List<StatementMain> result = new ArrayList<StatementMain>();
 		List<StatementMain> filteredList = new ArrayList<StatementMain>();
-		
+
 		AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
-		for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
-			
+		for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
+
 			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
 			if (allowedCompanyIdList.size() > 0) {
 				for (StatementMain item : list) {
@@ -827,18 +833,17 @@ public class StatementController extends CommonController {
 				}
 				list = filteredList;
 			}
-			
+
 			result.addAll(list);
 		}
-		
+
 		return list;
 	}
-	
+
 	private void setPurchaseInDetailState(StatementMain main, int state) {
 		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
 		for (StatementDetail detail : detailList) {
-			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository
-					.findOneById(detail.getPiDetailId());
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPiDetailId());
 
 			if (purchaseInDetail != null) {
 				purchaseInDetail.setState(state);
@@ -846,16 +851,15 @@ public class StatementController extends CommonController {
 			}
 		}
 	}
-	
-	
+
 	private boolean checkSecondPassword() {
 		if (this.isVendor()) {
-			Integer secondPassword = (Integer)httpSession.getAttribute("second_password");
-			if ( secondPassword == null || secondPassword != 1) {
+			Integer secondPassword = (Integer) httpSession.getAttribute("second_password");
+			if (secondPassword == null || secondPassword != 1) {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 }

@@ -31,12 +31,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.AttachFile;
+import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.VenPriceSaveForm;
 import com.srm.platform.vendor.searchitem.InquerySearchResult;
 import com.srm.platform.vendor.searchitem.VenPriceDetailItem;
+import com.srm.platform.vendor.utility.AccountPermission;
+import com.srm.platform.vendor.utility.AccountPermissionInfo;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.UploadFileHelper;
@@ -47,6 +50,8 @@ import com.srm.platform.vendor.utility.Utils;
 @PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('询价管理-查看列表')")
 public class InqueryController extends CommonController {
 
+	private static Long LIST_FUNCTION_ACTION_ID = 31L;
+	
 	@Override
 	protected String getOperationHistoryType() {
 		return "inquery";
@@ -74,7 +79,7 @@ public class InqueryController extends CommonController {
 		if (main == null)
 			show404();
 
-		// checkVendor(main.getVendor());
+		checkPermission(main, LIST_FUNCTION_ACTION_ID);
 
 		model.addAttribute("main", main);
 		return "inquery/edit";
@@ -165,18 +170,50 @@ public class InqueryController extends CommonController {
 			params.put("vendor", vendorStr);
 			params.put("createType", Constants.CREATE_TYPE_VENDOR);
 		} else {
-//			List<String> vendorList = this.getVendorListOfUser();
-//			if (vendorList.size() == 0) {
-//				return new PageImpl<InquerySearchResult>(new ArrayList(), request, 0);
-//			}
-//			params.put("vendorList", vendorList);
-			if (!vendorStr.trim().isEmpty()) {
-				bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";
-				params.put("vendor", vendorStr.trim());
+			String subWhere = " 1=0 ";
+
+			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			if (accountPermissionInfo.isNoPermission()) {
+				subWhere = " 1=0 ";
+			} else if (accountPermissionInfo.isAllPermission()) {
+				subWhere = " 1=1 ";
+			} else {
+				int index = 0;
+				String key = "";
+				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
+
+					String tempSubWhere = " 1=1 ";
+					List<String> allowedVendorCodeList = accountPermission.getVendorList();
+					if (allowedVendorCodeList.size() > 0) {
+						key = "vendorList" + index;
+						tempSubWhere += " and c.code in :" + key;
+						params.put(key, allowedVendorCodeList);
+					}
+
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+					if (allowedAccountIdList.size() > 0) {
+						key = "accountList" + index;
+						tempSubWhere += " and a.maker_id in :" + key;
+						params.put(key, allowedAccountIdList);
+					}
+
+					subWhere += " or (" + tempSubWhere + ") ";
+
+					index++;
+				}
 			}
+
+			bodyQuery += " and (" + subWhere + ") ";
+			
+			
 			params.put("createType", Constants.CREATE_TYPE_BUYER);
 		}
 
+		if (!vendorStr.trim().isEmpty()) {
+			bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";
+			params.put("vendor", vendorStr.trim());
+		}
+		
 		if (!inventory.trim().isEmpty()) {
 			bodyQuery += " and (d.name like CONCAT('%',:inventory, '%') or d.code like CONCAT('%',:inventory, '%')) ";
 			params.put("inventory", inventory.trim());
@@ -442,5 +479,51 @@ public class InqueryController extends CommonController {
 
 		return jsonResponse;
 	}
+	
+	private void checkPermission(VenPriceAdjustMain main, Long functionActionId) {
+		if (this.isVendor()) {
+			if (!main.getVendor().getCode().equals(this.getLoginAccount().getVendor().getCode())) {
+				show403();
+			}
+		} else {
+			if (!hasPermission(main, functionActionId)) {
+				show403();
+			}
+		}
+	}
 
+	private boolean hasPermission(VenPriceAdjustMain main, Long functionActionId) {
+		boolean isValid = false;
+
+		AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(functionActionId);
+		if (accountPermissionInfo.isNoPermission()) {
+			isValid = false;
+		} else if (accountPermissionInfo.isAllPermission()) {
+			isValid = true;
+		} else {
+			if (main.getVendor() != null && main.getMaker() != null) {
+
+				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
+
+					List<String> allowedVendorCodeList = accountPermission.getVendorList();
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+
+					if (allowedVendorCodeList.size() > 0
+							&& !allowedVendorCodeList.contains(main.getVendor().getCode())) {
+						continue;
+					}
+
+					if (allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getMaker().getId())) {
+						continue;
+					}
+
+					isValid = true;
+					break;
+
+				}
+			}
+		}
+
+		return isValid;
+	}
 }

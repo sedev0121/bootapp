@@ -11,9 +11,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,16 +27,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.srm.platform.vendor.model.Account;
-import com.srm.platform.vendor.model.DeliveryMain;
-import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
-import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
 import com.srm.platform.vendor.saveform.PurchaseOrderSaveForm;
-import com.srm.platform.vendor.searchitem.PurchaseInDetailResult;
 import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.AccountPermissionInfo;
@@ -78,12 +69,12 @@ public class PurchaseOrderController extends CommonController {
 			show404();
 
 		checkPermission(main, LIST_FUNCTION_ACTION_ID);
-		
+
 		model.addAttribute("main", main);
 		model.addAttribute("canDeploy", hasPermission(main, DEPLOY_FUNCTION_ACTION_ID));
 		model.addAttribute("canClose", hasPermission(main, CLOSE_FUNCTION_ACTION_ID));
 		model.addAttribute("canCloseRow", hasPermission(main, CLOSE_ROW_FUNCTION_ACTION_ID));
-		
+
 		return "purchaseorder/edit";
 	}
 
@@ -151,38 +142,45 @@ public class PurchaseOrderController extends CommonController {
 
 		} else {
 			String subWhere = " 1=0 ";
-			int index = 0; String key = "";
-			
+
 			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
-			for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
-				
-				String tempSubWhere = " 1=1 ";
-				List<String> allowedVendorCodeList = accountPermission.getVendorList();
-				if (allowedVendorCodeList.size() > 0) {
-					key = "vendorList" + index;
-					tempSubWhere += " and a.vencode in :" + key;
-					params.put(key, allowedVendorCodeList);
-				}
+			if (accountPermissionInfo.isNoPermission()) {
+				subWhere = " 1=0 ";
+			} else if (accountPermissionInfo.isAllPermission()) {
+				subWhere = " 1=1 ";
+			} else {
+				int index = 0;
+				String key = "";
+				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
 
-				List<Long> allowedAccountIdList = accountPermission.getAccountList();
-				if (allowedAccountIdList.size() > 0) {
-					key = "accountList" + index;
-					tempSubWhere += " and a.deployer in :" + key;
-					params.put(key, allowedAccountIdList);
-				}
+					String tempSubWhere = " 1=1 ";
+					List<String> allowedVendorCodeList = accountPermission.getVendorList();
+					if (allowedVendorCodeList.size() > 0) {
+						key = "vendorList" + index;
+						tempSubWhere += " and a.vencode in :" + key;
+						params.put(key, allowedVendorCodeList);
+					}
 
-				List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-				if (allowedCompanyIdList.size() > 0) {
-					key = "companyList" + index;
-					tempSubWhere += " and a.company_id in :" + key;
-					params.put(key, allowedCompanyIdList);
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+					if (allowedAccountIdList.size() > 0) {
+						key = "accountList" + index;
+						tempSubWhere += " and a.deployer in :" + key;
+						params.put(key, allowedAccountIdList);
+					}
+
+					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+					if (allowedCompanyIdList.size() > 0) {
+						key = "companyList" + index;
+						tempSubWhere += " and a.company_id in :" + key;
+						params.put(key, allowedCompanyIdList);
+					}
+
+					subWhere += " or (" + tempSubWhere + ") ";
+
+					index++;
 				}
-				
-				subWhere += " or (" + tempSubWhere + ") ";
-				
-				index++;
 			}
-			
+
 			bodyQuery += " and (" + subWhere + ") ";
 
 		}
@@ -212,7 +210,7 @@ public class PurchaseOrderController extends CommonController {
 		}
 
 		countQuery += bodyQuery;
-		
+
 		Query q = em.createNativeQuery(countQuery);
 
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -240,14 +238,14 @@ public class PurchaseOrderController extends CommonController {
 
 		Account account = this.getLoginAccount();
 		PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(form.getCode());
-		
 
 		Account vendorAccount = accountRepository.findOneByUsername(main.getVendor().getCode());
 		if (vendorAccount == null) {
-			GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "还未开通此供应商用户", null);
-			return jsonResponse;			
+			GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED,
+					"还未开通此供应商用户", null);
+			return jsonResponse;
 		}
-		
+
 		if (form.getState() != Constants.PURCHASE_ORDER_STATE_CLOSE_ROW) {
 			main.setSrmstate(form.getState());
 		}
@@ -262,18 +260,20 @@ public class PurchaseOrderController extends CommonController {
 			main.setReviewdate(new Date());
 			main.setReviewer(account);
 		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CLOSE) {
-			
+
 			Integer detailCountIsDelivering = deliveryDetailRepository.findDetailCountIsDelivering(main.getCode());
 			if (detailCountIsDelivering > 0) {
-				GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, detailCountIsDelivering + "个货品正在发货，不能关闭", null);
+				GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(
+						GenericJsonResponse.FAILED, detailCountIsDelivering + "个货品正在发货，不能关闭", null);
 				return jsonResponse;
 			}
 			main.setClosedate(new Date());
 			main.setCloser(account.getRealname());
-		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CLOSE_ROW) {			
+		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CLOSE_ROW) {
 			Integer detailCountIsDelivering = deliveryDetailRepository.findDetailCountIsDelivering(main.getCode());
 			if (detailCountIsDelivering > 0) {
-				GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, detailCountIsDelivering + "个货品正在发货，不能关闭", null);
+				GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(
+						GenericJsonResponse.FAILED, detailCountIsDelivering + "个货品正在发货，不能关闭", null);
 				return jsonResponse;
 			}
 		}
@@ -312,28 +312,28 @@ public class PurchaseOrderController extends CommonController {
 					detail.setMemo(item.get("memo"));
 					detail.setContractCode(item.get("contract_code"));
 					detail.setPriceFrom(Integer.parseInt(item.get("price_from")));
-					
+
 					detail.setBasePrice(null);
 					if (!Utils.isEmpty(item.get("base_price"))) {
-						detail.setBasePrice(Double.parseDouble(item.get("base_price")));	
+						detail.setBasePrice(Double.parseDouble(item.get("base_price")));
 					}
-					
+
 					if (!Utils.isEmpty(item.get("price"))) {
-						detail.setPrice(Double.parseDouble(item.get("price")));	
+						detail.setPrice(Double.parseDouble(item.get("price")));
 					}
-					
+
 					if (!Utils.isEmpty(item.get("tax_price"))) {
-						detail.setTaxPrice(Double.parseDouble(item.get("tax_price")));	
+						detail.setTaxPrice(Double.parseDouble(item.get("tax_price")));
 					}
-					
+
 					if (!Utils.isEmpty(item.get("money"))) {
-						detail.setMoney(Double.parseDouble(item.get("money")));	
+						detail.setMoney(Double.parseDouble(item.get("money")));
 					}
-					
+
 					if (!Utils.isEmpty(item.get("sum"))) {
-						detail.setSum(Double.parseDouble(item.get("sum")));	
+						detail.setSum(Double.parseDouble(item.get("sum")));
 					}
-					
+
 					detail.setConfirmedDate(detail.getArriveDate());
 					detail.setConfirmedQuantity(detail.getQuantity());
 					detail.setCountPerBox(Integer.valueOf(item.get("count_per_box")));
@@ -357,7 +357,8 @@ public class PurchaseOrderController extends CommonController {
 			}
 		}
 
-		GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, main);
+		GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS,
+				null, main);
 		return jsonResponse;
 	}
 
@@ -389,19 +390,19 @@ public class PurchaseOrderController extends CommonController {
 		if (vendor == null || company == null || store == null) {
 			return Page.empty();
 		}
-		
+
 		Long companyId = Long.parseLong(company);
 		Long storeId = Long.parseLong(store);
 
 		page_index--;
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order);
-		Page<PurchaseOrderDetail> result = purchaseOrderDetailRepository.searchAllOfOneVendor(search, vendor.getCode(), companyId, storeId, 
-				type, request);
+		Page<PurchaseOrderDetail> result = purchaseOrderDetailRepository.searchAllOfOneVendor(search, vendor.getCode(),
+				companyId, storeId, type, request);
 
 		return result;
 	}
-	
+
 	private void checkPermission(PurchaseOrderMain main, Long functionActionId) {
 		if (this.isVendor()) {
 			if (!main.getVendor().getCode().equals(this.getLoginAccount().getVendor().getCode())) {
@@ -413,33 +414,41 @@ public class PurchaseOrderController extends CommonController {
 			}
 		}
 	}
-	
+
 	private boolean hasPermission(PurchaseOrderMain main, Long functionActionId) {
 		boolean isValid = false;
-		
-		if (main.getVendor() != null && main.getCompany() != null && main.getDeployer() != null) {
-			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(functionActionId);
-			for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
-				
-				List<String> allowedVendorCodeList = accountPermission.getVendorList();
-				List<Long> allowedAccountIdList = accountPermission.getAccountList();
-				List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-				
-				if (allowedVendorCodeList.size() > 0 && !allowedVendorCodeList.contains(main.getVendor().getCode())) {
-					continue;
+
+		AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(functionActionId);
+		if (accountPermissionInfo.isNoPermission()) {
+			isValid = false;
+		} else if (accountPermissionInfo.isAllPermission()) {
+			isValid = true;
+		} else {
+			if (main.getVendor() != null && main.getCompany() != null && main.getDeployer() != null) {
+
+				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
+
+					List<String> allowedVendorCodeList = accountPermission.getVendorList();
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+
+					if (allowedVendorCodeList.size() > 0
+							&& !allowedVendorCodeList.contains(main.getVendor().getCode())) {
+						continue;
+					}
+
+					if (allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getDeployer().getId())) {
+						continue;
+					}
+
+					if (allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {
+						continue;
+					}
+
+					isValid = true;
+					break;
+
 				}
-				
-				if (allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getDeployer().getId())) {
-					continue;
-				}
-				
-				if (allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {
-					continue;
-				}
-				
-				isValid = true;
-				break;
-				
 			}
 		}
 

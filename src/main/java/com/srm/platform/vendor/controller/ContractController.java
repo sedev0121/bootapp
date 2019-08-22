@@ -12,8 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -44,7 +42,6 @@ import com.srm.platform.vendor.searchitem.ContractDetailItem;
 import com.srm.platform.vendor.searchitem.ContractOrderDetailItem;
 import com.srm.platform.vendor.searchitem.ContractSearchItem;
 import com.srm.platform.vendor.searchitem.ContractSearchResult;
-import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.utility.AccountPermission;
 import com.srm.platform.vendor.utility.AccountPermissionInfo;
 import com.srm.platform.vendor.utility.Constants;
@@ -56,7 +53,6 @@ import com.srm.platform.vendor.utility.Utils;
 @RequestMapping(path = "/contract")
 @PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('合同管理-查看列表')")
 public class ContractController extends CommonController {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private static Long LIST_FUNCTION_ACTION_ID = 41L;
 	
@@ -173,27 +169,33 @@ public class ContractController extends CommonController {
 		} else {
 			String subWhere = " 1=0 ";
 			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
-			int index = 0; String key = "";
-			
-			for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
-				String tempSubWhere = " 1=1 ";
-				List<String> allowedVendorCodeList = accountPermission.getVendorList();
-				if (allowedVendorCodeList.size() > 0) {
-					key = "vendorList" + index;
-					tempSubWhere += " and a.vendor_code in :" + key;
-					params.put(key, allowedVendorCodeList);
-				}
-
-				List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-				if (allowedCompanyIdList.size() > 0) {
-					key = "companyList" + index;
-					tempSubWhere += " and com.id in :" + key;
-					params.put(key, allowedCompanyIdList);
-				}
+			if (accountPermissionInfo.isNoPermission()) {
+				subWhere = " 1=0 ";
+			} else if (accountPermissionInfo.isAllPermission()) {
+				subWhere = " 1=1 ";
+			} else {
+				int index = 0; String key = "";
 				
-				subWhere += " or (" + tempSubWhere + ") ";
-				index++;
-			}
+				for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
+					String tempSubWhere = " 1=1 ";
+					List<String> allowedVendorCodeList = accountPermission.getVendorList();
+					if (allowedVendorCodeList.size() > 0) {
+						key = "vendorList" + index;
+						tempSubWhere += " and a.vendor_code in :" + key;
+						params.put(key, allowedVendorCodeList);
+					}
+
+					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+					if (allowedCompanyIdList.size() > 0) {
+						key = "companyList" + index;
+						tempSubWhere += " and com.id in :" + key;
+						params.put(key, allowedCompanyIdList);
+					}
+					
+					subWhere += " or (" + tempSubWhere + ") ";
+					index++;
+				}
+			}			
 			
 			bodyQuery += " and (" + subWhere + ") ";
 		}
@@ -453,27 +455,32 @@ public class ContractController extends CommonController {
 
 	private boolean hasPermission(ContractMain main, Long functionActionId) {
 		boolean isValid = false;
-		if (main.getVendor() != null && main.getCompany() != null) {
-			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(functionActionId);
-			for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
-				
-				List<String> allowedVendorCodeList = accountPermission.getVendorList();
-				List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-				
-				if (allowedVendorCodeList.size() > 0 && !allowedVendorCodeList.contains(main.getVendor().getCode())) {
-					continue;
+		AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(functionActionId);
+		if (accountPermissionInfo.isNoPermission()) {
+			isValid = false;
+		} else if (accountPermissionInfo.isAllPermission()) {
+			isValid = true;
+		} else {
+			if (main.getVendor() != null) {
+				for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
+					
+					List<String> allowedVendorCodeList = accountPermission.getVendorList();
+					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+					
+					if (allowedVendorCodeList.size() > 0 && !allowedVendorCodeList.contains(main.getVendor().getCode())) {
+						continue;
+					}
+					
+					if (main.getCompany() != null && allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {
+						continue;
+					}
+					
+					isValid = true;
+					break;
+					
 				}
-				
-				if (allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {
-					continue;
-				}
-				
-				isValid = true;
-				break;
-				
 			}
 		}
-		
 
 		return isValid;
 	}

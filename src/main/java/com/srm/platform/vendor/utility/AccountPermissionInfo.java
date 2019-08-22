@@ -15,10 +15,12 @@ public class AccountPermissionInfo {
 	private Long functionActionId;
 	
 	private List<AccountPermission> list = new ArrayList<AccountPermission>();
+	private List<Long> groupList = new ArrayList<Long>();
 
-	public AccountPermissionInfo(Long accountId, Long functionActionId, List<DimensionTargetItem> scopeList) {
+	public AccountPermissionInfo(Long accountId, Long functionActionId, List<DimensionTargetItem> scopeList, List<Long> groupList) {
 		this.accountId = accountId;
 		this.functionActionId = functionActionId;
+		this.groupList = groupList;
 		
 		long tempGroupId = -1;
 		List<DimensionTargetItem> tempList = new ArrayList<DimensionTargetItem>();
@@ -48,6 +50,14 @@ public class AccountPermissionInfo {
 		this.accountId = accountId;
 	}
 
+	public List<Long> getGroupList() {
+		return groupList;
+	}
+
+	public void setGroupList(List<Long> groupList) {
+		this.groupList = groupList;
+	}
+
 	public Long getFunctionActionId() {
 		return functionActionId;
 	}
@@ -70,5 +80,13 @@ public class AccountPermissionInfo {
 			permission += temp.toString() + "\n";
 		}
 		return permission;
+	}
+	
+	public boolean isNoPermission() {
+		return this.groupList.size() == 0;
+	}
+	
+	public boolean isAllPermission() {
+		return this.groupList.size() > 0 && this.groupList.size() > this.list.size();
 	}
 }

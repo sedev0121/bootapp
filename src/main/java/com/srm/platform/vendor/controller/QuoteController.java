@@ -9,13 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -35,12 +30,10 @@ import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
 import com.srm.platform.vendor.model.Vendor;
-import com.srm.platform.vendor.repository.AccountRepository;
-import com.srm.platform.vendor.repository.VenPriceAdjustDetailRepository;
-import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.saveform.VenPriceSaveForm;
 import com.srm.platform.vendor.searchitem.InquerySearchResult;
-import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
+import com.srm.platform.vendor.utility.AccountPermission;
+import com.srm.platform.vendor.utility.AccountPermissionInfo;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
 import com.srm.platform.vendor.utility.Utils;
@@ -50,6 +43,8 @@ import com.srm.platform.vendor.utility.Utils;
 @PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('询价管理-查看列表')")
 public class QuoteController extends CommonController {
 
+	private static Long LIST_FUNCTION_ACTION_ID = 31L;
+	
 	@Override
 	protected String getOperationHistoryType() {
 		return "inquery";
@@ -72,7 +67,7 @@ public class QuoteController extends CommonController {
 			show403();
 		}
 
-//		checkVendor(main.getVendor());
+		checkPermission(main, LIST_FUNCTION_ACTION_ID);
 
 		model.addAttribute("main", main);
 		return "quote/edit";
@@ -139,18 +134,40 @@ public class QuoteController extends CommonController {
 			params.put("vendor", vendorStr);
 			params.put("createType", Constants.CREATE_TYPE_BUYER);
 		} else {
-//			List<String> vendorList = this.getVendorListOfUser();
-//			
-//			if (vendorList.size() == 0) {
-//				return new PageImpl<InquerySearchResult>(new ArrayList(), request, 0);
-//			}
-//			
-//			bodyQuery += " and c.code in :vendorList";
-//			params.put("vendorList", vendorList);
-//			if (!vendorStr.trim().isEmpty()) {
-//				bodyQuery += " and (c.name like CONCAT('%',:vendor, '%') or c.code like CONCAT('%',:vendor, '%')) ";
-//				params.put("vendor", vendorStr.trim());
-//			}
+			String subWhere = " 1=0 ";
+
+			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+			if (accountPermissionInfo.isNoPermission()) {
+				subWhere = " 1=0 ";
+			} else if (accountPermissionInfo.isAllPermission()) {
+				subWhere = " 1=1 ";
+			} else {
+				int index = 0;
+				String key = "";
+				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
+
+					String tempSubWhere = " 1=1 ";
+					List<String> allowedVendorCodeList = accountPermission.getVendorList();
+					if (allowedVendorCodeList.size() > 0) {
+						key = "vendorList" + index;
+						tempSubWhere += " and c.code in :" + key;
+						params.put(key, allowedVendorCodeList);
+					}
+
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+					if (allowedAccountIdList.size() > 0) {
+						key = "accountList" + index;
+						tempSubWhere += " and a.maker_id in :" + key;
+						params.put(key, allowedAccountIdList);
+					}
+
+					subWhere += " or (" + tempSubWhere + ") ";
+
+					index++;
+				}
+			}
+
+			bodyQuery += " and (" + subWhere + ") ";
 			params.put("createType", Constants.CREATE_TYPE_VENDOR);
 		}
 
@@ -304,6 +321,53 @@ public class QuoteController extends CommonController {
 		}
 
 		return jsonResponse;
+	}
+	
+	private void checkPermission(VenPriceAdjustMain main, Long functionActionId) {
+		if (this.isVendor()) {
+			if (!main.getVendor().getCode().equals(this.getLoginAccount().getVendor().getCode())) {
+				show403();
+			}
+		} else {
+			if (!hasPermission(main, functionActionId)) {
+				show403();
+			}
+		}
+	}
+
+	private boolean hasPermission(VenPriceAdjustMain main, Long functionActionId) {
+		boolean isValid = false;
+
+		AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(functionActionId);
+		if (accountPermissionInfo.isNoPermission()) {
+			isValid = false;
+		} else if (accountPermissionInfo.isAllPermission()) {
+			isValid = true;
+		} else {
+			if (main.getVendor() != null && main.getMaker() != null) {
+
+				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
+
+					List<String> allowedVendorCodeList = accountPermission.getVendorList();
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+
+					if (allowedVendorCodeList.size() > 0
+							&& !allowedVendorCodeList.contains(main.getVendor().getCode())) {
+						continue;
+					}
+
+					if (allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getMaker().getId())) {
+						continue;
+					}
+
+					isValid = true;
+					break;
+
+				}
+			}
+		}
+
+		return isValid;
 	}
 
 }
