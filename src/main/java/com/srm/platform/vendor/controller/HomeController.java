@@ -73,6 +73,7 @@ public class HomeController {
 		for(NoticeClass noticeClass : noticeClassList) {
 			List<NoticeSearchResult> noticeList = getLastNotice(noticeClass);
 			Map<String, Object> oneClass = new HashMap<>();
+			oneClass.put("id", noticeClass.getId());
 			oneClass.put("title", noticeClass.getName());
 			oneClass.put("list", noticeList);
 			

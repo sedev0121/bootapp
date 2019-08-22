@@ -27,6 +27,12 @@
 									<input type="text" id="name" name="name" class="form-control">
 								</div>
 							</div>
+							<div class="form-group row">
+								<label for="name" class="col-sm-3 col-form-label">采购动态分类排序:</label>
+								<div class="col-sm-9">
+									<input type="number" id="rank" name="rank" class="form-control" maxlength="3">
+								</div>
+							</div>
 							<div class="text-center">
 								<a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a> 
 								<a class="btn btn-danger" id="del"><i class="fa fa-remove"></i> 删除</a>
@@ -44,6 +50,13 @@
 	var url = /*[[@{/classofnotice/all}]]*/'';
 	var del_url = /*[[@{/classofnotice/}]]*/'';
   jQuery(document).ready(function() {
+  	$('#rank').mask("990");
+		$('#rank').keyup(function(e) {
+		  if (/\D/g.test(this.value)) {
+			  this.value = this.value.replace(/\D/g, '');
+		  }
+	  });
+
 	  jQuery("#tree_3").jstree({
 	    core : {
 	      check_callback : function(operation, node, node_parent, node_position, more) {
@@ -62,83 +75,85 @@
 	    },
 	    plugins : [ "state", "types" ]
 	  }).on("select_node.jstree", function(e, data) {
-	  	$('#id').val(data.node.original.id);
+		  $('#id').val(data.node.original.id);
 		  $('#code').val(data.node.original.code);
 		  $('#code').attr('readonly', true);
 		  $('#name').val(data.node.original.name);
+		  $('#rank').val(data.node.original.rank);
 		  $('#del').show();
 	  });
-	  
+
 	  $('#add').click(function() {
-	  	$('#id').val('');
+		  $('#id').val('');
 		  $('#code').val('');
 		  $('#code').attr('readonly', false);
 		  $('#name').val('');
-		  $('#del').hide();		  
+		  $('#rank').val('');
+		  $('#del').hide();
 	  });
-	  
-	  $("#form" ).validate({
-      // define validation rules
-      rules: {
-      	code: {
-          required: true
-        }, 
-        name: {
-          required: true
-        }, 
-      },     
-      //display error alert on form submit  
-      invalidHandler: function(event, validator) {
-        App.showErrorDialog("输入有误", "请输入正确的值");
-      },
-      submitHandler: function (form) {
-        jQuery(form).ajaxSubmit({
-          beforeSend: function(){
-            App.blockUI();
-          },
-          complete: function(){
-            App.unblockUI();
-          }, 
-          success: function(res, status, xhr, form) {
-      			if (res.success == 1){
-      			  App.showSuccessDialog("操作成功", function(){
-      				  $("#tree_3").jstree("refresh");
-      			  });
-      			}else{
-      			  App.showErrorDialog("操作失败", res.errmsg);
-      			}            
-          },
-          error: function (res, status, xhr, form) {
-            App.showErrorDialog("操作失败", "请输入正确的值");
-          }
-        });
-      }
-    }); 
-	  
+
+	  $("#form").validate({
+	    // define validation rules
+	    rules : {
+	      code : {
+		      required : true
+	      },
+	      name : {
+		      required : true
+	      },
+	    },
+	    //display error alert on form submit  
+	    invalidHandler : function(event, validator) {
+		    App.showErrorDialog("输入有误", "请输入正确的值");
+	    },
+	    submitHandler : function(form) {
+		    jQuery(form).ajaxSubmit({
+		      beforeSend : function() {
+			      App.blockUI();
+		      },
+		      complete : function() {
+			      App.unblockUI();
+		      },
+		      success : function(res, status, xhr, form) {
+			      if (res.success == 1) {
+				      App.showSuccessDialog("操作成功", function() {
+					      $("#tree_3").jstree("refresh");
+				      });
+			      } else {
+				      App.showErrorDialog("操作失败", res.errmsg);
+			      }
+		      },
+		      error : function(res, status, xhr, form) {
+			      App.showErrorDialog("操作失败", "请输入正确的值");
+		      }
+		    });
+	    }
+	  });
+
 	  $("#save").click(function() {
-      $("#form").submit();            
-    });
-    
-    $("#del").click(function(){
-    	var id = $('#id').val();
-    	if (!id) {
-    		App.showErrorDialog("操作失败", "请选择一个分类");
-    		return;
-    	}  
-    	
-    	var url = del_url + id + "/delete";
-    	App.showConfirmDialog('确定要删除吗?', function(){
-        $.get(url, function(res, status){
-        	if (res.success == 1){
-    			  App.showSuccessDialog("操作成功", function(){
-    				  $("#tree_3").jstree("refresh");
-    			  });
-    			}else{
-    			  App.showErrorDialog("操作失败", res.errmsg);
-    			}   
-        });
-      });      	
-    });
-    
+		  $("#form").submit();
+	  });
+
+	  $("#del").click(function() {
+		  var id = $('#id').val();
+		  if (!id) {
+			  App.showErrorDialog("操作失败", "请选择一个分类");
+			  return;
+		  }
+
+		  var url = del_url + id + "/delete";
+		  App.showConfirmDialog('确定要删除吗?', function() {
+			  $.get(url, function(res, status) {
+				  if (res.success == 1) {
+					  App.showSuccessDialog("操作成功", function() {
+						  $("#tree_3").jstree("refresh");
+					  });
+				  } else {
+					  App.showErrorDialog("操作失败", res.errmsg);
+				  }
+			  });
+		  });
+	  });
+
   });
 </script>

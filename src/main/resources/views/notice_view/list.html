@@ -16,6 +16,13 @@
 			<div class="search-cell width-4">
 				<label for="end_date">&nbsp;</label> <input type="text" id="end_date" class="form-control datepicker">
 			</div>
+			<div class="search-cell width-3">
+				<label for="state">分类：</label> 
+				<select type="text" id="class_id" class="form-control">		
+					<option th:if="${noticeClass != null}" th:value="${noticeClass?.id}" th:text="${noticeClass?.name}" selected="selected"></option>			
+					<option th:if="${noticeClass == null}" th:value="-1" selected="selected"></option>
+				</select>
+			</div>
 			<div class="search-cell width-4">
 				<label for="create_account">创建人：</label> <input type="text" id="create_account" class="form-control">
 			</div>
@@ -35,6 +42,8 @@
 </body>
 </html>
 <script th:inline="javascript">
+var notice_class_search_url = /*[[@{/notice_view/search/class}]]*/'';
+
 	$(document).ready(function() {
 	  var table;
 
@@ -44,6 +53,8 @@
 		  }
 	  });
 
+	  $("#class_id").select2(App.getSelect2OptionsWithAll(notice_class_search_url));
+	  
 	  table = $('#example').DataTable({
 	    ordering : true,
 	    ajax : {
@@ -55,6 +66,7 @@
 		        order : data.columns[data.order[0].column].data,
 		        dir : data.order[0].dir,
 		        search : $('#search').val(),
+		        class_id : $('#class_id').val(),
 		        start_date : $('#start_date').val(),
 		        end_date : $('#end_date').val(),
 		        create_account : $('#create_account').val()
@@ -96,6 +108,10 @@
 		  table.draw();
 	  });
 
+	  $('#class_id').change(function() {
+	    table.draw();
+	  });
+	  
 	  $('#search, #start_date, #end_date, #create_account').keyup(function(e) {
 		  if (e.keyCode == 13)
 			  table.draw();

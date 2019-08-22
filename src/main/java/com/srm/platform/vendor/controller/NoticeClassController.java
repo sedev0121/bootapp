@@ -8,10 +8,6 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,22 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.srm.platform.vendor.model.Box;
-import com.srm.platform.vendor.model.BoxClass;
-import com.srm.platform.vendor.model.Inventory;
-import com.srm.platform.vendor.model.InventoryClass;
 import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeClass;
-import com.srm.platform.vendor.model.PurchaseInDetail;
-import com.srm.platform.vendor.model.StatementDetail;
-import com.srm.platform.vendor.model.StatementMain;
-import com.srm.platform.vendor.repository.InventoryRepository;
-import com.srm.platform.vendor.searchitem.InventorySearchItem;
-import com.srm.platform.vendor.searchitem.SearchItem;
-import com.srm.platform.vendor.utility.AccountPermission;
-import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
-import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/classofnotice")
@@ -50,9 +33,11 @@ public class NoticeClassController extends CommonController {
 
 
 	@GetMapping({ "/", "" })
-	public String index() {
+	public String index(Model model) {
+		model.addAttribute("classId", "-1");
 		return "noticeclass/index";
 	}
+
 
 	@Transactional
 	@PostMapping("/update")
@@ -62,15 +47,18 @@ public class NoticeClassController extends CommonController {
 		
 		String idStr = requestParams.get("id");
 		String name = requestParams.get("name");
+		String rankStr = requestParams.get("rank");
 		
 		NoticeClass main;
 		if (idStr == null || idStr.isEmpty()) {
 			main = new NoticeClass();
 			main.setName(name);
+			main.setRank(Integer.parseInt(rankStr));
 			main = noticeClassRepository.save(main);
 		} else {
 			main = noticeClassRepository.findOneById(Long.parseLong(idStr));	
 			main.setName(name);
+			main.setRank(Integer.parseInt(rankStr));
 			main = noticeClassRepository.save(main);			
 		}
 		
@@ -115,6 +103,7 @@ public class NoticeClassController extends CommonController {
 			row.put("id", temp.getId());
 			row.put("name", temp.getName());
 			row.put("text", temp.getName());
+			row.put("rank", temp.getRank());
 			row.put("children", false);
 			response.add(row);
 		}
@@ -122,10 +111,4 @@ public class NoticeClassController extends CommonController {
 		return response;
 	}
 
-	@ResponseBody
-	@RequestMapping(value = "/search", produces = "application/json")
-	public Page<SearchItem> classList(@RequestParam(value = "q") String search) {
-		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
-		return noticeClassRepository.findForSelect(request);
-	}
 }

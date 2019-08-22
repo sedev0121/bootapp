@@ -175,7 +175,7 @@
 			<div class="row">
 				<!-- BEGIN BOTTOM ABOUT BLOCK -->
 				<div class="col-md-4 news" th:each="noticeClass : ${noticeList}">
-					<h4 th:utext="${noticeClass.title}"></h4>
+					<a class="notice" th:href="@{|/notice_view/${noticeClass.id}|}"><h4 th:utext="${noticeClass.title}"></h4></a>
 					<ul class="list-unstyled">
 						<li th:each="notice : ${noticeClass.list}">
 							<a class="notice" th:href="@{|/notice_view/${notice.id}/view|}" th:utext="${notice.title}"></a>

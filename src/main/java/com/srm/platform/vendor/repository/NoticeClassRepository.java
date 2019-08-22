@@ -22,12 +22,12 @@ public interface NoticeClassRepository extends JpaRepository<NoticeClass, Long> 
 	@Query(value = "SELECT * FROM notice_class WHERE name like %?1% order by code asc", nativeQuery = true)
 	List<NoticeClass> findBySearchTerm(String search);
 	
-	@Query(value = "SELECT * FROM notice_class order by id asc", nativeQuery = true)
+	@Query(value = "SELECT * FROM notice_class order by rank asc", nativeQuery = true)
 	List<NoticeClass> findAllNodes();
 	
-	@Query(value = "SELECT id code, name FROM notice_class", nativeQuery = true)
-	Page<SearchItem> findForSelect(Pageable pageable);	
+	@Query(value = "SELECT id code, name FROM notice_class where name like %?1%", nativeQuery = true)
+	Page<SearchItem> findForSelect(String search, Pageable pageable);	
 	
-	@Query(value = "select a.* from notice_class a left join (select class_id from notice GROUP BY class_id ORDER BY max(verify_date) desc limit 3) b on a.id=b.class_id where b.class_id is not null", nativeQuery = true)
+	@Query(value = "select * from notice_class order by rank asc limit 3", nativeQuery = true)
 	List<NoticeClass> findLast3Class();
 }
