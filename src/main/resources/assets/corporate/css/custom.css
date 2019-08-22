@@ -703,8 +703,13 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
 	display: inline-block;
 }
 
+.notice-div {
+	padding: 20px;	
+}
+
 .notice-title {
-	font-size: 20px;
+	color: #E02222;
+	font-size: 30px;
 	text-align: center;
 }
 
@@ -719,6 +724,7 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
 
 .notice-deploy-info {
 	margin-top: 10px;		
+	text-align: right;
 }
 
 .notice-deploy-info .deployer {
@@ -747,7 +753,7 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
 	text-decoration: none;
 }
 
-.current {
+.current a {
   color: #E02222;
 }
 

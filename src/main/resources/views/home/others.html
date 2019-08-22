@@ -1,32 +1,11 @@
-<!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
-<body>
-	<div class="container" layout:fragment="content">
-		<!-- BEGIN SIDEBAR & CONTENT -->
-		<div class="row margin-bottom-40" style="min-height: 510px;">
-			<!-- BEGIN CONTENT -->
-			<div class="sidebar col-md-3 col-sm-3">
-				<ul class="list-group margin-bottom-25 sidebar-menu">
-					<li class="list-group-item clearfix"><a th:href="@{/about_us}" class="active"><i class="fa fa-angle-right"></i> 关于我们</a></li>
-					<li class="list-group-item clearfix"><a th:href="@{/intro}"><i class="fa fa-angle-right"></i> 系统介绍</a></li>
-					<li class="list-group-item clearfix"><a th:href="@{/link_us}"><i class="fa fa-angle-right"></i> 联系我们</a></li>
-					<li class="list-group-item clearfix"><a th:href="@{/assets/files/SRM供应商管理平台.pdf}" target="_blank"><i class="fa fa-angle-right"></i> 操作指南</a></li>
-					<li class="list-group-item clearfix current"><i class="fa fa-angle-right"></i>友情链接</li>
-				</ul>
-			</div>
-			<div class="col-md-9 col-sm-9">
-				<div class="content-page introduction">
-					<h2>友情链接</h2>
-					<ul class="list-unstyled">
-						<li>嘉兴市云链信息技术有限公司</li>
-						<li>服务热线：0573-83988820、83988818</li>
-						<li>QQ：595878081</li>
-						<li><a href="http://www.cnyunl.com">Http://www.cnyunl.com</a></li>
-					</ul>
-				</div>
-			</div>
-			<!-- END CONTENT -->
-		</div>
-	</div>
-</body>
+<html layout:decorate="~{layout/info}">
+<div layout:fragment="info-content">
+	<h2>友情链接</h2>
+	<ul class="list-unstyled">
+		<li>嘉兴市云链信息技术有限公司</li>
+		<li>服务热线：0573-83988820、83988818</li>
+		<li>QQ：595878081</li>
+		<li><a href="http://www.cnyunl.com">Http://www.cnyunl.com</a></li>
+	</ul>
+</div>
 </html>
