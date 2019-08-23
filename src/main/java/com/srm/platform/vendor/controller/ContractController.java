@@ -66,13 +66,13 @@ public class ContractController extends CommonController {
 	
 	// 查询列表
 	@GetMapping({ "", "/" })
-	@PreAuthorize("hasRole('ROLE_BUYER') and hasAuthority('对账单管理-查看列表') or hasRole('ROLE_VENDOR')")
+	@PreAuthorize("hasAuthority('合同管理-查看列表') or hasRole('ROLE_VENDOR')")
 	public String index() {
 		return "contract/index";
 	}
 
 	@GetMapping({ "/add" })
-	@PreAuthorize("hasAuthority('对账单管理-新建/提交')")
+	@PreAuthorize("hasAuthority('合同管理-新建/提交')")
 	public String add(Model model) {
 		ContractMain main = new ContractMain();
 		main.setMaker(this.getLoginAccount());		
@@ -89,6 +89,7 @@ public class ContractController extends CommonController {
 		return "contract/edit";
 	}
 
+	@PreAuthorize("hasAuthority('合同管理-查看列表') or hasRole('ROLE_VENDOR')")
 	@GetMapping({ "/{code}/edit" })
 	public String edit(@PathVariable("code") String code, Model model) {
 		ContractMain main = contractMainRepository.findOneByCode(code);
@@ -188,7 +189,7 @@ public class ContractController extends CommonController {
 					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
 					if (allowedCompanyIdList.size() > 0) {
 						key = "companyList" + index;
-						tempSubWhere += " and com.id in :" + key;
+						tempSubWhere += " and (com.id is null or com.id in :" + key + ") ";
 						params.put(key, allowedCompanyIdList);
 					}
 					

@@ -164,7 +164,7 @@ public class PurchaseOrderController extends CommonController {
 					List<Long> allowedAccountIdList = accountPermission.getAccountList();
 					if (allowedAccountIdList.size() > 0) {
 						key = "accountList" + index;
-						tempSubWhere += " and a.deployer in :" + key;
+						tempSubWhere += " and (a.depolyer is null or a.deployer in :" + key + ") ";
 						params.put(key, allowedAccountIdList);
 					}
 
@@ -424,7 +424,7 @@ public class PurchaseOrderController extends CommonController {
 		} else if (accountPermissionInfo.isAllPermission()) {
 			isValid = true;
 		} else {
-			if (main.getVendor() != null && main.getCompany() != null && main.getDeployer() != null) {
+			if (main.getVendor() != null && main.getCompany() != null) {
 
 				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
 
@@ -437,7 +437,7 @@ public class PurchaseOrderController extends CommonController {
 						continue;
 					}
 
-					if (allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getDeployer().getId())) {
+					if (main.getDeployer() != null && allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getDeployer().getId())) {
 						continue;
 					}
 

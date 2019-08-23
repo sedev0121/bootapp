@@ -241,162 +241,166 @@
 	  	negotiate_table.ajax.reload();
 	  });	  
 	  
-	  function getFloatingPrice(quantity, floating_price, direction) {
-  		var startWeight = selectedContractData.base_price;
-  		var floatingRange = selectedContractData.floating_price;
-  		var startPrice = $("#contract_base_price").val();
-  		quantity = parseFloat(quantity);
-  		
-  		if (!startPrice) {
-  			startPrice = 0;
-  		} else {
-  			startPrice = parseFloat(startPrice);
-  		}
-  			
-  		if (!startWeight) {
-  			startWeight = 0;
-  		} else {
-  			startWeight = parseFloat(startWeight);
-  		}
-  		
-  		if (!floatingRange) {
-  			floatingRange = 0;
-  		} else {
-  			floatingRange = parseFloat(floatingRange);
-  		}
-
-  		var price = 0, startIndex, endIndex, fromWeight, toWeight;
-  		if (floatingRange > 0 && startPrice) {
-  			if (direction == 1) {
-  				if (quantity >= startWeight) {
-    				startIndex = parseInt((quantity - startWeight) / floatingRange) - 1; 
-    				endIndex = parseInt((quantity + floatingRange) / floatingRange) + 1;
-    				for(var i=startIndex; i<endIndex; i++) {
-    					fromWeight = startWeight + floatingRange * i;
-    					toWeight = startWeight + floatingRange * (i + 1);
-    					if (fromWeight <= quantity && quantity < toWeight) {
-    						price = App.floatingPriceNumber(startPrice + floating_price * i);
-    						break;
-    					}
-    				}
-      		} else {
-      			price = startPrice;
-      		}
-    		} else if (direction == 2) {
-    			if (quantity > startWeight) {
-    				price = startPrice;
-      		} else {
-    				startIndex = parseInt((startWeight - quantity) / floatingRange) + 1; 
-    				endIndex = parseInt((startWeight - quantity) / floatingRange) - 1;
-    				for(var i=startIndex; i>=endIndex; i--) {
-    					fromWeight = startWeight - floatingRange * i;
-    					toWeight = startWeight - floatingRange * (i - 1);
-    					if (fromWeight <= quantity && quantity < toWeight) {
-    						price = App.floatingPriceNumber(startPrice + floating_price * i);
-    						break;
-    					}
-    				}
-      		}
-    		} else if (direction == 3) {
-    			if (quantity >= startWeight) {
-    				startIndex = parseInt((quantity - startWeight) / floatingRange) - 1; 
-    				endIndex = parseInt((quantity + floatingRange) / floatingRange) + 1;
-    				for(var i=startIndex; i<endIndex; i++) {
-    					fromWeight = startWeight + floatingRange * i;
-    					toWeight = startWeight + floatingRange * (i + 1);
-    					if (fromWeight <= quantity && quantity < toWeight) {
-    						price = App.floatingPriceNumber(startPrice + floating_price * i);
-    						break;
-    					}
-    				}
-      		} else {
-    				startIndex = parseInt((startWeight - quantity) / floatingRange) + 1; 
-    				endIndex = parseInt((startWeight - quantity) / floatingRange) - 1;
-    				for(var i=startIndex; i>=endIndex; i--) {
-    					fromWeight = startWeight - floatingRange * i;
-    					toWeight = startWeight - floatingRange * (i - 1);
-    					if (fromWeight <= quantity && quantity < toWeight) {
-    						price = App.floatingPriceNumber(startPrice + floating_price * i);
-    						break;
-    					}
-    				}
-      		}
-    		}
-  		}
-  		
-  		
-  		if (price < 0) {
-  			price = 0;
-  		}
-  		
-			return price;
-	  }
 	  
+		function getFloatingPrice(contract_tax_price, floating_price, direction) {
+		  var basePrice = selectedContractData.base_price;
+		  var floatingRange = selectedContractData.floating_price;
+		  var contractBasePrice = $("#contract_base_price").val();
+
+		  if (!contract_tax_price) {
+		  	contract_tax_price = 0;
+		  } else {
+		  	contract_tax_price = parseFloat(contract_tax_price);
+		  }
+		  
+		  if (!basePrice) {
+			  basePrice = 0;
+		  } else {
+			  basePrice = parseFloat(basePrice);
+		  }
+
+		  if (!contractBasePrice) {
+			  contractBasePrice = 0;
+		  } else {
+			  contractBasePrice = parseFloat(contractBasePrice);
+		  }
+
+		  if (!floatingRange) {
+			  floatingRange = 0;
+		  } else {
+			  floatingRange = parseFloat(floatingRange);
+		  }
+
+		  var price = 0, startIndex, endIndex, fromWeight, toWeight;
+		  if (floatingRange > 0 && contractBasePrice) {
+			  if (direction == 1) {
+				  if (contractBasePrice >= basePrice) {
+					  startIndex = parseInt((contractBasePrice - basePrice) / floatingRange) - 1;
+					  endIndex = parseInt((contractBasePrice + floatingRange) / floatingRange) + 1;
+					  for (var i = startIndex; i < endIndex; i++) {
+						  fromWeight = basePrice + floatingRange * i;
+						  toWeight = basePrice + floatingRange * (i + 1);
+						  if (fromWeight <= contractBasePrice && contractBasePrice < toWeight) {
+							  price = App.floatingPriceNumber(contract_tax_price + floating_price * i);
+							  break;
+						  }
+					  }
+				  } else {
+					  price = contract_tax_price;
+				  }
+			  } else if (direction == 2) {
+				  if (contractBasePrice > basePrice) {
+					  price = contract_tax_price;
+				  } else {
+					  startIndex = parseInt((basePrice - contractBasePrice) / floatingRange) + 1;
+					  endIndex = parseInt((basePrice - contractBasePrice) / floatingRange) - 1;
+					  for (var i = startIndex; i >= endIndex; i--) {
+						  fromWeight = basePrice - floatingRange * i;
+						  toWeight = basePrice - floatingRange * (i - 1);
+						  if (fromWeight <= contractBasePrice && contractBasePrice < toWeight) {
+							  price = App.floatingPriceNumber(contract_tax_price + floating_price * i);
+							  break;
+						  }
+					  }
+				  }
+			  } else if (direction == 3) {
+				  if (contractBasePrice >= basePrice) {
+					  startIndex = parseInt((contractBasePrice - basePrice) / floatingRange) - 1;
+					  endIndex = parseInt((contractBasePrice + floatingRange) / floatingRange) + 1;
+					  for (var i = startIndex; i < endIndex; i++) {
+						  fromWeight = basePrice + floatingRange * i;
+						  toWeight = basePrice + floatingRange * (i + 1);
+						  if (fromWeight <= contractBasePrice && contractBasePrice < toWeight) {
+							  price = App.floatingPriceNumber(contract_tax_price + floating_price * i);
+							  break;
+						  }
+					  }
+				  } else {
+					  startIndex = parseInt((basePrice - contractBasePrice) / floatingRange) + 1;
+					  endIndex = parseInt((basePrice - contractBasePrice) / floatingRange) - 1;
+					  for (var i = startIndex; i >= endIndex; i--) {
+						  fromWeight = basePrice - floatingRange * i;
+						  toWeight = basePrice - floatingRange * (i - 1);
+						  if (fromWeight <= contractBasePrice && contractBasePrice < toWeight) {
+							  price = App.floatingPriceNumber(contract_tax_price + floating_price * i);
+							  break;
+						  }
+					  }
+				  }
+			  }
+		  }
+
+		  if (price < 0) {
+			  price = 0;
+		  }
+
+		  return price;
+	  }
+
 	  $("#contract_base_price").change(function() {
-	  	if (selectedContractData && selectedContractData.price_type == 1) {
-	  		var exist_data = negotiate_table.rows().data().toArray();
-	 		 
-	  		for (var i = 0; i < exist_data.length; i++) {
-	  			var item = exist_data[i];
-	  			item.tax_price = getFloatingPrice(item.quantity, item.contract_floating_price, item.contract_floating_direction);
-      		item.price = App.priceNumber(item.tax_price * 100 / (100 + parseFloat(item.tax_rate)));
-      		item.tax_cost = App.costNumber(item.tax_price * item.quantity);
-      		item.cost = App.costNumber(item.price * item.quantity);
-      		item.tax = App.costNumber(item.tax_cost - item.cost);	
-		  	}
-			  	
-	  		negotiate_table.rows().invalidate().draw();
-	  	}
+		  if (selectedContractData && selectedContractData.price_type == 1) {
+			  var exist_data = negotiate_table.rows().data().toArray();
+
+			  for (var i = 0; i < exist_data.length; i++) {
+				  var item = exist_data[i];
+				  item.tax_price = getFloatingPrice(item.contract_tax_price, item.contract_floating_price, item.contract_floating_direction);
+				  item.price = App.priceNumber(item.tax_price * 100 / (100 + parseFloat(item.tax_rate)));
+				  item.tax_cost = App.costNumber(item.tax_price * item.quantity);
+				  item.cost = App.costNumber(item.price * item.quantity);
+				  item.tax = App.costNumber(item.tax_cost - item.cost);
+			  }
+
+			  negotiate_table.rows().invalidate().draw();
+		  }
 	  });
 
 	  $("#btn_contract_save").click(function() {
-	  	if (selectedContractData.price_type == 1) {
-	  		if (!$("#contract_base_price").val()) {
-	  			App.showErrorDialog("请输入基材价格");
-	  			return;
-	  		}
-	  		
-		  	$("#base_price").val($("#contract_base_price").val());
+		  if (selectedContractData.price_type == 1) {
+			  if (!$("#contract_base_price").val()) {
+				  App.showErrorDialog("请输入基材价格");
+				  return;
+			  }
+
+			  $("#base_price").val($("#contract_base_price").val());
 		  } else {
-		  	$("#base_price").val(null);
+			  $("#base_price").val(null);
 		  }
-	  	
-	  	$("#contract_code").val(selectedContractData.id);
-	  	var contract_data = negotiate_table.rows().data().toArray();
+
+		  $("#contract_code").val(selectedContractData.id);
+		  var contract_data = negotiate_table.rows().data().toArray();
 		  var exist_data = basic_table.rows().data().toArray();
 		  $.each(contract_data, function(key, item) {
-			  
+
 			  for (i = 0; i < exist_data.length; i++) {
 				  exist_row = exist_data[i];
 				  if (exist_row.id == item.id) {
-				  	exist_row.tax_price = item.tax_price;
-				  	exist_row.price = item.price;
-				  	exist_row.sum = item.tax_cost;
-				  	exist_row.money = item.cost;
-				  	exist_row.tax = item.tax;
-				  	exist_row.contract_code = selectedContractData.id;
-				  	exist_row.price_from = 1;
-				  	if (selectedContractData.price_type == 1) {
-				  		exist_row.base_price = $("#contract_base_price").val();
-				  	} else {
-				  		exist_row.base_price = null;
-				  	}				  	
+					  exist_row.tax_price = item.tax_price;
+					  exist_row.price = item.price;
+					  exist_row.sum = item.tax_cost;
+					  exist_row.money = item.cost;
+					  exist_row.tax = item.tax;
+					  exist_row.contract_code = selectedContractData.id;
+					  exist_row.price_from = 1;
+					  if (selectedContractData.price_type == 1) {
+						  exist_row.base_price = $("#contract_base_price").val();
+					  } else {
+						  exist_row.base_price = null;
+					  }
 					  break;
 				  }
 			  }
 		  })
 
 		  basic_table.rows().invalidate().draw();
-		  
-		  
+
 	  });
-	  
+
 	  $('#save_history').click(function() {
-	  	if (!$('#history_content').val()) {
-	  		App.showErrorDialog("日志内容不能为空！");
-	  		return;
-	  	}
-	  	
+		  if (!$('#history_content').val()) {
+			  App.showErrorDialog("日志内容不能为空！");
+			  return;
+		  }
+
 		  $("#history_form").ajaxSubmit({
 		    data : {
 		      target_type : "order",
@@ -412,7 +416,7 @@
 			    if (res.success == 1) {
 				    $('#history_content').val('');
 				    history_table.ajax.reload();
-				    $('#history_dialog').modal('hide'); 
+				    $('#history_dialog').modal('hide');
 			    } else {
 				    App.showErrorDialog(res.errmsg);
 			    }
@@ -720,8 +724,8 @@
 
 	  $('#negotiate_dialog').on('shown.bs.modal', function() {
 		  if (!negotiate_table) {
-		  	$("#contract_list").select2(App.getSelect2Options(contract_search_url));
-		  	
+			  $("#contract_list").select2(App.getSelect2Options(contract_search_url));
+
 			  var footer = $("<tfoot></tfoot>").appendTo("#negotiate_table");
 			  var footertr = $("<tr></tr>").appendTo(footer);
 			  var columnCount = 12;
@@ -747,7 +751,7 @@
 				      $.each(json, function(key, item) {
 					      if (selectedContractData) {
 						      if (selectedContractData.price_type == 1) {
-							      item.tax_price = getFloatingPrice(item.quantity, item.contract_floating_price, item.contract_floating_direction);
+							      item.tax_price = getFloatingPrice(item.contract_tax_price, item.contract_floating_price, item.contract_floating_direction);
 							      item.price = App.priceNumber(item.tax_price * 100 / (100 + parseFloat(item.tax_rate)));
 							      item.tax_cost = App.costNumber(item.tax_price * item.quantity);
 							      item.cost = App.costNumber(item.price * item.quantity);
@@ -932,14 +936,14 @@
 				    confirmed_date : item.confirmed_date,
 				    confirmed_memo : item.confirmed_memo,
 				    close_state : item.close_state,
-				    contract_code: item.contract_code,
-				    base_price: item.base_price,
-				    price_from: item.price_from,
-				    price: item.price,
-				    tax_price: item.tax_price,
-				    money: item.money,
-				    sum: item.sum,
-				    tax: item.tax
+				    contract_code : item.contract_code,
+				    base_price : item.base_price,
+				    price_from : item.price_from,
+				    price : item.price,
+				    tax_price : item.tax_price,
+				    money : item.money,
+				    sum : item.sum,
+				    tax : item.tax
 				  });
 			  });
 
