@@ -164,7 +164,7 @@ public class PurchaseOrderController extends CommonController {
 					List<Long> allowedAccountIdList = accountPermission.getAccountList();
 					if (allowedAccountIdList.size() > 0) {
 						key = "accountList" + index;
-						tempSubWhere += " and (a.depolyer is null or a.deployer in :" + key + ") ";
+						tempSubWhere += " and (a.deployer is null or a.deployer in :" + key + ") ";
 						params.put(key, allowedAccountIdList);
 					}
 

@@ -729,7 +729,7 @@ public class StatementController extends CommonController {
 		} else if (accountPermissionInfo.isAllPermission()) {
 			isValid = true;
 		} else {
-			if (main.getVendor() != null && main.getCompany() != null && main.getDeployer() != null) {
+			if (main.getVendor() != null && main.getCompany() != null) {
 				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
 
 					List<String> allowedVendorCodeList = accountPermission.getVendorList();
