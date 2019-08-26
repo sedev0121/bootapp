@@ -193,6 +193,13 @@ public class ContractController extends CommonController {
 						params.put(key, allowedCompanyIdList);
 					}
 					
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+					if (allowedAccountIdList.size() > 0) {
+						key = "accountList" + index;
+						tempSubWhere += " and (a.make_id in :" + key + ") ";
+						params.put(key, allowedAccountIdList);
+					}
+					
 					subWhere += " or (" + tempSubWhere + ") ";
 					index++;
 				}
@@ -462,13 +469,18 @@ public class ContractController extends CommonController {
 		} else if (accountPermissionInfo.isAllPermission()) {
 			isValid = true;
 		} else {
-			if (main.getVendor() != null) {
+			if (main.getMaker() != null && main.getVendor() != null) {
 				for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
 					
 					List<String> allowedVendorCodeList = accountPermission.getVendorList();
 					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
 					
 					if (allowedVendorCodeList.size() > 0 && !allowedVendorCodeList.contains(main.getVendor().getCode())) {
+						continue;
+					}
+					
+					if (allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getMaker().getId())) {
 						continue;
 					}
 					

@@ -218,6 +218,13 @@ public class StatementController extends CommonController {
 						params.put(key, allowedCompanyIdList);
 					}
 
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+					if (allowedAccountIdList.size() > 0) {
+						key = "accountList" + index;
+						tempSubWhere += " and (a.make_id in :" + key + ") ";
+						params.put(key, allowedAccountIdList);
+					}
+					
 					subWhere += " or (" + tempSubWhere + ") ";
 					index++;
 				}
@@ -734,12 +741,17 @@ public class StatementController extends CommonController {
 
 					List<String> allowedVendorCodeList = accountPermission.getVendorList();
 					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+					
 					if (allowedVendorCodeList.size() > 0 && !allowedVendorCodeList.contains(main.getVendor().getCode())) {
 						continue;
 					}
 
 					if (allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {
+						continue;
+					}
+					
+					if (main.getMaker() != null && allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getMaker().getId())) {
 						continue;
 					}
 

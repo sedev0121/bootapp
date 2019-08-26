@@ -145,6 +145,13 @@ public class PurchaseInController extends CommonController {
 						params.put(key, allowedCompanyIdList);
 					}
 					
+					List<Long> allowedStoreIdList = accountPermission.getStoreList();
+					if (allowedStoreIdList.size() > 0) {
+						key = "storeList" + index;
+						tempSubWhere += " and st.id :" + key;
+						params.put(key, allowedStoreIdList);
+					}
+					
 					subWhere += " or (" + tempSubWhere + ") ";
 					index++;
 				}

@@ -190,13 +190,6 @@ public class InqueryController extends CommonController {
 						params.put(key, allowedVendorCodeList);
 					}
 
-					List<Long> allowedAccountIdList = accountPermission.getAccountList();
-					if (allowedAccountIdList.size() > 0) {
-						key = "accountList" + index;
-						tempSubWhere += " and a.maker_id in :" + key;
-						params.put(key, allowedAccountIdList);
-					}
-
 					subWhere += " or (" + tempSubWhere + ") ";
 
 					index++;
@@ -501,19 +494,14 @@ public class InqueryController extends CommonController {
 		} else if (accountPermissionInfo.isAllPermission()) {
 			isValid = true;
 		} else {
-			if (main.getVendor() != null && main.getMaker() != null) {
+			if (main.getVendor() != null) {
 
 				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
 
 					List<String> allowedVendorCodeList = accountPermission.getVendorList();
-					List<Long> allowedAccountIdList = accountPermission.getAccountList();
 
 					if (allowedVendorCodeList.size() > 0
 							&& !allowedVendorCodeList.contains(main.getVendor().getCode())) {
-						continue;
-					}
-
-					if (allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getMaker().getId())) {
 						continue;
 					}
 

@@ -142,12 +142,12 @@ public class ShipController extends CommonController {
 						params.put(key, allowedVendorCodeList);
 					}
 
-					List<Long> allowedAccountIdList = accountPermission.getAccountList();
-					if (allowedAccountIdList.size() > 0) {
-						key = "accountList" + index;
-						tempSubWhere += " and b.deployer in :" + key;
-						params.put(key, allowedAccountIdList);
-					}
+//					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+//					if (allowedAccountIdList.size() > 0) {
+//						key = "accountList" + index;
+//						tempSubWhere += " and b.deployer in :" + key;
+//						params.put(key, allowedAccountIdList);
+//					}
 
 					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
 					if (allowedCompanyIdList.size() > 0) {
@@ -155,6 +155,14 @@ public class ShipController extends CommonController {
 						tempSubWhere += " and b.company_id in :" + key;
 						params.put(key, allowedCompanyIdList);
 					}
+					
+					List<Long> allowedStoreIdList = accountPermission.getStoreList();
+					if (allowedStoreIdList.size() > 0) {
+						key = "storeList" + index;
+						tempSubWhere += " and b.store_id in :" + key;
+						params.put(key, allowedStoreIdList);
+					}
+
 
 					subWhere += " or (" + tempSubWhere + ") ";
 
