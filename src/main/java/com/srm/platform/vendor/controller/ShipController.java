@@ -110,9 +110,9 @@ public class ShipController extends CommonController {
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from purchase_order_detail a "
-				+ "left join purchase_order_main b on a.code=b.code left join company c on b.company_id=c.id "
+				+ "left join purchase_order_main b on a.code=b.code left join company c on b.company_id=c.id left join account emp on b.employee_no=emp.employee_no "
 				+ "left join inventory d on  a.inventory_code=d.code left join box_class e on d.box_class_id=e.id "
-				+ "left join vendor f on b.vencode=f.code where 1=1 ";
+				+ "left join vendor f on b.vencode=f.code where b.state='审核'  ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -142,12 +142,12 @@ public class ShipController extends CommonController {
 						params.put(key, allowedVendorCodeList);
 					}
 
-//					List<Long> allowedAccountIdList = accountPermission.getAccountList();
-//					if (allowedAccountIdList.size() > 0) {
-//						key = "accountList" + index;
-//						tempSubWhere += " and b.deployer in :" + key;
-//						params.put(key, allowedAccountIdList);
-//					}
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+					if (allowedAccountIdList.size() > 0) {
+						key = "accountList" + index;
+						tempSubWhere += " and (emp.id in :" + key + ") ";
+						params.put(key, allowedAccountIdList);
+					}
 
 					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
 					if (allowedCompanyIdList.size() > 0) {

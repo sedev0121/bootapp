@@ -107,9 +107,11 @@ public class PurchaseInController extends CommonController {
 				+ "left join purchase_in_main b on a.code=b.code "
 				+ "left join inventory c on a.inventory_code=c.code "
 				+ "left join purchase_order_detail po on a.po_code=po.code and a.po_row_no=po.row_no "
+				+ "left join purchase_order_main pom on a.po_code=pom.code "
+				+ "left join account emp on pom.employee_no=emp.employee_no "
 				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
 				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
-				+ "left join vendor v on b.vendor_code=v.code where 1=1 ";
+				+ "left join vendor v on b.vendor_code=v.code where pom.state='审核'  ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -152,6 +154,13 @@ public class PurchaseInController extends CommonController {
 						params.put(key, allowedStoreIdList);
 					}
 					
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+					if (allowedAccountIdList.size() > 0) {
+						key = "accountList" + index;
+						tempSubWhere += " and (emp.id in :" + key + ") ";
+						params.put(key, allowedAccountIdList);
+					}
+
 					subWhere += " or (" + tempSubWhere + ") ";
 					index++;
 				}
@@ -219,6 +228,7 @@ public class PurchaseInController extends CommonController {
 			q.setParameter(entry.getKey(), entry.getValue());
 		}
 
+		logger.info(selectQuery);
 		List list = q.setFirstResult((int) request.getOffset()).setMaxResults(request.getPageSize()).getResultList();
 
 		return new PageImpl<PurchaseInDetailResult>(list, request, totalCount.longValue());
