@@ -36,7 +36,7 @@
 							<label for="duty">职位: </label> <input type="text" id="duty" name="duty" th:value="${account.duty}" class="form-control">
 						</div>
 						<div class="col-md-3 form-group">
-							<label for="account_no">员工编号：</label> <input type="text" id="account_no" name="account_no" class="form-control" th:value="${account.id}" readonly>
+							<label for="employee_no">员工编号：</label> <input type="text" id="employee_no" name="employee_no" class="form-control" th:value="${account.employeeNo}">
 						</div>
 						<div class="col-md-3 form-group">
 							<label for="mobile">手机:</label> <input type="text" id="mobile" name="mobile" class="form-control" th:value="${account.mobile}">
@@ -219,6 +219,9 @@
 		      required : true
 	      },
 	      duty : {
+		      required : true
+	      },
+	      employee_no : {
 		      required : true
 	      },
 	      username : {

@@ -166,6 +166,7 @@ public class BuyerController extends AccountController {
 		account.setUsername(accountSaveForm.getUsername());
 		account.setRealname(accountSaveForm.getRealname());
 		account.setUnitname(accountSaveForm.getUnitname());
+		account.setEmployeeNo(accountSaveForm.getEmployee_no());
 		account.setMobile(accountSaveForm.getMobile());
 		account.setTel(accountSaveForm.getTel());
 		account.setEmail(accountSaveForm.getEmail());

@@ -112,15 +112,20 @@ public class PurchaseOrderMain {
 	private Store store;
 	
 	@ManyToOne(cascade = { CascadeType.REFRESH })
+	@JoinColumn(name = "employee_no", referencedColumnName = "employeeNo")
+	private Account employee;
+	
+	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "deployer", referencedColumnName = "id")
 	private Account deployer;
+	
 	private Date deploydate;
 
 	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "reviewer", referencedColumnName = "id")
 	private Account reviewer;
 	private Date reviewdate;
-
+	
 	public PurchaseOrderMain() {
 
 	}
@@ -131,6 +136,14 @@ public class PurchaseOrderMain {
 
 	public void setContractCode(String contractCode) {
 		this.contractCode = contractCode;
+	}
+
+	public Account getEmployee() {
+		return employee;
+	}
+
+	public void setEmployee(Account employee) {
+		this.employee = employee;
 	}
 
 	public Double getBasePrice() {

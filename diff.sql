@@ -512,3 +512,10 @@ CREATE TABLE `notice_class`  (
 /* 2019-08-23 */
 alter table notice modify COLUMN content longtext NULL DEFAULT NULL;
 alter table notice_class add COLUMN rank int(3) NULL DEFAULT NULL;
+
+/* 2019-08-26 */
+alter table account add COLUMN employee_no varchar(255) NULL DEFAULT NULL;
+update account set employee_no=username where role='ROLE_BUYER';
+
+alter table purchase_order_main add COLUMN employee_no varchar(255) NULL DEFAULT NULL;
+update purchase_order_main a left join account b on a.maker=b.realname set a.employee_no=b.employee_no;

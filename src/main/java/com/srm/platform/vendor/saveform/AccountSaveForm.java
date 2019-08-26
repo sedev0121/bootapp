@@ -19,6 +19,7 @@ public class AccountSaveForm {
 	private String vendor;
 	private Integer state;
 	private Long company;
+	private String employee_no;
 	
 	private List<Map<String, String>> permission_scope_list;
 	private List<Map<String, Long>> permission_group_ids;
@@ -32,6 +33,14 @@ public class AccountSaveForm {
 	}
 
 	
+	public String getEmployee_no() {
+		return employee_no;
+	}
+
+	public void setEmployee_no(String employee_no) {
+		this.employee_no = employee_no;
+	}
+
 	public String getPassword() {
 		return password;
 	}

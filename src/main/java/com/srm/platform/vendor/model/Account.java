@@ -22,6 +22,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.srm.platform.vendor.searchitem.BuyerSearchResult;
 import com.srm.platform.vendor.searchitem.SellerSearchResult;
 
@@ -93,6 +94,8 @@ public class Account implements Serializable {
 	private String unitname;
 	private String address;
 	
+	@JsonProperty("employee_no")
+	private String employeeNo;
 
 	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "company_id", nullable=true)
@@ -125,6 +128,14 @@ public class Account implements Serializable {
 
 	public void setDuty(String duty) {
 		this.duty = duty;
+	}
+
+	public String getEmployeeNo() {
+		return employeeNo;
+	}
+
+	public void setEmployeeNo(String employeeNo) {
+		this.employeeNo = employeeNo;
 	}
 
 	public String getEmail() {

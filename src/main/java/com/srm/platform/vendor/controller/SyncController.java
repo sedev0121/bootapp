@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Inventory;
 import com.srm.platform.vendor.model.InventoryClass;
 import com.srm.platform.vendor.model.PurchaseInDetail;
@@ -22,6 +23,7 @@ import com.srm.platform.vendor.model.PurchaseOrderDetail;
 import com.srm.platform.vendor.model.PurchaseOrderMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.model.VendorClass;
+import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.BoxClassRepository;
 import com.srm.platform.vendor.repository.CompanyRepository;
 import com.srm.platform.vendor.repository.InventoryClassRepository;
@@ -59,6 +61,9 @@ public class SyncController {
 
 	@Autowired
 	private BoxClassRepository boxClassRepository;
+	
+	@Autowired
+	private AccountRepository accountRepository;
 	
 	@Autowired
 	private CompanyRepository companyRepository;
@@ -411,6 +416,13 @@ public class SyncController {
 					
 					main.setState(state);
 					
+					//TODO:
+					String employeeNo = getStringValue(temp, "cexch_name");
+					employeeNo = "0004";
+					if (employeeNo != null) {
+						Account employee = accountRepository.findOneByEmployeeNo(employeeNo);						
+						main.setEmployee(employee);
+					}
 
 					purchaseOrderMainRepository.save(main);
 

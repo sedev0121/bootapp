@@ -126,7 +126,8 @@ public class PurchaseOrderController extends CommonController {
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "FROM purchase_order_main a left join vendor b on a.vencode=b.code left join account c on a.deployer=c.id left join account d on a.reviewer=d.id "
+		String bodyQuery = "FROM purchase_order_main a left join vendor b on a.vencode=b.code left join account c on a.deployer=c.id "
+				+ "left join account d on a.reviewer=d.id left join account emp on a.employee_no=emp.employee_no "
 				+ "left join (select code, sum(prepay_money) prepay_money, sum(money) money, sum(sum) sum from purchase_order_detail group by code) e on a.code=e.code "
 				+ "left join company f on a.company_id=f.id WHERE a.state='审核' and a.company_id is not null and a.vencode in (select vendor_code from account where vendor_code is not null) ";
 
@@ -164,7 +165,7 @@ public class PurchaseOrderController extends CommonController {
 					List<Long> allowedAccountIdList = accountPermission.getAccountList();
 					if (allowedAccountIdList.size() > 0) {
 						key = "accountList" + index;
-						tempSubWhere += " and (a.deployer is null or a.deployer in :" + key + ") ";
+						tempSubWhere += " and (emp.id in :" + key + ") ";
 						params.put(key, allowedAccountIdList);
 					}
 
@@ -437,7 +438,7 @@ public class PurchaseOrderController extends CommonController {
 						continue;
 					}
 
-					if (main.getDeployer() != null && allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getDeployer().getId())) {
+					if (main.getEmployee() != null && allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getEmployee().getId())) {
 						continue;
 					}
 
