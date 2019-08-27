@@ -203,6 +203,13 @@ public class DeliveryController extends CommonController {
 						params.put(key, allowedCompanyIdList);
 					}
 					
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
+					if (allowedAccountIdList.size() > 0) {
+						key = "accountList" + index;
+						tempSubWhere += " and a.code in (select a.code from delivery_detail a left join purchase_order_detail b on a.order_detail_id=b.id left join purchase_order_main c on b.code=c.code left join account d on c.employee_no=d.employee_no where d.id in :" + key + ") ";
+						params.put(key, allowedAccountIdList);
+					}
+					
 					subWhere += " or (" + tempSubWhere + ") ";
 					index++;
 				}
@@ -215,7 +222,7 @@ public class DeliveryController extends CommonController {
 
 		if (!code.trim().isEmpty()) {
 			bodyQuery += " and a.code like CONCAT('%',:code, '%') ";
-			params.put("code", code.trim());
+			params.put("a.code", code.trim());
 		}
 
 		if (!vendorStr.trim().isEmpty()) {
@@ -555,6 +562,8 @@ public class DeliveryController extends CommonController {
 
 		boolean isValid = false;
 
+		List<DeliveryDetail> details = deliveryDetailRepository.findDetailsByCode(main.getCode());
+		
 		AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(functionActionId);
 		if (accountPermissionInfo.isNoPermission()) {
 			isValid = false;
@@ -567,6 +576,7 @@ public class DeliveryController extends CommonController {
 					List<String> allowedVendorCodeList = accountPermission.getVendorList();
 					List<Long> allowedStoreIdList = accountPermission.getStoreList();
 					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+					List<Long> allowedAccountIdList = accountPermission.getAccountList();
 					
 					if (allowedVendorCodeList.size() > 0 && !allowedVendorCodeList.contains(main.getVendor().getCode())) {
 						continue;
@@ -578,6 +588,15 @@ public class DeliveryController extends CommonController {
 					
 					if (allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {
 						continue;
+					}
+					
+					if (allowedAccountIdList.size() > 0) {
+						for(DeliveryDetail detail : details) {
+							Account employee = detail.getPurchaseOrderDetail().getMain().getEmployee();
+							if (employee != null && allowedAccountIdList.contains(employee.getId())) {
+								break;
+							}							
+						}
 					}
 					
 					isValid = true;

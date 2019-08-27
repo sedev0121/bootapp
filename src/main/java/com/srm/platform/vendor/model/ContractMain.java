@@ -93,7 +93,7 @@ public class ContractMain {
 	Vendor vendor;
 	
 	@Column(name = "tax_rate")
-	private Integer taxRate = 16;
+	private Integer taxRate = 13;
 	
 	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "make_id", referencedColumnName = "id")
