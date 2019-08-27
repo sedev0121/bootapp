@@ -150,7 +150,7 @@ public class PurchaseInController extends CommonController {
 					List<Long> allowedStoreIdList = accountPermission.getStoreList();
 					if (allowedStoreIdList.size() > 0) {
 						key = "storeList" + index;
-						tempSubWhere += " and st.id :" + key;
+						tempSubWhere += " and st.id in :" + key;
 						params.put(key, allowedStoreIdList);
 					}
 					
