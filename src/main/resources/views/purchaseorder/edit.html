@@ -156,7 +156,7 @@
 								</select>
 							</div>
 							<div class="col-md-2">
-								<label>基材价格： </label> <input type="number" id="contract_base_price" class="form-control" />
+								<label>基材价格： </label> <input type="number" min="0" id="contract_base_price" class="form-control" />
 							</div>
 							<div class="col-md-3">
 								<label> </label>
@@ -338,6 +338,10 @@
 	  }
 
 	  $("#contract_base_price").change(function() {
+	  	if ($(this).val() < 0) {
+	  		$(this).val($(this).val() * -1);
+	  	}
+	  	
 		  if (selectedContractData && selectedContractData.price_type == 1) {
 			  var exist_data = negotiate_table.rows().data().toArray();
 

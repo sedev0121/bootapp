@@ -55,13 +55,13 @@ public interface PermissionGroupRepository extends JpaRepository<PermissionGroup
 	@Query(value = "select * from company", nativeQuery = true)
 	List<ScopeCompanyItem> findCompanyList();
 	
-	@Query(value = "select * from account where role='ROLE_BUYER'", nativeQuery = true)
+	@Query(value = "select * from account where role='ROLE_BUYER' and state=1", nativeQuery = true)
 	List<ScopeAccountItem> findAccountList();
 	
-	@Query(value = "select a.*, b.name company_name from store a left join company b on a.company_id=b.id", nativeQuery = true)
+	@Query(value = "select a.*, b.name company_name from store a left join company b on a.company_id=b.id where is_use_in_srm = 1", nativeQuery = true)
 	List<ScopeStoreItem> findStoreList();
 	
-	@Query(value = "select * from vendor", nativeQuery = true)
+	@Query(value = "select * from vendor where code in (select vendor_code from account where state=1 and vendor_code is not null)", nativeQuery = true)
 	List<ScopeVendorItem> findVendorList();
 	
 	@Query(value = "select * from inventory_class", nativeQuery = true)
