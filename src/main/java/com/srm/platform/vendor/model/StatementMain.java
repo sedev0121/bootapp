@@ -63,15 +63,15 @@ public class StatementMain {
 	private Integer state = Constants.STATEMENT_STATE_NEW;
 	
 	@ManyToOne(cascade = { CascadeType.REFRESH })
-	@JoinColumn(name = "company_id", referencedColumnName = "id")
-	private Company company;
+	@JoinColumn(name = "statement_company_id", referencedColumnName = "id")
+	private StatementCompany statementCompany;
 	
 	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "vendor_code", referencedColumnName = "code")
 	Vendor vendor;
 	
 	@Column(name = "tax_rate")
-	private Integer taxRate = 16;
+	private Integer taxRate = 13;
 	
 	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "make_id", referencedColumnName = "id")
@@ -246,15 +246,13 @@ public class StatementMain {
 	}
 
 
-	public Company getCompany() {
-		return company;
+	public StatementCompany getStatementCompany() {
+		return statementCompany;
 	}
 
-
-	public void setCompany(Company company) {
-		this.company = company;
+	public void setStatementCompany(StatementCompany statementCompany) {
+		this.statementCompany = statementCompany;
 	}
-
 
 	public Vendor getVendor() {
 		return vendor;

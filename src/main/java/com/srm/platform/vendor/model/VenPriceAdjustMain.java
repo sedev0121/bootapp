@@ -53,7 +53,7 @@ public class VenPriceAdjustMain {
 	Integer type;
 	Integer createtype;
 
-	Float itaxrate = 16F;
+	Float itaxrate = 13F;
 
 	Integer iverifystate;
 

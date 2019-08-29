@@ -67,6 +67,7 @@ import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseInMainRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.PurchaseOrderMainRepository;
+import com.srm.platform.vendor.repository.StatementCompanyRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.StoreRepository;
@@ -124,6 +125,9 @@ public class CommonController {
 	@Autowired
 	public CompanyRepository companyRepository;
 
+	@Autowired
+	public StatementCompanyRepository statementCompanyRepository;
+	
 	@Autowired
 	public NoticeRepository noticeRepository;
 	

@@ -248,7 +248,7 @@ public class PurchaseInController extends CommonController {
 		String order = requestParams.getOrDefault("order", "code");
 		String dir = requestParams.getOrDefault("dir", "asc");
 		String vendor = requestParams.getOrDefault("vendor", "");
-		String company = requestParams.getOrDefault("company", "");
+		String statementCompany = requestParams.getOrDefault("statement_company", "");
 		String code = requestParams.getOrDefault("code", "");
 		String type = requestParams.getOrDefault("type", "普通采购");
 		String statementDateStr = requestParams.getOrDefault("statement_date", null);
@@ -293,12 +293,12 @@ public class PurchaseInController extends CommonController {
 				+ "left join purchase_order_detail po on a.po_code=po.code and a.po_row_no=po.row_no "
 				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
 				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
-				+ "left join vendor v on b.vendor_code=v.code where a.state=0 and type=:type and b.vendor_code=:vendor and com.id=:company and b.date<:statementDate ";
+				+ "left join vendor v on b.vendor_code=v.code where a.state=0 and type=:type and b.vendor_code=:vendor and com.statement_company_id=:company and b.date<:statementDate ";
 
 		Map<String, Object> params = new HashMap<>();
 
 		params.put("vendor", vendor);
-		params.put("company", company);
+		params.put("company", statementCompany);
 		params.put("type", type);
 		params.put("statementDate", statementDate);
 		

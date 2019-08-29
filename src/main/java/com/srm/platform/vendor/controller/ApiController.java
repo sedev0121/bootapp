@@ -35,6 +35,7 @@ import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.model.OperationHistory;
 import com.srm.platform.vendor.model.PurchaseInDetail;
 import com.srm.platform.vendor.model.PurchaseOrderDetail;
+import com.srm.platform.vendor.model.StatementCompany;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.Task;
@@ -52,6 +53,7 @@ import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.OperationHistoryRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
+import com.srm.platform.vendor.repository.StatementCompanyRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
 import com.srm.platform.vendor.repository.TaskLogRepository;
@@ -128,6 +130,9 @@ public class ApiController {
 	
 	@Autowired
 	public CompanyRepository companyRepository;
+	
+	@Autowired
+	public StatementCompanyRepository statementCompanyRepository;
 	
 	@Autowired
 	public PermissionGroupRepository permissionGroupRepository;
@@ -892,8 +897,15 @@ public class ApiController {
 			AccountPermission accountPermission = getPermissionScopeOfStatement(loginAccount.getId());	
 			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
 			if (!(allowedCompanyIdList == null || allowedCompanyIdList.size() == 0)) {
+				
+				List<StatementCompany> statementCompanyList = statementCompanyRepository.findStatementCompanys(allowedCompanyIdList);	
+				List<Long> statementCompanyIdList = new ArrayList<Long>();
+				for(StatementCompany temp : statementCompanyList) {
+					statementCompanyIdList.add(temp.getId());
+				}
+				
 				for (StatementPendingItem item : pendingDataList) {
-					if (allowedCompanyIdList.contains(item.getCompany_id())) {
+					if (statementCompanyIdList.contains(item.getStatement_company_id())) {
 						filteredList.add(item);
 					}
 				}
@@ -924,13 +936,17 @@ public class ApiController {
 		
 		for (StatementPendingItem item : pendingDataList) {
 			String vendorCode = item.getVendor_code();
-			String companyCode = item.getCompany_code();
+			Long statementCompanyId = item.getStatement_company_id();
 			String type = item.getType();
 			
-			main = generateStatementMain(statementDate, vendorCode, companyCode, type, task);
+			main = generateStatementMain(statementDate, vendorCode, statementCompanyId, type, task);
 			generateStatementDetails(main);
-			saveTaskLog(main, task);
-			saveOperationHistory(main, actionName);			
+			if (statementDetailRepository.findByCode(main.getCode()).size() == 0) {
+				statementMainRepository.delete(main);
+			} else {
+				saveTaskLog(main, task);
+				saveOperationHistory(main, actionName);	
+			}					
 		}
 		
 		GenericJsonResponse<String> response = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, null);	
@@ -939,16 +955,16 @@ public class ApiController {
 		return response;
 	}
 	
-	private StatementMain generateStatementMain(Date statementDate, String vendorCode, String companyCode, String type, Task task) {
+	private StatementMain generateStatementMain(Date statementDate, String vendorCode, Long statementCompanyId, String type, Task task) {
 		StatementMain main = new StatementMain();		
 		
 		Integer statementType = "普通采购".equalsIgnoreCase(type)? Constants.STATEMENT_TYPE_BASIC : Constants.STATEMENT_TYPE_WEIWAI;
 		Vendor vendor = vendorRepository.findOneByCode(vendorCode);
-		Company company = companyRepository.findOneByCode(companyCode);
+		StatementCompany statementCompany = statementCompanyRepository.findOneById(statementCompanyId);
 		
 		main.setDate(statementDate);
 		main.setVendor(vendor);
-		main.setCompany(company);
+		main.setStatementCompany(statementCompany);
 		main.setType(statementType);
 		main.setTaskCode(task.getCode());
 		main.setMakeDate(new Date());
@@ -960,11 +976,11 @@ public class ApiController {
 	
 	private void generateStatementDetails(StatementMain main) {
 		String vendorCode = main.getVendor().getCode();
-		String companyCode = main.getCompany().getCode();
+		Long statementCompanyId = main.getStatementCompany().getId();
 		String type = main.getType() == 1 ? "普通采购":"委外加工";
 		Date filterDate = Utils.getNextDate(main.getDate());
 		
-		List<StatementPendingDetail> pendingDetailList = this.statementDetailRepository.findAllPendingDetail(vendorCode, companyCode, type, filterDate);
+		List<StatementPendingDetail> pendingDetailList = this.statementDetailRepository.findAllPendingDetail(vendorCode, statementCompanyId, type, filterDate);
 		int index = 1;
 		double costSum = 0, taxCostSum = 0, taxSum = 0;
 		for (StatementPendingDetail detail : pendingDetailList) {
@@ -1062,5 +1078,19 @@ public class ApiController {
 		} else {
 			return false;
 		}		
+	}
+	
+	@ResponseBody
+	@RequestMapping({ "/test" })
+	public boolean test() {
+		List<Long> array = new ArrayList<Long>();
+		array.add(1L);
+		array.add(2L);
+		array.add(3L);
+		
+		boolean result = array.contains(1L);
+		
+		return result;
+		
 	}
 }

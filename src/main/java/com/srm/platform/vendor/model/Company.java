@@ -4,7 +4,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "company")
@@ -19,6 +24,11 @@ public class Company {
 
 	private String code;
 
+	@NotFound(action = NotFoundAction.IGNORE)
+	@JoinColumn(name = "statement_company_id")
+	@ManyToOne()
+	private StatementCompany statementCompany;
+	
 	public Company() {
 
 	}
@@ -47,5 +57,11 @@ public class Company {
 		this.code = code;
 	}
 
-	
+	public StatementCompany getStatementCompany() {
+		return statementCompany;
+	}
+
+	public void setStatementCompany(StatementCompany statementCompany) {
+		this.statementCompany = statementCompany;
+	}	
 }

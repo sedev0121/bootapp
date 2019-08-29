@@ -53,9 +53,9 @@
 							</select>
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label for="company">业务实体: </label> 
-							<select name="company" id="company" class="form-control">
-								<option th:if="${main.company != null}" th:value="${main.company?.id}" th:text="${main.company?.name}" selected="selected"></option>
+							<label for="statement_company">结算实体: </label> 
+							<select name="statement_company" id="statement_company" class="form-control">
+								<option th:if="${main.statementCompany != null}" th:value="${main.statementCompany?.id}" th:text="${main.statementCompany?.name}" selected="selected"></option>
 							</select>							
 						</div>
 						<div class="col-lg-2 col-md-2">
@@ -301,7 +301,7 @@
    var type = [[${main.type}]];
    var invoice_type = [[${main.invoiceType}]];
    var history_url = [[@{|/operation_history/list/statement/${main.code}}|]];
-   var company_search_url = [[@{/company/search}]];
+   var statement_company_search_url = [[@{/company/statement_search}]];
    var download_url = [[@{|/statement/${main.code}/download|}]];
    +]*/
 
@@ -711,7 +711,7 @@
 				        rows_per_page : data.length,
 				        page_index : data.start / data.length + 1,
 				        vendor : $('#vendor').val(),
-				        company : $('#company').val(),
+				        statement_company : $('#statement_company').val(),
 				        statement_date : $('#date').val(),
 				        inventory : $('#search_inventory').val(),
 				        code : $('#search_code').val(),
@@ -807,7 +807,7 @@
 			  import_table.draw();
 	  });
 
-	  $("#company").select2(App.getSelect2Options(company_search_url));
+	  $("#statement_company").select2(App.getSelect2Options(statement_company_search_url));
 	  $("#state").select2({
 	    data : App.getStatementStateData(),
 	    minimumResultsForSearch : -1
@@ -1026,9 +1026,9 @@
 				      return false;
 			      }
 
-			      if (!$("#company").val()) {
-				      $('#company').focus();
-				      App.showErrorDialog("请选择业务实体！");
+			      if (!$("#statement_company").val()) {
+				      $('#statement_company').focus();
+				      App.showErrorDialog("请选择结算实体！");
 				      return false;
 			      }
 
@@ -1192,11 +1192,11 @@
 			    var data_list = this.api().rows().data().toArray()
 			    if (data_list.length > 0) {
 				    $('#vendor').attr("readonly", true);
-				    $('#company').attr("readonly", true);
+				    $('#statement_company').attr("readonly", true);
 				    $('#type').attr("readonly", true);
 			    } else {
 				    $('#vendor').attr("readonly", false);
-				    $('#company').attr("readonly", false);
+				    $('#statement_company').attr("readonly", false);
 				    $('#type').attr("readonly", false);
 			    }
 
@@ -1281,7 +1281,7 @@
 	      vendor : {
 		      required : true
 	      },
-	      company : {
+	      statement_company : {
 		      required : true
 	      },
 	      tax_rate : {

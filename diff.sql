@@ -519,3 +519,22 @@ update account set employee_no=username where role='ROLE_BUYER';
 
 alter table purchase_order_main add COLUMN employee_no varchar(255) NULL DEFAULT NULL;
 update purchase_order_main a left join account b on a.maker=b.realname set a.employee_no=b.employee_no;
+
+/* 2019-08-29 */
+DROP TABLE IF EXISTS `statement_company`;
+CREATE TABLE `statement_company`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Records of statement_company
+-- ----------------------------
+INSERT INTO `statement_company` VALUES (1, '谈桥工厂');
+INSERT INTO `statement_company` VALUES (2, '马桥工厂');
+INSERT INTO `statement_company` VALUES (3, '橱柜工厂');
+
+alter table company add COLUMN statement_company_id int(11) NOT NULL;
+ALTER TABLE statement_main CHANGE company_id statement_company_id int(11) NOT NULL;
+update statement_main a left join company b on a.statement_company_id=b.id left join statement_company c on b.statement_company_id=c.id set a.statement_company_id=c.id;

@@ -163,7 +163,7 @@ public class TaskController extends CommonController {
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "FROM task_log a left join task b on a.task_id=b.id left join vendor c on a.vendor_code=c.code "
-				+ "left join statement_main d on a.statement_code=d.code left join company e on d.company_id=e.id where a.task_id=:id ";
+				+ "left join statement_main d on a.statement_code=d.code left join statement_company e on d.statement_company_id=e.id where a.task_id=:id ";
 
 		Map<String, Object> params = new HashMap<>();
 		params.put("id", id);

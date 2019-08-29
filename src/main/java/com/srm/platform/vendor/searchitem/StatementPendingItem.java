@@ -4,9 +4,7 @@ public interface StatementPendingItem {
 
 	String getVendor_code();
 
-	String getCompany_code();
-	
-	Long getCompany_id();
-
 	String getType();
+	
+	Long getStatement_company_id();
 }

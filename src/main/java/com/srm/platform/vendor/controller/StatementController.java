@@ -37,6 +37,7 @@ import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.AttachFile;
 import com.srm.platform.vendor.model.Master;
 import com.srm.platform.vendor.model.PurchaseInDetail;
+import com.srm.platform.vendor.model.StatementCompany;
 import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.Vendor;
@@ -180,7 +181,7 @@ public class StatementController extends CommonController {
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from statement_main a left join vendor b on a.vendor_code=b.code  "
-				+ "left join company com on a.company_id=com.id where 1=1 ";
+				+ "left join statement_company com on a.statement_company_id=com.id where 1=1 ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -213,10 +214,18 @@ public class StatementController extends CommonController {
 
 					List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
 					if (allowedCompanyIdList.size() > 0) {
-						key = "companyList" + index;
-						tempSubWhere += " and a.company_id in :" + key;
-						params.put(key, allowedCompanyIdList);
-					}
+						List<StatementCompany> statementCompanyList = statementCompanyRepository.findStatementCompanys(allowedCompanyIdList);	
+						List<Long> statementCompanyIdList = new ArrayList<Long>();
+						for(StatementCompany temp : statementCompanyList) {
+							statementCompanyIdList.add(temp.getId());
+						}
+						
+						if (statementCompanyIdList.size() > 0) {
+							key = "companyList" + index;
+							tempSubWhere += " and a.statement_company_id in :" + key;
+							params.put(key, statementCompanyIdList);
+						}	
+					}					
 
 					List<Long> allowedAccountIdList = accountPermission.getAccountList();
 					if (allowedAccountIdList.size() > 0) {
@@ -241,7 +250,7 @@ public class StatementController extends CommonController {
 
 		Long companyId = Long.valueOf(companyIdStr);
 		if (companyId >= 0) {
-			bodyQuery += " and com.id=:company";
+			bodyQuery += " and a.statement_company_id=:company";
 			params.put("company", companyId);
 		}
 
@@ -333,7 +342,7 @@ public class StatementController extends CommonController {
 				main.setMaker(this.getLoginAccount());
 				main.setType(form.getType());
 				main.setTaxRate(form.getTax_rate());
-				main.setCompany(companyRepository.findOneById(form.getCompany()));
+				main.setStatementCompany(statementCompanyRepository.findOneById(form.getStatement_company()));
 				main.setCostSum(form.getCostSum());
 				main.setTaxCostSum(form.getTaxCostSum());
 				main.setAdjustCostSum(form.getAdjustCostSum());
@@ -736,7 +745,7 @@ public class StatementController extends CommonController {
 		} else if (accountPermissionInfo.isAllPermission()) {
 			isValid = true;
 		} else {
-			if (main.getVendor() != null && main.getCompany() != null) {
+			if (main.getVendor() != null) {
 				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
 
 					List<String> allowedVendorCodeList = accountPermission.getVendorList();
@@ -747,9 +756,16 @@ public class StatementController extends CommonController {
 						continue;
 					}
 
-					if (allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {
-						continue;
-					}
+					if (allowedCompanyIdList.size() > 0) {
+						List<StatementCompany> statementCompanyList = statementCompanyRepository.findStatementCompanys(allowedCompanyIdList);	
+						List<Long> statementCompanyIdList = new ArrayList<Long>();
+						for(StatementCompany temp : statementCompanyList) {
+							statementCompanyIdList.add(temp.getId());
+						}
+						if (statementCompanyIdList.size() > 0 && !statementCompanyIdList.contains(main.getStatementCompany().getId())) {
+							continue;
+						}	
+					}					
 					
 					if (main.getMaker() != null && allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getMaker().getId())) {
 						continue;
@@ -825,21 +841,32 @@ public class StatementController extends CommonController {
 		AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
 		for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
 
-			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
-			if (allowedCompanyIdList.size() > 0) {
-				for (StatementMain item : list) {
-					if (allowedCompanyIdList.contains(item.getCompany().getId())) {
-						filteredList.add(item);
-					}
-				}
-				list = filteredList;
-			}
+//			List<Long> allowedCompanyIdList = accountPermission.getCompanyList();
+//			if (allowedCompanyIdList.size() > 0) {
+//				for (StatementMain item : list) {
+//					if (allowedCompanyIdList.contains(item.getCompany().getId())) {
+//						filteredList.add(item);
+//					}
+//				}
+//				list = filteredList;
+//			}
 
 			filteredList = new ArrayList<StatementMain>();
 			List<String> allowedVendorCodeList = accountPermission.getVendorList();
 			if (allowedVendorCodeList.size() > 0) {
 				for (StatementMain item : list) {
 					if (allowedVendorCodeList.contains(item.getVendor().getCode())) {
+						filteredList.add(item);
+					}
+				}
+				list = filteredList;
+			}
+			
+			filteredList = new ArrayList<StatementMain>();
+			List<Long> allowedAccountIdList = accountPermission.getAccountList();
+			if (allowedAccountIdList.size() > 0) {
+				for (StatementMain item : list) {
+					if (allowedAccountIdList.contains(item.getMaker().getId())) {
 						filteredList.add(item);
 					}
 				}

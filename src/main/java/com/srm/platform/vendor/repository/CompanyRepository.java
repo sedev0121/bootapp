@@ -1,5 +1,7 @@
 package com.srm.platform.vendor.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,5 +22,6 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 	
 	@Query(value = "SELECT * FROM company where (name LIKE %?1% or code LIKE %?1%)", nativeQuery = true)
 	Page<Company> findBySearchTerm(String search, Pageable pageable);
+
 	
 }

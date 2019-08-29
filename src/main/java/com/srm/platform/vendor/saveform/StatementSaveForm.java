@@ -16,7 +16,7 @@ public class StatementSaveForm {
 	private String remark;
 	private String date;
 	private Integer state;
-	private Long company;
+	private Long statement_company;
 	private Integer type;
 	private Integer invoice_state;
 	private Integer invoice_type;
@@ -189,12 +189,12 @@ public class StatementSaveForm {
 		this.content = content;
 	}
 
-	public Long getCompany() {
-		return company;
+	public Long getStatement_company() {
+		return statement_company;
 	}
 
-	public void setCompany(Long company) {
-		this.company = company;
+	public void setStatement_company(Long statement_company) {
+		this.statement_company = statement_company;
 	}
 
 	public boolean isInvoiceAction() {

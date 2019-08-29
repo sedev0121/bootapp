@@ -28,7 +28,7 @@ public class StatementDetail {
 	private Double adjustTaxCost;
 
 	@Column(name = "tax_rate")
-	private Integer taxRate = 16;
+	private Integer taxRate = 13;
 	
 	public Long getId() {
 		return id;

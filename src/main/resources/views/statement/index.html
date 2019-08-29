@@ -21,7 +21,7 @@
 				<label for="end_date">　</label> <input type="text" id="end_date" value="" class="form-control datepicker" placeholder=""/>
 			</div>
 			<div class="search-cell width-10">
-        <label for="company">业务实体：</label>
+        <label for="company">结算实体：</label>
         <select name="company" id="company" class="form-control">
         	<option value="-1" text="　" selected="selected"></option>
         </select>
@@ -90,7 +90,7 @@
    var edit_url = [[@{/statement/}]];
    var bluk_review_url = [[@{/statement/bulk_review}]];
    var bluk_deploy_url = [[@{/statement/bulk_deploy}]];
-   var company_search_url = [[@{/company/search}]];
+   var company_search_url = [[@{/company/statement_search}]];
    var log_url = [[@{/operation_history/list/statement/}]];
    +]*/
    
@@ -175,7 +175,7 @@
 	      render : $.fn.date_renderer
 	    }, {
 	      data : 'company_name',
-	      title : '业务实体',
+	      title : '结算实体',
 	    }, {
 	      data : 'vendor_code',
 	      visible : !is_vendor,

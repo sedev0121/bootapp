@@ -33,13 +33,13 @@ public interface StatementDetailRepository extends JpaRepository<StatementDetail
 	List<StatementDetailItem> findDetailsByCode(String code);
 	
 	
-	@Query(value = "select b.vendor_code, b.type, b.company_code, c.id company_id from purchase_in_detail a "
+	@Query(value = "select b.vendor_code, b.type, c.statement_company_id from purchase_in_detail a "
 			+ "left join purchase_in_main b on a.code=b.code left join company c on b.company_code=c.code "
-			+ "where a.state=0 and b.company_code is not null and b.date < ?1 GROUP BY b.vendor_code, b.type, b.company_code", nativeQuery = true)
+			+ "where a.state=0 and b.company_code is not null and b.date < ?1 GROUP BY b.vendor_code, b.type, c.statement_company_id", nativeQuery = true)
 	List<StatementPendingItem> findAllPendingData(Date filterDate);
 	
-	@Query(value = "select a.id, a.code from purchase_in_detail a left join purchase_in_main b on a.code=b.code "
-			+ "where a.state=0 and b.company_code is not null and b.vendor_code = ?1 and b.company_code = ?2 and b.type = ?3 and b.date < ?4", nativeQuery = true)
-	List<StatementPendingDetail> findAllPendingDetail(String vendorCode, String companyCode, String type, Date filterDate);
+	@Query(value = "select a.id, a.code from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join company c on b.company_code=c.code left join statement_company d on c.statement_company_id=d.id "
+			+ "where a.state=0 and b.company_code is not null and b.vendor_code = ?1 and d.id = ?2 and b.type = ?3 and b.date < ?4", nativeQuery = true)
+	List<StatementPendingDetail> findAllPendingDetail(String vendorCode, Long statementCompanyId, String type, Date filterDate);
 
 }
