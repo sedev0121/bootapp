@@ -528,9 +528,6 @@ CREATE TABLE `statement_company`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
--- ----------------------------
--- Records of statement_company
--- ----------------------------
 INSERT INTO `statement_company` VALUES (1, '谈桥工厂');
 INSERT INTO `statement_company` VALUES (2, '马桥工厂');
 INSERT INTO `statement_company` VALUES (3, '橱柜工厂');
@@ -538,3 +535,6 @@ INSERT INTO `statement_company` VALUES (3, '橱柜工厂');
 alter table company add COLUMN statement_company_id int(11) NOT NULL;
 ALTER TABLE statement_main CHANGE company_id statement_company_id int(11) NOT NULL;
 update statement_main a left join company b on a.statement_company_id=b.id left join statement_company c on b.statement_company_id=c.id set a.statement_company_id=c.id;
+
+/* 2019-08-30 */
+alter table contract_main add column floating_direction int(1) NOT NULL DEFAULT 2;

@@ -309,6 +309,7 @@ public class ContractController extends CommonController {
 			main.setType(form.getType());
 			main.setKind(form.getKind());
 			main.setPriceType(form.getPrice_type());
+			main.setFloatingDirection(form.getFloating_direction());
 			main.setQuantityType(form.getQuantity_type());
 			main.setCompany(companyRepository.findOneById(form.getCompany()));
 			main.setVendor(vendorRepository.findOneByCode(form.getVendor()));

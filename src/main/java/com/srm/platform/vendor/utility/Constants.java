@@ -81,6 +81,10 @@ public class Constants {
 	public final static int CONTRACT_PRICE_TYPE_FLOATING = 1;
 	public final static int CONTRACT_PRICE_TYPE_FIXED = 2;
 	
+	public final static int CONTRACT_FLOATING_DIRECTION_UP = 1;
+	public final static int CONTRACT_FLOATING_DIRECTION_DOWN = 2;
+	public final static int CONTRACT_FLOATING_DIRECTION_BOTH = 3;
+	
 	public final static int CONTRACT_QUANTITY_TYPE_NO = 1;
 	public final static int CONTRACT_QUANTITY_TYPE_YES = 2;
 

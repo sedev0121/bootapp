@@ -13,6 +13,7 @@ public class ContractSaveForm {
 	private String project_no;
 	private Double base_price;
 	private Double floating_price;
+	private Integer floating_direction;
 	private String memo;
 	private String pay_mode;
 	
@@ -42,6 +43,14 @@ public class ContractSaveForm {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getFloating_direction() {
+		return floating_direction;
+	}
+
+	public void setFloating_direction(Integer floating_direction) {
+		this.floating_direction = floating_direction;
 	}
 
 	public String getDate() {

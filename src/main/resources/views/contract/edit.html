@@ -93,9 +93,13 @@
 							<label for="code">币别: </label> 
 							<input type="text" class="form-control" value="CYN" readonly/>
 						</div>
-						<div class="col-lg-4 col-md-4">
+						<div class="col-lg-2 col-md-2">
 							<label for="code">备注: </label> 
 							<input type="text" name="memo" th:value="${main.memo}" class="form-control"/>
+						</div>
+						<div class="col-lg-2 col-md-2">
+							<label for="vendor">浮动方向:</label> 
+							<select id="floating_direction" name="floating_direction" class="form-control"></select>
 						</div>
 						<div class="col-lg-2 col-md-2">
 							<label for="maker">创建人:</label> 
@@ -195,6 +199,7 @@ is_readonly = 0;
    var state = [[${main.state}]];
    var type = [[${main.type}]];
    var kind = [[${main.kind}]];
+   var floating_direction = [[${main.floatingDirection}]];
    var price_type = [[${main.priceType}]];
    var quantity_type = [[${main.quantityType}]];
    
@@ -225,6 +230,11 @@ is_readonly = 0;
 	    data : App.getContractKindData(),
 	    minimumResultsForSearch : -1
 	  }).select2("val", kind.toString());
+	  
+	  $("#floating_direction").select2({
+	    data : App.getFloatingDirectionData(),
+	    minimumResultsForSearch : -1
+	  }).select2("val", floating_direction.toString());
 	  
 	  $("#price_type").select2({
 	    data : App.getContractPriceData(),
@@ -506,10 +516,23 @@ is_readonly = 0;
   			floatingRange = parseFloat(floatingRange);
   		}
   		
+  		var direction = $('#floating_direction').val();
+  		if (direction == 1) {
+  			startWeight -= 	floatingRange;
+  		} else if (direction == 2) {
+  			startWeight -= 	floatingRange * (rangeLength - 1);
+  		} else if (direction == 3) {
+  			startWeight -= 	floatingRange * parseInt(rangeLength / 2);
+  		}
   		
   		for(var i=0; i<rangeLength; i++) {
   			var start = App.floatingPriceNumber(startWeight + floatingRange * i);
   			var end = App.floatingPriceNumber(startWeight + floatingRange * (i + 1) - 0.01);
+  			if (i == 0 && direction == 1 || start < 0) {
+  				start = "0";
+  			} else if (i == rangeLength - 1 && direction == 2) {
+  				end = "∞";
+  			}
   			var item = {
   					key: "range_" + i,
   					title: start + "-" + end
@@ -523,11 +546,28 @@ is_readonly = 0;
 			  	var item = rowDatas[i];
 			  	var direction = item.floating_direction;
 			  	item.tax_cost = App.costNumber(item.tax_price * item.quantity);
-			  	if (direction == 2) {
+			  	if (direction == 1){
 			  		for (var j=0; j<rangeLength; j++) {
-				  		var titleItem = titleList[rangeLength - j - 1];
+				  		var titleItem = titleList[j];
 				  		var key = titleItem.key;
-				  		var value = App.floatingPriceNumber(item.tax_price - item.floating_price * j);
+				  		var value;
+				  		if (j == 0) {
+				  			value = App.floatingPriceNumber(item.tax_price);
+				  		} else {
+				  			value = App.floatingPriceNumber(item.tax_price * 1 + item.floating_price * (j - 1));
+				  		}
+				  		
+				  		if (value < 0) {
+				  			value = 0;
+				  		}
+				  		item[key] = value;
+				  	}	
+			  	} else if (direction == 2) {
+			  		for (var j=rangeLength-1; j >= 0; j--) {
+				  		var titleItem = titleList[j];
+				  		var key = titleItem.key;
+				  		var value = App.floatingPriceNumber(item.tax_price - item.floating_price * (rangeLength - j - 1));
+				  		
 				  		if (value < 0) {
 				  			value = 0;
 				  		}
@@ -537,7 +577,7 @@ is_readonly = 0;
 			  		for (var j=0; j<rangeLength; j++) {
 				  		var titleItem = titleList[j];
 				  		var key = titleItem.key;
-				  		var value = App.floatingPriceNumber(item.tax_price * 1 + item.floating_price * j);
+				  		var value = App.floatingPriceNumber(item.tax_price * 1 + item.floating_price * (parseInt(rangeLength / 2) - rangeLength + j));
 				  		if (value < 0) {
 				  			value = 0;
 				  		}
@@ -689,15 +729,6 @@ is_readonly = 0;
 		      id : "tax_price",
 		      name : "tax_price"
 		    }, {
-		    	type:  "select",
-		      options: [
-		      	{ label: "向上浮动", value: "1" },
-		      	{ label: "向下浮动", value: "2" },
-		      	{ label: "上下浮动", value: "3" },
-	      	],
-		      id : "floating_direction",
-		      name : "floating_direction"
-		    }, {
 		      attr : {
 			      type : "number"
 		      },
@@ -756,7 +787,8 @@ is_readonly = 0;
 		    destroy : true,
 		    ordering : false,
 		    select : canEdit()?{
-			    style : 'multi'
+			    style : 'multi',
+			    selector : 'td:first-child',
 		    }:false,
 		    buttons : canEdit()?[ {
 		      text : "导出EXCEL模板",
@@ -768,6 +800,9 @@ is_readonly = 0;
 		      action : function(e, dt, node, config) {
 		      	import_csv();
 		      }
+		    }, {
+		      extend : "remove",
+		      editor : editor
 		    } ]:false,
 		    ajax : {
 		      url : detail_url,
@@ -779,6 +814,13 @@ is_readonly = 0;
 		      },
 		    },
 		    columns : [ {
+		      data : null,
+		      title : '选择',
+		      defaultContent : ' ',
+		      visible : canEdit(),
+		      orderable : false,
+		      className : 'select-checkbox',
+		    }, {
 		      data : 'row_no',
 		      sortable : false,
 		      className : 'dt-center ignore-export',
@@ -848,9 +890,15 @@ is_readonly = 0;
 		    } ],
 		    order : [ [ 0, "asc" ] ],
 		    footerCallback : function(row, data, start, end, display) {
-			    App.footerCallback(this.api(), [ [ 5, "quantity" ], [ 8, "cost" ] ]);
+			    App.footerCallback(this.api(), [ [ 6, "quantity" ], [ 9, "cost" ] ]);
 		    },
 		    drawCallback : function(settings) {
+		    	var data_list = this.api().rows().data().toArray()
+			    if (data_list.length > 0) {
+				    $('#floating_direction').attr("readonly", true);
+			    } else {
+				    $('#floating_direction').attr("readonly", false);
+			    }
 		    	loadFloatingTable();
 		    }
 		  };
@@ -866,7 +914,7 @@ is_readonly = 0;
 		  //Add footer cells
 		  for (var i = 0; i < 8; i++) {
 			  if (i == 0) {
-				  $("<th colspan='5' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
+				  $("<th colspan='6' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
 			  } else {
 				  $("<th></th>").appendTo(footertr);
 			  }
@@ -1105,7 +1153,7 @@ is_readonly = 0;
 								quantity: columns[1],
 								tax_price: columns[2],
 								memo: columns[3],
-								floating_direction: 2,
+								floating_direction: $("#floating_direction").val(),
 								floating_price: 0
 						}
 

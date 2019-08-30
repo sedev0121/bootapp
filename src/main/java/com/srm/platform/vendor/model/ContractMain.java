@@ -69,6 +69,9 @@ public class ContractMain {
 	@JsonProperty("floating_price")
 	private Double floatingPrice;
 	
+	@JsonProperty("floating_direction")
+	private Integer floatingDirection = Constants.CONTRACT_FLOATING_DIRECTION_DOWN;
+	
 	private String memo;
 	
 	@JsonProperty("pay_mode")
@@ -118,6 +121,14 @@ public class ContractMain {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getFloatingDirection() {
+		return floatingDirection;
+	}
+
+	public void setFloatingDirection(Integer floatingDirection) {
+		this.floatingDirection = floatingDirection;
 	}
 
 	public Date getDate() {
