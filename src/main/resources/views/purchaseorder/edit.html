@@ -322,7 +322,7 @@
 						  fromWeight = basePrice - floatingRange * i;
 						  toWeight = basePrice - floatingRange * (i - 1);
 						  if (fromWeight <= contractBasePrice && contractBasePrice < toWeight) {
-							  price = App.floatingPriceNumber(contract_tax_price + floating_price * i);
+							  price = App.floatingPriceNumber(contract_tax_price - floating_price * i);
 							  break;
 						  }
 					  }
