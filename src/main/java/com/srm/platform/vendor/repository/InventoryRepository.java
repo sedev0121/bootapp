@@ -17,10 +17,10 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 	
 	Inventory findOneByCode(String code);
 	
-	@Query(value = "SELECT * FROM inventory a left join inventory_class b on a.sort_code=b.code left join box_class c on a.box_class_id=c.id WHERE (a.specs LIKE %?1% or a.code LIKE %?1% or a.name LIKE %?1%) and (b.code LIKE %?2% or b.name LIKE %?2%)", nativeQuery = true)
+	@Query(value = "SELECT * FROM inventory a left join inventory_class b on a.sort_code=b.code left join box_class c on a.box_class_id=c.id WHERE (a.specs LIKE %?1% or a.code LIKE %?1% or a.name LIKE %?1%) and (b.code LIKE %?2% or b.name LIKE %?2%) and (is_asset=1 or is_import=1 or is_purchase=1 or is_weiwai=1)", nativeQuery = true)
 	Page<Inventory> findBySearchTerm(String inventory, String inventoryClass, Pageable pageable);
 
-	@Query(value = "SELECT * FROM inventory a left join inventory_class b on a.sort_code=b.code left join box_class c on a.box_class_id=c.id WHERE (a.specs LIKE %?1% or a.code LIKE %?1% or a.name LIKE %?1%) and (b.code LIKE %?2% or b.name LIKE %?2%) and (c.code LIKE %?3% or c.name LIKE %?3%)", nativeQuery = true)
+	@Query(value = "SELECT * FROM inventory a left join inventory_class b on a.sort_code=b.code left join box_class c on a.box_class_id=c.id WHERE (a.specs LIKE %?1% or a.code LIKE %?1% or a.name LIKE %?1%) and (b.code LIKE %?2% or b.name LIKE %?2%) and (c.code LIKE %?3% or c.name LIKE %?3%) and (is_asset=1 or is_import=1 or is_purchase=1 or is_weiwai=1)", nativeQuery = true)
 	Page<Inventory> findBySearchTerm(String inventory, String inventoryClass, String boxClass, Pageable pageable);
 
 	@Query(value = "SELECT * FROM inventory WHERE code in ?1", nativeQuery = true)

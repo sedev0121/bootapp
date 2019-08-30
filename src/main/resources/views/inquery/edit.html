@@ -1010,6 +1010,16 @@
 	  });
 
 	  $.validator.addMethod("checkTable", function(value, element) {
+	  	
+	  	var startDate = $('#start_date').val();
+		  var endDate = $('#end_date').val();
+		  startDate = Date.parse(startDate);
+		  endDate = Date.parse(endDate);
+	    if (endDate < startDate){
+	    	App.showErrorDialog("操作失败", "生效日期不能大于有效日期");
+	     	return false;
+	    }
+	    
 		  var exist_data = table.rows().data().toArray();
 		  var inventoryIdList = [];
 		  validInventoryIdList = [];
@@ -1057,6 +1067,15 @@
 				  App.showErrorDialog("操作失败", "有效日期不能为空！");
 				  return false;
 			  }
+			  
+			  var startDate = exist_row.dstartdate;
+			  var endDate = exist_row.denddate;
+			  startDate = Date.parse(startDate);
+			  endDate = Date.parse(endDate);
+		    if (endDate < startDate){
+		    	App.showErrorDialog("操作失败", "生效日期不能大于有效日期");
+		      return false;
+		    }
 		  }
 
 		  if ($('#type').val() == 2 && $('#state').val() == 5 && inventoryIdList.length != validInventoryIdList.length) {
@@ -1205,6 +1224,17 @@
 	  $("#publish").click(function() {
 		  $('#state').val(7);
 		  $("#form").submit();
+	  });
+	  
+	  $("#tax_rate, #start_date, #end_date").change(function() {
+	  	 var exist_data = table.rows().data().toArray();
+			 for (i = 0; i < exist_data.length; i++) {
+				 exist_row = exist_data[i];
+				 exist_row.itaxrate = $("#tax_rate").val();
+				 exist_row.dstartdate = $("#start_date").val();
+				 exist_row.denddate = $("#end_date").val();
+			 }
+			 table.rows().invalidate();
 	  });
   });
 </script>

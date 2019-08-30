@@ -70,7 +70,7 @@ public class ContractMain {
 	private Double floatingPrice;
 	
 	@JsonProperty("floating_direction")
-	private Integer floatingDirection = Constants.CONTRACT_FLOATING_DIRECTION_DOWN;
+	private Integer floatingDirection = Constants.CONTRACT_FLOATING_DIRECTION_BOTH;
 	
 	private String memo;
 	
