@@ -38,8 +38,10 @@ import com.srm.platform.vendor.model.Notice;
 import com.srm.platform.vendor.model.NoticeRead;
 import com.srm.platform.vendor.model.OperationHistory;
 import com.srm.platform.vendor.model.Price;
+import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.VenPriceAdjustDetail;
 import com.srm.platform.vendor.model.VenPriceAdjustMain;
+import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.repository.AccountRepository;
 import com.srm.platform.vendor.repository.AttachFileRepository;
 import com.srm.platform.vendor.repository.BoxClassRepository;
@@ -78,9 +80,11 @@ import com.srm.platform.vendor.repository.VenPriceAdjustMainRepository;
 import com.srm.platform.vendor.repository.VendorClassRepository;
 import com.srm.platform.vendor.repository.VendorRepository;
 import com.srm.platform.vendor.searchitem.DimensionTargetItem;
+import com.srm.platform.vendor.searchitem.StatementDetailItem;
 import com.srm.platform.vendor.service.SessionCounter;
 import com.srm.platform.vendor.u8api.AppProperties;
 import com.srm.platform.vendor.u8api.RestApiClient;
+import com.srm.platform.vendor.u8api.RestApiResponse;
 import com.srm.platform.vendor.utility.AccountPermissionInfo;
 import com.srm.platform.vendor.utility.Constants;
 import com.srm.platform.vendor.utility.GenericJsonResponse;
@@ -385,111 +389,7 @@ public class CommonController {
 		return idList;
 	}
 
-	protected GenericJsonResponse<VenPriceAdjustMain> u8VenPriceAdjust(VenPriceAdjustMain main) {
-
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		Map<String, Object> map = new HashMap<>();
-
-		GenericJsonResponse<VenPriceAdjustMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS,
-				null, main);
-//		try {
-//
-//			map = new HashMap<>();
-//
-//			String postJson = createJsonString(main);
-//			Map<String, String> getParams = new HashMap<>();
-//
-//			getParams.put("biz_id", main.getCcode());
-//			getParams.put("sync", "1");
-//
-//			String response = apiClient.generateVenpriceadjust(getParams, postJson);
-//
-//			map = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {
-//			});
-//
-//			int errorCode = Integer.parseInt((String) map.get("errcode"));
-//			String errmsg = String.valueOf(map.get("errmsg"));
-//
-//			if (errorCode != appProperties.getError_code_success()) {
-//				jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errorCode + ":" + errmsg, main);
-//			}
-//
-//		} catch (IOException e) {
-//			logger.info(e.getMessage());
-//			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, "服务器错误！", main);
-//		}
-
-		return jsonResponse;
-	}
-
-	// 更新价格表
-	protected void updatePriceTable(VenPriceAdjustMain venPriceAdjustMain) {
-
-		List<VenPriceAdjustDetail> list = venPriceAdjustDetailRepository.findByMainId(venPriceAdjustMain.getCcode());
-		for (VenPriceAdjustDetail item : list) {
-			if (venPriceAdjustMain.getType() == Constants.INQUERY_TYPE_RANGE && item.getIvalid() == 0)
-				continue;
-
-			Price price = new Price();
-			price.setVendor(venPriceAdjustMain.getVendor());
-			price.setInventory(item.getInventory());
-			price.setCreateby(venPriceAdjustMain.getMaker().getId());
-			price.setCreatedate(venPriceAdjustMain.getDmakedate());
-			price.setFavdate(venPriceAdjustMain.getDstartdate());
-			price.setFcanceldate(venPriceAdjustMain.getDenddate());
-			price.setFnote(item.getCbodymemo());
-			price.setFprice(item.getIunitprice());
-			price.setFtax((float) item.getItaxrate());
-			price.setFtaxprice(item.getItaxunitprice());
-			price.setFisoutside(false);
-			price.setFcheckdate(new Date());
-			price.setDescription(item.getInventory().getSpecs());
-			// price.setFauxunit(item.getInventory().getPuunitName());
-			priceRepository.save(price);
-		}
-
-	}
-
-	protected String createJsonString(VenPriceAdjustMain main) {
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonString = "";
-
-		U8VenpriceadjustPostData post = new U8VenpriceadjustPostData();
-		post.setCcode(main.getCcode());
-		post.setIsupplytype(main.getIsupplytype());
-		post.setMaker(this.getLoginAccount().getRealname());
-
-		List<U8VenpriceadjustPostEntry> entryList = new ArrayList<>();
-
-		List<VenPriceAdjustDetail> detailList = venPriceAdjustDetailRepository.findByMainId(main.getCcode());
-		for (VenPriceAdjustDetail detail : detailList) {
-			if (main.getType() == Constants.INQUERY_TYPE_RANGE && detail.getIvalid() == 0)
-				continue;
-
-			U8VenpriceadjustPostEntry entry = new U8VenpriceadjustPostEntry();
-			entry.setCinvcode(detail.getInventory().getCode());
-			entry.setCvencode(main.getVendor().getCode());
-			entry.setDstartdate(Utils.formatDate(detail.getDstartdate()));
-			entry.setItaxrate(detail.getItaxrate());
-			entry.setItaxunitprice(detail.getItaxunitprice());
-			entry.setIunitprice(detail.getIunitprice());
-
-			entryList.add(entry);
-		}
-
-		post.setEntry(entryList);
-
-		try {
-			Map<String, U8VenpriceadjustPostData> map = new HashMap<>();
-			map.put("venpriceadjust", post);
-			jsonString = mapper.writeValueAsString(map);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return jsonString;
-	}
+	
 
 	public ResponseEntity<Resource> download(String filePath, String downloadFileName) {
 
@@ -518,6 +418,52 @@ public class CommonController {
 			}
 		}
 		
+	}
+	
+	protected GenericJsonResponse<VenPriceAdjustMain> u8price(VenPriceAdjustMain main) {
+
+		GenericJsonResponse<VenPriceAdjustMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
+				main);
+
+		RestApiResponse response = apiClient.postForU8Iinvoice(createU8PricePostData(main));
+
+		if (!response.isSuccess()) {
+			response.getErrmsg();
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, response.getErrmsg(), main);
+		}
+
+		return jsonResponse;
+	}
+
+	private Map<String, Object> createU8PricePostData(VenPriceAdjustMain main) {
+		
+		Map<String, Object> postParams = new HashMap<>();
+		postParams.put("ccode", main.getCcode()); // 调价单号
+		postParams.put("ddate", Utils.formatDateTime(main.getDmakedate())); // 单据日期
+		postParams.put("cmainmemo", ""); // 备注
+		postParams.put("cpersoncode", this.getLoginAccount().getEmployeeNo()); // 业务员编号
+		postParams.put("cmaker", main.getMaker().getRealname()); // 制单人
+		postParams.put("isupplytype", main.getIsupplytype()); //1表示采购，2表示委外
+		
+
+		List<VenPriceAdjustDetail> list = venPriceAdjustDetailRepository.findByMainId(main.getCcode());
+		List<Map<String, String>> listParams = new ArrayList<Map<String, String>>();
+		for (VenPriceAdjustDetail detail : list) {
+			Map<String, String> row = new HashMap<>();
+			row.put("dstartdate", Utils.formatDateTime(detail.getDstartdate())); // 调价开始日期
+			row.put("cinvcode", detail.getInventory().getCode()); // 存货编码
+			row.put("cvencode", main.getVendor().getCode()); // 供应商编号
+			row.put("iunitprice", Utils.priceNumber(detail.getIunitprice())); // 未税单价
+			row.put("itaxrate", detail.getItaxrate().toString()); // 税率
+			row.put("itaxunitprice", Utils.priceNumber(detail.getItaxunitprice())); // 含税单价
+			row.put("ivouchrowno", detail.getRowno().toString()); // 行号
+			
+			listParams.add(row);
+		}
+
+		postParams.put("detail", listParams);
+
+		return postParams;
 	}
 
 }

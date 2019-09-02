@@ -349,7 +349,7 @@ public class InqueryController extends CommonController {
 			venPriceAdjustMain.setDverifydate(new Date());
 		}
 		if (form.getState() == Constants.STATE_PUBLISH) {
-			GenericJsonResponse<VenPriceAdjustMain> u8Response = this.u8VenPriceAdjust(venPriceAdjustMain);
+			GenericJsonResponse<VenPriceAdjustMain> u8Response = u8price(venPriceAdjustMain);
 			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
 				venPriceAdjustMain.setPublisher(account);
 				venPriceAdjustMain.setDpublishdate(new Date());
@@ -464,10 +464,6 @@ public class InqueryController extends CommonController {
 
 				venPriceAdjustDetailRepository.save(detail);
 			}
-		}
-
-		if (form.getState() == Constants.STATE_PUBLISH) {
-			updatePriceTable(venPriceAdjustMain);
 		}
 
 		return jsonResponse;

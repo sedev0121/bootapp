@@ -149,6 +149,18 @@ public class RestApiClient {
 		String url = appProperties.getData_url();
 
 		Map<String, Object> postData = new HashMap<>();
+		postData.put("classname", "SRM_pupricejust");
+		postData.put("method", "insert");
+		postData.put("content", content);
+
+		return post(url, postData, null, true);
+	}
+	
+	public RestApiResponse postForU8Price(Map<String, Object> content) {
+		
+		String url = appProperties.getData_url();
+
+		Map<String, Object> postData = new HashMap<>();
 		postData.put("classname", "SRM_PurBillVouch");
 		postData.put("method", "createPurBillVouch");
 		postData.put("content", content);
