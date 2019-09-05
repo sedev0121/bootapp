@@ -552,11 +552,18 @@ public class StatementController extends CommonController {
 		}
 
 		if (form.isInvoiceAction() && form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
-			GenericJsonResponse<StatementMain> u8Response = this.u8invoice(main);
+			GenericJsonResponse<StatementMain> u8Response = this.u8CheckInvoice(main);
 			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
-				main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
-				main.setErpInvoiceMakeDate(new Date());
-				main = statementMainRepository.save(main);
+				u8Response = this.u8invoice(main);
+				if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
+					main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
+					main.setErpInvoiceMakeDate(new Date());
+					main = statementMainRepository.save(main);
+				} else {
+					main.setInvoiceState(Constants.INVOICE_STATE_CONFIRMED);
+					main = statementMainRepository.save(main);
+					return u8Response;
+				}
 			} else {
 				main.setInvoiceState(Constants.INVOICE_STATE_CONFIRMED);
 				main = statementMainRepository.save(main);
@@ -567,12 +574,27 @@ public class StatementController extends CommonController {
 		return jsonResponse;
 	}
 
+	private GenericJsonResponse<StatementMain> u8CheckInvoice(StatementMain main) {
+
+		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
+				main);
+
+		RestApiResponse response = apiClient.postForU8CheckInvoice(createU8CheckInvoicePostData(main));
+
+		if (!response.isSuccess()) {
+			response.getErrmsg();
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, response.getErrmsg(), main);
+		}
+
+		return jsonResponse;
+	}
+	
 	private GenericJsonResponse<StatementMain> u8invoice(StatementMain main) {
 
 		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
 				main);
 
-		RestApiResponse response = apiClient.postForU8Iinvoice(createU8InvoicePostData(main));
+		RestApiResponse response = apiClient.postForU8Invoice(createU8InvoicePostData(main));
 
 		if (!response.isSuccess()) {
 			response.getErrmsg();
@@ -672,6 +694,34 @@ public class StatementController extends CommonController {
 		}
 
 		postParams.put("list", listParams);
+
+		return postParams;
+	}
+	
+	private Map<String, Object> createU8CheckInvoicePostData(StatementMain main) {
+		
+		Map<String, Object> postParams = new HashMap<>();
+		
+		List<StatementDetailItem> list = statementDetailRepository.findDetailsByCode(main.getCode());
+		List<Map<String, String>> listParams = new ArrayList<Map<String, String>>();
+		for (StatementDetailItem detail : list) {
+			Map<String, String> row = new HashMap<>();
+//			row.put("ID", ""); // 外购入库单表头ID
+			row.put("AutoID", detail.getPi_auto_id()); // 外购入库单表体ID
+			row.put("cVenCode", detail.getPi_vendor_code()); // 供应商编号
+			row.put("cInvCode", detail.getInventory_code()); // 外购入库单存货编码
+			
+			row.put("iQuantity", detail.getPi_quantity()); // 外购入库单入库数量
+			row.put("iOriTaxCost", detail.getPi_tax_price()); // 外购入库单含税单价
+			row.put("iTaxRate", detail.getPi_tax_rate()); // 外购入库单税率
+			row.put("cWhCode", detail.getPi_store_code()); // 外购入库单入库仓库
+			row.put("cCode", detail.getPi_code()); // 外购入库单入库单号
+			row.put("irowno", detail.getRow_no().toString()); // 对帐单行号			
+
+			listParams.add(row);
+		}
+
+		postParams.put("bills", listParams);
 
 		return postParams;
 	}

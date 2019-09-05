@@ -14,6 +14,12 @@ public interface StatementDetailItem {
 	String getPi_date();
 	String getPi_quantity();
 	String getPi_auto_id();
+	
+	String getPi_store_code();
+	String getPi_tax_rate();
+	String getPi_tax_price();
+	String getPi_vendor_code();
+	
 	String getTax_rate();
 	String getTax();
 	String getPrice();

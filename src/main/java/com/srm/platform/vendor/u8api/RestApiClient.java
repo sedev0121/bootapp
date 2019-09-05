@@ -144,13 +144,25 @@ public class RestApiClient {
 		
 	}
 	
-	public RestApiResponse postForU8Iinvoice(Map<String, Object> content) {
+	public RestApiResponse postForU8Invoice(Map<String, Object> content) {
 		
 		String url = appProperties.getData_url();
 
 		Map<String, Object> postData = new HashMap<>();
-		postData.put("classname", "SRM_pupricejust");
-		postData.put("method", "insert");
+		postData.put("classname", "SRM_PurBillVouch");
+		postData.put("method", "createPurBillVouch");		
+		postData.put("content", content);
+
+		return post(url, postData, null, true);
+	}
+	
+	public RestApiResponse postForU8CheckInvoice(Map<String, Object> content) {
+		
+		String url = appProperties.getData_url();
+
+		Map<String, Object> postData = new HashMap<>();
+		postData.put("classname", "SRM_rdrecord01");
+		postData.put("method", "checkBill");
 		postData.put("content", content);
 
 		return post(url, postData, null, true);
@@ -161,8 +173,8 @@ public class RestApiClient {
 		String url = appProperties.getData_url();
 
 		Map<String, Object> postData = new HashMap<>();
-		postData.put("classname", "SRM_PurBillVouch");
-		postData.put("method", "createPurBillVouch");
+		postData.put("classname", "SRM_pupricejust");
+		postData.put("method", "insert");
 		postData.put("content", content);
 
 		return post(url, postData, null, true);

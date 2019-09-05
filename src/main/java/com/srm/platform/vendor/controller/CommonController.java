@@ -425,7 +425,7 @@ public class CommonController {
 		GenericJsonResponse<VenPriceAdjustMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
 				main);
 
-		RestApiResponse response = apiClient.postForU8Iinvoice(createU8PricePostData(main));
+		RestApiResponse response = apiClient.postForU8Price(createU8PricePostData(main));
 
 		if (!response.isSuccess()) {
 			response.getErrmsg();
