@@ -199,6 +199,10 @@ public class SellerController extends AccountController {
 		account.setRealname(newVendor.getAbbrname());
 		account = accountRepository.save(account);
 
+		if (account.getState() == Constants.ACCOUNT_STATE_DISABLE) {
+			permissionUserScopeRepository.deleteByVendorDimension(account.getVendor().getCode());
+		}
+		
 		jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, account);
 
 		return jsonResponse;

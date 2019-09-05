@@ -227,6 +227,10 @@ public class BuyerController extends AccountController {
 				permissionUserScopeRepository.save(temp);
 			}
 		}
+		
+		if (account.getState() == Constants.ACCOUNT_STATE_DISABLE) {
+			permissionUserScopeRepository.deleteByAccountDimension(account.getId());
+		}
 
 		return jsonResponse;
 	}

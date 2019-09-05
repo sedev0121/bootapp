@@ -222,7 +222,7 @@ public class DeliveryController extends CommonController {
 
 		if (!code.trim().isEmpty()) {
 			bodyQuery += " and a.code like CONCAT('%',:code, '%') ";
-			params.put("a.code", code.trim());
+			params.put("code", code.trim());
 		}
 
 		if (!vendorStr.trim().isEmpty()) {

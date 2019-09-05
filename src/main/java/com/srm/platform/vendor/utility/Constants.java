@@ -5,6 +5,8 @@ public class Constants {
 	public final static String ATTACH_TYPE_STATEMENT = "statement";
 	public final static String ATTACH_TYPE_INQUERY = "inquery";
 	
+	public final static int ACCOUNT_STATE_ENABLE = 1;
+	public final static int ACCOUNT_STATE_DISABLE = 0;
 	
 	public final static int STATE_NEW = 1;
 	public final static int STATE_SUBMIT = 2;
