@@ -699,7 +699,8 @@
 			  import_table = $('#import_table').DataTable({
 			    ordering : true,
 			    select : {
-				    style : 'multi'
+				    style : 'multi',
+				    selector : 'td:first-child',
 			    },
 			    lengthChange: true,
 			    ajax : {
@@ -1011,7 +1012,8 @@
 		    destroy : true,
 		    ordering : false,
 		    select : canEdit() ? {
-			    style : 'multi'
+			    style : 'multi',
+			    selector : 'td:first-child',
 		    } : false,
 		    fixedColumns : {
 			    leftColumns : 7,

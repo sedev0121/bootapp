@@ -35,11 +35,11 @@ public interface StatementDetailRepository extends JpaRepository<StatementDetail
 	
 	@Query(value = "select b.vendor_code, b.type, c.statement_company_id from purchase_in_detail a "
 			+ "left join purchase_in_main b on a.code=b.code left join company c on b.company_code=c.code "
-			+ "where a.state=0 and b.company_code is not null and b.date < ?1 GROUP BY b.vendor_code, b.type, c.statement_company_id", nativeQuery = true)
+			+ "where a.state=0 and b.company_code is not null and b.date < ?1 and b.vendor_code in (select vendor_code from account where role='ROLE_VENDOR' and vendor_code is not null) GROUP BY b.vendor_code, b.type, c.statement_company_id", nativeQuery = true)
 	List<StatementPendingItem> findAllPendingData(Date filterDate);
 	
 	@Query(value = "select a.id, a.code from purchase_in_detail a left join purchase_in_main b on a.code=b.code left join company c on b.company_code=c.code left join statement_company d on c.statement_company_id=d.id "
-			+ "where a.state=0 and b.company_code is not null and b.vendor_code = ?1 and d.id = ?2 and b.type = ?3 and b.date < ?4", nativeQuery = true)
+			+ "where a.state=0 and b.company_code is not null and b.vendor_code = ?1 and d.id = ?2 and b.type = ?3 and b.date < ?4 order by a.code, a.row_no", nativeQuery = true)
 	List<StatementPendingDetail> findAllPendingDetail(String vendorCode, Long statementCompanyId, String type, Date filterDate);
 
 }

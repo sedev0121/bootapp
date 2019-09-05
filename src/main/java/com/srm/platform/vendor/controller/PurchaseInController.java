@@ -111,7 +111,7 @@ public class PurchaseInController extends CommonController {
 				+ "left join account emp on pom.employee_no=emp.employee_no "
 				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
 				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
-				+ "left join vendor v on b.vendor_code=v.code where pom.state='审核'  ";
+				+ "left join vendor v on b.vendor_code=v.code where 1=1  ";
 
 		Map<String, Object> params = new HashMap<>();
 
