@@ -174,6 +174,42 @@ public class ApiController {
 	}
 	
 	@ResponseBody
+	@RequestMapping({ "/delete_pi_rows" })
+	public Map<String, Object> deletePIRows(@RequestBody Map<String, Object> requestParams) {
+		
+		List<String> autoIdList = (List<String>)requestParams.get("auto_ids");
+		
+		logger.info("=========/api/delete_pi_rows============");
+		logger.info("<<< " + Utils.convertMapToJson(requestParams));
+		
+		List<PurchaseInDetail> list = new ArrayList<PurchaseInDetail>();
+		
+		for(String autoId : autoIdList) {
+			if (Utils.isEmpty(autoId)) {				
+				continue;
+			}
+			
+			PurchaseInDetail temp = purchaseInDetailRepository.findOneByAutoId(Long.parseLong(autoId));
+			if (temp != null) {
+				logger.info("成功删除入库单行[" + autoId + "]");
+				temp.setState(Constants.PURCHASE_IN_STATE_DELETED);
+				list.add(temp);	
+			} else {
+				logger.error("找不到入库单行[" + autoId + "]");
+			}
+		}
+		
+		purchaseInDetailRepository.saveAll(list);
+		
+		Map<String, Object> response = new HashMap<String, Object>();
+		response.put("error_code", RESPONSE_SUCCESS);
+		response.put("msg", "成功");
+		
+		logger.info(">>> " + Utils.convertMapToJson(response));
+		return response;
+	}
+	
+	@ResponseBody
 	@RequestMapping({ "/box/empty" })
 	public GenericJsonResponse<Box> boxEmpty(@RequestParam Map<String, String> requestParams) {
 		GenericJsonResponse<Box> jsonResponse;

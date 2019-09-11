@@ -545,9 +545,7 @@ public class StatementController extends CommonController {
 			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START);
 		}
 
-		if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
-			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_FINISH);
-		} else if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCEL_UPLOAD) {
+		if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCEL_UPLOAD) {
 			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START);
 		}
 
@@ -559,6 +557,9 @@ public class StatementController extends CommonController {
 					main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
 					main.setErpInvoiceMakeDate(new Date());
 					main = statementMainRepository.save(main);
+					
+					setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_FINISH); 
+						
 				} else {
 					main.setInvoiceState(Constants.INVOICE_STATE_CONFIRMED);
 					main = statementMainRepository.save(main);
@@ -582,7 +583,6 @@ public class StatementController extends CommonController {
 		RestApiResponse response = apiClient.postForU8CheckInvoice(createU8CheckInvoicePostData(main));
 
 		if (!response.isSuccess()) {
-			response.getErrmsg();
 			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, response.getErrmsg(), main);
 		}
 

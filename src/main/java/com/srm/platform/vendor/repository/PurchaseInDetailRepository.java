@@ -14,6 +14,8 @@ import com.srm.platform.vendor.searchitem.PurchaseInDetailItem;
 public interface PurchaseInDetailRepository extends JpaRepository<PurchaseInDetail, Long> {
 
 	PurchaseInDetail findOneById(Long id);
+	
+	PurchaseInDetail findOneByAutoId(Long autoId);
 
 	@Query(value = "select b.name inventoryname, b.specs, b.main_measure unitname, c.closed_quantity, a.* from purchase_in_detail a left join inventory b on a.inventory_code=b.code left join (select b.id, sum(a.closed_quantity) closed_quantity from statement_detail a left join purchase_in_detail b on a.purchase_in_detail_id=b.id left join statement_main c on a.code=c.code where c.state=3 group by b.id) c on a.id=c.id where a.code= :code order by a.rowno", nativeQuery = true)
 	List<PurchaseInDetailItem> findDetailsByCode(String code);

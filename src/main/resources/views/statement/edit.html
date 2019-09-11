@@ -1185,10 +1185,21 @@
 		      defaultContent : '',
 		      sortable : false,
 		      title : '送货单数量'
+		    }, {
+		      data : 'pi_state',
+		      className : 'dt-center',
+		      render : App.getPurchaseInStateOfId,
+		      sortable : false,
+		      title : '入库单行状态'
 		    } ],
 		    order : [ [ 0, "asc" ], [ 3, "asc" ] ],
 		    footerCallback : function(row, data, start, end, display) {
 			    App.footerCallback(this.api(), [ [ 9, "quantity" ], [ 10, "cost" ], [ 11, "cost" ], [ 13, "cost" ], [ 14, "cost" ], [ 15, "quantity" ], [ 17, "cost" ], [ 23, "quantity" ] ]);
+		    },
+		    rowCallback: function (row, data) {
+		    	if (data.pi_state > 1) {
+		    		$(row).addClass('red');
+		    	}
 		    },
 		    drawCallback : function(settings) {
 			    var data_list = this.api().rows().data().toArray()
@@ -1255,7 +1266,7 @@
 		  var footertr = $("<tr></tr>").appendTo(footer);
 
 		  //Add footer cells
-		  for (var i = 0; i < 18; i++) {
+		  for (var i = 0; i < 19; i++) {
 			  if (i == 0) {
 				  $("<th colspan='7' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
 			  } else {
@@ -1427,6 +1438,7 @@
 				  item.invoice_quantity = item.quantity;
 				  item.invoice_cost = item.tax_cost;
 				  item.adjust_tax_cost = 0;
+				  item.pi_state = 0;
 				  item.tax_rate = parseFloat($('#tax_rate').val());
 				  item.invoice_price = App.costNumber(item.invoice_cost / item.invoice_quantity);
 
