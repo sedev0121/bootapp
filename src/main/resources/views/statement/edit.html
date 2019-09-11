@@ -294,6 +294,7 @@
    var edit_url = [[@{/statement/}]];
    var import_url = [[@{/purchasein/select}]];
    var del_url = [[@{|/statement/${main.code}/delete|}]];
+   var init_url = [[@{|/statement/${main.code}/init|}]];
    var vendor_search_url = [[@{/vendor/search}]];
    var state = [[${main.state}]];
    var invoice_state = [[${main.invoiceState}]];
@@ -1400,14 +1401,20 @@
 						      window.location.href = edit_url + res.data.code + "/edit";
 					      });
 				      } else {
-				      	if (confirmMessage == "传递ERP") {
-				      		App.showInputConfirmDialog(res.errmsg, function() {
-				      			$('#save_state').val(1);
-				      		  $("#form").submit();
-				      		});
-				      	} else {
+				      	if (res.data) {
 				      		App.showErrorDialog("操作失败", res.errmsg);	
-				      	}					      
+				      	} else {
+				      		App.showConfirmDialog(res.errmsg + "确定要退回到新建状态？", function() {
+				      			$.get(init_url, function(data, status) {
+				    				  App.showSuccessDialog("操作成功", function() {
+				    				  	window.location.href = edit_url + $("#code").val() + "/edit";
+				    				  });
+				    			  });
+				      		}, function() {
+				      			window.location.href = edit_url + $("#code").val() + "/edit";
+				      		});
+				      	}
+				      						      
 				      }
 			      },
 			      error : function(res, status, xhr, form) {

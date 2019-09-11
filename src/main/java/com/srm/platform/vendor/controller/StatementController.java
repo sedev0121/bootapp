@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -516,65 +517,78 @@ public class StatementController extends CommonController {
 		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
 				main);
 
-		if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
-			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_WAIT);
-			statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
-			if (form.getTable() != null) {
-				int i = 1;
-				for (Map<String, String> row : form.getTable()) {
-					StatementDetail detail = new StatementDetail();
-					detail.setCode(main.getCode());
-					detail.setPiDetailId(Long.parseLong(row.get("pi_detail_id")));
-					try {
-						detail.setAdjustTaxCost(Double.parseDouble(row.get("adjust_tax_cost")));
-					} catch (Exception e) {
-
-					}
-
-					try {
-						detail.setTaxRate(Integer.parseInt(row.get("tax_rate")));
-					} catch (Exception e) {
-
-					}
-
-					detail.setRowNo(i++);
-
-					detail = statementDetailRepository.save(detail);
-				}
-			}
-			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START);
-		}
-
-		if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCEL_UPLOAD) {
-			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START);
-		}
-
-		if (form.isInvoiceAction() && form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
-			GenericJsonResponse<StatementMain> u8Response = this.u8CheckInvoice(main);
-			if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
-				u8Response = this.u8invoice(main);
+		if (form.isInvoiceAction()) {
+			if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCEL_UPLOAD) {
+				setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START, true);
+			} else if (form.getInvoice_state() == Constants.INVOICE_STATE_UPLOAD_ERP) {
+				GenericJsonResponse<StatementMain> u8Response = this.u8CheckInvoice(main);
 				if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
-					main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
-					main.setErpInvoiceMakeDate(new Date());
-					main = statementMainRepository.save(main);
-					
-					setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_FINISH); 
+					u8Response = this.u8invoice(main);
+					if (u8Response.getSuccess() == GenericJsonResponse.SUCCESS) {
+						main.setErpInvoiceMakeName(this.getLoginAccount().getRealname());
+						main.setErpInvoiceMakeDate(new Date());
+						main = statementMainRepository.save(main);
 						
+						setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_FINISH, true); 
+							
+					} else {
+						main.setInvoiceState(Constants.INVOICE_STATE_CONFIRMED);
+						main = statementMainRepository.save(main);
+						return u8Response;
+					}
 				} else {
 					main.setInvoiceState(Constants.INVOICE_STATE_CONFIRMED);
 					main = statementMainRepository.save(main);
 					return u8Response;
 				}
-			} else {
-				main.setInvoiceState(Constants.INVOICE_STATE_CONFIRMED);
-				main = statementMainRepository.save(main);
-				return u8Response;
+			}			
+		} else {
+			if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
+				setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_WAIT, false);
+				statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
+				if (form.getTable() != null) {
+					int i = 1;
+					for (Map<String, String> row : form.getTable()) {
+						StatementDetail detail = new StatementDetail();
+						detail.setCode(main.getCode());
+						detail.setPiDetailId(Long.parseLong(row.get("pi_detail_id")));
+						try {
+							detail.setAdjustTaxCost(Double.parseDouble(row.get("adjust_tax_cost")));
+						} catch (Exception e) {
+
+						}
+
+						try {
+							detail.setTaxRate(Integer.parseInt(row.get("tax_rate")));
+						} catch (Exception e) {
+
+						}
+
+						detail.setRowNo(i++);
+
+						detail = statementDetailRepository.save(detail);
+					}
+				}
+				setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START, false);
 			}
 		}
 
 		return jsonResponse;
 	}
-
+	
+	@GetMapping("/{code}/init")
+	public @ResponseBody Boolean initState(@PathVariable("code") String code) {
+		StatementMain main = statementMainRepository.findOneByCode(code);
+		if (main != null) {
+			main.setState(Constants.STATEMENT_STATE_NEW);
+			statementMainRepository.save(main);	
+			
+			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START, false);
+		}
+		
+		return true;
+	}
+	
 	private GenericJsonResponse<StatementMain> u8CheckInvoice(StatementMain main) {
 
 		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
@@ -583,7 +597,39 @@ public class StatementController extends CommonController {
 		RestApiResponse response = apiClient.postForU8CheckInvoice(createU8CheckInvoicePostData(main));
 
 		if (!response.isSuccess()) {
-			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, response.getErrmsg(), main);
+			List<String> deletedRowNoList = new ArrayList<String>();
+			List<String> finishedRowNoList = new ArrayList<String>();
+			List<LinkedHashMap<String, Object>> details = response.getData("details");
+			for(LinkedHashMap<String, Object> row : details) {
+				String autoId = (String)row.get("AutoID");
+				String stateStr = (String)row.get("state");
+				String rowNoStr = (String)row.get("irowno");
+				
+				PurchaseInDetail purchaseInDetail = this.purchaseInDetailRepository.findOneByAutoId(Long.parseLong(autoId));
+				if (purchaseInDetail != null) {
+					int state = Integer.parseInt(stateStr);
+					if (state == 1) {
+						state = Constants.PURCHASE_IN_STATE_DELETED;
+						purchaseInDetail.setState(state);
+						purchaseInDetailRepository.save(purchaseInDetail);
+						deletedRowNoList.add(rowNoStr);
+					} else if (state == 2) {
+						state = Constants.PURCHASE_IN_STATE_FINISH;
+						purchaseInDetail.setState(state);
+						purchaseInDetailRepository.save(purchaseInDetail);
+						finishedRowNoList.add(rowNoStr);
+					}					
+				}
+			}
+			
+			String errMsg = "";
+			if (deletedRowNoList.size() > 0) {
+				errMsg += String.join(",", deletedRowNoList) + "行已被删除。";
+			}
+			if (finishedRowNoList.size() > 0) {
+				errMsg += String.join(",", finishedRowNoList) + "行已开过发票。";
+			}
+			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errMsg, null);
 		}
 
 		return jsonResponse;
@@ -597,7 +643,6 @@ public class StatementController extends CommonController {
 		RestApiResponse response = apiClient.postForU8Invoice(createU8InvoicePostData(main));
 
 		if (!response.isSuccess()) {
-			response.getErrmsg();
 			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, response.getErrmsg(), main);
 		}
 
@@ -929,14 +974,18 @@ public class StatementController extends CommonController {
 		return list;
 	}
 
-	private void setPurchaseInDetailState(StatementMain main, int state) {
+	private void setPurchaseInDetailState(StatementMain main, int state, boolean isOverwriteFinishState) {
 		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
 		for (StatementDetail detail : detailList) {
 			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPiDetailId());
 
-			if (purchaseInDetail != null) {
-				purchaseInDetail.setState(state);
-				purchaseInDetailRepository.save(purchaseInDetail);
+			if (purchaseInDetail != null && purchaseInDetail.getState() != Constants.PURCHASE_IN_STATE_DELETED) {
+				if (!isOverwriteFinishState && purchaseInDetail.getState() == Constants.PURCHASE_IN_STATE_FINISH) {
+					continue;
+				} else {
+					purchaseInDetail.setState(state);
+					purchaseInDetailRepository.save(purchaseInDetail);	
+				}
 			}
 		}
 	}
