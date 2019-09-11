@@ -1197,7 +1197,7 @@
 			    App.footerCallback(this.api(), [ [ 9, "quantity" ], [ 10, "cost" ], [ 11, "cost" ], [ 13, "cost" ], [ 14, "cost" ], [ 15, "quantity" ], [ 17, "cost" ], [ 23, "quantity" ] ]);
 		    },
 		    rowCallback: function (row, data) {
-		    	if (data.pi_state > 1) {
+		    	if (data.pi_state == 3 || data.pi_state == 2 && invoice_state != 4) {
 		    		$(row).addClass('red');
 		    	}
 		    },
@@ -1400,7 +1400,14 @@
 						      window.location.href = edit_url + res.data.code + "/edit";
 					      });
 				      } else {
-					      App.showErrorDialog("操作失败", res.errmsg);
+				      	if (confirmMessage == "传递ERP") {
+				      		App.showInputConfirmDialog(res.errmsg, function() {
+				      			$('#save_state').val(1);
+				      		  $("#form").submit();
+				      		});
+				      	} else {
+				      		App.showErrorDialog("操作失败", res.errmsg);	
+				      	}					      
 				      }
 			      },
 			      error : function(res, status, xhr, form) {
