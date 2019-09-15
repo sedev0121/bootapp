@@ -370,9 +370,10 @@ public class SyncController {
 					PurchaseOrderMain main = purchaseOrderMainRepository.findOneById(id);
 					if (main == null) {
 						main = new PurchaseOrderMain();
-						main.setCode(getStringValue(temp, "cPOID"));
+						main.setId(id);
 						main.setSrmstate(Constants.PURCHASE_ORDER_STATE_START);
 					}
+					main.setCode(getStringValue(temp, "cPOID"));
 					main.setPurchaseTypeName(purchaseTypeName);					
 					Vendor vendor = vendorRepository.findOneByCode(getStringValue(temp, "cVenCode"));
 
