@@ -54,13 +54,13 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 @Table(name = "purchase_order_main")
 public class PurchaseOrderMain {
 	@Id
+	private String id;
+	
 	private String code;
 
 	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "vencode", referencedColumnName = "code")
 	Vendor vendor;
-
-	private String poid;
 	
 	@JsonProperty("purchase_type_name")
 	private String purchaseTypeName;
@@ -128,6 +128,14 @@ public class PurchaseOrderMain {
 	
 	public PurchaseOrderMain() {
 
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getContractCode() {
@@ -376,14 +384,6 @@ public class PurchaseOrderMain {
 
 	public void setAudittime(Date audittime) {
 		this.audittime = audittime;
-	}
-
-	public String getPoid() {
-		return poid;
-	}
-
-	public void setPoid(String poid) {
-		this.poid = poid;
 	}
 
 }

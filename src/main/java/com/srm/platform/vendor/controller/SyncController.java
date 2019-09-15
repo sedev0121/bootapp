@@ -357,24 +357,32 @@ public class SyncController {
 					break;
 				}
 				for (LinkedHashMap<String, Object> temp : response.getData()) {
-
-					PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(getStringValue(temp, "cPOID"));
+					String purchaseTypeName = getStringValue(temp, "cBusType");
+					String poid = getStringValue(temp, "POID");
+					
+					String id;
+					if (purchaseTypeName.equals("普通采购")) {
+						id = "PO" + poid;
+					} else {
+						id = "WE" + poid;
+					}
+					
+					PurchaseOrderMain main = purchaseOrderMainRepository.findOneById(id);
 					if (main == null) {
 						main = new PurchaseOrderMain();
 						main.setCode(getStringValue(temp, "cPOID"));
 						main.setSrmstate(Constants.PURCHASE_ORDER_STATE_START);
 					}
-					main.setPurchaseTypeName(getStringValue(temp, "cBusType"));
-					main.setPoid(getStringValue(temp, "POID"));
+					main.setPurchaseTypeName(purchaseTypeName);					
 					Vendor vendor = vendorRepository.findOneByCode(getStringValue(temp, "cVenCode"));
 
 					// TODO:0=新建 1=审核 2=关闭
 					int cState = getIntegerValue(temp, "cState");
 					if (cState == 0 || vendor == null) {
 						if (main.getPurchaseTypeName().equals("普通采购")) {
-							pocodes.add(main.getPoid());
+							pocodes.add(poid);
 						} else {
-							mocodes.add(main.getPoid());
+							mocodes.add(poid);
 						}
 						totalCount++;
 						continue;
@@ -426,7 +434,7 @@ public class SyncController {
 
 					purchaseOrderMainRepository.save(main);
 
-					List<PurchaseOrderDetail> oldList = purchaseOrderDetailRepository.findDetailsByCode(main.getCode());
+					List<PurchaseOrderDetail> oldList = purchaseOrderDetailRepository.findDetailsByMainId(main.getId());
 					
 					List<LinkedHashMap<String, Object>> details = getDetailMap(temp, "details");
 					if (details == null || details.size() == 0) {
@@ -440,7 +448,7 @@ public class SyncController {
 					
 					for (LinkedHashMap<String, Object> detailTemp : details) {
 						String originalID = getStringValue(detailTemp, "ID");
-						PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByOrigianId(main.getCode(), originalID);
+						PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByOrigianId(main.getId(), originalID);
 
 						if (detail == null) {
 							detail = new PurchaseOrderDetail();
@@ -530,9 +538,9 @@ public class SyncController {
 					
 					if (addDetailSuccess) {
 						if (main.getPurchaseTypeName().equals("普通采购")) {
-							pocodes.add(main.getPoid());
+							pocodes.add(poid);
 						} else {
-							mocodes.add(main.getPoid());
+							mocodes.add(poid);
 						}
 						totalCount++;
 					}					
