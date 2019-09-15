@@ -549,7 +549,7 @@ public class SyncController {
 				}
 
 				if (pocodes.size() > 0 || mocodes.size() > 0) {
-					response = apiClient.postConfirmForOrder(pocodes, mocodes);
+					//response = apiClient.postConfirmForOrder(pocodes, mocodes);
 				} else {
 					hasMore = false;
 					break;
@@ -584,6 +584,7 @@ public class SyncController {
 				}
 				for (LinkedHashMap<String, Object> temp : data) {
 
+					Long id = getLongValue(temp, "ID");
 					String code = getStringValue(temp, "cCode");
 					String type = getStringValue(temp, "cBusType");
 					String vendor_code = getStringValue(temp, "cVenCode");
@@ -593,12 +594,13 @@ public class SyncController {
 					String date = getStringValue(temp, "dDate");
 					String verifyDate = getStringValue(temp, "dVeriDate");
 					
-					PurchaseInMain main = purchaseInMainRepository.findOneByCode(code);
+					PurchaseInMain main = purchaseInMainRepository.findOneById(id);
 					if (main == null) {
 						main = new PurchaseInMain();
-						main.setCode(code);						
+						main.setId(id);			
 					}
 
+					main.setCode(code);
 					Vendor vendor = vendorRepository.findOneByCode(vendor_code);
 					main.setVendor(vendor);
 
@@ -665,7 +667,7 @@ public class SyncController {
 				}
 
 				if (codes.size() > 0) {
-					response = apiClient.postConfirmForPurchaseIn(codes);
+//					response = apiClient.postConfirmForPurchaseIn(codes);
 				} else {
 					hasMore = false;
 					break;

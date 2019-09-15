@@ -17,6 +17,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Table(name = "purchase_in_main")
 public class PurchaseInMain {
 	@Id
+	private Long id;
+	
 	private String code;
 
 	private String type;
@@ -35,6 +37,15 @@ public class PurchaseInMain {
 	
 	private Date date;
 	private Date verifyDate;
+
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public Date getVerifyDate() {
 		return verifyDate;
