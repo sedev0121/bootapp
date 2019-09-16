@@ -1030,8 +1030,12 @@ public class ApiController {
 				this.logger.info(String.format("Details continue=> %s %s", detail.getId(), detail.getCode()));
 				continue;
 			}			
-			costSum += purchaseInDetail.getCost();
-			taxCostSum += purchaseInDetail.getTaxCost();
+			
+			Double cost = purchaseInDetail.getCost();
+			Double taxCost = purchaseInDetail.getTaxCost();
+			
+			costSum += (cost==null)?0:cost;
+			taxCostSum += (taxCost==null)?0:taxCost;
 			
 			purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);				
 			purchaseInDetailList.add(purchaseInDetail);
