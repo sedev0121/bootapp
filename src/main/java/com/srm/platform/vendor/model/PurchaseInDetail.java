@@ -105,7 +105,7 @@ public class PurchaseInDetail {
 
 	@JsonIgnore
 	@ManyToOne(cascade = { CascadeType.REFRESH })
-	@JoinColumn(name = "code", referencedColumnName = "code")
+	@JoinColumn(name = "main_id", referencedColumnName = "id")
 	private PurchaseInMain main;
 
 	@OneToOne(cascade = { CascadeType.REFRESH })

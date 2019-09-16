@@ -551,9 +551,13 @@ ALTER TABLE purchase_order_detail CHANGE COLUMN code main_id varchar(255) NOT NU
 update purchase_order_detail set main_id=concat('PO', table_id) where main_id like 'PO%';
 update purchase_order_detail set main_id=concat('WE', table_id) where main_id like 'WE%';
 
+alter table purchase_order_detail DROP column table_id;
+alter table purchase_order_main DROP column table_id;
+
+
 delete from purchase_in_main where table_id is null;
 ALTER TABLE purchase_in_main CHANGE COLUMN table_id id int(20) NOT NULL;
 alter table purchase_in_main drop primary key, add primary key(id);
 
 ALTER TABLE purchase_in_detail CHANGE COLUMN table_id main_id int(20) NOT NULL;
-
+alter table purchase_in_detail DROP column code;

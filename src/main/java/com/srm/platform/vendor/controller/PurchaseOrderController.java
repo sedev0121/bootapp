@@ -128,7 +128,7 @@ public class PurchaseOrderController extends CommonController {
 
 		String bodyQuery = "FROM purchase_order_main a left join vendor b on a.vencode=b.code left join account c on a.deployer=c.id "
 				+ "left join account d on a.reviewer=d.id left join account emp on a.employee_no=emp.employee_no "
-				+ "left join (select code, sum(prepay_money) prepay_money, sum(money) money, sum(sum) sum from purchase_order_detail group by code) e on a.code=e.code "
+				+ "left join (select main_id, sum(prepay_money) prepay_money, sum(money) money, sum(sum) sum from purchase_order_detail group by main_id) e on a.id=e.main_id "
 				+ "left join company f on a.company_id=f.id WHERE a.state='审核' and a.company_id is not null and a.vencode in (select vendor_code from account where vendor_code is not null) ";
 
 		Map<String, Object> params = new HashMap<>();

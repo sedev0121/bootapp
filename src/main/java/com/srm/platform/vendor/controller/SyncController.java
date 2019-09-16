@@ -633,7 +633,7 @@ public class SyncController {
 					Integer deliveryRowNo = getIntegerValue(temp, "purowno");
 					
 										
-					PurchaseInDetail detail = purchaseInDetailRepository.findOneByCodeAndRowno(code,rowNo);
+					PurchaseInDetail detail = purchaseInDetailRepository.findOneByMainIdAndRowno(id,rowNo);
 					if (detail != null) {
 						logger.info("code=" + code + " rowno=" + rowNo);
 					} else {

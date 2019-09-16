@@ -78,6 +78,9 @@ public class PurchaseInController extends CommonController {
 		Date endDate = Utils.getNextDate(end_date);
 
 		switch (order) {
+		case "code":
+			order = "b.code";
+			break;
 		case "date":
 			order = "b.date";
 			break;
@@ -98,16 +101,16 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
+		String selectQuery = "select a.*, b.code, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
 				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, po.confirmed_memo confirmed_memo, dd.delivered_quantity ";
 		String countQuery = "select count(a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from purchase_in_detail a "
-				+ "left join purchase_in_main b on a.code=b.code "
+				+ "left join purchase_in_main b on a.main_id=b.id "
 				+ "left join inventory c on a.inventory_code=c.code "
-				+ "left join purchase_order_detail po on a.po_code=po.code and a.po_row_no=po.row_no "
-				+ "left join purchase_order_main pom on a.po_code=pom.code "
+				+ "left join purchase_order_detail po on a.po_code=po.main_id and a.po_row_no=po.row_no "
+				+ "left join purchase_order_main pom on po.main_id=pom.id "
 				+ "left join account emp on pom.employee_no=emp.employee_no "
 				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
 				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
