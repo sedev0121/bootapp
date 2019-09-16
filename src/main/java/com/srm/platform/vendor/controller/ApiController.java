@@ -992,6 +992,7 @@ public class ApiController {
 	}
 	
 	private StatementMain generateStatementMain(Date statementDate, String vendorCode, Long statementCompanyId, String type, Task task) {
+		logger.info(String.format("生成对账单 供应商=%s, 结算实体=%d, 类型=%s, 任务编号=%s", vendorCode, statementCompanyId, type, task.getCode()));
 		StatementMain main = new StatementMain();		
 		
 		Integer statementType = "普通采购".equalsIgnoreCase(type)? Constants.STATEMENT_TYPE_BASIC : Constants.STATEMENT_TYPE_WEIWAI;
@@ -1011,6 +1012,7 @@ public class ApiController {
 	}
 	
 	private void generateStatementDetails(StatementMain main) {
+		logger.info("生成对账单明细 ");
 		String vendorCode = main.getVendor().getCode();
 		Long statementCompanyId = main.getStatementCompany().getId();
 		String type = main.getType() == 1 ? "普通采购":"委外加工";
@@ -1019,6 +1021,9 @@ public class ApiController {
 		List<StatementPendingDetail> pendingDetailList = this.statementDetailRepository.findAllPendingDetail(vendorCode, statementCompanyId, type, filterDate);
 		int index = 1;
 		double costSum = 0, taxCostSum = 0, taxSum = 0;
+		List<PurchaseInDetail> purchaseInDetailList = new ArrayList<PurchaseInDetail>();
+		List<StatementDetail> statementDetailList = new ArrayList<StatementDetail>();
+		
 		for (StatementPendingDetail detail : pendingDetailList) {
 			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getId());
 			if (purchaseInDetail.getState() != Constants.PURCHASE_IN_STATE_WAIT) {
@@ -1028,16 +1033,22 @@ public class ApiController {
 			costSum += purchaseInDetail.getCost();
 			taxCostSum += purchaseInDetail.getTaxCost();
 			
-			purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);	
-			purchaseInDetailRepository.save(purchaseInDetail);
+			purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);				
+			purchaseInDetailList.add(purchaseInDetail);
 			
 			StatementDetail statementDetail = new StatementDetail();
 			statementDetail.setCode(main.getCode());
 			statementDetail.setPiDetailId(detail.getId());
 			statementDetail.setRowNo(index++);
 			statementDetail.setAdjustTaxCost(0D);
-			statementDetailRepository.save(statementDetail);
+			
+			statementDetailList.add(statementDetail);
+			
+			logger.info(String.format("生成对账单明细  入库单AutoID=%d", purchaseInDetail.getAutoId()));
 		}
+		
+		purchaseInDetailRepository.saveAll(purchaseInDetailList);
+		statementDetailRepository.saveAll(statementDetailList);
 		
 		taxSum = taxCostSum - costSum;
 		

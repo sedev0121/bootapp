@@ -324,6 +324,7 @@
 	  		App.showErrorDialog("操作失败", "请输入对账时间");
 	  	} else {
 	  		App.showConfirmDialog('确定要生成对账单吗?', function() {
+	  			$('#new_dialog').modal('hide');
 				  var url = manual_generate_url + $("#manual_statement_date").val();
 				  App.blockUI();
 				  $.get(url, function(res, status) {
