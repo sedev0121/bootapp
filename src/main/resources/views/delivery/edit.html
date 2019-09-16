@@ -935,41 +935,40 @@ is_readonly = 0;
 					  return false;
 				  }			  			  			  
 			  }	
-	  	}	  	
-	  	
-		 
-		  var store_set = $('#store_set').val();
+	  	} else {
+	  		var store_set = $('#store_set').val();
 
-		  for (i = 0; i < exist_data.length; i++) {
-			  var exist_row = exist_data[i];
-			  
-			  var delivery_max_limit = exist_row.purchaseOrderDetail.quantity * (exist_row.purchaseOrderDetail.inventory.extra_rate + 100)/100 - exist_row.purchaseOrderDetail.delivered_quantity;
-			  
-			  if (exist_row.purchaseOrderDetail.main.purchase_type_name != $('#type').val()) {
-			  	App.showErrorDialog("操作失败", "有些货品的采购类型与发货单不符！");
-				  return false;
-			  } else if (!exist_row.delivered_quantity || exist_row.delivered_quantity == 0) {
-				  App.showErrorDialog("操作失败", "发货数量不能为空！");
-				  return false;
-			  } else if (exist_row.delivered_quantity > delivery_max_limit) {
-			  	App.showErrorDialog("操作失败", "发货数量不能大于订单未发数量！");
-				  return false;
-			  } else if (store_set == 1 && !exist_row.purchaseOrderDetail.count_per_box) {			  	
-			  	App.showErrorDialog("操作失败", exist_row.purchaseOrderDetail.inventory.name + "(" + exist_row.purchaseOrderDetail.inventory.code + ")" + "的单位包装量为空。请先维护此货品的单位包装量。");
-				  return false;
-			  }			  
-		  }
-		  
-		  for (i = 0; i < exist_data.length; i++) {
-			  var exist_row = exist_data[i];
-			  for (j = i+1; j < exist_data.length; j++) {
-				  var compare_row = exist_data[j];
-				  if (exist_row.purchaseOrderDetail.inventory.code == compare_row.purchaseOrderDetail.inventory.code && exist_row.purchaseOrderDetail.count_per_box != compare_row.purchaseOrderDetail.count_per_box) {
-				  	App.showErrorDialog("操作失败", "存在单位包装量不一致的货品【" + exist_row.purchaseOrderDetail.inventory.name + "(" + exist_row.purchaseOrderDetail.inventory.code + ")】");
+			  for (i = 0; i < exist_data.length; i++) {
+				  var exist_row = exist_data[i];
+				  
+				  var delivery_max_limit = exist_row.purchaseOrderDetail.quantity * (exist_row.purchaseOrderDetail.inventory.extra_rate + 100)/100 - exist_row.purchaseOrderDetail.delivered_quantity;
+				  
+				  if (exist_row.purchaseOrderDetail.main.purchase_type_name != $('#type').val()) {
+				  	App.showErrorDialog("操作失败", "有些货品的采购类型与发货单不符！");
 					  return false;
-				  }		  
-			  }			  			  
-		  }
+				  } else if (!exist_row.delivered_quantity || exist_row.delivered_quantity == 0) {
+					  App.showErrorDialog("操作失败", "发货数量不能为空！");
+					  return false;
+				  } else if (exist_row.delivered_quantity > delivery_max_limit) {
+				  	App.showErrorDialog("操作失败", "发货数量不能大于订单未发数量！");
+					  return false;
+				  } else if (store_set == 1 && !exist_row.purchaseOrderDetail.count_per_box) {			  	
+				  	App.showErrorDialog("操作失败", exist_row.purchaseOrderDetail.inventory.name + "(" + exist_row.purchaseOrderDetail.inventory.code + ")" + "的单位包装量为空。请先维护此货品的单位包装量。");
+					  return false;
+				  }			  
+			  }
+			  
+			  for (i = 0; i < exist_data.length; i++) {
+				  var exist_row = exist_data[i];
+				  for (j = i+1; j < exist_data.length; j++) {
+					  var compare_row = exist_data[j];
+					  if (exist_row.purchaseOrderDetail.inventory.code == compare_row.purchaseOrderDetail.inventory.code && exist_row.purchaseOrderDetail.count_per_box != compare_row.purchaseOrderDetail.count_per_box) {
+					  	App.showErrorDialog("操作失败", "存在单位包装量不一致的货品【" + exist_row.purchaseOrderDetail.inventory.name + "(" + exist_row.purchaseOrderDetail.inventory.code + ")】");
+						  return false;
+					  }		  
+				  }			  			  
+			  }
+	  	} 
 
 		  return true;
 	  }, "");
