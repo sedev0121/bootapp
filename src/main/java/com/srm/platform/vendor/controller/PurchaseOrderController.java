@@ -377,7 +377,7 @@ public class PurchaseOrderController extends CommonController {
 
 		switch (order) {
 		case "main.code":
-			order = "code";
+			order = "b.code";
 			break;
 		case "inventory.code":
 			order = "inventory_code";

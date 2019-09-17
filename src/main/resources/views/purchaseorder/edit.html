@@ -470,7 +470,8 @@
 	    serverSide : false,
 	    processing : false,
 	    select : (!is_vendor) ? {
-		    style : 'multi'
+		    style : 'multi',
+		    selector : 'td:first-child',
 	    } : false,
 	    ajax : {
 	      url : detail_url,
