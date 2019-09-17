@@ -561,3 +561,7 @@ alter table purchase_in_main drop primary key, add primary key(id);
 
 ALTER TABLE purchase_in_detail CHANGE COLUMN table_id main_id int(20) NOT NULL;
 alter table purchase_in_detail DROP column code;
+
+ALTER TABLE purchase_in_detail CHANGE COLUMN po_code po_id varchar(255) NOT NULL;
+
+alter table purchase_in_detail add column bill_quantity double(255, 2) NULL DEFAULT NULL;

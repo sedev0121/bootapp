@@ -427,13 +427,8 @@ public class SyncController {
 					main.setState(state);
 					
 					//TODO:
-					String employeeNo = getStringValue(temp, "cexch_name");
-					employeeNo = "0004";
-					if (employeeNo != null) {
-						Account employee = accountRepository.findOneByEmployeeNo(employeeNo);						
-						main.setEmployee(employee);
-					}
-
+					String employeeNo = getStringValue(temp, "cPersonCode");
+					main.setEmployeeNo(employeeNo);
 					purchaseOrderMainRepository.save(main);
 
 					List<PurchaseOrderDetail> oldList = purchaseOrderDetailRepository.findDetailsByMainId(main.getId());
@@ -549,7 +544,7 @@ public class SyncController {
 				}
 
 				if (pocodes.size() > 0 || mocodes.size() > 0) {
-					//response = apiClient.postConfirmForOrder(pocodes, mocodes);
+					response = apiClient.postConfirmForOrder(pocodes, mocodes);
 				} else {
 					hasMore = false;
 					break;
@@ -627,11 +622,20 @@ public class SyncController {
 					
 					Long autoId = getLongValue(temp, "AutoID");
 					
-					String poCode = getStringValue(temp, "cpoid");
+					//TODO: CODE
+					String poId = getStringValue(temp, "cpoid");
+
+					if (type.equals("普通采购")) {
+						poId = "PO" + poId;
+					} else {
+						poId = "WE" + poId;
+					}
+					
 					Integer poRowNo = getIntegerValue(temp, "porowno");
 					String deliveryCode = getStringValue(temp, "cbarvcode");
 					Integer deliveryRowNo = getIntegerValue(temp, "purowno");
 					
+					Double billQuantity = getDoubleValue(temp, "iSumBillQuantity");
 										
 					PurchaseInDetail detail = purchaseInDetailRepository.findOneByMainIdAndRowno(id,rowNo);
 					if (detail != null) {
@@ -644,6 +648,14 @@ public class SyncController {
 
 					detail.setInventory(inventoryRepository.findOneByCode(inventoryCode));
 					detail.setQuantity(quantity);
+					detail.setBillQuantity(billQuantity);
+					
+					//TODO:
+					if (billQuantity == 0) {
+						detail.setState(Constants.PURCHASE_IN_STATE_WAIT);
+					} else {
+						detail.setState(Constants.PURCHASE_IN_STATE_FINISH);	
+					}
 					
 					detail.setTaxRate(taxRate);
 					detail.setTax(tax);
@@ -654,7 +666,7 @@ public class SyncController {
 					detail.setTaxPrice(taxPrice);
 					detail.setTaxCost(taxCost);
 					
-					detail.setPoCode(poCode);
+					detail.setPoId(poId);
 					detail.setPoRowNo(poRowNo);
 					
 					detail.setDeliveryCode(deliveryCode);

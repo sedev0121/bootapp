@@ -112,9 +112,7 @@ public class PurchaseOrderMain {
 	@JoinColumn(name = "store_id", referencedColumnName = "id")
 	private Store store;
 	
-	@ManyToOne(cascade = { CascadeType.REFRESH })
-	@JoinColumn(name = "employee_no", referencedColumnName = "employeeNo")
-	private Account employee;
+	private String employeeNo;
 	
 	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "deployer", referencedColumnName = "id")
@@ -139,20 +137,20 @@ public class PurchaseOrderMain {
 		this.id = id;
 	}
 
+	public String getEmployeeNo() {
+		return employeeNo;
+	}
+
+	public void setEmployeeNo(String employeeNo) {
+		this.employeeNo = employeeNo;
+	}
+
 	public String getContractCode() {
 		return contractCode;
 	}
 
 	public void setContractCode(String contractCode) {
 		this.contractCode = contractCode;
-	}
-
-	public Account getEmployee() {
-		return employee;
-	}
-
-	public void setEmployee(Account employee) {
-		this.employee = employee;
 	}
 
 	public Double getBasePrice() {

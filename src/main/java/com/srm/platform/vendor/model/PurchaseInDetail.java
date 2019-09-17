@@ -117,6 +117,9 @@ public class PurchaseInDetail {
 	
 	private Double quantity;
 
+	@JsonProperty("bill_quantity")
+	private Double billQuantity;
+	
 	private Double tax;
 	private Double taxRate;
 
@@ -126,7 +129,7 @@ public class PurchaseInDetail {
 	private Double taxPrice;
 	private Double taxCost;
 	
-	private String poCode;
+	private String poId;
 	private Integer poRowNo;
 	
 	private String deliveryCode;
@@ -148,6 +151,14 @@ public class PurchaseInDetail {
 		this.id = id;
 	}
 
+	public Double getBillQuantity() {
+		return billQuantity;
+	}
+
+	public void setBillQuantity(Double billQuantity) {
+		this.billQuantity = billQuantity;
+	}
+
 	public Date getSyncDate() {
 		return syncDate;
 	}
@@ -156,12 +167,12 @@ public class PurchaseInDetail {
 		this.syncDate = syncDate;
 	}
 
-	public String getPoCode() {
-		return poCode;
+	public String getPoId() {
+		return poId;
 	}
 
-	public void setPoCode(String poCode) {
-		this.poCode = poCode;
+	public void setPoId(String poId) {
+		this.poId = poId;
 	}
 
 	public Integer getPoRowNo() {

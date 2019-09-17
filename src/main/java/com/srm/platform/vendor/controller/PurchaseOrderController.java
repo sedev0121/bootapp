@@ -438,8 +438,11 @@ public class PurchaseOrderController extends CommonController {
 						continue;
 					}
 
-					if (main.getEmployee() != null && allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getEmployee().getId())) {
-						continue;
+					if (main.getEmployeeNo() != null && allowedAccountIdList.size() > 0) {
+						Account employee = accountRepository.findOneByEmployeeNo(main.getEmployeeNo());
+						if (!allowedAccountIdList.contains(employee.getId())) {
+							continue;	
+						}						
 					}
 
 					if (allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {

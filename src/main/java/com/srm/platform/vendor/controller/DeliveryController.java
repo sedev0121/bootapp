@@ -591,11 +591,14 @@ public class DeliveryController extends CommonController {
 					}
 					
 					if (allowedAccountIdList.size() > 0) {
-						for(DeliveryDetail detail : details) {
-							Account employee = detail.getPurchaseOrderDetail().getMain().getEmployee();
-							if (employee != null && allowedAccountIdList.contains(employee.getId())) {
-								break;
-							}							
+						for(DeliveryDetail detail : details) {							
+							String employeeNo = detail.getPurchaseOrderDetail().getMain().getEmployeeNo();
+							if (employeeNo != null) {
+								Account employee = accountRepository.findOneByEmployeeNo(employeeNo);
+								if (employee != null && allowedAccountIdList.contains(employee.getId())) {
+									break;
+								}	
+							}														
 						}
 					}
 					
