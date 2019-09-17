@@ -97,6 +97,12 @@ public class ShipController extends CommonController {
 		String start_date = requestParams.getOrDefault("start_date", null);
 		String end_date = requestParams.getOrDefault("end_date", null);
 		
+		switch (order) {
+		case "code":
+			order = "b.code";
+			break;
+		}
+		
 		Date startDate = Utils.parseDate(start_date);
 		Date endDate = Utils.getNextDate(end_date);
 		Integer state = Integer.parseInt(stateStr);
@@ -105,12 +111,12 @@ public class ShipController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, b.orderdate, b.vencode, c.name company_name, e.name box_class_name, f.name vendor_name, d.specs  ";
+		String selectQuery = "select a.*, b.code, b.orderdate, b.vencode, c.name company_name, e.name box_class_name, f.name vendor_name, d.specs  ";
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
 		String bodyQuery = "from purchase_order_detail a "
-				+ "left join purchase_order_main b on a.code=b.code left join company c on b.company_id=c.id left join account emp on b.employee_no=emp.employee_no "
+				+ "left join purchase_order_main b on a.main_id=b.id left join company c on b.company_id=c.id left join account emp on b.employee_no=emp.employee_no "
 				+ "left join inventory d on  a.inventory_code=d.code left join box_class e on d.box_class_id=e.id "
 				+ "left join vendor f on b.vencode=f.code where b.state='审核'  ";
 
@@ -230,7 +236,7 @@ public class ShipController extends CommonController {
 			});
 
 			String query = "select a.*, d.code vendorcode, (a.quantity-ifnull(a.shipped_quantity,0)) remain_quantity, d.name vendorname, c.name inventoryname, c.specs, e.name unitname "
-					+ "from purchase_order_detail a left join purchase_order_main b on a.code = b.code "
+					+ "from purchase_order_detail a left join purchase_order_main b on a.main_id = b.id "
 					+ "left join inventory c on a.inventorycode=c.code left join vendor d on b.vencode=d.code "
 					+ "left join measurement_unit e on c.main_measure=e.code where a.id in :idList ";
 

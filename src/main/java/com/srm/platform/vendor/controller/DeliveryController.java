@@ -206,7 +206,7 @@ public class DeliveryController extends CommonController {
 					List<Long> allowedAccountIdList = accountPermission.getAccountList();
 					if (allowedAccountIdList.size() > 0) {
 						key = "accountList" + index;
-						tempSubWhere += " and a.code in (select a.code from delivery_detail a left join purchase_order_detail b on a.order_detail_id=b.id left join purchase_order_main c on b.code=c.code left join account d on c.employee_no=d.employee_no where d.id in :" + key + ") ";
+						tempSubWhere += " and a.code in (select a.code from delivery_detail a left join purchase_order_detail b on a.order_detail_id=b.id left join purchase_order_main c on b.main_id=c.id left join account d on c.employee_no=d.employee_no where d.id in :" + key + ") ";
 						params.put(key, allowedAccountIdList);
 					}
 					
