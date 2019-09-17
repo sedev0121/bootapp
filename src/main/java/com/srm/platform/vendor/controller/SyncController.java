@@ -624,12 +624,17 @@ public class SyncController {
 					
 					//TODO: CODE
 					String poId = getStringValue(temp, "cpoid");
-
-					if (type.equals("普通采购")) {
-						poId = "PO" + poId;
+					
+					if (Utils.isEmpty(poId)) {
+						poId = null;
 					} else {
-						poId = "WE" + poId;
+						if (type.equals("普通采购")) {
+							poId = "PO" + poId;
+						} else {
+							poId = "WE" + poId;
+						}	
 					}
+					
 					
 					Integer poRowNo = getIntegerValue(temp, "porowno");
 					String deliveryCode = getStringValue(temp, "cbarvcode");
@@ -651,11 +656,11 @@ public class SyncController {
 					detail.setBillQuantity(billQuantity);
 					
 					//TODO:
-					if (billQuantity == 0) {
-						detail.setState(Constants.PURCHASE_IN_STATE_WAIT);
-					} else {
-						detail.setState(Constants.PURCHASE_IN_STATE_FINISH);	
-					}
+//					if (billQuantity == 0) {
+//						detail.setState(Constants.PURCHASE_IN_STATE_WAIT);
+//					} else {
+//						detail.setState(Constants.PURCHASE_IN_STATE_FINISH);	
+//					}
 					
 					detail.setTaxRate(taxRate);
 					detail.setTax(tax);
@@ -679,7 +684,7 @@ public class SyncController {
 				}
 
 				if (codes.size() > 0) {
-//					response = apiClient.postConfirmForPurchaseIn(codes);
+					response = apiClient.postConfirmForPurchaseIn(codes);
 				} else {
 					hasMore = false;
 					break;
