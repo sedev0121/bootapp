@@ -1018,8 +1018,10 @@ is_readonly = 0;
 		  		return;
 		  	}
 		  	
+		  	var confirmMessage = "";
+		  	
 		  	var new_state = $('#state').val();  	
-		    var confirmMessage = "";
+		    var alertMessage = "";
 			  if (new_state == 1) {
 			  	confirmMessage = "保存";
 			  } else if (new_state == 2) {
@@ -1031,10 +1033,25 @@ is_readonly = 0;
 			  } else if (new_state == 6) {
 			  	confirmMessage = "退回";
 			  } else if (new_state == 7) {
+			  	var notConfirmedCount = 0;
+			  	for (i = 0; i < exist_data.length; i++) {
+					  var exist_row = exist_data[i];
+				  	var cancel_quantity = exist_row.cancel_quantity;
+		    		var cancel_confirmed = exist_row.cancel_confirmed;
+					  if (!cancel_confirmed && exist_row.cancel_quantity > 0) {
+					  	notConfirmedCount++;
+					  }			  			  			  
+				  }
+			  	
+			  	if (notConfirmedCount > 0) {
+			  		alertMessage = "还有" + notConfirmedCount + "行没选。";
+			  	}
 			  	confirmMessage = "确认拒收";
 			  }
 			  
-			  App.showInputConfirmDialog('确定要' + confirmMessage + '发货单吗?', function(submit_content) {
+			  var message = alertMessage + '确定要' + confirmMessage + '发货单吗?';
+			  
+			  App.showInputConfirmDialog(message, function(submit_content) {
 			  	jQuery(form).ajaxSubmit({
 			      beforeSend : function() {
 				      App.blockUI();
