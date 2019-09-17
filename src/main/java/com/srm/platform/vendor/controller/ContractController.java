@@ -51,7 +51,6 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/contract")
-@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('合同管理-查看列表')")
 public class ContractController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 41L;
