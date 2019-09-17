@@ -21,6 +21,7 @@
 		<div class="panel panel-default">
 			<div class="panel-body">
 				<form id="form" th:action="@{/purchaseorder/update}" method="post">
+					<input type="hidden" id="id" name="id" th:value="${main.id}"/>
 					<div class="row">
 						<div class="col-md-2">
 							<label>订单编号： </label> 
@@ -186,13 +187,13 @@
 </script>
 <script th:inline="javascript">
 	/*[+
-   var detail_url = [[@{/purchaseorder/}]] + [[${main.code}]] + "/details";
-   var history_url = [[@{/operation_history/list/order/}]] + [[${main.code}]];
+   var detail_url = [[@{/purchaseorder/}]] + [[${main.id}]] + "/details";
+   var history_url = [[@{/operation_history/list/order/}]] + [[${main.id}]];
    var store_url = [[@{/store/search/}]] + [[${main.company.id}]];
    var submit_url = [[@{/purchaseorder/update}]];
    var state = [[${main.srmstate}]];
-   var contract_search_url = [[@{|/contract/search/${main.code}|}]];   
-   var contract_details_url = [[@{|/contract/search_order_details/${main.code}/|}]];
+   var contract_search_url = [[@{|/contract/search/${main.id}|}]];   
+   var contract_details_url = [[@{|/contract/search_order_details/${main.id}/|}]];
    +]*/
 
   var editor, selectedContractData;
@@ -408,7 +409,7 @@
 		  $("#history_form").ajaxSubmit({
 		    data : {
 		      target_type : "order",
-		      target_id : $('#code').val(),
+		      target_id : $('#id').val(),
 		    },
 		    beforeSend : function() {
 			    App.blockUI();
@@ -959,7 +960,6 @@
 				    App.unblockUI();
 			    },
 			    data : {
-			      code : $('#code').val(),
 			      state : state,
 			      table : small_data,
 			      content : submit_content,

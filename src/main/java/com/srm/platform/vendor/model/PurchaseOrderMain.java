@@ -20,6 +20,7 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 
 @SqlResultSetMapping(name = "PurchaseOrderSearchResult", classes = {
 	@ConstructorResult(targetClass = PurchaseOrderSearchResult.class, columns = {
+		@ColumnResult(name = "id", type = String.class), 
 		@ColumnResult(name = "code", type = String.class), 
 		@ColumnResult(name = "vencode", type = String.class), 
 		@ColumnResult(name = "audittime", type = Date.class),
