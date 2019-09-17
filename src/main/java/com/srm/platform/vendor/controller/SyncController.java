@@ -358,13 +358,12 @@ public class SyncController {
 				}
 				for (LinkedHashMap<String, Object> temp : response.getData()) {
 					String purchaseTypeName = getStringValue(temp, "cBusType");					
+					String poid = getStringValue(temp, "POID");
 					
-					String poid, id;
-					if (purchaseTypeName.equals("普通采购")) {
-						poid = getStringValue(temp, "POID");
+					String id;
+					if (purchaseTypeName.equals("普通采购")) {						
 						id = "PO" + poid;
 					} else {
-						poid = getStringValue(temp, "MOID");
 						id = "WE" + poid;
 					}
 					
