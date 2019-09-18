@@ -485,7 +485,7 @@ public class DeliveryController extends CommonController {
 						Double count = entry.getValue();
 						Integer countPerBox = countPerBoxMap.get(key);
 						Inventory inventory = inventoryMap.get(key);
-						if (countPerBox == 0) {
+						if (countPerBox == null || countPerBox == 0) {
 							continue;
 						}
 						int index = 0;
