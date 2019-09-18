@@ -245,6 +245,10 @@ is_readonly = 0;
 	      label : "备注:",
 	      name : "memo"
 	    }, {
+	      name : "cancel_date"
+	    }, {
+	      name : "cancel_confirm_date"
+	    }, {
 	      name : "purchaseOrderDetail.quantity"
 	    }, {
 	      name : "purchaseOrderDetail.inventory.extra_rate"
@@ -311,11 +315,16 @@ is_readonly = 0;
         });
 		  		
 		  }
-	  }).on('preOpen', function(e, data, action) {	  	
+	  }).on('preOpen', function(e, mode, action) {	  	
 		  var currentFieldName = e.currentTarget.s.includeFields[0];
+		  
 		  if (currentFieldName == "cancel_confirmed") {
-		  	var modifier = editor.modifier();
-		  	$(modifier).addClass("selecting");	
+		  	if (e.currentTarget.s.editData.cancel_date[1] && !e.currentTarget.s.editData.cancel_confirm_date[1]) {
+		  		var modifier = editor.modifier();
+			  	$(modifier).addClass("selecting");	
+		  	} else {
+		  		return false;
+		  	}		  		
 		  }
 	  }).on('close', function(e) {
 	  	var currentFieldName = e.currentTarget.s.includeFields[0];
@@ -529,9 +538,14 @@ is_readonly = 0;
 	    		$('#store').attr("readonly", false);
 	    		$('#type').attr("readonly", false);
 	    	}
-	    	summary_data = {};	    	
+	    	summary_data = {};
+	    	var hasUnConfirmedCancelRow = false;
 		  	$.each(tableData, function(key, item) {
 		  		var key = item.purchaseOrderDetail.inventory.code;
+		  		
+		  		if (item.cancel_date && !item.cancel_confirm_date) {
+		  			hasUnConfirmedCancelRow = true;
+		  		}
 		  		if (!summary_data[key]) {
 		  			summary_data[key] = {
 			  				inventory_code: item.purchaseOrderDetail.inventory.code,
@@ -550,6 +564,11 @@ is_readonly = 0;
 		  		}
 		  	});
 		  	
+		  	if (!hasUnConfirmedCancelRow) {
+		  		$("#confirm_cancel").hide();	
+		  	} else {
+		  		$("#confirm_cancel").show();
+		  	}
 		  	summary_data = Object.values(summary_data);
 		  	
     		reloadSummaryTable();
