@@ -599,6 +599,7 @@ public class StatementController extends CommonController {
 		if (!response.isSuccess()) {
 			List<String> deletedRowNoList = new ArrayList<String>();
 			List<String> finishedRowNoList = new ArrayList<String>();
+			List<String> changedRowNoList = new ArrayList<String>();
 			List<LinkedHashMap<String, Object>> details = response.getData("details");
 			for(LinkedHashMap<String, Object> row : details) {
 				String autoId = (String)row.get("AutoID");
@@ -618,6 +619,11 @@ public class StatementController extends CommonController {
 						purchaseInDetail.setState(state);
 						purchaseInDetailRepository.save(purchaseInDetail);
 						finishedRowNoList.add(rowNoStr);
+					} else if (state == 3) {
+						state = Constants.PURCHASE_IN_STATE_CHANGED;
+						purchaseInDetail.setState(state);
+						purchaseInDetailRepository.save(purchaseInDetail);
+						changedRowNoList.add(rowNoStr);
 					}					
 				}
 			}
@@ -628,6 +634,9 @@ public class StatementController extends CommonController {
 			}
 			if (finishedRowNoList.size() > 0) {
 				errMsg += String.join(",", finishedRowNoList) + "行已开过发票。";
+			}
+			if (changedRowNoList.size() > 0) {
+				errMsg += String.join(",", changedRowNoList) + "行的业务实体|仓库已改变。";
 			}
 			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errMsg, null);
 		}

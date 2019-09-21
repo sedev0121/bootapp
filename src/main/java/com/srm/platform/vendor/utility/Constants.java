@@ -35,6 +35,7 @@ public class Constants {
 	public final static int PURCHASE_IN_STATE_START = 1;
 	public final static int PURCHASE_IN_STATE_FINISH = 2;
 	public final static int PURCHASE_IN_STATE_DELETED = 3;
+	public final static int PURCHASE_IN_STATE_CHANGED = 4;
 	
 	public final static int PURCHASE_ORDER_PRICE_FROM_EMPTY = 0;
 	public final static int PURCHASE_ORDER_PRICE_FROM_CONTRACT = 1;
