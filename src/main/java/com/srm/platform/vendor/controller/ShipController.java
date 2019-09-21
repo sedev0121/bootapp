@@ -118,7 +118,7 @@ public class ShipController extends CommonController {
 		String bodyQuery = "from purchase_order_detail a "
 				+ "left join purchase_order_main b on a.main_id=b.id left join company c on b.company_id=c.id left join account emp on b.employee_no=emp.employee_no "
 				+ "left join inventory d on  a.inventory_code=d.code left join box_class e on d.box_class_id=e.id "
-				+ "left join vendor f on b.vencode=f.code where b.state='审核'  ";
+				+ "left join vendor f on b.vencode=f.code where b.state='审核' and b.vencode in (select vendor_code from account where vendor_code is not null) ";
 
 		Map<String, Object> params = new HashMap<>();
 
