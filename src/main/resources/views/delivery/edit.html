@@ -319,12 +319,8 @@ is_readonly = 0;
 		  var currentFieldName = e.currentTarget.s.includeFields[0];
 		  
 		  if (currentFieldName == "cancel_confirmed") {
-		  	if (e.currentTarget.s.editData.cancel_date[1] && !e.currentTarget.s.editData.cancel_confirm_date[1]) {
-		  		var modifier = editor.modifier();
-			  	$(modifier).addClass("selecting");	
-		  	} else {
-		  		return false;
-		  	}		  		
+		  	var modifier = editor.modifier();
+		  	$(modifier).addClass("selecting");		  		
 		  }
 	  }).on('close', function(e) {
 	  	var currentFieldName = e.currentTarget.s.includeFields[0];
