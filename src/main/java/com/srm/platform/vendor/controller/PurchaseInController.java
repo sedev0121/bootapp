@@ -314,7 +314,7 @@ public class PurchaseInController extends CommonController {
 		}
 
 		if (!code.trim().isEmpty()) {
-			bodyQuery += " and a.code like CONCAT('%',:code, '%')";
+			bodyQuery += " and b.code like CONCAT('%',:code, '%')";
 			params.put("code", code);
 		}
 
