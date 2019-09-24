@@ -39,11 +39,11 @@ public class PurchaseInDetailResult implements Serializable {
 
 	String state;
 	
-	@JsonProperty("u8_state")
-	String u8State;
+	@JsonProperty("erp_state")
+	String erpState;
 	
-	@JsonProperty("u8_changed")
-	String u8Changed;
+	@JsonProperty("erp_changed")
+	Integer erpChanged;
 	
 	String tax_cost;
 
@@ -84,7 +84,7 @@ public class PurchaseInDetailResult implements Serializable {
 	public PurchaseInDetailResult(String id, String code, String date, String verify_date,Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
 			String tax_price, String tax_rate, String tax_cost, String confirmedMemo, String vendorname, String vendorcode, String type,
-			String bredvouch, String state, String u8State, String u8Changed, String poCode, Integer poRowNo, String deliveryCode, Integer deliveryRowNo, 
+			String bredvouch, String state, String erpState, Integer erpChanged, String poCode, Integer poRowNo, String deliveryCode, Integer deliveryRowNo, 
 			String deliveredQuantity, String companyName, String storeName, Date syncDate) {
 
 		this.id = id;
@@ -111,8 +111,8 @@ public class PurchaseInDetailResult implements Serializable {
 		this.bredvouch = bredvouch;
 		
 		this.state = state;
-		this.u8State = u8State;
-		this.u8Changed = u8Changed;
+		this.erpState = erpState;
+		this.erpChanged = erpChanged;
 
 		this.poCode = poCode;
 		this.poRowNo = poRowNo;
@@ -126,21 +126,26 @@ public class PurchaseInDetailResult implements Serializable {
 		
 	}
 
-	public String getU8State() {
-		return u8State;
+
+	public String getErpState() {
+		return erpState;
 	}
 
-	public void setU8State(String u8State) {
-		this.u8State = u8State;
+
+	public void setErpState(String erpState) {
+		this.erpState = erpState;
 	}
 
-	public String getU8Changed() {
-		return u8Changed;
+
+	public Integer getErpChanged() {
+		return erpChanged;
 	}
 
-	public void setU8Changed(String u8Changed) {
-		this.u8Changed = u8Changed;
+
+	public void setErpChanged(Integer erpChanged) {
+		this.erpChanged = erpChanged;
 	}
+
 
 	public Date getSyncDate() {
 		return syncDate;

@@ -788,10 +788,20 @@
 			    }, {
 			      data : 'state',
 			      className : 'dt-center',
-			      title : '摘要',
+			      title : 'SRM状态',
 			      render : App.getPurchaseInStateOfId,
+			    }, {
+			      data : 'erp_changed',
+			      className : 'dt-center',
+			      title : 'U8已修改',
+			      render : App.getYesNoOfId,
 			    } ],
 			    order : [ [ 1, "asc" ] ],
+			    rowCallback: function (row, data) {
+			    	if (data.erp_changed) {
+			    		$(row).addClass('red');
+			    	}
+			    },
 			  });
 		  }
 		  $('#btn_search').trigger('click');
@@ -978,6 +988,14 @@
 		  updateData(false);
 	  }
 
+	  function hasInvalidRow(row) {
+	  	if (row.pi_state == 3 || row.pi_state == 2 && invoice_state != 4 || row.pi_erp_changed) {
+    		return true;
+    	}
+	  	
+	  	return false;
+	  }
+	  
 	  function loadNormalTable() {
 		  editor = new $.fn.dataTable.Editor({
 		    table : "#detail_table",
@@ -1192,13 +1210,19 @@
 		      render : App.getPurchaseInStateOfId,
 		      sortable : false,
 		      title : '入库单行状态'
+		    }, {
+		      data : 'pi_erp_changed',
+		      className : 'dt-center',
+		      render : App.getYesNoOfId,
+		      sortable : false,
+		      title : 'U8已修改'
 		    } ],
 		    order : [ [ 0, "asc" ], [ 3, "asc" ] ],
 		    footerCallback : function(row, data, start, end, display) {
 			    App.footerCallback(this.api(), [ [ 9, "quantity" ], [ 10, "cost" ], [ 11, "cost" ], [ 13, "cost" ], [ 14, "cost" ], [ 15, "quantity" ], [ 17, "cost" ], [ 23, "quantity" ] ]);
 		    },
 		    rowCallback: function (row, data) {
-		    	if (data.pi_state == 3 || data.pi_state == 2 && invoice_state != 4) {
+		    	if (hasInvalidRow(data)) {
 		    		$(row).addClass('red');
 		    	}
 		    },
@@ -1268,7 +1292,7 @@
 		  var footertr = $("<tr></tr>").appendTo(footer);
 
 		  //Add footer cells
-		  for (var i = 0; i < 19; i++) {
+		  for (var i = 0; i < 20; i++) {
 			  if (i == 0) {
 				  $("<th colspan='7' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
 			  } else {
@@ -1330,7 +1354,13 @@
 
 		    var details = table.rows().data().toArray();
 		    var post_table = [];
-		    $.each(details, function(key, item) {
+		    for(var i=0; i<details.length; i++) {
+		    	var item = details[i];
+		    	if (hasInvalidRow(item)) {
+		    		App.showErrorDialog("操作失败", "存在U8已修改的入库单行。请先退回新建状态，并且删除再添加。");
+		    		return;
+		    	}
+		    	
 			    var row = {
 			      row_no : item.row_no,
 			      pi_detail_id : item.pi_detail_id,
@@ -1338,7 +1368,7 @@
 			      tax_rate: item.tax_rate
 			    };
 			    post_table.push(row);
-		    });
+		    };
 
 		    var post_data = {
 			    attachIds : postAttachIds.join(",")
@@ -1450,6 +1480,7 @@
 				  item.pi_detail_id = item.id;
 				  item.pi_date = item.date;
 				  item.pi_quantity = item.quantity;
+				  item.pi_erp_changed = item.erp_changed;
 				  item.invoice_quantity = item.quantity;
 				  item.invoice_cost = item.tax_cost;
 				  item.adjust_tax_cost = 0;

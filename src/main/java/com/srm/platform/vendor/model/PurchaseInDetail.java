@@ -49,8 +49,8 @@ import com.srm.platform.vendor.utility.Constants;
 					@ColumnResult(name = "type", type = String.class),
 					@ColumnResult(name = "bredvouch", type = String.class),
 					@ColumnResult(name = "state", type = String.class),
-					@ColumnResult(name = "u8_state", type = String.class),
-					@ColumnResult(name = "u8_changed", type = String.class),
+					@ColumnResult(name = "erp_state", type = String.class),
+					@ColumnResult(name = "erp_changed", type = Integer.class),
 					@ColumnResult(name = "po_code", type = String.class),
 					@ColumnResult(name = "po_row_no", type = Integer.class),
 					@ColumnResult(name = "delivery_code", type = String.class),
@@ -145,11 +145,11 @@ public class PurchaseInDetail {
 	@JsonProperty("sync_date")
 	private Date syncDate;
 
-	@JsonProperty("u8_state")
-	private Integer u8State = Constants.PURCHASE_IN_U8_STATE_NEW;
+	@JsonProperty("erp_state")
+	private Integer erpState = Constants.PURCHASE_IN_U8_STATE_NEW;
 	
-	@JsonProperty("u8_changed")
-	private Integer u8Changed = Constants.PURCHASE_IN_U8_STATE_NO_CHANGED;
+	@JsonProperty("erp_changed")
+	private Integer erpChanged = Constants.PURCHASE_IN_U8_STATE_NO_CHANGED;
 	
 	public Long getId() {
 		return id;
@@ -159,20 +159,21 @@ public class PurchaseInDetail {
 		this.id = id;
 	}
 
-	public Integer getU8State() {
-		return u8State;
+
+	public Integer getErpState() {
+		return erpState;
 	}
 
-	public void setU8State(Integer u8State) {
-		this.u8State = u8State;
+	public void setErpState(Integer erpState) {
+		this.erpState = erpState;
 	}
 
-	public Integer getU8Changed() {
-		return u8Changed;
+	public Integer getErpChanged() {
+		return erpChanged;
 	}
 
-	public void setU8Changed(Integer u8Changed) {
-		this.u8Changed = u8Changed;
+	public void setErpChanged(Integer erpChanged) {
+		this.erpChanged = erpChanged;
 	}
 
 	public Double getBillQuantity() {
