@@ -545,6 +545,8 @@ public class StatementController extends CommonController {
 		} else {
 			if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
 				setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_WAIT, false);
+				initPurchaseInDetailErpChanged(main, form);
+				
 				statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
 				if (form.getTable() != null) {
 					int i = 1;
@@ -584,6 +586,8 @@ public class StatementController extends CommonController {
 			statementMainRepository.save(main);	
 			
 			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START, false);
+			
+			this.addOpertionHistory(main.getCode(), "退回新建", "");
 		}
 		
 		return true;
@@ -992,6 +996,25 @@ public class StatementController extends CommonController {
 					continue;
 				} else {
 					purchaseInDetail.setState(state);
+					purchaseInDetailRepository.save(purchaseInDetail);	
+				}
+			}
+		}
+	}
+	
+	private void initPurchaseInDetailErpChanged(StatementMain main, StatementSaveForm form) {
+		if (form.getTable() != null) {
+			List<Long> newPurchaseInDetailIdList = new ArrayList<Long>();
+			for (Map<String, String> row : form.getTable()) {
+				newPurchaseInDetailIdList.add(Long.parseLong(row.get("pi_detail_id")));
+			}
+			
+			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
+			for (StatementDetail detail : detailList) {
+				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPiDetailId());
+
+				if (purchaseInDetail != null && !newPurchaseInDetailIdList.contains(purchaseInDetail.getId())) {
+					purchaseInDetail.setErpChanged(Constants.PURCHASE_IN_U8_STATE_NO_CHANGED);
 					purchaseInDetailRepository.save(purchaseInDetail);	
 				}
 			}

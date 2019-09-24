@@ -1354,10 +1354,30 @@
 
 		    var details = table.rows().data().toArray();
 		    var post_table = [];
+		    
+		    var new_state = $('#save_state').val();
+		    
 		    for(var i=0; i<details.length; i++) {
 		    	var item = details[i];
 		    	if (hasInvalidRow(item)) {
-		    		App.showErrorDialog("操作失败", "存在U8已修改的入库单行。请先退回新建状态，并且删除再添加。");
+		    		if (state == 1) {		    			
+		    			App.showErrorDialog("操作失败", "存在U8已修改的入库单行。请删除入库单行。");
+		    		} else {
+		    			if (is_vendor) {
+		    				App.showErrorDialog("操作失败", "存在U8已修改的入库单行。");
+		    			} else {
+		    				App.showConfirmDialog("存在U8已修改的入库单行。请先退回新建状态，并且删除再添加。确定要退回到新建状态？", function() {
+			      			$.get(init_url, function(data, status) {
+			    				  App.showSuccessDialog("操作成功", function() {
+			    				  	window.location.href = edit_url + $("#code").val() + "/edit";
+			    				  });
+			    			  });
+			      		}, function() {
+			      			
+			      		});	
+		    			}		    			
+		    		}		    		
+		    		
 		    		return;
 		    	}
 		    	
@@ -1378,10 +1398,10 @@
 			    post_data.table = post_table;
 		    }
 
-		    var new_state = $('#save_state').val();
+		    
 		    var action = $('#action').val();
 		    var new_invoice_state = $('#save_invoice_state').val();
-		    
+		    var new_state = $('#save_state').val();
 		    var confirmMessage = "";
 
 		    if (action == "invoice") {
