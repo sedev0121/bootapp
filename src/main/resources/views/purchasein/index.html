@@ -38,7 +38,7 @@
             <input type="text" id="end_date" value="" class="form-control datepicker" placeholder=""/>
           </div>
           <div class="search-cell width-10">
-            <label for="state">状态:</label>
+            <label for="state">SRM状态:</label>
             <select name="status" id="state" class="form-control">
             </select>
           </div>
@@ -206,8 +206,20 @@ var store_search_url = [[@{/store/search/}]];
         render : $.fn.date_renderer,
         title : 'SRM创建日期',
       }, {
+        data : 'u8_state',
+        className:'dt-center',
+        createdCell : App.getStateClass,
+        title : 'U8状态',
+        render : App.getPurchaseInU8StateOfId,
+      }, {
+        data : 'u8_changed',
+        className:'dt-center',
+        createdCell : App.getStateClass,
+        title : 'U8已修改',
+        render : App.getYesNoOfId,
+      }, {
         data : 'state',
-        className:'dt-right',
+        className:'dt-center',
         createdCell : App.getStateClass,
         title : 'SRM状态',
         render : App.getPurchaseInStateOfId,

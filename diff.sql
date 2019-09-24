@@ -565,3 +565,8 @@ alter table purchase_in_detail DROP column code;
 ALTER TABLE purchase_in_detail CHANGE COLUMN po_code po_id varchar(255) NULL;
 
 alter table purchase_in_detail add column bill_quantity double(255, 2) NULL DEFAULT NULL;
+
+
+/* 2019-09-24 */
+alter table purchase_in_detail add column u8_state int(1) NOT NULL DEFAULT 1;
+alter table purchase_in_detail add column u8_changed int(1) NOT NULL DEFAULT 0;

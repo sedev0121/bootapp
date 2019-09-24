@@ -38,7 +38,13 @@ public class PurchaseInDetailResult implements Serializable {
 	String tax_rate;
 
 	String state;
-
+	
+	@JsonProperty("u8_state")
+	String u8State;
+	
+	@JsonProperty("u8_changed")
+	String u8Changed;
+	
 	String tax_cost;
 
 	@JsonProperty("confirmed_memo")
@@ -78,7 +84,7 @@ public class PurchaseInDetailResult implements Serializable {
 	public PurchaseInDetailResult(String id, String code, String date, String verify_date,Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
 			String tax_price, String tax_rate, String tax_cost, String confirmedMemo, String vendorname, String vendorcode, String type,
-			String bredvouch, String state, String poCode, Integer poRowNo, String deliveryCode, Integer deliveryRowNo, 
+			String bredvouch, String state, String u8State, String u8Changed, String poCode, Integer poRowNo, String deliveryCode, Integer deliveryRowNo, 
 			String deliveredQuantity, String companyName, String storeName, Date syncDate) {
 
 		this.id = id;
@@ -105,6 +111,8 @@ public class PurchaseInDetailResult implements Serializable {
 		this.bredvouch = bredvouch;
 		
 		this.state = state;
+		this.u8State = u8State;
+		this.u8Changed = u8Changed;
 
 		this.poCode = poCode;
 		this.poRowNo = poRowNo;
@@ -116,6 +124,22 @@ public class PurchaseInDetailResult implements Serializable {
 		this.storeName = storeName;
 		this.syncDate = syncDate;
 		
+	}
+
+	public String getU8State() {
+		return u8State;
+	}
+
+	public void setU8State(String u8State) {
+		this.u8State = u8State;
+	}
+
+	public String getU8Changed() {
+		return u8Changed;
+	}
+
+	public void setU8Changed(String u8Changed) {
+		this.u8Changed = u8Changed;
 	}
 
 	public Date getSyncDate() {

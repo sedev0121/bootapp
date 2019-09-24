@@ -638,18 +638,22 @@ public class SyncController {
 					Integer poRowNo = getIntegerValue(temp, "porowno");
 					String deliveryCode = getStringValue(temp, "cbarvcode");
 					Integer deliveryRowNo = getIntegerValue(temp, "purowno");
-					
+					Integer u8State = getIntegerValue(temp, "u8state");
 					Double billQuantity = getDoubleValue(temp, "iSumBillQuantity");
 										
 					PurchaseInDetail detail = purchaseInDetailRepository.findOneByMainIdAndRowno(id,rowNo);
 					if (detail != null) {
 						logger.info("code=" + code + " rowno=" + rowNo);
+						if (detail.getState() == Constants.PURCHASE_IN_STATE_START) {
+							detail.setU8Changed(Constants.PURCHASE_IN_U8_STATE_CHANGED);
+						}
 					} else {
 						detail = new PurchaseInDetail();
 						detail.setMain(main);
 						detail.setRowNo(rowNo);
 					}
 
+					detail.setU8State(u8State);
 					detail.setInventory(inventoryRepository.findOneByCode(inventoryCode));
 					detail.setQuantity(quantity);
 					detail.setBillQuantity(billQuantity);

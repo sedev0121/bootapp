@@ -620,8 +620,7 @@ public class StatementController extends CommonController {
 						purchaseInDetailRepository.save(purchaseInDetail);
 						finishedRowNoList.add(rowNoStr);
 					} else if (state == 3) {
-						state = Constants.PURCHASE_IN_STATE_CHANGED;
-						purchaseInDetail.setState(state);
+						purchaseInDetail.setU8Changed(Constants.PURCHASE_IN_U8_STATE_CHANGED);
 						purchaseInDetailRepository.save(purchaseInDetail);
 						changedRowNoList.add(rowNoStr);
 					}					
