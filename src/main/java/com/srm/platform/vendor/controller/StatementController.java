@@ -132,6 +132,7 @@ public class StatementController extends CommonController {
 					if (purchaseInDetail == null)
 						continue;
 
+					purchaseInDetail.setErpChanged(Constants.PURCHASE_IN_U8_STATE_NO_CHANGED);
 					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_WAIT);
 					purchaseInDetailRepository.save(purchaseInDetail);
 				}
