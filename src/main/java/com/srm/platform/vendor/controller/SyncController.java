@@ -193,8 +193,7 @@ public class SyncController {
 				for (LinkedHashMap<String, Object> temp : response.getData()) {
 					Inventory inventory = inventoryRepository.findOneByCode(getStringValue(temp, "code"));
 					if (inventory == null) {
-						inventory = new Inventory();
-						inventory.setBoxClass(boxClassRepository.findOneById(1L));
+						inventory = new Inventory();						
 					}
 
 					inventory.setCode(getStringValue(temp, "code"));
