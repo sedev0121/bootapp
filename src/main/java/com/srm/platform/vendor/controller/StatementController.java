@@ -1004,22 +1004,24 @@ public class StatementController extends CommonController {
 	}
 	
 	private void initPurchaseInDetailErpChanged(StatementMain main, StatementSaveForm form) {
+		
+		List<Long> newPurchaseInDetailIdList = new ArrayList<Long>();
 		if (form.getTable() != null) {
-			List<Long> newPurchaseInDetailIdList = new ArrayList<Long>();
 			for (Map<String, String> row : form.getTable()) {
 				newPurchaseInDetailIdList.add(Long.parseLong(row.get("pi_detail_id")));
 			}
-			
-			List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
-			for (StatementDetail detail : detailList) {
-				PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPiDetailId());
+		}
+		
+		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
+		for (StatementDetail detail : detailList) {
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPiDetailId());
 
-				if (purchaseInDetail != null && !newPurchaseInDetailIdList.contains(purchaseInDetail.getId())) {
-					purchaseInDetail.setErpChanged(Constants.PURCHASE_IN_U8_STATE_NO_CHANGED);
-					purchaseInDetailRepository.save(purchaseInDetail);	
-				}
+			if (purchaseInDetail != null && !newPurchaseInDetailIdList.contains(purchaseInDetail.getId())) {
+				purchaseInDetail.setErpChanged(Constants.PURCHASE_IN_U8_STATE_NO_CHANGED);
+				purchaseInDetailRepository.save(purchaseInDetail);	
 			}
 		}
+		
 	}
 
 	private boolean checkSecondPassword() {
