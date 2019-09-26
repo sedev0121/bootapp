@@ -1147,23 +1147,25 @@ is_readonly = 0;
 					var line = lines[i];
 					var columns = line.split(",");
 					if (columns.length == 4) {
-						var item = {
-								code: columns[0],
-								quantity: columns[1],
-								tax_price: columns[2],
-								memo: columns[3],
-								floating_direction: $("#floating_direction").val(),
-								floating_price: 0
-						}
+						if (columns[0]) {
+							var item = {
+									code: columns[0],
+									quantity: columns[1],
+									tax_price: columns[2],
+									memo: columns[3],
+									floating_direction: $("#floating_direction").val(),
+									floating_price: 0
+							}
 
-						item.tax_cost = App.costNumber(item.quantity * item.tax_price);
-						
-						if (codeList.includes(item.code)) {
-							App.showErrorDialog("操作失败", "存货代码(" + item.code + ")重复");
-	  					return;
-						}
-						newRowList.push(item);
-						codeList = newRowList.map(item => item.code);
+							item.tax_cost = App.costNumber(item.quantity * item.tax_price);
+							
+							if (codeList.includes(item.code)) {
+								App.showErrorDialog("操作失败", "存货代码(" + item.code + ")重复");
+		  					return;
+							}
+							newRowList.push(item);
+							codeList = newRowList.map(item => item.code);	
+						}						
 					}
 				}
 				
