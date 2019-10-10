@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.srm.platform.vendor.model.Account;
 import com.srm.platform.vendor.model.Box;
+import com.srm.platform.vendor.model.BoxClass;
 import com.srm.platform.vendor.model.Company;
 import com.srm.platform.vendor.model.DeliveryDetail;
 import com.srm.platform.vendor.model.DeliveryMain;
@@ -358,8 +359,13 @@ public class ApiController {
 			return response;
 		}
 		
+		BoxClass box1Class = box1.getBoxClass();
+		
 		box1.setCode(boxCode2);
+		box1.setBoxClass(box2.getBoxClass());
+		
 		box2.setCode(boxCode1);
+		box2.setBoxClass(box1Class);
 		
 		box1 = boxRepository.save(box1);
 		box2 = boxRepository.save(box2);

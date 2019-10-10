@@ -58,4 +58,16 @@ public class AccountController extends CommonController {
 		
 		return "1";
 	}
+	
+	// 用户修改
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@GetMapping("/reset_second_pwd/{id}")
+	public @ResponseBody String resetSecondPassword(@PathVariable("id") Long id) {
+		Account account = accountRepository.findOneById(id);
+		account.setSecondPassword(passwordEncoder.encode(Constants.DEFAULT_SECOND_PASSWORD));
+		account = accountRepository.save(account);
+		
+		return "1";
+	}
 }

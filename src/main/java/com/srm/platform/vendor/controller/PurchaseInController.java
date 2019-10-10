@@ -102,7 +102,7 @@ public class PurchaseInController extends CommonController {
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
 		String selectQuery = "select a.*, b.code, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
-				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, pom.code po_code, po.confirmed_memo confirmed_memo, dd.delivered_quantity ";
+				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, pom.code po_code, po.confirmed_memo confirmed_memo, 0 delivered_quantity ";
 		String countQuery = "select count(a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
@@ -111,7 +111,7 @@ public class PurchaseInController extends CommonController {
 				+ "left join purchase_order_detail po on a.po_id=po.main_id and a.po_row_no=po.row_no "
 				+ "left join purchase_order_main pom on po.main_id=pom.id "
 				+ "left join account emp on pom.employee_no=emp.employee_no "
-				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
+//				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
 				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
 				+ "left join vendor v on b.vendor_code=v.code where b.vendor_code in (select vendor_code from account where role='ROLE_VENDOR' and vendor_code is not null)  ";
 
