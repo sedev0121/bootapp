@@ -51,7 +51,6 @@ import com.srm.platform.vendor.utility.Utils;
 
 @Controller
 @RequestMapping(path = "/contract")
-@PreAuthorize("hasRole('ROLE_VENDOR') or hasAuthority('合同管理-查看列表')")
 public class ContractController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 41L;
@@ -253,11 +252,11 @@ public class ContractController extends CommonController {
 
 	}
 	
-	@RequestMapping(value = "/search/{code}", produces = "application/json")
-	public @ResponseBody Page<ContractSearchItem> search(@PathVariable("code") String orderCode, @RequestParam(value = "q") String search) {
+	@RequestMapping(value = "/search/{id}", produces = "application/json")
+	public @ResponseBody Page<ContractSearchItem> search(@PathVariable("id") String orderId, @RequestParam(value = "q") String search) {
 		
 		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
-		return contractMainRepository.findAllOfPurchaseOrder(orderCode, search, request);
+		return contractMainRepository.findAllOfPurchaseOrder(orderId, search, request);
 
 	}
 	
@@ -268,9 +267,9 @@ public class ContractController extends CommonController {
 		return list;
 	}
 	
-	@RequestMapping(value = "/search_order_details/{orderCode}/{contractCode}", produces = "application/json")
-	public @ResponseBody List<ContractOrderDetailItem> orderDetailsOfContract(@PathVariable("contractCode") String contractCode, @PathVariable("orderCode") String orderCode) {
-		List<ContractOrderDetailItem> list = contractDetailRepository.searchOrderDetailsByCode(orderCode, contractCode);
+	@RequestMapping(value = "/search_order_details/{orderId}/{contractCode}", produces = "application/json")
+	public @ResponseBody List<ContractOrderDetailItem> orderDetailsOfContract(@PathVariable("contractCode") String contractCode, @PathVariable("orderId") String orderId) {
+		List<ContractOrderDetailItem> list = contractDetailRepository.searchOrderDetailsById(orderId, contractCode);
 
 		return list;
 	}

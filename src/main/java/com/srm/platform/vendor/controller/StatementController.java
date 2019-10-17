@@ -132,6 +132,7 @@ public class StatementController extends CommonController {
 					if (purchaseInDetail == null)
 						continue;
 
+					purchaseInDetail.setErpChanged(Constants.PURCHASE_IN_U8_STATE_NO_CHANGED);
 					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_WAIT);
 					purchaseInDetailRepository.save(purchaseInDetail);
 				}
@@ -545,6 +546,8 @@ public class StatementController extends CommonController {
 		} else {
 			if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
 				setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_WAIT, false);
+				initPurchaseInDetailErpChanged(main, form);
+				
 				statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
 				if (form.getTable() != null) {
 					int i = 1;
@@ -584,6 +587,8 @@ public class StatementController extends CommonController {
 			statementMainRepository.save(main);	
 			
 			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START, false);
+			
+			this.addOpertionHistory(main.getCode(), "退回新建", "");
 		}
 		
 		return true;
@@ -599,6 +604,7 @@ public class StatementController extends CommonController {
 		if (!response.isSuccess()) {
 			List<String> deletedRowNoList = new ArrayList<String>();
 			List<String> finishedRowNoList = new ArrayList<String>();
+			List<String> changedRowNoList = new ArrayList<String>();
 			List<LinkedHashMap<String, Object>> details = response.getData("details");
 			for(LinkedHashMap<String, Object> row : details) {
 				String autoId = (String)row.get("AutoID");
@@ -618,6 +624,10 @@ public class StatementController extends CommonController {
 						purchaseInDetail.setState(state);
 						purchaseInDetailRepository.save(purchaseInDetail);
 						finishedRowNoList.add(rowNoStr);
+					} else if (state == 3) {
+						purchaseInDetail.setErpChanged(Constants.PURCHASE_IN_U8_STATE_CHANGED);
+						purchaseInDetailRepository.save(purchaseInDetail);
+						changedRowNoList.add(rowNoStr);
 					}					
 				}
 			}
@@ -628,6 +638,9 @@ public class StatementController extends CommonController {
 			}
 			if (finishedRowNoList.size() > 0) {
 				errMsg += String.join(",", finishedRowNoList) + "行已开过发票。";
+			}
+			if (changedRowNoList.size() > 0) {
+				errMsg += String.join(",", changedRowNoList) + "行的业务实体|仓库已改变。";
 			}
 			jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.FAILED, errMsg, null);
 		}
@@ -988,6 +1001,27 @@ public class StatementController extends CommonController {
 				}
 			}
 		}
+	}
+	
+	private void initPurchaseInDetailErpChanged(StatementMain main, StatementSaveForm form) {
+		
+		List<Long> newPurchaseInDetailIdList = new ArrayList<Long>();
+		if (form.getTable() != null) {
+			for (Map<String, String> row : form.getTable()) {
+				newPurchaseInDetailIdList.add(Long.parseLong(row.get("pi_detail_id")));
+			}
+		}
+		
+		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
+		for (StatementDetail detail : detailList) {
+			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPiDetailId());
+
+			if (purchaseInDetail != null && !newPurchaseInDetailIdList.contains(purchaseInDetail.getId())) {
+				purchaseInDetail.setErpChanged(Constants.PURCHASE_IN_U8_STATE_NO_CHANGED);
+				purchaseInDetailRepository.save(purchaseInDetail);	
+			}
+		}
+		
 	}
 
 	private boolean checkSecondPassword() {

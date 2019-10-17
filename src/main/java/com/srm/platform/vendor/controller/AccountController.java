@@ -36,11 +36,11 @@ public class AccountController extends CommonController {
 	// 用户修改
 	@Transactional
 	@GetMapping("/checkuser")
-	public @ResponseBody Boolean checkUser_ajax(@RequestParam("id") Long id,
+	public @ResponseBody Boolean checkUser_ajax(@RequestParam("id") long id,
 			@RequestParam("username") String username) {
 		Account account = accountRepository.findOneByUsername(username);
 
-		if (account != null && account.getId() != id) {
+		if (account != null && account.getId().longValue() != id) {
 			return false;
 		} else {
 			return true;
@@ -54,6 +54,18 @@ public class AccountController extends CommonController {
 	public @ResponseBody String resetPassword(@PathVariable("id") Long id) {
 		Account account = accountRepository.findOneById(id);
 		account.setPassword(passwordEncoder.encode(Constants.DEFAULT_PASSWORD));
+		account = accountRepository.save(account);
+		
+		return "1";
+	}
+	
+	// 用户修改
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@GetMapping("/reset_second_pwd/{id}")
+	public @ResponseBody String resetSecondPassword(@PathVariable("id") Long id) {
+		Account account = accountRepository.findOneById(id);
+		account.setSecondPassword(passwordEncoder.encode(Constants.DEFAULT_SECOND_PASSWORD));
 		account = accountRepository.save(account);
 		
 		return "1";

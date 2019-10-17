@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class PurchaseOrderSaveForm {
 
+	private String id;
 	private String code;
 	private String content;
 	private Integer state;
@@ -15,6 +16,14 @@ public class PurchaseOrderSaveForm {
 	private Integer price_from;
 	
 	private List<Map<String, String>> table;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getCode() {
 		return code;

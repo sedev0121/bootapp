@@ -20,7 +20,7 @@ public interface PurchaseInDetailRepository extends JpaRepository<PurchaseInDeta
 	@Query(value = "select b.name inventoryname, b.specs, b.main_measure unitname, c.closed_quantity, a.* from purchase_in_detail a left join inventory b on a.inventory_code=b.code left join (select b.id, sum(a.closed_quantity) closed_quantity from statement_detail a left join purchase_in_detail b on a.purchase_in_detail_id=b.id left join statement_main c on a.code=c.code where c.state=3 group by b.id) c on a.id=c.id where a.code= :code order by a.rowno", nativeQuery = true)
 	List<PurchaseInDetailItem> findDetailsByCode(String code);
 
-	@Query(value = "select * from purchase_in_detail where code=?1 and row_no=?2", nativeQuery = true)
-	PurchaseInDetail findOneByCodeAndRowno(String code, Integer rowno);
+	@Query(value = "select * from purchase_in_detail where main_id=?1 and row_no=?2", nativeQuery = true)
+	PurchaseInDetail findOneByMainIdAndRowno(Long mainId, Integer rowno);
 
 }

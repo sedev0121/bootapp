@@ -62,9 +62,9 @@ public class PurchaseOrderController extends CommonController {
 		return "purchaseorder/index";
 	}
 
-	@GetMapping({ "/{code}/edit" })
-	public String edit(@PathVariable("code") String code, Model model) {
-		PurchaseOrderMain main = this.purchaseOrderMainRepository.findOneByCode(code);
+	@GetMapping({ "/{id}/edit" })
+	public String edit(@PathVariable("id") String id, Model model) {
+		PurchaseOrderMain main = this.purchaseOrderMainRepository.findOneById(id);
 		if (main == null)
 			show404();
 
@@ -78,15 +78,15 @@ public class PurchaseOrderController extends CommonController {
 		return "purchaseorder/edit";
 	}
 
-	@GetMapping({ "/{code}/read/{msgid}" })
-	public String read(@PathVariable("code") String code, @PathVariable("msgid") Long msgid, Model model) {
+	@GetMapping({ "/{id}/read/{msgid}" })
+	public String read(@PathVariable("id") String id, @PathVariable("msgid") Long msgid, Model model) {
 		setReadDate(msgid);
-		return "redirect:/purchaseorder/" + code + "/edit";
+		return "redirect:/purchaseorder/" + id + "/edit";
 	}
 
-	@RequestMapping(value = "/{code}/details", produces = "application/json")
-	public @ResponseBody List<PurchaseOrderDetail> details_ajax(@PathVariable("code") String code) {
-		List<PurchaseOrderDetail> list = purchaseOrderDetailRepository.findDetailsByCode(code);
+	@RequestMapping(value = "/{id}/details", produces = "application/json")
+	public @ResponseBody List<PurchaseOrderDetail> details_ajax(@PathVariable("id") String id) {
+		List<PurchaseOrderDetail> list = purchaseOrderDetailRepository.findDetailsByMainId(id);
 
 		return list;
 	}
@@ -128,7 +128,7 @@ public class PurchaseOrderController extends CommonController {
 
 		String bodyQuery = "FROM purchase_order_main a left join vendor b on a.vencode=b.code left join account c on a.deployer=c.id "
 				+ "left join account d on a.reviewer=d.id left join account emp on a.employee_no=emp.employee_no "
-				+ "left join (select code, sum(prepay_money) prepay_money, sum(money) money, sum(sum) sum from purchase_order_detail group by code) e on a.code=e.code "
+				+ "left join (select main_id, sum(prepay_money) prepay_money, sum(money) money, sum(sum) sum from purchase_order_detail group by main_id) e on a.id=e.main_id "
 				+ "left join company f on a.company_id=f.id WHERE a.state='审核' and a.company_id is not null and a.vencode in (select vendor_code from account where vendor_code is not null) ";
 
 		Map<String, Object> params = new HashMap<>();
@@ -238,7 +238,7 @@ public class PurchaseOrderController extends CommonController {
 	public @ResponseBody GenericJsonResponse<PurchaseOrderMain> update_ajax(PurchaseOrderSaveForm form) {
 
 		Account account = this.getLoginAccount();
-		PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(form.getCode());
+		PurchaseOrderMain main = purchaseOrderMainRepository.findOneById(form.getId());
 
 		Account vendorAccount = accountRepository.findOneByUsername(main.getVendor().getCode());
 		if (vendorAccount == null) {
@@ -262,7 +262,7 @@ public class PurchaseOrderController extends CommonController {
 			main.setReviewer(account);
 		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CLOSE) {
 
-			Integer detailCountIsDelivering = deliveryDetailRepository.findDetailCountIsDelivering(main.getCode());
+			Integer detailCountIsDelivering = deliveryDetailRepository.findDetailCountIsDelivering(main.getId());
 			if (detailCountIsDelivering > 0) {
 				GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(
 						GenericJsonResponse.FAILED, detailCountIsDelivering + "个货品正在发货，不能关闭", null);
@@ -271,7 +271,7 @@ public class PurchaseOrderController extends CommonController {
 			main.setClosedate(new Date());
 			main.setCloser(account.getRealname());
 		} else if (form.getState() == Constants.PURCHASE_ORDER_STATE_CLOSE_ROW) {
-			Integer detailCountIsDelivering = deliveryDetailRepository.findDetailCountIsDelivering(main.getCode());
+			Integer detailCountIsDelivering = deliveryDetailRepository.findDetailCountIsDelivering(main.getId());
 			if (detailCountIsDelivering > 0) {
 				GenericJsonResponse<PurchaseOrderMain> jsonResponse = new GenericJsonResponse<>(
 						GenericJsonResponse.FAILED, detailCountIsDelivering + "个货品正在发货，不能关闭", null);
@@ -302,8 +302,8 @@ public class PurchaseOrderController extends CommonController {
 
 		String title = String.format("订单【%s】已由【%s】%s，请及时查阅和处理！", main.getCode(), account.getRealname(), action);
 
-		this.sendmessage(title, toList, String.format("/purchaseorder/%s/read", main.getCode()));
-		this.addOpertionHistory(main.getCode(), action, form.getContent());
+		this.sendmessage(title, toList, String.format("/purchaseorder/%s/read", main.getId()));
+		this.addOpertionHistory(main.getId(), action, form.getContent());
 
 		if (form.getTable() != null) {
 			for (Map<String, String> item : form.getTable()) {
@@ -337,7 +337,11 @@ public class PurchaseOrderController extends CommonController {
 
 					detail.setConfirmedDate(detail.getArriveDate());
 					detail.setConfirmedQuantity(detail.getQuantity());
-					detail.setCountPerBox(Integer.valueOf(item.get("count_per_box")));
+					String countPerBox = item.get("count_per_box");
+					if (!Utils.isEmpty(countPerBox)) {
+						detail.setCountPerBox(Integer.valueOf(countPerBox));	
+					}
+					
 					if (Integer.parseInt(item.get("close_state")) == Constants.PURCHASE_ORDER_ROW_CLOSE_STATE_YES) {
 						if (detail.getCloseDate() == null) {
 							detail.setCloseDate(new Date());
@@ -377,7 +381,7 @@ public class PurchaseOrderController extends CommonController {
 
 		switch (order) {
 		case "main.code":
-			order = "code";
+			order = "b.code";
 			break;
 		case "inventory.code":
 			order = "inventory_code";
@@ -438,8 +442,11 @@ public class PurchaseOrderController extends CommonController {
 						continue;
 					}
 
-					if (main.getEmployee() != null && allowedAccountIdList.size() > 0 && !allowedAccountIdList.contains(main.getEmployee().getId())) {
-						continue;
+					if (main.getEmployeeNo() != null && allowedAccountIdList.size() > 0) {
+						Account employee = accountRepository.findOneByEmployeeNo(main.getEmployeeNo());
+						if (!allowedAccountIdList.contains(employee.getId())) {
+							continue;	
+						}						
 					}
 
 					if (allowedCompanyIdList.size() > 0 && !allowedCompanyIdList.contains(main.getCompany().getId())) {

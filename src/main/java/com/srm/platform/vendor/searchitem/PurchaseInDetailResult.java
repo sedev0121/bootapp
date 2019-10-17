@@ -38,7 +38,13 @@ public class PurchaseInDetailResult implements Serializable {
 	String tax_rate;
 
 	String state;
-
+	
+	@JsonProperty("erp_state")
+	String erpState;
+	
+	@JsonProperty("erp_changed")
+	Integer erpChanged;
+	
 	String tax_cost;
 
 	@JsonProperty("confirmed_memo")
@@ -78,7 +84,7 @@ public class PurchaseInDetailResult implements Serializable {
 	public PurchaseInDetailResult(String id, String code, String date, String verify_date,Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
 			String tax_price, String tax_rate, String tax_cost, String confirmedMemo, String vendorname, String vendorcode, String type,
-			String bredvouch, String state, String poCode, Integer poRowNo, String deliveryCode, Integer deliveryRowNo, 
+			String bredvouch, String state, String erpState, Integer erpChanged, String poCode, Integer poRowNo, String deliveryCode, Integer deliveryRowNo, 
 			String deliveredQuantity, String companyName, String storeName, Date syncDate) {
 
 		this.id = id;
@@ -105,6 +111,8 @@ public class PurchaseInDetailResult implements Serializable {
 		this.bredvouch = bredvouch;
 		
 		this.state = state;
+		this.erpState = erpState;
+		this.erpChanged = erpChanged;
 
 		this.poCode = poCode;
 		this.poRowNo = poRowNo;
@@ -117,6 +125,27 @@ public class PurchaseInDetailResult implements Serializable {
 		this.syncDate = syncDate;
 		
 	}
+
+
+	public String getErpState() {
+		return erpState;
+	}
+
+
+	public void setErpState(String erpState) {
+		this.erpState = erpState;
+	}
+
+
+	public Integer getErpChanged() {
+		return erpChanged;
+	}
+
+
+	public void setErpChanged(Integer erpChanged) {
+		this.erpChanged = erpChanged;
+	}
+
 
 	public Date getSyncDate() {
 		return syncDate;

@@ -49,6 +49,8 @@ import com.srm.platform.vendor.utility.Constants;
 					@ColumnResult(name = "type", type = String.class),
 					@ColumnResult(name = "bredvouch", type = String.class),
 					@ColumnResult(name = "state", type = String.class),
+					@ColumnResult(name = "erp_state", type = String.class),
+					@ColumnResult(name = "erp_changed", type = Integer.class),
 					@ColumnResult(name = "po_code", type = String.class),
 					@ColumnResult(name = "po_row_no", type = Integer.class),
 					@ColumnResult(name = "delivery_code", type = String.class),
@@ -105,7 +107,7 @@ public class PurchaseInDetail {
 
 	@JsonIgnore
 	@ManyToOne(cascade = { CascadeType.REFRESH })
-	@JoinColumn(name = "code", referencedColumnName = "code")
+	@JoinColumn(name = "main_id", referencedColumnName = "id")
 	private PurchaseInMain main;
 
 	@OneToOne(cascade = { CascadeType.REFRESH })
@@ -117,6 +119,9 @@ public class PurchaseInDetail {
 	
 	private Double quantity;
 
+	@JsonProperty("bill_quantity")
+	private Double billQuantity;
+	
 	private Double tax;
 	private Double taxRate;
 
@@ -126,7 +131,7 @@ public class PurchaseInDetail {
 	private Double taxPrice;
 	private Double taxCost;
 	
-	private String poCode;
+	private String poId;
 	private Integer poRowNo;
 	
 	private String deliveryCode;
@@ -140,12 +145,43 @@ public class PurchaseInDetail {
 	@JsonProperty("sync_date")
 	private Date syncDate;
 
+	@JsonProperty("erp_state")
+	private Integer erpState = Constants.PURCHASE_IN_U8_STATE_NEW;
+	
+	@JsonProperty("erp_changed")
+	private Integer erpChanged = Constants.PURCHASE_IN_U8_STATE_NO_CHANGED;
+	
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+
+	public Integer getErpState() {
+		return erpState;
+	}
+
+	public void setErpState(Integer erpState) {
+		this.erpState = erpState;
+	}
+
+	public Integer getErpChanged() {
+		return erpChanged;
+	}
+
+	public void setErpChanged(Integer erpChanged) {
+		this.erpChanged = erpChanged;
+	}
+
+	public Double getBillQuantity() {
+		return billQuantity;
+	}
+
+	public void setBillQuantity(Double billQuantity) {
+		this.billQuantity = billQuantity;
 	}
 
 	public Date getSyncDate() {
@@ -156,12 +192,12 @@ public class PurchaseInDetail {
 		this.syncDate = syncDate;
 	}
 
-	public String getPoCode() {
-		return poCode;
+	public String getPoId() {
+		return poId;
 	}
 
-	public void setPoCode(String poCode) {
-		this.poCode = poCode;
+	public void setPoId(String poId) {
+		this.poId = poId;
 	}
 
 	public Integer getPoRowNo() {

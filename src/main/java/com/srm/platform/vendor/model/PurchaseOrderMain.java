@@ -20,6 +20,7 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 
 @SqlResultSetMapping(name = "PurchaseOrderSearchResult", classes = {
 	@ConstructorResult(targetClass = PurchaseOrderSearchResult.class, columns = {
+		@ColumnResult(name = "id", type = String.class), 
 		@ColumnResult(name = "code", type = String.class), 
 		@ColumnResult(name = "vencode", type = String.class), 
 		@ColumnResult(name = "audittime", type = Date.class),
@@ -54,13 +55,13 @@ import com.srm.platform.vendor.searchitem.PurchaseOrderSearchResult;
 @Table(name = "purchase_order_main")
 public class PurchaseOrderMain {
 	@Id
+	private String id;
+	
 	private String code;
 
 	@OneToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "vencode", referencedColumnName = "code")
 	Vendor vendor;
-
-	private String poid;
 	
 	@JsonProperty("purchase_type_name")
 	private String purchaseTypeName;
@@ -111,9 +112,7 @@ public class PurchaseOrderMain {
 	@JoinColumn(name = "store_id", referencedColumnName = "id")
 	private Store store;
 	
-	@ManyToOne(cascade = { CascadeType.REFRESH })
-	@JoinColumn(name = "employee_no", referencedColumnName = "employeeNo")
-	private Account employee;
+	private String employeeNo;
 	
 	@ManyToOne(cascade = { CascadeType.REFRESH })
 	@JoinColumn(name = "deployer", referencedColumnName = "id")
@@ -130,20 +129,28 @@ public class PurchaseOrderMain {
 
 	}
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getEmployeeNo() {
+		return employeeNo;
+	}
+
+	public void setEmployeeNo(String employeeNo) {
+		this.employeeNo = employeeNo;
+	}
+
 	public String getContractCode() {
 		return contractCode;
 	}
 
 	public void setContractCode(String contractCode) {
 		this.contractCode = contractCode;
-	}
-
-	public Account getEmployee() {
-		return employee;
-	}
-
-	public void setEmployee(Account employee) {
-		this.employee = employee;
 	}
 
 	public Double getBasePrice() {
@@ -376,14 +383,6 @@ public class PurchaseOrderMain {
 
 	public void setAudittime(Date audittime) {
 		this.audittime = audittime;
-	}
-
-	public String getPoid() {
-		return poid;
-	}
-
-	public void setPoid(String poid) {
-		this.poid = poid;
 	}
 
 }

@@ -193,8 +193,7 @@ public class SyncController {
 				for (LinkedHashMap<String, Object> temp : response.getData()) {
 					Inventory inventory = inventoryRepository.findOneByCode(getStringValue(temp, "code"));
 					if (inventory == null) {
-						inventory = new Inventory();
-						inventory.setBoxClass(boxClassRepository.findOneById(1L));
+						inventory = new Inventory();						
 					}
 
 					inventory.setCode(getStringValue(temp, "code"));
@@ -357,24 +356,33 @@ public class SyncController {
 					break;
 				}
 				for (LinkedHashMap<String, Object> temp : response.getData()) {
-
-					PurchaseOrderMain main = purchaseOrderMainRepository.findOneByCode(getStringValue(temp, "cPOID"));
+					String purchaseTypeName = getStringValue(temp, "cBusType");					
+					String poid = getStringValue(temp, "POID");
+					
+					String id;
+					if (purchaseTypeName.equals("普通采购")) {						
+						id = "PO" + poid;
+					} else {
+						id = "WE" + poid;
+					}
+					
+					PurchaseOrderMain main = purchaseOrderMainRepository.findOneById(id);
 					if (main == null) {
 						main = new PurchaseOrderMain();
-						main.setCode(getStringValue(temp, "cPOID"));
+						main.setId(id);
 						main.setSrmstate(Constants.PURCHASE_ORDER_STATE_START);
 					}
-					main.setPurchaseTypeName(getStringValue(temp, "cBusType"));
-					main.setPoid(getStringValue(temp, "POID"));
+					main.setCode(getStringValue(temp, "cPOID"));
+					main.setPurchaseTypeName(purchaseTypeName);					
 					Vendor vendor = vendorRepository.findOneByCode(getStringValue(temp, "cVenCode"));
 
 					// TODO:0=新建 1=审核 2=关闭
 					int cState = getIntegerValue(temp, "cState");
 					if (cState == 0 || vendor == null) {
 						if (main.getPurchaseTypeName().equals("普通采购")) {
-							pocodes.add(main.getPoid());
+							pocodes.add(poid);
 						} else {
-							mocodes.add(main.getPoid());
+							mocodes.add(poid);
 						}
 						totalCount++;
 						continue;
@@ -417,16 +425,11 @@ public class SyncController {
 					main.setState(state);
 					
 					//TODO:
-					String employeeNo = getStringValue(temp, "cexch_name");
-					employeeNo = "0004";
-					if (employeeNo != null) {
-						Account employee = accountRepository.findOneByEmployeeNo(employeeNo);						
-						main.setEmployee(employee);
-					}
-
+					String employeeNo = getStringValue(temp, "cPersonCode");
+					main.setEmployeeNo(employeeNo);
 					purchaseOrderMainRepository.save(main);
 
-					List<PurchaseOrderDetail> oldList = purchaseOrderDetailRepository.findDetailsByCode(main.getCode());
+					List<PurchaseOrderDetail> oldList = purchaseOrderDetailRepository.findDetailsByMainId(main.getId());
 					
 					List<LinkedHashMap<String, Object>> details = getDetailMap(temp, "details");
 					if (details == null || details.size() == 0) {
@@ -440,7 +443,7 @@ public class SyncController {
 					
 					for (LinkedHashMap<String, Object> detailTemp : details) {
 						String originalID = getStringValue(detailTemp, "ID");
-						PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByOrigianId(main.getCode(), originalID);
+						PurchaseOrderDetail detail = purchaseOrderDetailRepository.findOneByOrigianId(main.getId(), originalID);
 
 						if (detail == null) {
 							detail = new PurchaseOrderDetail();
@@ -530,9 +533,9 @@ public class SyncController {
 					
 					if (addDetailSuccess) {
 						if (main.getPurchaseTypeName().equals("普通采购")) {
-							pocodes.add(main.getPoid());
+							pocodes.add(poid);
 						} else {
-							mocodes.add(main.getPoid());
+							mocodes.add(poid);
 						}
 						totalCount++;
 					}					
@@ -574,6 +577,7 @@ public class SyncController {
 				}
 				for (LinkedHashMap<String, Object> temp : data) {
 
+					Long id = getLongValue(temp, "ID");
 					String code = getStringValue(temp, "cCode");
 					String type = getStringValue(temp, "cBusType");
 					String vendor_code = getStringValue(temp, "cVenCode");
@@ -583,12 +587,13 @@ public class SyncController {
 					String date = getStringValue(temp, "dDate");
 					String verifyDate = getStringValue(temp, "dVeriDate");
 					
-					PurchaseInMain main = purchaseInMainRepository.findOneByCode(code);
+					PurchaseInMain main = purchaseInMainRepository.findOneById(id);
 					if (main == null) {
 						main = new PurchaseInMain();
-						main.setCode(code);						
+						main.setId(id);			
 					}
 
+					main.setCode(code);
 					Vendor vendor = vendorRepository.findOneByCode(vendor_code);
 					main.setVendor(vendor);
 
@@ -615,23 +620,53 @@ public class SyncController {
 					
 					Long autoId = getLongValue(temp, "AutoID");
 					
-					String poCode = getStringValue(temp, "cpoid");
+					//TODO: CODE
+					String poId = getStringValue(temp, "cpoid");
+					
+					if (Utils.isEmpty(poId)) {
+						poId = null;
+					} else {
+						if (type.equals("普通采购")) {
+							poId = "PO" + poId;
+						} else {
+							poId = "WE" + poId;
+						}	
+					}
+					
+					
 					Integer poRowNo = getIntegerValue(temp, "porowno");
 					String deliveryCode = getStringValue(temp, "cbarvcode");
 					Integer deliveryRowNo = getIntegerValue(temp, "purowno");
 					
+					Double billQuantity = getDoubleValue(temp, "iSumBillQuantity");
 										
-					PurchaseInDetail detail = purchaseInDetailRepository.findOneByCodeAndRowno(code,rowNo);
+					PurchaseInDetail detail = purchaseInDetailRepository.findOneByMainIdAndRowno(id,rowNo);
 					if (detail != null) {
 						logger.info("code=" + code + " rowno=" + rowNo);
+						if (detail.getState() == Constants.PURCHASE_IN_STATE_START) {
+							detail.setErpChanged(Constants.PURCHASE_IN_U8_STATE_CHANGED);
+						}
 					} else {
 						detail = new PurchaseInDetail();
 						detail.setMain(main);
 						detail.setRowNo(rowNo);
 					}
 
+					if (verifyDate == null) {
+						detail.setErpState(Constants.PURCHASE_IN_U8_STATE_NEW);
+					} else {
+						detail.setErpState(Constants.PURCHASE_IN_U8_STATE_VERIFIED);
+					}
+					
 					detail.setInventory(inventoryRepository.findOneByCode(inventoryCode));
 					detail.setQuantity(quantity);
+					detail.setBillQuantity(billQuantity);
+					
+					if (billQuantity == 0) {
+						detail.setState(Constants.PURCHASE_IN_STATE_WAIT);
+					} else {
+						detail.setState(Constants.PURCHASE_IN_STATE_FINISH);	
+					}
 					
 					detail.setTaxRate(taxRate);
 					detail.setTax(tax);
@@ -642,7 +677,7 @@ public class SyncController {
 					detail.setTaxPrice(taxPrice);
 					detail.setTaxCost(taxCost);
 					
-					detail.setPoCode(poCode);
+					detail.setPoId(poId);
 					detail.setPoRowNo(poRowNo);
 					
 					detail.setDeliveryCode(deliveryCode);

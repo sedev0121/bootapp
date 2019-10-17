@@ -37,7 +37,7 @@ import com.srm.platform.vendor.utility.Utils;
 public class PurchaseInController extends CommonController {
 
 	private static Long LIST_FUNCTION_ACTION_ID = 21L;
-	
+
 	@PersistenceContext
 	private EntityManager em;
 
@@ -53,7 +53,7 @@ public class PurchaseInController extends CommonController {
 		if (main == null)
 			show404();
 
-//		checkVendor(main.getVendor());
+		// checkVendor(main.getVendor());
 
 		model.addAttribute("main", main);
 		return "purchasein/edit";
@@ -78,6 +78,9 @@ public class PurchaseInController extends CommonController {
 		Date endDate = Utils.getNextDate(end_date);
 
 		switch (order) {
+		case "code":
+			order = "b.code";
+			break;
 		case "date":
 			order = "b.date";
 			break;
@@ -98,18 +101,17 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
-				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, po.confirmed_memo confirmed_memo, dd.delivered_quantity ";
+		String selectQuery = "select a.*, b.code, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
+				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, pom.code po_code, po.confirmed_memo confirmed_memo, 0 delivered_quantity ";
 		String countQuery = "select count(a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "from purchase_in_detail a "
-				+ "left join purchase_in_main b on a.code=b.code "
+		String bodyQuery = "from purchase_in_detail a " + "left join purchase_in_main b on a.main_id=b.id "
 				+ "left join inventory c on a.inventory_code=c.code "
-				+ "left join purchase_order_detail po on a.po_code=po.code and a.po_row_no=po.row_no "
-				+ "left join purchase_order_main pom on a.po_code=pom.code "
+				+ "left join purchase_order_detail po on a.po_id=po.main_id and a.po_row_no=po.row_no "
+				+ "left join purchase_order_main pom on po.main_id=pom.id "
 				+ "left join account emp on pom.employee_no=emp.employee_no "
-				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
+//				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
 				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
 				+ "left join vendor v on b.vendor_code=v.code where b.vendor_code in (select vendor_code from account where role='ROLE_VENDOR' and vendor_code is not null)  ";
 
@@ -121,8 +123,8 @@ public class PurchaseInController extends CommonController {
 			bodyQuery += " and v.code= :vendor";
 			params.put("vendor", vendorStr);
 
-		} else {			
-			
+		} else {
+
 			String subWhere = " 1=0 ";
 			AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
 			if (accountPermissionInfo.isNoPermission()) {
@@ -130,8 +132,9 @@ public class PurchaseInController extends CommonController {
 			} else if (accountPermissionInfo.isAllPermission()) {
 				subWhere = " 1=1 ";
 			} else {
-				int index = 0; String key = "";
-				for(AccountPermission accountPermission : accountPermissionInfo.getList()) {
+				int index = 0;
+				String key = "";
+				for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
 					String tempSubWhere = " 1=1 ";
 					List<String> allowedVendorCodeList = accountPermission.getVendorList();
 					if (allowedVendorCodeList.size() > 0) {
@@ -146,14 +149,14 @@ public class PurchaseInController extends CommonController {
 						tempSubWhere += " and com.id in :" + key;
 						params.put(key, allowedCompanyIdList);
 					}
-					
+
 					List<Long> allowedStoreIdList = accountPermission.getStoreList();
 					if (allowedStoreIdList.size() > 0) {
 						key = "storeList" + index;
 						tempSubWhere += " and st.id in :" + key;
 						params.put(key, allowedStoreIdList);
 					}
-					
+
 					List<Long> allowedAccountIdList = accountPermission.getAccountList();
 					if (allowedAccountIdList.size() > 0) {
 						key = "accountList" + index;
@@ -164,19 +167,19 @@ public class PurchaseInController extends CommonController {
 					subWhere += " or (" + tempSubWhere + ") ";
 					index++;
 				}
-			}			
-			
+			}
+
 			bodyQuery += " and (" + subWhere + ") ";
 
 		}
-		
+
 		if (!inventory.trim().isEmpty()) {
 			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
 			params.put("inventory", inventory.trim());
 		}
 
 		if (!code.trim().isEmpty()) {
-			bodyQuery += " and a.code like CONCAT('%',:code, '%')";
+			bodyQuery += " and b.code like CONCAT('%',:code, '%')";
 			params.put("code", code);
 		}
 
@@ -200,7 +203,6 @@ public class PurchaseInController extends CommonController {
 			bodyQuery += " and a.state=:state";
 			params.put("state", state);
 		}
-		
 
 		Long companyId = Long.valueOf(companyIdStr);
 		if (companyId >= 0) {
@@ -259,6 +261,9 @@ public class PurchaseInController extends CommonController {
 		Date date = Utils.parseDate(dateStr);
 
 		switch (order) {
+		case "code":
+			order = "b.code";
+			break;
 		case "purchase_in_detail_id":
 			order = "id";
 			break;
@@ -282,18 +287,19 @@ public class PurchaseInController extends CommonController {
 		PageRequest request = PageRequest.of(page_index, rows_per_page,
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
-		String selectQuery = "select a.*, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
-				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, po.confirmed_memo confirmed_memo, dd.delivered_quantity ";
-		
+		String selectQuery = "select a.*, b.code, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
+				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, pom.code po_code, po.confirmed_memo confirmed_memo, dd.delivered_quantity ";
+
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;
 
-		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.code=b.code "
+		String bodyQuery = "from purchase_in_detail a left join purchase_in_main b on a.main_id=b.id "
 				+ "left join inventory c on a.inventory_code=c.code "
-				+ "left join purchase_order_detail po on a.po_code=po.code and a.po_row_no=po.row_no "
+				+ "left join purchase_order_detail po on a.po_id=po.main_id and a.po_row_no=po.row_no "
+				+ "left join purchase_order_main pom on po.main_id=pom.id "
 				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
 				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
-				+ "left join vendor v on b.vendor_code=v.code where a.state=0 and type=:type and b.vendor_code=:vendor and com.statement_company_id=:company and b.date<:statementDate ";
+				+ "left join vendor v on b.vendor_code=v.code where a.state=0 and a.erp_state=1 and (a.bill_quantity is null or a.bill_quantity =0) and type=:type and b.vendor_code=:vendor and com.statement_company_id=:company and b.date<:statementDate ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -301,17 +307,17 @@ public class PurchaseInController extends CommonController {
 		params.put("company", statementCompany);
 		params.put("type", type);
 		params.put("statementDate", statementDate);
-		
+
 		if (!inventory.trim().isEmpty()) {
 			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
 			params.put("inventory", inventory.trim());
 		}
 
 		if (!code.trim().isEmpty()) {
-			bodyQuery += " and a.code like CONCAT('%',:code, '%')";
+			bodyQuery += " and b.code like CONCAT('%',:code, '%')";
 			params.put("code", code);
 		}
-		
+
 		if (date != null) {
 			bodyQuery += " and b.date=:date";
 			params.put("date", date);

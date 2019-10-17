@@ -538,3 +538,35 @@ update statement_main a left join company b on a.statement_company_id=b.id left 
 
 /* 2019-08-30 */
 alter table contract_main add column floating_direction int(1) NOT NULL DEFAULT 2;
+
+
+/* 2019-09-15 */
+delete from purchase_order_main where table_id is null;
+update purchase_order_main set poid=concat('PO', table_id) where purchase_type_name='普通采购';
+update purchase_order_main set poid=concat('WE', table_id) where purchase_type_name<>'普通采购';
+ALTER TABLE purchase_order_main CHANGE COLUMN poid id varchar(255) NOT NULL;
+alter table purchase_order_main drop primary key, add primary key(id);
+
+ALTER TABLE purchase_order_detail CHANGE COLUMN code main_id varchar(255) NOT NULL;
+update purchase_order_detail set main_id=concat('PO', table_id) where main_id like 'PO%';
+update purchase_order_detail set main_id=concat('WE', table_id) where main_id like 'WE%';
+
+alter table purchase_order_detail DROP column table_id;
+alter table purchase_order_main DROP column table_id;
+
+
+delete from purchase_in_main where table_id is null;
+ALTER TABLE purchase_in_main CHANGE COLUMN table_id id int(20) NOT NULL;
+alter table purchase_in_main drop primary key, add primary key(id);
+
+ALTER TABLE purchase_in_detail CHANGE COLUMN table_id main_id int(20) NOT NULL;
+alter table purchase_in_detail DROP column code;
+
+ALTER TABLE purchase_in_detail CHANGE COLUMN po_code po_id varchar(255) NULL;
+
+alter table purchase_in_detail add column bill_quantity double(255, 2) NULL DEFAULT NULL;
+
+
+/* 2019-09-24 */
+alter table purchase_in_detail add column erp_state int(1) NOT NULL DEFAULT 1;
+alter table purchase_in_detail add column erp_changed int(1) NOT NULL DEFAULT 0;

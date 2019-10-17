@@ -9,6 +9,8 @@ import com.srm.platform.vendor.model.PurchaseOrderMain;
 
 public interface PurchaseOrderMainRepository extends JpaRepository<PurchaseOrderMain, Long> {
 
+	PurchaseOrderMain findOneById(String id);
+	
 	PurchaseOrderMain findOneByCode(String code);
 
 }

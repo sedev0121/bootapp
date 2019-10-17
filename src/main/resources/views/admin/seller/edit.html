@@ -10,6 +10,7 @@
 		<div class="btn-group-bar">
 			<div class="text-right">
 				<a class="btn btn-primary" th:if="${account.id}" sec:authorize="hasRole('ROLE_ADMIN')" id="reset_pwd"><i class="fa fa-key"></i> 重置密码</a>
+				<a class="btn btn-primary" th:if="${account.id}" sec:authorize="hasRole('ROLE_ADMIN')" id="reset_second_pwd"><i class="fa fa-key"></i> 重置二级密码</a>
 				<a class="btn btn-primary" id="save"><i class="fa fa-save"></i> 保存</a> 
 				<a class="btn btn-danger hidden" id="del" th:if="${account.id}"><i class="fa fa-remove"></i> 删除</a> 
 				<a class="btn btn-default" th:href="@{/seller}"><i class="fa fa-arrow-left"></i> 返回列表</a>
@@ -123,6 +124,7 @@
 <script th:inline="javascript">
 	var edit_url = /*[[@{/seller/}]]*/'';
 	var reset_pwd_url = /*[[@{/seller/reset_pwd}]]*/'';
+	var reset_second_pwd_url = /*[[@{/seller/reset_second_pwd}]]*/'';
   var table, vendor_table;
 
   jQuery(document).ready(function() {
@@ -239,6 +241,7 @@
 		    	data : null,
 		      defaultContent : '',
 		      orderable : false,
+		      title : '选择',
 		      className : 'select-checkbox',
 		    }, {
 		      data : 'code',
@@ -281,6 +284,28 @@
               App.showSuccessDialog("重置密码成功");
             }else{
               App.showErrorDialog("重置密码失败");
+            }
+          }
+        });
+      });
+      
+    });
+	  
+	  $("#reset_second_pwd").click(function() {
+      App.showConfirmDialog('确定要重置二级密码吗?', function() {
+        $.ajax({
+          beforeSend: function(){
+            App.blockUI();
+          },
+          complete: function(){
+            App.unblockUI();
+          }, 
+          url : reset_second_pwd_url + "/" + $("#id").val(),
+          success : function(data, res) {
+            if (data == "1") {
+              App.showSuccessDialog("重置二级密码成功");
+            }else{
+              App.showErrorDialog("重置二级密码失败");
             }
           }
         });

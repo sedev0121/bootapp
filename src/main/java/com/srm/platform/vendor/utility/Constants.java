@@ -31,6 +31,12 @@ public class Constants {
 	public final static int PURCHASE_ORDER_ROW_CLOSE_STATE_NO = 0;
 	public final static int PURCHASE_ORDER_ROW_CLOSE_STATE_YES = 1;
 	
+	public final static int PURCHASE_IN_U8_STATE_NEW = 0;
+	public final static int PURCHASE_IN_U8_STATE_VERIFIED = 1;
+	
+	public final static int PURCHASE_IN_U8_STATE_NO_CHANGED = 0;
+	public final static int PURCHASE_IN_U8_STATE_CHANGED = 1;
+	
 	public final static int PURCHASE_IN_STATE_WAIT = 0;
 	public final static int PURCHASE_IN_STATE_START = 1;
 	public final static int PURCHASE_IN_STATE_FINISH = 2;

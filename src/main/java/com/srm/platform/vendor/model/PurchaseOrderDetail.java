@@ -27,7 +27,7 @@ public class PurchaseOrderDetail {
 	private Long id;
 
 	@ManyToOne(cascade = { CascadeType.REFRESH })
-	@JoinColumn(name = "code", referencedColumnName = "code")
+	@JoinColumn(name = "main_id", referencedColumnName = "id")
 	private PurchaseOrderMain main;
 
 	@Nullable

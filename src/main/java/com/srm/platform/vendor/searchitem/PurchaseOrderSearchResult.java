@@ -7,6 +7,8 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 	private static final long serialVersionUID = 3692876780746931969L;
 
+	private String id;
+	
 	private String code;
 
 	private String state;
@@ -57,11 +59,12 @@ public class PurchaseOrderSearchResult implements Serializable {
 	private String contract_code;
 	private Double base_price;
 	
-	public PurchaseOrderSearchResult(String code, String vencode, Date audittime, String state, String vendorname, String companyname,
+	public PurchaseOrderSearchResult(String id, String code, String vencode, Date audittime, String state, String vendorname, String companyname,
 			String deployername, String reviewername, Date deploydate, Date reviewdate, String maker, Date makedate,
 			Double sum, Double money, Integer srmstate, String purchase_type_name, Double prepay_money, String verifier, String closer, 
 			String department, String person, Double tax_rate, Double exchange_rate, String currency, Date closedate, Date orderdate,
 			String contract_code, Double base_price) {
+		this.id = id;
 		this.code = code;
 		this.setVencode(vencode);
 		this.setAudittime(audittime);
@@ -92,6 +95,14 @@ public class PurchaseOrderSearchResult implements Serializable {
 
 		this.contract_code = contract_code;
 		this.base_price = base_price;
+	}		
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public Double getPrepay_money() {

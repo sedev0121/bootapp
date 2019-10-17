@@ -125,21 +125,11 @@ public class Utils {
 		Date today = new Date();
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
-		String todayDate = dateFormat.format(today);
+		
 		String statementDateStr;
-		if (Integer.parseInt(todayDate) > Integer.parseInt(dateStr)) {
-			dateFormat = new SimpleDateFormat("yyyy-MM-");
-			String yearMonth = dateFormat.format(today);
-			statementDateStr = yearMonth + dateStr;
-		} else {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(today);
-			cal.add(Calendar.MONTH, -1);
-			Date prevMonthDate = cal.getTime();			
-			dateFormat = new SimpleDateFormat("yyyy-MM-");
-			String yearMonth = dateFormat.format(prevMonthDate);
-			statementDateStr = yearMonth + dateStr;
-		}
+		dateFormat = new SimpleDateFormat("yyyy-MM-");
+		String yearMonth = dateFormat.format(today);
+		statementDateStr = yearMonth + dateStr;
 		
 		return parseDate(statementDateStr);
 	}

@@ -10,5 +10,6 @@ import com.srm.platform.vendor.model.PurchaseInMain;
 public interface PurchaseInMainRepository extends JpaRepository<PurchaseInMain, Long> {
 
 	PurchaseInMain findOneByCode(String code);
-
+	
+	PurchaseInMain findOneById(Long id);
 }
