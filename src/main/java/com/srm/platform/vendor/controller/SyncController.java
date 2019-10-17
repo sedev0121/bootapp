@@ -662,12 +662,11 @@ public class SyncController {
 					detail.setQuantity(quantity);
 					detail.setBillQuantity(billQuantity);
 					
-					//TODO:
-//					if (billQuantity == 0) {
-//						detail.setState(Constants.PURCHASE_IN_STATE_WAIT);
-//					} else {
-//						detail.setState(Constants.PURCHASE_IN_STATE_FINISH);	
-//					}
+					if (billQuantity == 0) {
+						detail.setState(Constants.PURCHASE_IN_STATE_WAIT);
+					} else {
+						detail.setState(Constants.PURCHASE_IN_STATE_FINISH);	
+					}
 					
 					detail.setTaxRate(taxRate);
 					detail.setTax(tax);
