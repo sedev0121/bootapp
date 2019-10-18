@@ -1064,8 +1064,6 @@
 		      url : detail_url,
 		      dataSrc : function(json) {
 			      $.each(json, function(key, item) {
-			      	item.price = App.priceNumber(item.tax_price * 100 / (parseInt(item.tax_rate) + 100));
-						  item.cost = App.costNumber(item.price * item.pi_quantity);
 						  item.tax = App.costNumber(item.tax_cost - item.cost);
 						  
 				      item.invoice_quantity = App.quantityNumber(item.pi_quantity);
