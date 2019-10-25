@@ -299,14 +299,14 @@ public class PurchaseInController extends CommonController {
 				+ "left join purchase_order_main pom on po.main_id=pom.id "
 				+ "left join delivery_detail dd on a.delivery_code=dd.code and a.delivery_row_no=dd.row_no "
 				+ "left join company com on b.company_code=com.code left join store st on b.store_code=st.code "
-				+ "left join vendor v on b.vendor_code=v.code where a.state=0 and a.erp_state=1 and (a.bill_quantity is null or a.bill_quantity =0) and type=:type and b.vendor_code=:vendor and com.statement_company_id=:company and b.date<:statementDate ";
+				+ "left join vendor v on b.vendor_code=v.code where a.state=0 and a.erp_state=1 and (a.bill_quantity is null or a.bill_quantity =0) and type=:type and b.vendor_code=:vendor and com.statement_company_id=:company  ";
 
 		Map<String, Object> params = new HashMap<>();
 
 		params.put("vendor", vendor);
 		params.put("company", statementCompany);
 		params.put("type", type);
-		params.put("statementDate", statementDate);
+//		params.put("statementDate", statementDate);
 
 		if (!inventory.trim().isEmpty()) {
 			bodyQuery += " and (c.name like CONCAT('%',:inventory, '%') or c.code like CONCAT('%',:inventory, '%')) ";
