@@ -245,7 +245,7 @@ public class DeliveryController extends CommonController {
 		BigInteger totalCount = (BigInteger) q.getSingleResult();
 
 		selectQuery += bodyQuery + orderBy;
-		
+		logger.info(selectQuery);
 		q = em.createNativeQuery(selectQuery, "DeliverySearchResult");
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			q.setParameter(entry.getKey(), entry.getValue());
