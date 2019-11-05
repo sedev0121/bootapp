@@ -490,11 +490,13 @@ is_readonly = 0;
 
 	  function updateData() {
 		  var rowDatas = table.data();
+		  var index = 1;
 		  $.each(rowDatas, function(key, item) {
 			  item.tax_cost = App.costNumber(item.tax_price * item.quantity);
+			  item.row_no = index++;
 		  });		  
 
-		  table.rows().invalidate().draw();
+		  table.rows().invalidate().draw(false);
 	  }
 	  
 	  function getFloatingTableData() {
@@ -755,11 +757,7 @@ is_readonly = 0;
 		  		for (var i = 0; i < keys.length; i++) {
 		  			var item = data.data[keys[i]];
 			  		if (item[currentFieldName]) {			  			
-			  			var value = parseFloat(item[currentFieldName]);
-			  			if (value <= 0) {
-			  				this.error( currentFieldName, '必须大于0' );
-			  				return false;
-			  			}
+			  			var value = parseFloat(item[currentFieldName]);			  			
 			  			item[currentFieldName] = value;
 			  		}
 			  	};
@@ -1059,6 +1057,17 @@ is_readonly = 0;
 			  App.showErrorDialog("操作失败", "没有添加货品");
 			  return false;
 		  }
+		  
+		  for(var i=0;i<data.length; i++) {
+		  	var item = data[i];
+		  	if (item.tax_price < 0) {
+		  		App.showErrorDialog("操作失败", "第" + item.row_no + "行基准含税单价小于0");
+		  		return false;
+		  	} else if (item.floating_price < 0) {
+		  		App.showErrorDialog("操作失败", "第" + item.row_no + "行阶梯浮动幅度小于0");
+		  		return false;
+		  	}	    	
+	    }
 		  
 		  var startDate = $('#start_date').val();
 		  var endDate = $('#end_date').val();
