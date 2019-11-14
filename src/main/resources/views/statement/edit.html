@@ -936,8 +936,9 @@
 		  var rowDatas = table.data();
 		  var index = 1;
 		  $.each(rowDatas, function(key, item) {
-		  	item.price = App.priceNumber(item.tax_price * 100 /(parseInt(item.tax_rate) + 100));
+		  	item.price = item.tax_price * 100 /(parseInt(item.tax_rate) + 100);
 			  item.cost = App.costNumber(item.price * item.pi_quantity);
+			  item.price = App.priceNumber(item.price);
 			  item.tax = App.costNumber(item.tax_cost - item.cost);
 			  
 			  cost += item.cost * 1;
