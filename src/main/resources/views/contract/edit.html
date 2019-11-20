@@ -823,6 +823,7 @@ is_readonly = 0;
 		      className : 'dt-center ignore-export',
 		      title : '行号'
 		    }, {
+		    	className : 'csv-string',
 		      data : 'code',
 		      sortable : false,
 		      title : '货品代码',
@@ -1158,7 +1159,7 @@ is_readonly = 0;
 					if (columns.length == 4) {
 						if (columns[0]) {
 							var item = {
-									code: columns[0],
+									code: remove_csv_string_mark(columns[0]),
 									quantity: columns[1],
 									tax_price: columns[2],
 									memo: columns[3],

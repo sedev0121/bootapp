@@ -5,6 +5,16 @@ function extractLast( term ) {
   return split( term ).pop();
 }
 
+function add_csv_string_mark(str) {
+	return "【" + str + "】";
+}
+
+function remove_csv_string_mark(str) {
+	str = str.replace(/【/g, "");
+	str = str.replace(/】/g, "");
+	return str;
+}
+
 function import_csv_as_text(callback) {
 	$("#import_file").click();
 	$("#import_file").off().change(function(evt) {
@@ -718,6 +728,9 @@ var App = function() {
           
           if (!cell_value || cell_value == undefined || cell_value == null || cell_value == 'undefined' || cell_value == 'null') {
           	cell_value = '';
+          }
+          if (column_setting.className == 'csv-string') {
+          	cell_value = add_csv_string_mark(cell_value);
           }
           csv_string += cell_value + column_seperator;
         }
