@@ -43,7 +43,7 @@
 							<input type="text" id="code" name="code" th:value="${main.code}" class="form-control" readonly />
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label for="makedate">账单时间: </label> 
+							<label for="makedate">任务日期: </label> 
 							<input type="text" name="date" id="date" th:value="${#dates.format(main.date, 'yyyy-MM-dd')}" class="form-control" readonly>
 						</div>
 						<div class="col-lg-4 col-md-4">
@@ -71,7 +71,7 @@
 							<input type="text" th:value="${main.maker?.realname}" class="form-control" readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
-							<label>制单日期: </label> 
+							<label>账单日期: </label> 
 							<input type="text" th:value="${#dates.format(main.makeDate, 'yyyy-MM-dd')}" class="form-control" readonly>
 						</div>
 						<div class="col-lg-2 col-md-2">
