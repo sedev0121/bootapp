@@ -27,6 +27,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.util.UriUtils;
 import org.thymeleaf.util.StringUtils;
@@ -241,6 +243,12 @@ public class CommonController {
 	protected int maxResults;
 	protected int pageSize;
 
+
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+	    binder.setAutoGrowCollectionLimit(10000);
+	}
+	
 	public boolean isVendor() {
 
 		return hasAuthority("ROLE_VENDOR");
