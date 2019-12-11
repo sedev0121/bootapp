@@ -626,6 +626,7 @@
 		      data : 'specs',
 		      className : 'dt-center',
 		      title : '规格型号',
+		      className: 'fixed-width-tooltip',
 		    }, {
 		      data : 'pi_quantity',
 		      className : 'dt-right',
@@ -760,6 +761,7 @@
 			      title : '货品名称'
 			    }, {
 			      data : 'specs',
+			      className: 'fixed-width-tooltip',
 			      title : '规格型号',
 			    }, {
 			      data : 'unitname',
@@ -1117,7 +1119,7 @@
 		    }, {
 		      data : 'specs',
 		      sortable : false,
-		      className : 'dt-center',
+		      className : 'dt-center fixed-width-tooltip',
 		      title : '规格型号',
 		    }, {
 		      data : 'unitname',
@@ -1236,6 +1238,7 @@
 		    	}
 		    },
 		    drawCallback : function(settings) {
+		    	fix_width_tooltip();
 			    var data_list = this.api().rows().data().toArray()
 			    if (data_list.length > 0) {
 				    $('#vendor').attr("readonly", true);

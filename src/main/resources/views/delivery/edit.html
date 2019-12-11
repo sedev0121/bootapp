@@ -388,6 +388,7 @@ is_readonly = 0;
 	    }, {
 	      data : 'purchaseOrderDetail.inventory.specs',
 	      title : '规格型号',
+	      className: 'fixed-width-tooltip',
 	    }, {
 	      data : 'purchaseOrderDetail.quantity',
 	      className : 'dt-right',
@@ -568,6 +569,9 @@ is_readonly = 0;
 		  	summary_data = Object.values(summary_data);
 		  	
     		reloadSummaryTable();
+    		
+    		fix_width_tooltip();
+    		
       }
 	  };
 
@@ -810,6 +814,7 @@ is_readonly = 0;
 			      data : 'inventory.specs',
 			      title : '货品规格型号',
 			      orderable: false,
+			      className: 'fixed-width-tooltip',
 			    }, {
 			      data : 'main.purchase_type_name',
 			      title : '采购类型',

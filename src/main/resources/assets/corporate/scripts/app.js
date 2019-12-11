@@ -15,6 +15,12 @@ function remove_csv_string_mark(str) {
 	return str;
 }
 
+function fix_width_tooltip() {
+	$('td.fixed-width-tooltip').each( function() {
+    this.setAttribute( 'title', $(this).html() );
+  });
+}
+
 function import_csv_as_text(callback) {
 	$("#import_file").click();
 	$("#import_file").off().change(function(evt) {
@@ -830,6 +836,9 @@ $(document).ready(function() {
 		ajax: {
 			timeout: 150000, 
 		},
+		drawCallback: function( settings ) {
+			fix_width_tooltip();
+		}
 	});
 	
 	$.fn.rowno_renderer = function (data, type, row, meta) {

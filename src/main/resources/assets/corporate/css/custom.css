@@ -765,3 +765,9 @@ table.dataTable.DTFC_Cloned>thead>tr[style="height: 0px;"]>th.sorting:after {
 .introduction p {
 	font-size: 15px;
 }
+
+.fixed-width-tooltip {
+	max-width: 100px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

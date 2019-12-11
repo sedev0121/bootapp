@@ -524,6 +524,7 @@
 	      data : null,
 	      defaultContent : '',
 	      title : '规格型号',
+	      className: 'fixed-width-tooltip',
 	      render : function(data, display, record) {
 		      if (record.inventory) {
 			      return record.inventory.specs;
@@ -790,6 +791,7 @@
 			    }, {
 			      data : 'specs',
 			      title : '规格型号',
+			      className: 'fixed-width-tooltip',
 			    }, {
 			      data : 'main_measure',
 			      className : 'dt-center',

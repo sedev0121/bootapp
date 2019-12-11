@@ -626,6 +626,7 @@ is_readonly = 0;
 		      sortable : false,
 		      className : 'dt-center',
 		      title : '规格型号',
+		      className: 'fixed-width-tooltip',
 		    }, {
 		      data : 'main_measure',
 		      sortable : false,
@@ -835,7 +836,7 @@ is_readonly = 0;
 		    }, {
 		      data : 'specs',
 		      sortable : false,
-		      className : 'dt-center ignore-export',
+		      className : 'dt-center ignore-export fixed-width-tooltip',
 		      title : '规格型号',
 		    }, {
 		      data : 'main_measure',
@@ -898,6 +899,7 @@ is_readonly = 0;
 				    $('#floating_direction').attr("readonly", false);
 			    }
 		    	loadFloatingTable();
+		    	fix_width_tooltip();
 		    }
 		  };
 
