@@ -19,7 +19,6 @@ public interface StatementDetailItem {
 	
 	String getPi_store_code();
 	String getPi_tax_rate();
-	String getPi_tax_price();
 	String getPi_vendor_code();
 	
 	String getTax_rate();

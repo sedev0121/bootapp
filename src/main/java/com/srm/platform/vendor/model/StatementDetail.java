@@ -30,6 +30,12 @@ public class StatementDetail {
 	@Column(name = "tax_rate")
 	private Integer taxRate = 13;
 	
+
+	private Double price;
+	private Double cost;
+	private Double taxPrice;
+	private Double taxCost;
+	
 	public Long getId() {
 		return id;
 	}
@@ -76,6 +82,38 @@ public class StatementDetail {
 
 	public void setAdjustTaxCost(Double adjustTaxCost) {
 		this.adjustTaxCost = adjustTaxCost;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
+
+	public Double getTaxPrice() {
+		return taxPrice;
+	}
+
+	public void setTaxPrice(Double taxPrice) {
+		this.taxPrice = taxPrice;
+	}
+
+	public Double getTaxCost() {
+		return taxCost;
+	}
+
+	public void setTaxCost(Double taxCost) {
+		this.taxCost = taxCost;
 	}
 	
 }

@@ -577,6 +577,30 @@ public class StatementController extends CommonController {
 
 						}
 
+						try {
+							detail.setPrice(Double.parseDouble(row.get("price")));
+						} catch (Exception e) {
+
+						}
+
+						try {
+							detail.setCost(Double.parseDouble(row.get("cost")));
+						} catch (Exception e) {
+
+						}
+
+						try {
+							detail.setTaxPrice(Double.parseDouble(row.get("tax_price")));
+						} catch (Exception e) {
+
+						}
+
+						try {
+							detail.setTaxCost(Double.parseDouble(row.get("tax_cost")));
+						} catch (Exception e) {
+
+						}
+
 						detail.setRowNo(i++);
 
 						detail = statementDetailRepository.save(detail);
@@ -780,7 +804,7 @@ public class StatementController extends CommonController {
 			row.put("cInvCode", detail.getInventory_code()); // 外购入库单存货编码
 			
 			row.put("iQuantity", detail.getPi_quantity()); // 外购入库单入库数量
-			row.put("iOriTaxCost", detail.getPi_tax_price()); // 外购入库单含税单价
+			row.put("iOriTaxCost", detail.getTax_price()); // 外购入库单含税单价
 			row.put("iTaxRate", detail.getPi_tax_rate()); // 外购入库单税率
 			row.put("cWhCode", detail.getPi_store_code()); // 外购入库单入库仓库
 			row.put("cCode", detail.getPi_code()); // 外购入库单入库单号
