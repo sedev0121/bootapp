@@ -29,4 +29,6 @@ public interface VendorRepository extends JpaRepository<Vendor, Long> {
 	@Query(value = "SELECT a.*, '' unitname, c.stop_date FROM vendor a left join account c on a.code=c.vendor_code where a.code in ?1", nativeQuery = true)
 	List<VendorSearchItem> findVendorsByCodeList(String[] codeList);
 
+	@Query(value = "SELECT code, name FROM vendor WHERE (abbrname LIKE %?1% or code LIKE %?1% or name LIKE %?1%) and code in ?2", countQuery = "SELECT count(*) FROM vendor WHERE (abbrname LIKE %?1% or code LIKE %?1% or name LIKE %?1%) and code in ?2", nativeQuery = true)
+	Page<SearchItem> findCreatedVendorsByCodeList(String search, List<String> codeList, Pageable pageable);
 }

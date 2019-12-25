@@ -509,10 +509,15 @@ public class SyncController {
 						detail.setInvoicedQuantity(getDoubleValue(detailTemp, "iInvQTY")); //累计开票数量 
 						detail.setInvoicedMoney(getDoubleValue(detailTemp, "iNatInvMoney")); //累计开票金额 
 						
-						detail.setCloserName(getStringValue(detailTemp, "cbCloser")); //行关闭人 
+						 
 						
-						String closeDateStr = getStringValue(detailTemp, "cbCloseTime"); //行关闭时间  
-						detail.setCloseDate(Utils.parseDateTime(closeDateStr));
+						if (detail.getCloseDate() == null) {
+							String closeDateStr = getStringValue(detailTemp, "cbCloseTime"); //行关闭时间  
+							detail.setCloseDate(Utils.parseDateTime(closeDateStr));
+							
+							detail.setCloserName(getStringValue(detailTemp, "cbCloser")); //行关闭人
+						}
+						
 						detail.setMemo(getStringValue(detailTemp, "cbMemo")); //表体备注 
 						
 

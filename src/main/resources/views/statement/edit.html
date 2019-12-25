@@ -295,7 +295,7 @@
    var import_url = [[@{/purchasein/select}]];
    var del_url = [[@{|/statement/${main.code}/delete|}]];
    var init_url = [[@{|/statement/${main.code}/init|}]];
-   var vendor_search_url = [[@{/vendor/search}]];
+   var vendor_search_url = [[@{/statement/search}]];
    var state = [[${main.state}]];
    var invoice_state = [[${main.invoiceState}]];
    var invoice_code = [[${main.invoiceCode}]];
@@ -1590,6 +1590,8 @@
 	  });
 	  
 	  $("#cancel_confirm").click(function() {
+	  	$('#invoice_code').rules("remove", "required");
+	  	$('#invoice_type').rules("remove", "required");
 		  $('#save_state').val(8);
 		  $("#form").submit();
 	  });
@@ -1600,6 +1602,8 @@
 	  });
 
 	  $("#invoice_make").click(function() {
+	  	$('#invoice_code').rules("add", "required");
+	  	$('#invoice_type').rules("add", "required");
 		  $('#action').val("invoice");
 		  $('#save_invoice_state').val(1);
 		  $("#form").submit();

@@ -43,6 +43,7 @@ import com.srm.platform.vendor.model.StatementDetail;
 import com.srm.platform.vendor.model.StatementMain;
 import com.srm.platform.vendor.model.Vendor;
 import com.srm.platform.vendor.saveform.StatementSaveForm;
+import com.srm.platform.vendor.searchitem.SearchItem;
 import com.srm.platform.vendor.searchitem.StatementDetailItem;
 import com.srm.platform.vendor.searchitem.StatementSearchResult;
 import com.srm.platform.vendor.u8api.RestApiResponse;
@@ -324,6 +325,7 @@ public class StatementController extends CommonController {
 	@PostMapping("/update")
 	public @ResponseBody GenericJsonResponse<StatementMain> update_ajax(StatementSaveForm form,
 			BindingResult bindingResult) {
+		
 		StatementMain main = statementMainRepository.findOneByCode(form.getCode());
 
 		if (main == null) {
@@ -331,6 +333,8 @@ public class StatementController extends CommonController {
 			main.setCode(form.getCode());
 		}
 
+		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null, main);
+		
 		String action = null;
 		List<Account> toList = new ArrayList<>();
 
@@ -455,6 +459,13 @@ public class StatementController extends CommonController {
 			main.setInvoiceState(form.getInvoice_state());
 
 			if (form.getInvoice_state() == Constants.INVOICE_STATE_DONE) {
+				
+				if (form.getInvoice_code().isEmpty()) {
+					jsonResponse.setSuccess(GenericJsonResponse.FAILED);
+					jsonResponse.setErrmsg("必须要填发票号");
+					return jsonResponse;
+				}
+				
 				main.setInvoiceType(form.getInvoice_type());
 				main.setInvoiceCode(form.getInvoice_code());
 				main.setInvoiceMaker(this.getLoginAccount());
@@ -515,8 +526,7 @@ public class StatementController extends CommonController {
 
 		main = statementMainRepository.save(main);
 
-		GenericJsonResponse<StatementMain> jsonResponse = new GenericJsonResponse<>(GenericJsonResponse.SUCCESS, null,
-				main);
+		
 
 		if (form.isInvoiceAction()) {
 			if (form.getInvoice_state() == Constants.INVOICE_STATE_CANCEL_UPLOAD) {
@@ -1033,5 +1043,41 @@ public class StatementController extends CommonController {
 		}
 
 		return true;
+	}	
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/search", produces = "application/json")
+	public Page<SearchItem> search_ajax(@RequestParam(value = "q") String search) {
+		PageRequest request = PageRequest.of(0, 15, Direction.ASC, "name");
+		List<String> allowedVendorCodeList = new ArrayList<String>();
+		boolean isAll = false;
+		AccountPermissionInfo accountPermissionInfo = this.getPermissionScopeOfFunction(LIST_FUNCTION_ACTION_ID);
+		if (accountPermissionInfo.isAllPermission()) {
+			isAll = true;
+		} else {			
+			for (AccountPermission accountPermission : accountPermissionInfo.getList()) {
+
+				List<String> temp = accountPermission.getVendorList();
+				allowedVendorCodeList.addAll(accountPermission.getVendorList());
+				
+				if (temp.size() == 0) {
+					isAll = true;
+					break;
+				} else {
+					allowedVendorCodeList.addAll(temp);
+				}
+			}
+		}
+		
+		if (isAll) {
+			return vendorRepository.findCreatedVendors(search, request);
+		} else {
+			if (allowedVendorCodeList.size() > 0) {
+				return vendorRepository.findCreatedVendorsByCodeList(search, allowedVendorCodeList, request);
+			} else {
+				return Page.empty();
+			}
+		}
 	}
 }
