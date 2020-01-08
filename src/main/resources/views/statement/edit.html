@@ -839,7 +839,11 @@
 	  $("#invoice_type").select2({
 	    data : App.getInvoiceTypeData(),
 	    minimumResultsForSearch : -1
-	  }).select2("val", invoice_type.toString());
+	  });
+	  
+	  if (invoice_type) {
+	  	$("#invoice_type").select2("val", invoice_type.toString());
+	  }
 
 	  $("#invoice_state").select2({
 	    data : App.getInvoiceStateData(),

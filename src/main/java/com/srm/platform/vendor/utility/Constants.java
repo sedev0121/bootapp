@@ -61,6 +61,9 @@ public class Constants {
 	public final static int INVOICE_STATE_UPLOAD_ERP = 4; //采购已传递ERP
 	public final static int INVOICE_STATE_CANCEL_UPLOAD = 5; //采购审批撤消
 	
+	public final static int INVOICE_TYPE_SPECIAL = 1; //专用发票
+	public final static int INVOICE_TYPE_NORMAL = 2; //普通发票
+	
 	public final static int NOTICE_TYPE_USER = 1;
 	public final static int NOTICE_TYPE_SYSTEM = 2;
 	public final static int NOTICE_TYPE_ALERT = 3;

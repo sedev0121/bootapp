@@ -119,10 +119,10 @@ public class StatementMain {
 	private String invoiceCode;
 	
 	@Column(name = "invoice_state")
-	private Integer invoiceState;
+	private Integer invoiceState = Constants.INVOICE_STATE_NONE;
 	
 	@JsonProperty("invoice_type")
-	private Integer invoiceType = Constants.INVOICE_STATE_NONE;
+	private Integer invoiceType = Constants.INVOICE_TYPE_SPECIAL;
 	
 	@JsonProperty("erp_invoice_make_name")
 	private String erpInvoiceMakeName;
