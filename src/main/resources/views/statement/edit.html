@@ -1330,6 +1330,14 @@
 
 	  var is_cancel = false;
 
+	  $.validator.addMethod("checkInvoiceType", function(value, element) {
+	  	if ($('#invoice_type').val() == 0) {
+	  		return false;
+	  	} else {
+	  		return true;	  		
+	  	} 
+	  }, "请选择发票类型");
+	  
 	  $("#form").validate({
 	    // define validation rules
 	    rules : {
@@ -1350,7 +1358,8 @@
 		      maxlength: 30
 	      },
 	      invoice_type : {
-		      required : state == 6
+		      required : state == 6,
+		      checkInvoiceType: state == 6,
 	      },
 	    },
 
@@ -1600,6 +1609,7 @@
 	  $("#cancel_confirm").click(function() {
 	  	$('#invoice_code').rules("remove", "required");
 	  	$('#invoice_type').rules("remove", "required");
+	  	$('#invoice_type').rules("remove", "checkInvoiceType");
 		  $('#save_state').val(8);
 		  $('#action').val("not_invoice");
 		  $("#form").submit();
@@ -1613,6 +1623,7 @@
 	  $("#invoice_make").click(function() {
 	  	$('#invoice_code').rules("add", "required");
 	  	$('#invoice_type').rules("add", "required");
+	  	$('#invoice_type').rules("add", "checkInvoiceType");
 		  $('#action').val("invoice");
 		  $('#save_invoice_state').val(1);
 		  $("#form").submit();
@@ -1626,6 +1637,9 @@
 
 	  $("#invoice_deny").click(function() {
 		  $('#action').val("invoice");
+		  $('#invoice_code').rules("remove", "required");
+		  $('#invoice_type').rules("remove", "required");
+		  $('#invoice_type').rules("remove", "checkInvoiceType");
 		  $('#save_invoice_state').val(3);
 		  $("#form").submit();
 	  });

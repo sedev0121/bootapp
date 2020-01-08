@@ -46,7 +46,7 @@ function import_csv_as_text(callback) {
 var special_regex = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
 var App = function() {
-	var price_from_data = [{id:0, text:' '}, {id:1, text:'合同'}];
+	var price_from_data = [{id:0, text:'　'}, {id:1, text:'合同'}];
 	var floating_direction = [{id:1, text:'向上浮动'}, {id:2, text:'向下浮动'}, {id:3, text:'上下浮动'}];
 	var contract_type = [{id:1, text:'框架合同'}, {id:2, text:'非框架合同'}];
 	var contract_kind = [{id:1, text:'采购合同'}, {id:2, text:'加工合同'}, {id:3, text:'租赁合同'}, {id:4, text:'维保合同'}];
@@ -71,8 +71,8 @@ var App = function() {
   var delivery_state_data = [{id:1, text:"新建"}, {id:2, text:"已发布"}, {id:3, text:"审批"}, {id:4, text:"已发货"}, {id:5, text:"已收货"}, {id:6, text:"已退回"}, {id:7, text:"确认拒收"}];
   var delivery_row_state_data = [{id:1, text:"新建"}, {id:2, text:"已发布"}, {id:3, text:"审批"}, {id:4, text:"拒绝"}];
   var statement_type_data = [{id:1, text:"采购对账"}, {id:2, text:"委外对账"}];
-  var invoice_type_data = [{id:1, text:"专用发票"}, {id:2, text:"普通发票"}];
-  var order_close_state_data = [{id:0, text:"  "}, {id:1, text:"关闭"}];
+  var invoice_type_data = [{id:0, text:"　"}, {id:1, text:"专用发票"}, {id:2, text:"普通发票"}];
+  var order_close_state_data = [{id:0, text:"　"}, {id:1, text:"关闭"}];
   var yes_no_data = [{id:1, text:"是"}, {id:0, text:"否"}];
   var purchase_order_type_data = [{id:"普通采购", text:"普通采购"}, {id:"委外加工", text:"委外加工"}];
   var box_type_data = [{id:"1", text:"发货单"}, {id:"2", text:"调拨单"}];
