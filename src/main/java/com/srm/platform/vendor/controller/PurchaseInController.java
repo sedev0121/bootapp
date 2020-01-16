@@ -102,7 +102,8 @@ public class PurchaseInController extends CommonController {
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
 		String selectQuery = "select a.*, b.code, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
-				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, pom.code po_code, po.confirmed_memo confirmed_memo, 0 delivered_quantity ";
+				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, pom.code po_code, po.confirmed_memo confirmed_memo, "
+				+ "po.price po_price, po.tax_price po_tax_price, po.money po_cost, po.sum po_tax_cost, 0 delivered_quantity ";
 		String countQuery = "select count(a.id) ";
 		String orderBy = " order by " + order + " " + dir;
 
@@ -288,7 +289,8 @@ public class PurchaseInController extends CommonController {
 				dir.equals("asc") ? Direction.ASC : Direction.DESC, order, "rowno");
 
 		String selectQuery = "select a.*, b.code, b.date, b.verify_date, c.main_measure unitname, c.name inventory_name,c.specs, com.name company_name, st.name store_name, "
-				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, pom.code po_code, po.confirmed_memo confirmed_memo, dd.delivered_quantity ";
+				+ "v.name vendorname, v.code vendorcode, b.type, b.bredvouch, pom.code po_code, po.confirmed_memo confirmed_memo, "
+				+ "po.price po_price, po.tax_price po_tax_price, po.money po_cost, po.sum po_tax_cost, dd.delivered_quantity ";
 
 		String countQuery = "select count(*) ";
 		String orderBy = " order by " + order + " " + dir;

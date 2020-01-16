@@ -1552,6 +1552,18 @@
 			  }
 
 			  if (available) {
+			  	
+			  	item.pi_price = item.price;
+			  	item.pi_tax_price = item.tax_price;
+			  	item.pi_cost = item.cost;
+			  	item.pi_tax_cost = item.tax_cost;
+			  	item.pi_tax = item.tax;
+			  	
+			  	item.price = item.po_price;
+			  	item.tax_price = item.po_tax_price;
+			  	item.cost = item.po_cost;
+			  	item.tax_cost = item.po_tax_cost;
+			  	
 				  item.pi_code = item.code;
 				  item.pi_detail_id = item.id;
 				  item.pi_date = item.date;

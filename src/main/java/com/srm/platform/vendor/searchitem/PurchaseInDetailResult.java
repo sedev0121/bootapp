@@ -36,6 +36,7 @@ public class PurchaseInDetailResult implements Serializable {
 	String tax_price;
 
 	String tax_rate;
+	String tax;
 
 	String state;
 	
@@ -63,6 +64,18 @@ public class PurchaseInDetailResult implements Serializable {
 	@JsonProperty("po_row_no")
 	Integer poRowNo;
 	
+	@JsonProperty("po_price")
+	String poPrice;
+	
+	@JsonProperty("po_tax_price")
+	String poTaxPrice;
+	
+	@JsonProperty("po_cost")
+	String poCost;
+	
+	@JsonProperty("po_tax_cost")
+	String poTaxCost;
+	
 	@JsonProperty("delivery_code")
 	String deliveryCode;
 	
@@ -83,8 +96,10 @@ public class PurchaseInDetailResult implements Serializable {
 	
 	public PurchaseInDetailResult(String id, String code, String date, String verify_date,Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
-			String tax_price, String tax_rate, String tax_cost, String confirmedMemo, String vendorname, String vendorcode, String type,
-			String bredvouch, String state, String erpState, Integer erpChanged, String poCode, Integer poRowNo, String deliveryCode, Integer deliveryRowNo, 
+			String tax_price, String tax_rate, String tax, String tax_cost, String confirmedMemo, String vendorname, String vendorcode, String type,
+			String bredvouch, String state, String erpState, Integer erpChanged, String poCode, Integer poRowNo, 
+			String poPrice, String poTaxPrice, String poCost, String poTaxCost, 
+			String deliveryCode, Integer deliveryRowNo, 
 			String deliveredQuantity, String companyName, String storeName, Date syncDate) {
 
 		this.id = id;
@@ -104,6 +119,7 @@ public class PurchaseInDetailResult implements Serializable {
 		this.tax_price = tax_price;
 		this.tax_cost = tax_cost;
 		this.tax_rate = tax_rate;
+		this.tax = tax;
 
 		this.vendorcode = vendorcode;
 		this.vendorname = vendorname;
@@ -116,6 +132,11 @@ public class PurchaseInDetailResult implements Serializable {
 
 		this.poCode = poCode;
 		this.poRowNo = poRowNo;
+		this.poPrice = poPrice;
+		this.poTaxPrice = poTaxPrice;
+		this.poCost = poCost;
+		this.poTaxCost = poTaxCost;
+		
 		this.deliveryCode = deliveryCode;
 		this.deliveryRowNo = deliveryRowNo;
 		this.deliveredQuantity = deliveredQuantity;
@@ -144,6 +165,54 @@ public class PurchaseInDetailResult implements Serializable {
 
 	public void setErpChanged(Integer erpChanged) {
 		this.erpChanged = erpChanged;
+	}
+
+	
+	public String getTax() {
+		return tax;
+	}
+
+	public void setTax(String tax) {
+		this.tax = tax;
+	}
+
+
+	public String getPoPrice() {
+		return poPrice;
+	}
+
+
+	public void setPoPrice(String poPrice) {
+		this.poPrice = poPrice;
+	}
+
+
+	public String getPoTaxPrice() {
+		return poTaxPrice;
+	}
+
+
+	public void setPoTaxPrice(String poTaxPrice) {
+		this.poTaxPrice = poTaxPrice;
+	}
+
+	public String getPoCost() {
+		return poCost;
+	}
+
+
+	public void setPoCost(String poCost) {
+		this.poCost = poCost;
+	}
+
+
+	public String getPoTaxCost() {
+		return poTaxCost;
+	}
+
+
+	public void setPoTaxCost(String poTaxCost) {
+		this.poTaxCost = poTaxCost;
 	}
 
 
