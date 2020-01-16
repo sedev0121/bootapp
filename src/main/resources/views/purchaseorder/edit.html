@@ -7,7 +7,7 @@
 			<li><a th:href="@{/purchaseorder}">订单管理</a></li>
 			<li class="active">订单详细</li>
 		</ul>
-		<div class="btn-group-bar">
+		<div class="btn-group-bar" th:if="${main.state=='审核'}">
 			<div class="text-right" style="margin-top: 10px; margin-bottom: 5px;">
 				<a class="btn btn-primary" id="deploy" th:if="${(main.srmstate==0 && canDeploy)}"><i class="fa fa-share"></i> 发布</a> 
 				<a class="btn btn-warning" id="negotiate" th:if="${(main.srmstate==0 && canDeploy)}"><i class="fa fa-comments"></i> 协议采购</a>

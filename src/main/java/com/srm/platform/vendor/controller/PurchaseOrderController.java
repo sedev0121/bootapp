@@ -124,12 +124,16 @@ public class PurchaseOrderController extends CommonController {
 
 		String selectQuery = "SELECT a.*, b.abbrname vendorname, f.name companyname, c.realname deployername, d.realname reviewername, e.prepay_money, e.money, e.sum ";
 		String countQuery = "select count(*) ";
-		String orderBy = " order by " + order + " " + dir;
+		String orderBy = " order by a.state desc, " + order + " " + dir;
+		
+		if (order.equalsIgnoreCase("state")) {
+			orderBy = " order by " + order + " " + dir;
+		}
 
 		String bodyQuery = "FROM purchase_order_main a left join vendor b on a.vencode=b.code left join account c on a.deployer=c.id "
 				+ "left join account d on a.reviewer=d.id left join account emp on a.employee_no=emp.employee_no "
 				+ "left join (select main_id, sum(prepay_money) prepay_money, sum(money) money, sum(sum) sum from purchase_order_detail group by main_id) e on a.id=e.main_id "
-				+ "left join company f on a.company_id=f.id WHERE a.state='审核' and a.company_id is not null and a.vencode in (select vendor_code from account where vendor_code is not null) ";
+				+ "left join company f on a.company_id=f.id WHERE a.company_id is not null and a.vencode in (select vendor_code from account where vendor_code is not null) ";
 
 		Map<String, Object> params = new HashMap<>();
 
