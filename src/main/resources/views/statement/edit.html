@@ -1142,34 +1142,60 @@
 		      title : '接收数量',
 		      render : App.quantityNumber,
 		    }, {
-		      data : 'cost',
+		      data : 'pi_cost',
 		      sortable : false,
 		      className : 'dt-center',
-		      title : '未税金额',
+		      title : '入库单未税金额',
 		      render : App.costNumber,
 		    }, {
-		      data : 'tax',
+		      data : 'pi_tax',
 		      sortable : false,
 		      className : 'dt-center',
-		      title : '税额',
+		      title : '入库单税额',
 		      render : App.costNumber,
+		    }, {
+		      data : 'pi_tax_price',
+		      sortable : false,
+		      className : 'dt-right',
+		      title : '入库单含税单价',
+		      render : App.priceNumber,
+		    }, {
+		      data : 'pi_tax_cost',
+		      sortable : false,
+		      className : 'dt-right',
+		      title : '入库单含税金额',
+		      render : App.costNumber,
+		      
+		    }, {
+		      data : 'price',
+		      sortable : false,
+		      className : 'dt-right',
+		      title : '对账单未税单价',
+		      render : App.priceNumber,
 		    }, {
 		      data : 'tax_price',
 		      sortable : false,
 		      className : 'dt-right',
-		      title : '含税单价',
+		      title : '对账单含税单价',
 		      render : App.priceNumber,
+		    }, {
+		      data : 'tax',
+		      sortable : false,
+		      className : 'dt-right',
+		      title : '对账单税额',
+		      render : App.costNumber,
 		    }, {
 		      data : 'tax_cost',
 		      sortable : false,
 		      className : 'dt-right',
-		      title : '含税金额',
+		      title : '对账单含税金额',
 		      render : App.costNumber,
+		      
 		    }, {
 		      data : 'adjust_tax_cost',
 		      sortable : false,
 		      className : 'dt-right edit-cell',
-		      title : '含税调整金额',
+		      title : '对账单含税调整金额',
 		      render : App.costNumber,
 		    }, {
 		      data : 'invoice_quantity',
@@ -1234,7 +1260,7 @@
 		    } ],
 		    order : [ [ 0, "asc" ], [ 3, "asc" ] ],
 		    footerCallback : function(row, data, start, end, display) {
-			    App.footerCallback(this.api(), [ [ 9, "quantity" ], [ 10, "cost" ], [ 11, "cost" ], [ 13, "cost" ], [ 14, "cost" ], [ 15, "quantity" ], [ 17, "cost" ], [ 23, "quantity" ] ]);
+			    App.footerCallback(this.api(), [ [ 9, "quantity" ], [ 10, "cost" ], [ 11, "cost" ], [ 13, "cost" ], [ 16, "cost" ], [ 17, "cost" ], [ 18, "cost" ], [ 19, "quantity" ], [ 21, "cost" ], [ 27, "quantity" ] ]);
 		    },
 		    rowCallback: function (row, data) {
 		    	if (hasInvalidRow(data)) {
@@ -1308,7 +1334,7 @@
 		  var footertr = $("<tr></tr>").appendTo(footer);
 
 		  //Add footer cells
-		  for (var i = 0; i < 20; i++) {
+		  for (var i = 0; i < 24; i++) {
 			  if (i == 0) {
 				  $("<th colspan='7' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
 			  } else {

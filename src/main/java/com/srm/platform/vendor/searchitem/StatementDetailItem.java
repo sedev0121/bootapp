@@ -16,6 +16,11 @@ public interface StatementDetailItem {
 	String getPi_auto_id();
 	Integer getPi_state();
 	Integer getPi_erp_changed();
+	String getPi_price();
+	String getPi_tax_price();
+	String getPi_cost();
+	String getPi_tax_cost();
+	String getPi_tax();
 	
 	String getPi_store_code();
 	String getPi_tax_rate();
@@ -39,6 +44,7 @@ public interface StatementDetailItem {
 	String getConfirmed_memo();
 	String getPo_code();
 	String getPo_row_no();
+
 	
 	//delivery info
 	String getDelivery_code();
