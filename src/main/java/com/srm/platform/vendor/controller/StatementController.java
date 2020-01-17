@@ -133,7 +133,6 @@ public class StatementController extends CommonController {
 					if (purchaseInDetail == null)
 						continue;
 
-					purchaseInDetail.setErpChanged(Constants.PURCHASE_IN_U8_STATE_NO_CHANGED);
 					purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_WAIT);
 					purchaseInDetailRepository.save(purchaseInDetail);
 				}
@@ -556,7 +555,6 @@ public class StatementController extends CommonController {
 		} else {
 			if (form.getState() <= Constants.STATEMENT_STATE_SUBMIT) {
 				setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_WAIT, false);
-				initPurchaseInDetailErpChanged(main, form);
 				
 				statementDetailRepository.deleteInBatch(statementDetailRepository.findByCode(main.getCode()));
 				if (form.getTable() != null) {
@@ -658,10 +656,9 @@ public class StatementController extends CommonController {
 						purchaseInDetail.setState(state);
 						purchaseInDetailRepository.save(purchaseInDetail);
 						finishedRowNoList.add(rowNoStr);
-					} else if (state == 3) {
-						purchaseInDetail.setErpChanged(Constants.PURCHASE_IN_U8_STATE_CHANGED);
-						purchaseInDetailRepository.save(purchaseInDetail);
-						changedRowNoList.add(rowNoStr);
+//					} else if (state == 3) {
+//						purchaseInDetailRepository.save(purchaseInDetail);
+//						changedRowNoList.add(rowNoStr);
 					}					
 				}
 			}
@@ -1037,27 +1034,6 @@ public class StatementController extends CommonController {
 		}
 	}
 	
-	private void initPurchaseInDetailErpChanged(StatementMain main, StatementSaveForm form) {
-		
-		List<Long> newPurchaseInDetailIdList = new ArrayList<Long>();
-		if (form.getTable() != null) {
-			for (Map<String, String> row : form.getTable()) {
-				newPurchaseInDetailIdList.add(Long.parseLong(row.get("pi_detail_id")));
-			}
-		}
-		
-		List<StatementDetail> detailList = statementDetailRepository.findByCode(main.getCode());
-		for (StatementDetail detail : detailList) {
-			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getPiDetailId());
-
-			if (purchaseInDetail != null && !newPurchaseInDetailIdList.contains(purchaseInDetail.getId())) {
-				purchaseInDetail.setErpChanged(Constants.PURCHASE_IN_U8_STATE_NO_CHANGED);
-				purchaseInDetailRepository.save(purchaseInDetail);	
-			}
-		}
-		
-	}
-
 	private boolean checkSecondPassword() {
 		if (this.isVendor()) {
 			Integer secondPassword = (Integer) httpSession.getAttribute("second_password");

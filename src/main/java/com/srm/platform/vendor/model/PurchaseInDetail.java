@@ -51,7 +51,6 @@ import com.srm.platform.vendor.utility.Constants;
 					@ColumnResult(name = "bredvouch", type = String.class),
 					@ColumnResult(name = "state", type = String.class),
 					@ColumnResult(name = "erp_state", type = String.class),
-					@ColumnResult(name = "erp_changed", type = Integer.class),
 					@ColumnResult(name = "po_code", type = String.class),
 					@ColumnResult(name = "po_row_no", type = Integer.class),
 					@ColumnResult(name = "po_price", type = String.class),
@@ -153,9 +152,6 @@ public class PurchaseInDetail {
 	@JsonProperty("erp_state")
 	private Integer erpState = Constants.PURCHASE_IN_U8_STATE_NEW;
 	
-	@JsonProperty("erp_changed")
-	private Integer erpChanged = Constants.PURCHASE_IN_U8_STATE_NO_CHANGED;
-	
 	public Long getId() {
 		return id;
 	}
@@ -171,14 +167,6 @@ public class PurchaseInDetail {
 
 	public void setErpState(Integer erpState) {
 		this.erpState = erpState;
-	}
-
-	public Integer getErpChanged() {
-		return erpChanged;
-	}
-
-	public void setErpChanged(Integer erpChanged) {
-		this.erpChanged = erpChanged;
 	}
 
 	public Double getBillQuantity() {

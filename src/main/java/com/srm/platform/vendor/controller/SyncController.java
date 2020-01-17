@@ -658,9 +658,6 @@ public class SyncController {
 					PurchaseInDetail detail = purchaseInDetailRepository.findOneByMainIdAndRowno(id,rowNo);
 					if (detail != null) {
 						logger.info("code=" + code + " rowno=" + rowNo);
-						if (detail.getState() == Constants.PURCHASE_IN_STATE_START) {
-							detail.setErpChanged(Constants.PURCHASE_IN_U8_STATE_CHANGED);
-						}
 					} else {
 						detail = new PurchaseInDetail();
 						detail.setMain(main);

@@ -92,3 +92,7 @@ alter table statement_detail add column `tax_price` decimal(20, 6) NULL DEFAULT 
 alter table statement_detail add column `tax_cost` decimal(10, 0) NULL DEFAULT NULL;
 
 update statement_detail a left join purchase_in_detail b on a.pi_detail_id=b.id set a.price=b.price, a.cost=b.cost, a.tax_price=b.tax_price, a.tax_cost=b.tax_cost;
+
+
+--2020-01-17
+ALTER TABLE purchase_in_detail DROP COLUMN erp_changed;

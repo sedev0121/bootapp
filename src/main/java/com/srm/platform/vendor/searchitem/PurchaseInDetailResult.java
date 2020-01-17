@@ -43,9 +43,6 @@ public class PurchaseInDetailResult implements Serializable {
 	@JsonProperty("erp_state")
 	String erpState;
 	
-	@JsonProperty("erp_changed")
-	Integer erpChanged;
-	
 	String tax_cost;
 
 	@JsonProperty("confirmed_memo")
@@ -97,7 +94,7 @@ public class PurchaseInDetailResult implements Serializable {
 	public PurchaseInDetailResult(String id, String code, String date, String verify_date,Integer rowno, String inventoryname,
 			String inventorycode, String specs, String unitname, String quantity, String price, String cost,
 			String tax_price, String tax_rate, String tax, String tax_cost, String confirmedMemo, String vendorname, String vendorcode, String type,
-			String bredvouch, String state, String erpState, Integer erpChanged, String poCode, Integer poRowNo, 
+			String bredvouch, String state, String erpState, String poCode, Integer poRowNo, 
 			String poPrice, String poTaxPrice, String poCost, String poTaxCost, 
 			String deliveryCode, Integer deliveryRowNo, 
 			String deliveredQuantity, String companyName, String storeName, Date syncDate) {
@@ -128,7 +125,6 @@ public class PurchaseInDetailResult implements Serializable {
 		
 		this.state = state;
 		this.erpState = erpState;
-		this.erpChanged = erpChanged;
 
 		this.poCode = poCode;
 		this.poRowNo = poRowNo;
@@ -156,17 +152,6 @@ public class PurchaseInDetailResult implements Serializable {
 	public void setErpState(String erpState) {
 		this.erpState = erpState;
 	}
-
-
-	public Integer getErpChanged() {
-		return erpChanged;
-	}
-
-
-	public void setErpChanged(Integer erpChanged) {
-		this.erpChanged = erpChanged;
-	}
-
 	
 	public String getTax() {
 		return tax;

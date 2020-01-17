@@ -796,18 +796,8 @@
 			      className : 'dt-center',
 			      title : 'SRM状态',
 			      render : App.getPurchaseInStateOfId,
-			    }, {
-			      data : 'erp_changed',
-			      className : 'dt-center',
-			      title : 'U8已修改',
-			      render : App.getYesNoOfId,
 			    } ],
 			    order : [ [ 1, "asc" ] ],
-			    rowCallback: function (row, data) {
-			    	if (data.erp_changed) {
-			    		$(row).addClass('red');
-			    	}
-			    },
 			  });
 		  }
 		  $('#btn_search').trigger('click');
@@ -1000,7 +990,7 @@
 	  }
 
 	  function hasInvalidRow(row) {
-	  	if (row.pi_state == 3 || row.pi_state == 2 && invoice_state != 4 || row.pi_erp_changed) {
+	  	if (row.pi_state == 3 || row.pi_state == 2 && invoice_state != 4) {
     		return true;
     	}
 	  	
@@ -1251,12 +1241,6 @@
 		      render : App.getPurchaseInStateOfId,
 		      sortable : false,
 		      title : '入库单行状态'
-		    }, {
-		      data : 'pi_erp_changed',
-		      className : 'dt-center',
-		      render : App.getYesNoOfId,
-		      sortable : false,
-		      title : 'U8已修改'
 		    } ],
 		    order : [ [ 0, "asc" ], [ 3, "asc" ] ],
 		    footerCallback : function(row, data, start, end, display) {
@@ -1334,7 +1318,7 @@
 		  var footertr = $("<tr></tr>").appendTo(footer);
 
 		  //Add footer cells
-		  for (var i = 0; i < 24; i++) {
+		  for (var i = 0; i < 23; i++) {
 			  if (i == 0) {
 				  $("<th colspan='7' class='dt-center' style='text-align:center'>合计</th>").appendTo(footertr);
 			  } else {
@@ -1568,7 +1552,6 @@
 				  item.pi_detail_id = item.id;
 				  item.pi_date = item.date;
 				  item.pi_quantity = item.quantity;
-				  item.pi_erp_changed = item.erp_changed;
 				  item.invoice_quantity = item.quantity;
 				  item.invoice_cost = item.tax_cost;
 				  item.adjust_tax_cost = 0;
