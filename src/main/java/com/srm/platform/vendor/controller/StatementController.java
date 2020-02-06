@@ -362,6 +362,9 @@ public class StatementController extends CommonController {
 				main.setConfirmer(this.getLoginAccount());
 				main.setConfirmDate(new Date());
 			} else if (form.getState() == Constants.STATEMENT_STATE_CANCEL) {
+				main.setInvoiceType(null);
+				main.setInvoiceCode(null);
+				main.setInvoiceState(Constants.INVOICE_STATE_NONE);
 				main.setCanceler(this.getLoginAccount());
 				main.setCancelDate(new Date());
 				main.setState(Constants.STATEMENT_STATE_NEW);
