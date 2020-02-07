@@ -619,6 +619,10 @@ public class StatementController extends CommonController {
 		StatementMain main = statementMainRepository.findOneByCode(code);
 		if (main != null) {
 			main.setState(Constants.STATEMENT_STATE_NEW);
+			main.setInvoiceType(null);
+			main.setInvoiceCode(null);
+			main.setInvoiceState(Constants.INVOICE_STATE_NONE);
+			
 			statementMainRepository.save(main);	
 			
 			setPurchaseInDetailState(main, Constants.PURCHASE_IN_STATE_START, false);

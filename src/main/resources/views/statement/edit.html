@@ -1642,6 +1642,7 @@
 	  });
 
 	  $("#invoice_make").click(function() {
+	  	invoice_editor.submit();
 	  	$('#invoice_code').rules("add", "required");
 	  	$('#invoice_type').rules("add", "required");
 	  	$('#invoice_type').rules("add", "checkInvoiceType");
