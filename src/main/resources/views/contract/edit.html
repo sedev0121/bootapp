@@ -267,8 +267,8 @@ is_readonly = 0;
 	  		$('#form').validate().settings.rules.base_price.positiveNumber = false;
 	  		$('#form').validate().settings.rules.floating_price.positiveNumber = false;
 	  		
-	  		table.columns([9, 10]).visible(false);
-	  		$(table.column(7).header()).text('含税单价');
+	  		table.columns([10, 11]).visible(false);
+	  		$(table.column(8).header()).text('含税单价');
 	  	} else {
 	  		$('[href="#tab-2"]').closest('li').show();	 
 	  		
@@ -282,8 +282,8 @@ is_readonly = 0;
 	  		$('#form').validate().settings.rules.base_price.positiveNumber = true;
 	  		$('#form').validate().settings.rules.floating_price.positiveNumber = true;
 	  		
-	  		table.columns([9, 10]).visible(true);
-	  		$(table.column(7).header()).text('基准含税单价');
+	  		table.columns([10, 11]).visible(true);
+	  		$(table.column(8).header()).text('基准含税单价');
 	  	}
 	  	
 	  	table.columns.adjust().fixedColumns().relayout()
