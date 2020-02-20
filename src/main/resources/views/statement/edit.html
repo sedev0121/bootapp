@@ -1066,12 +1066,7 @@
 		      dataSrc : function(json) {
 			      $.each(json, function(key, item) {
 			      	
-			      	item.price = item.tax_price * 100 / (parseInt(item.tax_rate) + 100);
-						  item.cost = App.costNumber(item.price * item.pi_quantity);
-						  item.price = App.priceNumber(item.price);
-						  
-						  item.tax_cost = App.costNumber(item.tax_price * item.pi_quantity);
-						  item.tax = App.costNumber(item.tax_cost - item.cost);
+			      	item.tax = App.costNumber(item.tax_cost - item.cost);
 						  
 				      item.invoice_quantity = App.quantityNumber(item.pi_quantity);
 				      item.invoice_cost = App.costNumber(item.tax_cost * 1 + item.adjust_tax_cost * 1);
@@ -1546,7 +1541,7 @@
 			  	
 			  	item.price = item.po_price;
 			  	item.tax_price = item.po_tax_price;
-			  	item.cost = item.po_cost;
+			  	item.cost = App.costNumber(item.po_price * item.quantity);
 			  	item.tax_cost = App.costNumber(item.po_tax_price * item.quantity);
 			  	
 				  item.pi_code = item.code;

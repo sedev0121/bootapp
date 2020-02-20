@@ -1042,11 +1042,8 @@ public class ApiController {
 				continue;
 			}			
 			
-			Double cost = purchaseInDetail.getCost();
-			Double taxCost = purchaseInDetail.getTaxCost();
-			
-			costSum += (cost==null)?0:cost;
-			taxCostSum += (taxCost==null)?0:taxCost;
+			Double cost = 0D;
+			Double taxCost = 0D;
 			
 			purchaseInDetail.setState(Constants.PURCHASE_IN_STATE_START);				
 			purchaseInDetailList.add(purchaseInDetail);
@@ -1057,12 +1054,16 @@ public class ApiController {
 			statementDetail.setRowNo(index++);
 			statementDetail.setAdjustTaxCost(0D);
 			if (purchaseOrderDetail != null) {
+				cost = purchaseOrderDetail.getPrice() * purchaseInDetail.getQuantity();
+				taxCost = purchaseOrderDetail.getTaxPrice() * purchaseInDetail.getQuantity();
 				statementDetail.setPrice(purchaseOrderDetail.getPrice());
-				statementDetail.setCost(purchaseOrderDetail.getMoney());
+				statementDetail.setCost(cost);
 				statementDetail.setTaxPrice(purchaseOrderDetail.getTaxPrice());
-				statementDetail.setTaxCost(purchaseOrderDetail.getSum());	
+				statementDetail.setTaxCost(taxCost);	
 			}
 			
+			costSum += (cost==null)?0:cost;
+			taxCostSum += (taxCost==null)?0:taxCost;
 			
 			statementDetailList.add(statementDetail);
 			
