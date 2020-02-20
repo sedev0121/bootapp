@@ -54,6 +54,7 @@ import com.srm.platform.vendor.repository.NoticeRepository;
 import com.srm.platform.vendor.repository.OperationHistoryRepository;
 import com.srm.platform.vendor.repository.PermissionGroupRepository;
 import com.srm.platform.vendor.repository.PurchaseInDetailRepository;
+import com.srm.platform.vendor.repository.PurchaseOrderDetailRepository;
 import com.srm.platform.vendor.repository.StatementCompanyRepository;
 import com.srm.platform.vendor.repository.StatementDetailRepository;
 import com.srm.platform.vendor.repository.StatementMainRepository;
@@ -101,6 +102,9 @@ public class ApiController {
 	
 	@Autowired
 	private PurchaseInDetailRepository purchaseInDetailRepository;
+	
+	@Autowired
+	private PurchaseOrderDetailRepository purchaseOrderDetailRepository;
 	
 	@Autowired
 	private StatementDetailRepository statementDetailRepository;
@@ -1032,6 +1036,7 @@ public class ApiController {
 		
 		for (StatementPendingDetail detail : pendingDetailList) {
 			PurchaseInDetail purchaseInDetail = purchaseInDetailRepository.findOneById(detail.getId());
+			PurchaseOrderDetail purchaseOrderDetail = purchaseOrderDetailRepository.findOneByIDAndRowno(purchaseInDetail.getPoId(), purchaseInDetail.getPoRowNo());
 			if (purchaseInDetail.getState() != Constants.PURCHASE_IN_STATE_WAIT) {
 				this.logger.info(String.format("Details continue=> %s %s", detail.getId(), detail.getCode()));
 				continue;
@@ -1051,6 +1056,13 @@ public class ApiController {
 			statementDetail.setPiDetailId(detail.getId());
 			statementDetail.setRowNo(index++);
 			statementDetail.setAdjustTaxCost(0D);
+			if (purchaseOrderDetail != null) {
+				statementDetail.setPrice(purchaseOrderDetail.getPrice());
+				statementDetail.setCost(purchaseOrderDetail.getMoney());
+				statementDetail.setTaxPrice(purchaseOrderDetail.getTaxPrice());
+				statementDetail.setTaxCost(purchaseOrderDetail.getSum());	
+			}
+			
 			
 			statementDetailList.add(statementDetail);
 			

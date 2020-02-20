@@ -1070,6 +1070,7 @@
 						  item.cost = App.costNumber(item.price * item.pi_quantity);
 						  item.price = App.priceNumber(item.price);
 						  
+						  item.tax_cost = App.costNumber(item.tax_price * item.pi_quantity);
 						  item.tax = App.costNumber(item.tax_cost - item.cost);
 						  
 				      item.invoice_quantity = App.quantityNumber(item.pi_quantity);
@@ -1546,7 +1547,7 @@
 			  	item.price = item.po_price;
 			  	item.tax_price = item.po_tax_price;
 			  	item.cost = item.po_cost;
-			  	item.tax_cost = item.po_tax_cost;
+			  	item.tax_cost = App.costNumber(item.po_tax_price * item.quantity);
 			  	
 				  item.pi_code = item.code;
 				  item.pi_detail_id = item.id;

@@ -25,6 +25,9 @@ public interface PurchaseOrderDetailRepository extends JpaRepository<PurchaseOrd
 	@Query(value = "select * from purchase_order_detail where code= :code and row_no=:rowno limit 1", nativeQuery = true)
 	PurchaseOrderDetail findOneByCodeAndRowno(String code, String rowno);
 	
+	@Query(value = "select * from purchase_order_detail where main_id= :id and row_no=:rowno limit 1", nativeQuery = true)
+	PurchaseOrderDetail findOneByIDAndRowno(String id, Integer rowno);
+	
 	@Query(value = "select * from purchase_order_detail where code like %?1%", nativeQuery = true)
 	Page<PurchaseOrderDetail> searchAll(String search, Pageable pageable);
 	
