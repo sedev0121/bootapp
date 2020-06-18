@@ -258,6 +258,8 @@ public class ApiController {
 			response.put("msg", "参数不正确");			
 		} else if (method.equals("deleteBoxMsg")) {
 			response = this.deleteBoxMsg(requestParams);
+		} else if (method.equals("deleteBoxMsg2")) {
+			response = this.deleteBoxMsg2(requestParams);
 		} else if (method.equals("getBoxState")) {
 			response = this.getBoxState(requestParams);
 		} else if (method.equals("replceBox")) {
@@ -280,8 +282,6 @@ public class ApiController {
 		return response;
 	}
 	
-	
-	
 	private Map<String, Object> deleteBoxMsg(Map<String, Object> requestParams) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		
@@ -296,6 +296,37 @@ public class ApiController {
 		}
 		
 		Box box = boxRepository.findOneByCode(boxCode);
+		if (box == null) {
+			response = new HashMap<String, Object>();
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", "找不到箱码");	
+			return response;
+		}
+		
+		box.setEmpty();
+		boxRepository.save(box);
+		
+		response.put("error_code", RESPONSE_SUCCESS);
+		response.put("msg", "已成功解绑编号为" + boxCode + "的箱码信息");
+		
+		return response;
+	}
+	
+	private Map<String, Object> deleteBoxMsg2(Map<String, Object> requestParams) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		
+		Map<String, String> content = (Map<String, String>)requestParams.get("content");
+		String boxCode = content.get("boxCode");
+		String invoiceCode = content.get("invoiceCode");
+		
+		if (boxCode == null || invoiceCode == null) {
+			response = new HashMap<String, Object>();
+			response.put("error_code", RESPONSE_FAIL);
+			response.put("msg", "参数不正确");	
+			return response;
+		}
+		
+		Box box = boxRepository.findOneByCodeAndDeliveryCode(boxCode, invoiceCode);
 		if (box == null) {
 			response = new HashMap<String, Object>();
 			response.put("error_code", RESPONSE_FAIL);
