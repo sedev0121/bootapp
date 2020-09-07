@@ -246,8 +246,7 @@ is_readonly = 0;
 	  }).select2("val", quantity_type.toString());
 	  
 	  $('#price_type, #tax_rate, #base_price, #floating_price').change(function() {	  	
-	  	table.rows().invalidate().draw();
-	  	showFloatingTab();
+	  	table.rows().invalidate().draw(false);
 	  });	
 
 	  

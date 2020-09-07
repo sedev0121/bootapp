@@ -961,7 +961,7 @@
 		  	$('#adjust_tax_cost').val(App.costNumber(adjust_tax_cost));	
 		  }		  
 
-		  table.rows().invalidate().draw();
+		  table.rows().invalidate().draw(false);
 	  }
 
 	  function calcRowAdjustTaxCost() {
