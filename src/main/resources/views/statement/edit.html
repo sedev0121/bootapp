@@ -1582,7 +1582,13 @@
 			  if (!exist_row.invoice_cost) {
 				  App.showErrorDialog("操作失败", exist_row.inventory_name + "(" + exist_row.inventory_code + ")" + "的开票金额为空。");
 				  return false;
-			  }
+			  } else {
+			  	if (exist_row.pi_quantity < 0 && exist_row.invoice_cost > 0) {
+			  		App.showErrorDialog("操作失败", "退货单（单据数量为负数时）开票金额不允许大于0");
+					  return false;
+			  	}	
+			  }			  
+			  
 		  }
 
 		  return true;
@@ -1590,6 +1596,9 @@
 
 	  $("#save").click(function() {
 		  editor.submit();
+		  if (!checkTable()) {
+			  return;
+		  }
 		  $('#save_state').val(1);
 		  $("#form").submit();
 	  });
