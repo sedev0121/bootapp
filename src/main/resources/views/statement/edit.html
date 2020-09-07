@@ -1576,20 +1576,28 @@
 			  return;
 		  }
 
+		  var no_invoice_cost_rows = [];
+		  var invalid_invoice_cost_row = [];
+		  
 		  for (i = 0; i < exist_data.length; i++) {
 			  var exist_row = exist_data[i];
 
 			  if (!exist_row.invoice_cost) {
-				  App.showErrorDialog("操作失败", exist_row.inventory_name + "(" + exist_row.inventory_code + ")" + "的开票金额为空。");
-				  return false;
-			  } else {
-			  	if (exist_row.pi_quantity < 0 && exist_row.invoice_cost > 0) {
-			  		App.showErrorDialog("操作失败", "退货单（单据数量为负数时）开票金额不允许大于0");
-					  return false;
-			  	}	
-			  }			  
-			  
-		  }
+			  	no_invoice_cost_rows.push(exist_row.row_no);
+			  } else if (exist_row.invoice_quantity < 0 && exist_row.invoice_cost > 0) {
+			  	invalid_invoice_cost_row.push(exist_row.row_no);
+		  	}				  
+		  }		  
+		  
+		  if (no_invoice_cost_rows.length > 0) {
+			  App.showErrorDialog("操作失败", "开票金额为空。行号为[" + no_invoice_cost_rows.join(", ") + "]");
+			  return false;
+		  }  
+		  
+		  if (invalid_invoice_cost_row.length > 0) {
+	  		App.showErrorDialog("操作失败", "退货单（单据数量为负数时）开票金额不允许大于0。行号为[" + invalid_invoice_cost_row.join(", ") + "]");
+			  return false;
+	  	}	
 
 		  return true;
 	  }
