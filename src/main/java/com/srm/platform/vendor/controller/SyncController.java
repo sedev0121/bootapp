@@ -450,16 +450,16 @@ public class SyncController {
 							detail.setMain(main);
 						} else {
 							logger.info("exist=" + originalID);
-//							if (detail.getContractCode() != null && !detail.getContractCode().trim().isEmpty()) {
-//								logger.info(String.format("skip %s contract=%s", originalID, detail.getContractCode()));
-//								for(PurchaseOrderDetail oldOrderDetail: oldList) {
-//									if (oldOrderDetail.getId() == detail.getId()) {
-//										oldList.remove(oldOrderDetail);
-//										break;
-//									}
-//								}
-//								continue;
-//							}
+							if (detail.getContractCode() != null && !detail.getContractCode().trim().isEmpty()) {
+								logger.info(String.format("skip %s contract=%s", originalID, detail.getContractCode()));
+								for(PurchaseOrderDetail oldOrderDetail: oldList) {
+									if (oldOrderDetail.getId() == detail.getId()) {
+										oldList.remove(oldOrderDetail);
+										break;
+									}
+								}
+								continue;
+							}
 						}
 
 						detail.setRowNo(getIntegerValue(detailTemp, "ivouchrowno"));
